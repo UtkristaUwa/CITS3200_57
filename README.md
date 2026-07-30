@@ -4,10 +4,10 @@
 
 ## Team members
 
-| NAME             | StudentID   |   GitHubID   |
-|------------------|-------------|--------------|
-| Utkrista Sen     | 24145884    | UtkristaUwa  |
-|                  |             |              |
+| NAME                     | StudentID   |   GitHubID     |
+|--------------------------|-------------|----------------|
+| Utkrista Sen             | 24145884    | UtkristaUwa    |
+| Sepehr Moghani Pilehroud | 23642415    | sepehrmoghani  |
 
 
 # TenderAI
