@@ -9,6 +9,7 @@
 | Utkrista Sen             | 24145884    | UtkristaUwa    |
 | Sepehr Moghani Pilehroud | 23642415    | sepehrmoghani  |
 | Jinghao Hu | 24183532 | jinghao163 |
+| Lucan McDonald | 24214099 | PiesOnTues |
 
 # TenderAI
 
