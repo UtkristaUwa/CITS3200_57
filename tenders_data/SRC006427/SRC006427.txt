@@ -1,0 +1,27 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - SRC006427
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/c3fa077d-b9ac-4d56-b7f6-26e0d261cedf
+Scraped At: 2026-08-13 00:15:25
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: SRC006427
+Agency: Australian Electoral Commission
+Category: 56101500 - Furniture
+Close Date & Time: 13-Aug-2026 2:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 25-Jun-2026
+Location: ACT, NSW, VIC, SA, WA, QLD, NT, TAS
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: Yes
+Multi-stage: No
+Description: Please see attached documents.
+Other Instructions: 
+Conditions for Participation: Notwithstanding the use of 'must', 'shall', 'will' or other mandatory language, no other requirement in this RFT is to be treated as a ‘Condition for Participation’.
+Timeframe for Delivery: Please see attached Statement of Requirements.
+Address for Lodgement: Via AusTender.
+Addenda Available: View Addenda
+
+================================================================================

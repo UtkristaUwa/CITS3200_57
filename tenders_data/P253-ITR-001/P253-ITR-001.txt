@@ -1,0 +1,29 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - P253-ITR-001
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/410a6519-8d02-4439-aa9d-57ef2281ec07
+Scraped At: 2026-08-13 00:15:47
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: P253-ITR-001
+Agency: Department of Defence - DSRG
+Category: 72100000 - Building construction and support and maintenance and repair services
+Close Date & Time: 13-Aug-2026 4:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 23-Jul-2026
+Location: Overseas
+ATM Type: Expression of Interest
+Multi Agency Access: Yes
+Multi Agency Access Type: All Agencies
+Panel Arrangement: No
+Multi-stage: Yes
+Multi-stage Criteria: From this ITR, a shortlist of applicants will be selected and invited to submit Tenders at the RFT stage commencing Sep 2026.
+Description: 3FIR forms part of the Republic of Fiji Military Forces and provides land-based security capability for domestic operations and international deployments. This project involves the design of a new military headquarters precinct, comprising headquarters accommodation, supporting administration and operational facilities, associated infrastructure and external works at Queen Elizabeth Barracks, Suva. The project involves development of the complete suite of design services to deliver the Project through all nominated design stages.
+Other Instructions: Two stage procurement process. Stage 2, Request for Tender, commencing in September 2026 for shortlisted applicants. Applicants may direct any questions pertaining to this procurement to 19 CE Works at the following email address: 19cew.p253.3fir@defence.gov.au
+Conditions for Participation: Nil
+Timeframe for Delivery: Estimated Design time 12 Months, Estimated delivery time 24 months
+Address for Lodgement: Tender responses are to be submitted electronically via the AusTender website www.tenders.gov.au using the 'Lodgement Page' link on this tender notification.
+Addenda Available: View Addenda
+
+================================================================================

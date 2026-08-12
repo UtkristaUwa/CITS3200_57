@@ -1,0 +1,27 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - PROCFY26078
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/d947d7e8-17cf-4796-9f49-e74fed4b7c8b
+Scraped At: 2026-08-13 00:17:19
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: PROCFY26078
+Agency: Tourism Australia
+Category: 80141607 - Events management
+Close Date & Time: 15-Aug-2026 10:00 am (ACT Local Time) Show close time for other time zones
+Publish Date: 21-Jul-2026
+Location: Overseas
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: No
+Description: This tender is seeking a suitably qualified and experienced Event Management Company to provide end-to-end management, strategic planning and on-site logistical execution for Tourism Australia's nominated signature events in the North American market held between 2027-2029.
+Other Instructions: 
+Conditions for Participation: See section 4.2 of Request for Tender document
+Timeframe for Delivery: Estimated commencement of contract from 1 December 2026
+Address for Lodgement: AusTender at www.austender.gov.au in accordance with instructions in the Request for Tender documentation
+Addenda Available: View Addenda
+
+================================================================================

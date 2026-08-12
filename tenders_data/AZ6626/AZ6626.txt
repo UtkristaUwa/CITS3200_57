@@ -1,0 +1,31 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - AZ6626
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/f2f39aee-b28e-469c-9f78-ef33266f778e
+Scraped At: 2026-08-13 00:17:30
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: AZ6626
+Agency: Department of Defence - DSRG
+Category: 72100000 - Building construction and support and maintenance and repair services
+Close Date & Time: 17-Aug-2026 12:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 6-Jul-2026
+Location: NSW Sydney
+ATM Type: Expression of Interest
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: Yes
+Multi-stage Criteria: Invitation to Register evaluation criteria:
+Proposed resources (50% weighting). The extent to which the Applicant has demonstrated that it has the resources and capacity to perform the contractor's activities and otherwise meet its obligations under the contract if it is the successful tenderer;
+Previous performance (50% weighting). The extent to which the Applicant has demonstrated that it has the experience and ability to perform the contractor's activities and otherwise meet its obligations under the contract if it is the successful tenderer;
+Information security (no weighting, the Registration of Interest will be evaluated with reference to whether or not this evaluation criterion is met). Whether or not the Applicant has demonstrated that it has the ability to meet its information security obligations if it is invited to lodge a tender for the contractor's activities and the works and will otherwise meet its obligations under the contract if it is the successful tenderer.
+Description: ESTS4000PH6 will deliver new infrastructure and capital build facilities in the form of modified and expanded training facilities and working accommodation including: Construction of new and refurbished training facilities at Navy Training Systems Centre – Randwick, NSW. • Modifications to existing buildings. • Modifications and improvements to existing site services infrastructure. • Construction of a new two storey extension to the existing training facility. • Civil and landscaping works. • Existing training facilities will remain operational throughout the project. Provision of working accommodation to Defence Plaza Sydney • Modifications to existing office fitout (one level) to accommodate additional staffing, including modifications to existing services, non-loadbearing internal partitions and finishes. • Existing adjacent offices will be operational throughout the project. The Invitation to Register Interest, which is the subject of this ATM, is the first stage of a two-staged selection process. Applicants will be requested to demonstrate that they have suitable experience and ability to construct the facilities and infrastructure noted above at the required Defence locations. Additionally, Applicants will be requested to demonstrate that they have the resources with suitable experience and capacity to perform the services to meet its obligations under the contract. The second stage of the selection process will be a Request For Tender (RFT) which will be issued to Applicants that have been successfully shortlisted through this Invitation to Register Interest process. Further details in relation to the subsequent RFT process will be provided to the short listed Applicants in the RFT. Applicants are advised that works packages for Maritime Combat Systems Integration Centre, St Kilda (MCSIC) will be subject to a separate procurement process.
+Other Instructions: N/A
+Conditions for Participation: None Stated
+Timeframe for Delivery: Anticipated RFT released to the market in Quarter 1 2027. Anticipated commencement of Works Quarter 2 2027. Anticipated completion of the construction works in Quarter 3 2029.
+Estimated Value (AUD): From $60,000,000.00 to $80,000,000.00
+Address for Lodgement: Tender responses are to be submitted electronically via the AusTender website www.tenders.gov.au using the 'Lodgement Page' link on this tender notification.
+
+================================================================================

@@ -1,0 +1,28 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - CSIRORFT2026019
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/c26648f6-b84c-40dd-96cc-0d163d91e290
+Scraped At: 2026-08-13 00:17:41
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: CSIRORFT2026019
+Agency: CSIRO
+Category: 72102900 - Facility maintenance and repair services
+Close Date & Time: 17-Aug-2026 2:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 16-Jul-2026
+Location: VIC Melbourne
+ATM Type: Request for Tender
+APP Reference: CSIRORFT2026019
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: No
+Description: CSIRO, through this RFT, is seeking responses from suitably qualified and experienced service providers to provide grounds maintenance services at its Clayton Precinct (Clayton, Clayton North and Notting Hill), Aspendale, and Werribee (Sneydes Road and South Road). The Contractor shall provide comprehensive preventive and reactive grounds maintenance and landscaping services to ensure all outdoor areas at the mentioned sites are maintained to a high standard of safety and presentation.
+Other Instructions: 
+Conditions for Participation: 5.1 Conditions for Participation 5.1.1 Subject to clause 5.7, Unintentional Errors of Form, CSIRO will exclude a Tenderer from further consideration and evaluation if CSIRO considers in its absolute discretion that the conditions for participation set out in this clause have not been met by the Tenderer. Notwithstanding anything else contained in this RFT, only requirements listed in this clause will be deemed conditions for participation. a.the Tenderer exists as a legal entity at the RFT Closing Time and Date b.at the time of lodgement of their Tender, Tenderers must not have been: i.precluded from tendering for Australian Government funded work or ii. subject to a judicial decision against them relating to employee entitlements (not including decisions under appeal, and have not paid the claim c. where the Tenderer is a Relevant Employer, the Tenderer is compliant with its obligations under the Workplace Gender Equality Act 2012 (Cth) (the WGE Act). Further information may be found at http://www.wgea.gov.au/ d. the Tenderer must comply with all Mandatory Requirements identified in the Attachment A - SOR (Statement of Requirements). 5.2 Minimum Content and Format Requirements 5.2.1 Subject to clause 5.7, Unintentional Errors of Form, CSIRO will exclude a Tenderer from further consideration if CSIRO considers in its absolute discretion that the Tenderer’s response does not meet the minimum content and format requirements listed in this clause. Notwithstanding anything else contained in this RFT, only requirements listed in this clause will be deemed minimum content and format requirements for the purposes of this RFT. a. The Tender must be lodged electronically via AusTender, the Australian Government Tendering System, in accordance with, clause 3.8, AusTender Terms and Conditions b. The Tenderer must complete and submit in their Response the: i. Tenderer’s Deed Poll, substantially in the form at Schedule 10, as set out in Attachment B - TRS (Tender Response Schedules). c. Noting the requirement at clause 5.2.1 b, Tenderers should substantially complete all remaining schedules of Attachment B - TRS (Tender Response Schedules), including the RFT Pricing Tables at Annexure A in the format provided. d. The Tender, including all attachments and supporting material, must be written in English. e. Alternative solutions will only be considered where the Tenderer also provides in its Tender, a response that conforms to the specified requirements of this RFT. f. Where the Tenderer is a Relevant Employer, the Tenderer must provide evidence as specified in Schedule 3 item 1.3.5 of Attachment B - TRS (Tender Response Schedules). Further information can be found at clause 5.8.
+Timeframe for Delivery: October 2026
+Address for Lodgement: AusTender
+Addenda Available: View Addenda
+
+================================================================================

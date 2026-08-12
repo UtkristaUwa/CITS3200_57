@@ -1,0 +1,27 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - ATM_2026_6786
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/998e15fe-ea59-434c-9b12-cf38ae0b49d2
+Scraped At: 2026-08-13 00:17:32
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: ATM_2026_6786
+Agency: Department of Climate Change, Energy, the Environment and Water
+Category: 77101800 - Environmental auditing
+Close Date & Time: 17-Aug-2026 2:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 1-Jul-2026
+Location: ACT, NSW, VIC, SA, WA, QLD, NT, TAS, Overseas Canberra, Sydney, Melbourne, Adelaide, Perth, Brisbane, Darwin, Hobart
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: Yes
+Multi-stage: No
+Description: The Department requires the services of testing laboratories with appropriate accreditation to undertake verification testing of products regulated under the Greenhouse and Energy Minimum Standards Act 2012 (GEMS Act) . This testing is used to verify compliance with mandatory regulatory requirements and to confirm the accuracy of energy efficiency and performance claims made by manufacturers and suppliers. Testing is conducted in accordance with the relevant GEMS determinations, which prescribe applicable Australian and/or international test standards. Each year, the GEMS Regulator publishes a Compliance Monitoring Program that outlines priority compliance activities for GEMS-regulated products. As part of this program, the GEMS Regulator conducts check testing of registered products to assess compliance with Minimum Energy Performance Standards (MEPS), Energy Rating Labelling (ERL) requirements, and other energy efficiency and performance claims. The GEMS Regulator may also select additional registered products for check testing outside of those identified in the annual program. Service Requirements The Supplier will be required to procure products for check testing and undertake testing services in accordance with the Customer’s instructions, applicable standards, accreditation requirements, and relevant regulatory obligations. Testing activities must be completed within the agreed timeframes, generally within 45 days of receipt of the product at the laboratory unless otherwise agreed by the Customer. The Supplier must ensure that all check testing results are accurately documented in the prescribed reporting format, with reports fully completed, quality assured, and reviewed for accuracy prior to submission. The Supplier will provide monthly progress reports detailing the status of product procurement and testing activities, including product acquisition, laboratory receipt, testing progress, and report issuance.
+Other Instructions: 
+Conditions for Participation: The tenderer must be accredited, or provide evidence that they are in the process of obtaining accreditation, to test one or more of the GEMS products listed at Attachment 13 by either: • The National Association of Testing Authorities, Australia (NATA); or • an accreditation body, other than NATA, that is a signatory to either: - the Asia Pacific Accreditation Cooperation (APAC) Mutual Recognition Arrangement; or - the International Laboratory Accreditation Cooperation (ILAC) Mutual Recognition Arrangement
+Timeframe for Delivery: The deed is anticipated to commence from 1 November 2026 and conclude on 30 June 2030. A one-year extension option will be incorporated into the deed, to be exercised at the Department's discretion.
+Address for Lodgement: AusTender at www.tenders.gov.au in accordance with instructions in Request documentation
+Addenda Available: View Addenda
+
+================================================================================

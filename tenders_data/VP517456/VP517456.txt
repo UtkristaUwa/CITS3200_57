@@ -1,0 +1,26 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - VP517456
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/544d2a3d-0ba4-49e3-a248-e2a8517d8a4a
+Scraped At: 2026-08-13 00:15:50
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: VP517456
+Agency: National Capital Authority
+Category: 81100000 - Professional engineering services
+Close Date & Time: 13-Aug-2026 4:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 30-Jul-2026
+Location: ACT Canberra
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: No
+Description: BGIS as Managing Contractor for The National Capital Authority (NCA), seeks suitably qualified consultants to provide inspection, engineering, and asset management services for bridges and jetties across the NCA estate within the ACT. The successful consultant will be responsible for, but not limited to, comprehensive documentation and reporting, undertaking asset inspections including review of service reports, providing detailed condition assessments, maintenance planning and providing technical engineering services. All additional scope and returnable schedules can be found within this opportunity. All supplier queries are to be asked within VendorPanel VendorPanel Public Tenders - BGIS - NCA RFT Bridge & Jetty Inspections Open Tender
+Other Instructions: Nil
+Conditions for Participation: Nil
+Timeframe for Delivery: From contract execution date, contract to expire 29/02/2028, with a possible 1 year extension.
+Address for Lodgement: https://www.vendorpanel.com.au/PublicTenderAccess.aspx?id=5d4bf83c66654bc5be5bcc8f24e7cb07s517456
+
+================================================================================

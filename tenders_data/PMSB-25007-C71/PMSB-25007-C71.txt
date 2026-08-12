@@ -1,0 +1,28 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - PMSB-25007-C71
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/1665ab46-4233-4694-927f-799a42c03993
+Scraped At: 2026-08-13 00:15:51
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: PMSB-25007-C71
+Agency: Department of Foreign Affairs and Trade
+Category: 72100000 - Building construction and support and maintenance and repair services
+Close Date & Time: 13-Aug-2026 5:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 26-Jun-2026
+Location: Overseas
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: Yes
+Multi-stage Criteria: Tenderers must complete and return the Due Diligence Information Deed Poll of Confidentiality for Request for Tender, located at Attachment E of the RFT, to the Contact Email. The completed Due Diligence Information Deed Poll of Confidentiality. Once DFAT is satisfied that the Confidentiality Deed Poll has been correctly completed and properly executed, DFAT will provide the Tenderer's representative identified in the Deed access to a secure AusTender page to access and download the design and due diligence information.
+Description: The Australian Department of Foreign Affairs and Trade (DFAT) has a requirement for a Design and Construct Head Works Contractor for the Refurbishment of the Australian High Commission Staff Residential Compound Konedobu, Port Moresby, Papua New Guinea. The refurbishment works include design due diligence, demolition, and replacement of internal services, fixtures and finishes across 39 residences within a large secure operational compound. The residences are a mix of townhouses, duplexes and apartments comprised of 3 and 4 bedrooms across multiple levels. The project will be delivered through a staged rolling program of works to maintain safety and operational continuity within the compound. Overall delivery is anticipated to occur over an approximate period of 4.5 years.
+Other Instructions: Industry Briefing Industry briefings will be held for all tenderers in two parts 1 - Online Microsoft Teams meeting for Tenderers Tuesday 7 July 2026. 2 - In-person Site Visit at the Konedobu Compound, Port Moresby, PNG. 15 July 2026. Time to be confirmed. Attendance at the industry briefing and site visit will be limited to Registered Tenderer’s. Tenderer’s must provide the required details outlined in the RFT and returned time specified. Attendance at the industry briefing and/or site visit is not mandatory, however, it is recommended as it will assist potential Tenderers in better understanding the requirements and in preparing submissions that address the evaluation criteria. Individual briefings will not be provided. Access to Due Diligence Information: Tenderers should note that Attachment C of this RFT contains a list of documents that comprise the due diligence and design Information for the Project. The due diligence and design Information itself is not included in this published RFT document as it is classified as DFAT Confidential Information For reasons of security and confidentiality, due diligence and design information will not be made available to a Tenderer until the Tenderer has met the requirements set out in the Due Diligence Information Deed Poll (Attachment E) and the RFT.
+Conditions for Participation: 1. The Tenderers must exist as a single legal entity at the Closing Time. 2. The Tenderer must either: i. Holds all Valid and satisfactory Statements of Tax record required for its entity type. 3. The Tenderer must hold all Valid and Satisfactory Statement of Tax Record for the entity type of any first tier subcontractor that it proposes, as part of its Tender, to engage to deliver goods or services with an estimated value of over $4 million (GST inclusive).
+Timeframe for Delivery: Estimated Period:  September 2026 - May 2031
+Address for Lodgement: Electronic lodgment via AusTender at www.tenders.gov.au
+Addenda Available: View Addenda
+
+================================================================================

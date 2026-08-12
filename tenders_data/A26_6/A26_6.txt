@@ -1,0 +1,27 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - A26/6
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/e9befc75-e3d7-4f64-824b-fc0067b9ee11
+Scraped At: 2026-08-13 00:15:42
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: A26/6
+Agency: National Capital Authority
+Category: 81100000 - Professional engineering services
+Close Date & Time: 13-Aug-2026 2:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 17-Jul-2026
+Location: ACT Canberra
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: No
+Description: The National Capital Authority (NCA) is seeking to engage a suitably qualified and experienced consultant for Independent Technical Advisor (ITA) services at Scrivener Dam. The services include regular audits to assess NCA’s compliance to the Dam Safety Management Plan, and the provision of independent technical advice for the dam safety management of Scrivener Dam.
+Other Instructions: 
+Conditions for Participation: Conditions for Participation The Customer will exclude from participation any Potential Supplier that does not demonstrate compliance with: a. The Respondent meets the definition of an Australian or New Zealand business https://www.finance.gov.au/government/procurement/defining-australian-business-commonwealth-procurement/guidance-definition-australian-or-new-zealand-business
+Timeframe for Delivery: 3 Years
+Address for Lodgement: Electronic lodgement through AusTender at www.tenders.gov.au
+Addenda Available: View Addenda
+
+================================================================================

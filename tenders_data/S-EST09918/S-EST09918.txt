@@ -1,0 +1,27 @@
+================================================================================
+AUSTENDER DETAILS: Current ATM View - S-EST09918
+================================================================================
+
+Detail URL: https://www.tenders.gov.au/Atm/Show/9524ca3c-4902-464d-b61f-65fc33b98f92
+Scraped At: 2026-08-13 00:17:25
+
+STRUCTURED ATTRIBUTES:
+----------------------------------------
+ATM ID: S-EST09918
+Agency: Department of Defence - DSRG
+Category: 72100000 - Building construction and support and maintenance and repair services
+Close Date & Time: 17-Aug-2026 12:00 pm (ACT Local Time) Show close time for other time zones
+Publish Date: 7-Jul-2026
+Location: WA
+ATM Type: Request for Tender
+Multi Agency Access: No
+Panel Arrangement: No
+Multi-stage: No
+Description: This project involves design, investigation works and provision of communications equipment and infrastructure services upgrade at Campbell Barracks
+Other Instructions: The tender documents (including Contract) are attached on AusTender (under ‘Go to ATM documents’). The scopes of works and associated documents have not been attached. To obtain the full scope of works documentation, tenderers are to submit a signed Disclaimer and Confidentiality Agreement as follows: 1. Click on Go to ATM Documents 2. Download the tender documents 3. Go to Disclaimer and Confidentiality Agreement 4. Print and sign the Disclaimer and Confidentiality Agreement 5. Return the signed copy by email, as a scanned PDF file, to the Contact Officer / PDS Contractor noted below Tenderers are to note that without the Disclaimer and Confidentiality Agreement being returned to the Contact Officer / PDS Contractor, the complete Scope of Works cannot be released. Any questions relating to this tender are to be forwarded via email to the Contact Officer / PDS Contractor nominated below. The cut-off date for questions pertaining to this tender is seven (7) days before the tender close date. Industry Briefing: Refer to Part 2, Tender Particulars of the Tender Conditions.
+Conditions for Participation: The Tenderer must at the time of submitting its Tender satisfy each condition for participation as follows: - The Tenderer must complete and return the signed Disclaimer and Confidentiality Agreement.
+Timeframe for Delivery: To be inserted following selection of successful tenderer.
+Address for Lodgement: Tender responses are to be submitted electronically via the AusTender website www.tenders.gov.au using the 'Lodgement Page' link on this tender notification.
+Addenda Available: View Addenda
+
+================================================================================
