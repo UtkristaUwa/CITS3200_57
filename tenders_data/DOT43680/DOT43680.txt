@@ -1,0 +1,40 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - DOT43680
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329402
+Scraped At : 2026-08-17 20:22:06
+
+--------------------------------------------------------------------------------
+Display Tender DOT43680 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Rectification of Uninterruptible Power Supply (UPS) Systems at Traffic Signal Sites throughout Metropolitan Melbourne
+Issued By Department of Transport and Planning
+Type:
+Request for Tender
+Status:
+Open
+Number:
+DOT43680
+Contract Number
+DOT43680
+UNSPSC:
+Traffic signals
+Region(s):
+Victoria
+Enquiries 
+Tenderservices
+Contractual
+Phone: +61 (3) 00000000
+tenderservices@transport.vic.gov.au
+Description
+DOT43680 - Rectification of Uninterruptible Power Supply (UPS) Systems at Traffic Signal Sites throughout Metropolitan Melbourne
+Rectification of faulty UPS Systems and Replacement of end-of-life UPS Systems at Metropolitan Traffic Signal Sites.
+Tender Opening Date: 5 August 2026
+Tender Closing Date: 16 September 2026
+Only Tenderers prequalified at prequalification level STS at the time of closing of the tender will be eligible to tender on this Contract.
+Request for Tender documents should be directed to: tenderservices@transport.vic.gov.au
+All Tender submissions must be lodged via http://www.tenders.vic.gov.au by 3:30pm on Wednesday, 16 September 2026
+This was previously listed as the Advanced Tender Notice ATN33610
+
+================================================================================
