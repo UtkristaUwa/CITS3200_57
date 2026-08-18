@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Container, Card, CardContent,
-  CardActions, Collapse, Box, Chip
+  CardActions, Collapse, Box, Chip, Link
 } from '@mui/material';
 
 // Mock Data for the tender skeleton
-const mockTenders = [
-  {
-    title: "Tender Title",
-    isNew: true
-  }
+interface Tender {
+  id: number;
+  title: string;
+  isNew: boolean;
+  isFavorite: boolean;
+  source: string;
+}
+
+const initialTenders: Tender[] = [
+  { id: 1, title: "Tender Title", isNew: true, isFavorite: false, source: "https://example.com/tender-1" },
+  { id: 2, title: "Tender Title", isNew: false, isFavorite: false, source: "https://example.com/tender-2" },
+  { id: 3, title: "Tender Title", isNew: false, isFavorite: false, source: "https://example.com/tender-3" },
 ];
 
 // Single Tender Card Component
-function TenderCard({ tender }) {
+function TenderCard({ tender, onToggleFavorite }: { tender: Tender; onToggleFavorite: (id: number) => void }) {
   // State to control the expand/collapse action
   const [expanded, setExpanded] = useState(false);
 
@@ -25,12 +32,21 @@ function TenderCard({ tender }) {
             Contains Title, ATM ID, Closing Date, Agency, Description
             ========================================== */}
         
-        {/* Title and Badge */}
+        {/* Title and Badges */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
           <Typography variant="h6" component="div" sx={{ textAlign: 'left' }}>
             {tender.title}
           </Typography>
-          {tender.isNew && <Chip label="NEW" color="primary" size="small" />}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {tender.isNew && <Chip label="NEW" color="primary" size="small" />}
+            <Chip
+              label="FAVORITE"
+              color={tender.isFavorite ? 'warning' : 'default'}
+              size="small"
+              onClick={() => onToggleFavorite(tender.id)}
+              sx={{ cursor: 'pointer' }}
+            />
+          </Box>
         </Box>
 
         {/* Outer layer information (Left Aligned, Reordered) */}
@@ -43,8 +59,14 @@ function TenderCard({ tender }) {
         <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
           <strong>Agency:</strong> 
         </Typography>
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 1.5 }}>
+        <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
           <strong>Description:</strong> 
+        </Typography>
+        <Typography variant="body2" sx={{ textAlign: 'left', mb: 1.5 }}>
+          <strong>Source:</strong>{' '}
+          <Link href={tender.source} target="_blank" rel="noopener noreferrer">
+            {tender.source}
+          </Link>
         </Typography>
 
         {/* ==========================================
@@ -116,6 +138,16 @@ function TenderCard({ tender }) {
 
 // Main Page Component
 export default function BasicSkeletonApp() {
+  const [tenders, setTenders] = useState<Tender[]>(initialTenders);
+
+  const handleToggleFavorite = (id: number) => {
+    setTenders(prev =>
+      [...prev]
+        .map(t => (t.id === id ? { ...t, isFavorite: !t.isFavorite } : t))
+        .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite))
+    );
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       {/* Top Navigation Bar */}
@@ -132,8 +164,8 @@ export default function BasicSkeletonApp() {
 
       {/* Main Content: Render Cards */}
       <Container maxWidth="md">
-        {mockTenders.map((tender, index) => (
-          <TenderCard key={index} tender={tender} />
+        {tenders.map((tender) => (
+          <TenderCard key={tender.id} tender={tender} onToggleFavorite={handleToggleFavorite} />
         ))}
       </Container>
     </Box>
