@@ -1,0 +1,66 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - VLPRJ1428
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=330495
+Scraped At : 2026-08-17 20:22:24
+
+--------------------------------------------------------------------------------
+Display Tender VLPRJ1428 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Traffic Management Services Panel
+Issued By V/Line
+Type:
+Request for Tender
+Status:
+Open
+Number:
+VLPRJ1428
+UNSPSC:
+Traffic control
+Region(s):
+Victoria
+Enquiries 
+Amy Tan (Enquiries)
+amy.tan@vline.com.au
+Description
+Traffic Management Services Panel
+V/Line Tender Reference VLPRJ1428
+Provision of Temporary Traffic Management Services across the network.
+
+In issuing the RFT, V/Line is seeking a panel of contractors to provide Traffic Management Services includes traffic control, equipment hire, planning and permits. Examples of traffic management include;
+• VMS board and portable equipment/facility hire (including traffic lights and other site amenities such as toilets, site sheds cameras and etc.)
+• Lane closure and detours
+• Traffic Control
+• Sign Installation
+• Road Closures (including road barries; installation and removal)
+• Traffic Management and 24 emergency response
+• Engineered and non-engineered plans
+• Signal Plan
+• Obtain approval from either VicRoads, Council or both (e.g. MOA for VicRoads)
+• Traffic management plans
+Accreditation with Vic Roads is required as mandatory (evidence of certification must be provided). https://transport.vic.gov.au/business/road-and-traffic-management/traffic-management-reform-program/temporary-traffic-management-accreditation-program
+Tenderers must be accredited for both Traffic Management Design (TMD) and Traffic Management Implementation (TMI), and must meet the requirements for road Categories 1, 2, and 3.
+
+What this means for you.
+V/Line has released a new Tender document for the Electrical Works Panel on the Zycus platform. This is the   ONLY   platform that tender documentation will be available on.
+As part of our implementation of Zycus, we have also introduced the Zycus Supplier Network (ZSN) portal, which is a secure, online platform that enables suppliers to engage with V/Line digitally. Tender documentation will be available to be viewed via the ZSN portal, and V/Line will be accepting tender responses submitted via ZSN.
+
+How to access ZSN
+Active V/Line vendor:
+Please contact V/Line at: procurementsystems@vline.com.au to request your unique ZSN registration link which allows you to create your ZSN account with V/Line.
+If you already have a ZSN account linked to V/Line, please login using your existing login information.
+Prospective V/Line vendor:
+Please click this link to register an account on ZSN and create your company profile.
+
+View tender documentation
+After your ZSN registration is complete, you will be able to login to ZSN and view the tender documentation when it is released from your ZSN account V/Line home page.  Tender documentation is currently available to view.
+
+Submitting a tender response
+V/Line will only be accepting responses submitted via ZSN. Please login to the ZSN Portal during the tender open period to complete and submit your response. 
+
+Please visit V/Line’s Corporate website (V/Line - Regional public transport for Victoria - Suppliers) for more information, FAQ’s and guides on how to use ZSN.
+
+For additional help, please email ProcurementSystems@vline.com.au.
+
+================================================================================

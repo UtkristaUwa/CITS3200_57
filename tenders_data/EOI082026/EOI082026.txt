@@ -1,0 +1,117 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - EOI082026
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329237
+Scraped At : 2026-08-17 20:27:31
+
+--------------------------------------------------------------------------------
+Display Tender EOI082026 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Systems Assurance – Sourcing of Financial Statement IT Audit Services
+Issued By Victorian Auditor General's Office
+Type:
+Expression of Interest
+Status:
+Open
+Number:
+EOI082026
+UNSPSC:
+Audit services
+Region(s):
+Victoria
+Enquiries 
+Anh Ha (Chief Financial Officer)
+Anh.Ha@audit.vic.gov.au
+Nizar Punjani
+Technical
+Office: +61 (03) 8601 7000
+Nizar.Punjani@audit.vic.gov.au
+Shirley Ang
+Technical
+Phone: +61 (03) 8601 7000
+Shirley.Ang@audit.vic.gov.au
+VAGO Finance Team
+Contractual
+Phone: +61 (03) 8601 7000
+Finance@audit.vic.gov.au
+Description
+Systems Assurance – Sourcing of Financial Statement IT Audit Services for up to Three-Years (Financial Year Ending 30 June 2027 to 30 June 2029) – Multiple Audits
+1. Introduction
+This Expression of Interest (EOI) invites suitably qualified IT Audit Service Providers (ITASPs) to register their interest to support VAGO in delivering financial statement IT audit services for multiple audits for up to three years from FY2027 to FY2029. For the purpose of this EOI, ITASPs may include existing VAGO Audit Service Providers engaged under the VAGO Financial Audit Service Provider Agreement or other IT Audit Service Providers willing to be engaged in accordance with applicable VAGO procurement requirements.
+2. Background, Context and Purpose
+VAGO currently delivers IT audit services across a number of financial audits annually using a combination of in-house Systems Assurance resources and external IT Audit Service Providers. This EOI relates to the approximate annual hours that may be delivered by successful ITASPs under future ITASP arrangements.
+The future audit volumes and resourcing requirements may change due to audit and resourcing planning. Accordingly, VAGO is seeking a flexible sourcing approach that can respond to business requirements across FY2027 to FY2029.
+The purpose of this EOI is to identify ITASPs that have the capability, capacity and interest to participate in a subsequent Request for Quotation (RFQ) process for eligible FY2027 – FY2029 financial statement IT audits.
+The EOI is not a request for detailed pricing and does not guarantee that any provider will be invited to quote or awarded work.
+Services include planning, interim and year-end IT audit procedures in support of financial statement audits, performed in accordance with VAGO's audit methodology and the requirements of ASA 315, including understanding the audit environment, identifying and evaluating IT-related risks, designing appropriate audit responses, and effectively integrating with Financial Audit (FA) teams to support systems assurance optimisation initiatives.
+3. High Level Scope of Services
+Services include planning, interim and year-end IT audit procedures in support of financial statement audits, performed in accordance with VAGO's audit methodology and the requirements of ASA 315, including understanding the audit environment, identifying and evaluating IT-related risks, designing appropriate audit responses, and effectively integrating with Financial Audit (FA) teams to support systems assurance optimisation initiatives.
+4. Mandatory Requirements
+Public liability and professional indemnity insurance to cover liabilities in aggregate amounting to a minimum of $10,000,000.
+Ability to comply with VAGO’s confidentiality, privacy, data protection and intellectual property requirements.
+Ability to satisfy VAGO’s independence and conflict of interest requirements for both the firm and proposed resources.
+Ability to comply with applicable Victorian Government procurement requirements, including Local Jobs First Policy where applicable.
+All proposed resources must be employees of the supplier.
+No subcontracting or third-party engagement is permitted for delivery of services.
+All proposed resources must be able to satisfactorily complete relevant criminal checks.
+Use of VAGO systems, methodology, templates and quality requirements.
+Operate under VAGO oversight and direction.
+Willingness to participate in subsequent RFQ processes.
+5. Indicative Resourcing Requirements
+Based on past experience, our preferred resourcing model is outlined below; however, we welcome alternative approaches proposed by providers.
+1 x IT Audit Director/Partner-level resource
+2 × IT Audit Manager-level resources with CISA certification and a minimum of 3 years' recent Financial IT Audit Manager level experience
+3 × IT Auditor-level resources with a minimum of 12 months' recent Financial IT Audit Team Member level experience
+Providers should be able to provide backup and replacement resources where required, to deliver the assigned audit portfolio.
+6. Indicative Volume and Timing Requirements
+Approximate annual requirement: Approximately 2,000 hours across ~22 audits with different levels of scope and involvement on each audit.
+Potential annual range: Initially estimated at 2,000 hours, with potential increases depending on audit volumes and approved extensions.
+Contract structure: Initial one-year term with two optional one-year extensions at VAGO’s discretion and subject to approvals and business requirements.
+Indicative annual delivery cycle: 
+Planning: mid-October to pre-Christmas shutdown
+Interim: post-Christmas to June
+Year-end: July to August
+Indicative effort profile:
+Year-end: Approximately 20%
+Planning: 20–30%
+Interim: 50–60%
+7. Information Requested from ITASPs
+Interested ITASPs should complete the attached EOI Response Template and provide information covering:
+Organisational details
+Response to Mandatory requirements
+Response to Contract structure
+Response to Resources, Capacity and Capability requirements
+Response to Independence and COI questions
+Declaration
+8. Assessment of EOI Responses
+EOI responses will be reviewed to determine suitable providers for a subsequent RFQ process. The review may consider mandatory compliance, resource capacity, availability and flexibility, audit portfolio coverage, independence and conflict of interest considerations, and interest in contract structure.
+9. Subsequent RFQ Process
+Following assessment of EOI responses, VAGO may issue an RFQ to suitable providers for selected eligible financial statement IT Audits.
+10. Conditions of EOI
+This EOI does not constitute an offer, contract or commitment by VAGO to procure services.
+VAGO may amend, suspend or discontinue the EOI process at any time.
+Submission of EOI does not guarantee participation in a future RFQ process.
+VAGO may request clarification, additional information or supporting evidence from respondents.
+All information provided must be accurate, complete and authorised by the respondent.
+Respondents are responsible for their own costs in preparing and submitting an EOI response.
+11. Lodgment Requirements
+Lodgment method: Via email to Contact officers mentioned below
+Response document: Completed EOI Response Template
+Supporting documents: None required at this stage - VAGO may request clarification, additional information or supporting evidence from respondents
+Closing date and time: By Close of Business 21 August 2026
+Contact officers:
+Nizar Punjani (Senior Manager, Corporate, Systems Assurance), Email: Nizar.Punjani@audit.vic.gov.au
+Cc:
+Shirley Ang (Senior Manager, Corporate, Systems Assurance), Email: Shirley.Ang@audit.vic.gov.au
+VAGO Finance Team, Email: Finance@audit.vic.gov.au  
+Specification Documents 
+You must be logged in to download documents.
+   VAGO_EOI_IT Audit Services - July 2026.docx
+Version 1 (4 Aug 2026)
+Available by Download   (111 KB)
+   VAGO_EOI_Response Template ITASP_IT Audit Services - July 2026.xlsx
+Version 1 (4 Aug 2026)
+Available by Download   (27 KB)
+
+================================================================================

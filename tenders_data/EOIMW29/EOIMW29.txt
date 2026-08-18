@@ -1,0 +1,52 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - EOIMW29
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329644
+Scraped At : 2026-08-17 20:21:21
+
+--------------------------------------------------------------------------------
+Display Tender EOIMW29 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+WTP Grit & Screenings Plant
+Issued By Melbourne Water
+Type:
+Expression of Interest
+Status:
+Open
+Number:
+EOIMW29
+UNSPSC:
+Waste water and sewage treatment plant construction service
+Region(s):
+Victoria
+Enquiries 
+Neil Chen
+Contractual
+Phone: +61 (03) 00000000
+WTPGritScreenings@melbournewater.com.au
+Description
+Melbourne Water (MW) is seeking Expressions of Interest (EOI) for the provision of Design & Construct services for the Western Treatment Plant Grit & Screenings Plant (WTPGSP) project. Successful shortlisted Respondents to this EOI will be invited to participate in the following RFP. 
+The EOI will be conducted through MW's procurement system called Zycus. All submissions must be lodged through Zycus and all queries/clarifications are to be directed through the Zycus eForum.
+Access to the EOI is via the following Zycus link: https://zsn.zycus.com/guest (sourcing event number 1222442574).
+Respondents must first submit an unamended executed confidentiality deed poll (instructions as per the EOI) to Zycus event 1222442574. Respondents will then be invited to a second Zycus event for the EOI submission and provide access to project information.
+Respondents are able to submit their executed confidentiality deed poll until 14:00 AEST, Monday 14 September 2026. Respondents that do not submit their confidentiality deed by this close date, will not be invited to the second Zycus event and will not be able to formally lodge an EOI proposal. 
+Refer to Zycus guides attached to this tender notice for registration and setup details.
+The closing date for this EOI is 14:00 AEST, Monday 21 September 2026.
+An optional Industry Briefing Session will be held in person at Melbourne Water's Head Office (990 La Trobe St, Docklands, VIC 3008) on Monday, 17 August 2026. Respondents must register their attendance with the Contact Officer by no later than 14:00 AEST, Thursday 13 August 2026. 
+Specification Documents 
+You must be logged in to download documents.
+   Zycus eForum Collaboration Guide.pdf
+Version 1 (7 Aug 2026)
+Available by Download   (1 MB)
+   Zycus Registration Guide - New Supplier.pdf
+Version 1 (7 Aug 2026)
+Available by Download   (749 KB)
+   Zycus Lodgement Guide.pdf
+Version 1 (7 Aug 2026)
+Available by Download   (1 MB)
+   Zycus Supplier Guide - Updating your details.pdf
+Version 1 (7 Aug 2026)
+Available by Download   (781 KB)
+
+================================================================================
