@@ -10,6 +10,7 @@
 | Sepehr Moghani Pilehroud | 23642415    | sepehrmoghani  |
 | Jinghao Hu | 24183532 | jinghao163 |
 | Lucan McDonald | 24214099 | PiesOnTues |
+| Benjamin Gilmore | 23706738 | bgilmore22 |
 
 # TenderAI
 
