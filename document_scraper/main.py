@@ -1,5 +1,6 @@
 import os
-import fitz #pdf extraction
+import fitz #pdf extraction\
+import docx
 def extract_pdf(file_path: str) :
     """
     Extracts text from a PDF file using PyMuPDF.
@@ -21,8 +22,19 @@ def extract_docx(file_path: str) :
     """
     Extracts text from a Word document using python-docx.
     """
-    pass
-    return ""
+    text_in_doc = ""
+    try:
+        doc = docx.Document(file_path)
+        for paragraph in doc.paragraphs:
+            # We check if the paragraph actually has text to avoid adding thousands of empty lines
+            if paragraph.text.strip():
+                text_in_doc += paragraph.text + "\n"
+                # print(text_in_doc)
+
+        return text_in_doc
+    except Exception as e:
+        print(f"     ❌ DOCX Extraction Error on {file_path}: {e}")
+        return ""
 
 def append_to_master_txt(master_file, text_to_append, original_document_file):
     """
@@ -80,6 +92,9 @@ def process_tenders(filepath):
                 elif file_extension == '.docx':
                     print(f"  -> [DOCX] Processing: {doc}")
                     result = extract_docx(doc_path)
+
+                    append_to_master_txt(scraped_txt_file, result, doc)
+
                 elif file_extension == '.txt':
                     #check if downloaded txt might perhaps be different to the txt file scraped off website
                     print(f"  -> [TXT] Processing: {doc}")
