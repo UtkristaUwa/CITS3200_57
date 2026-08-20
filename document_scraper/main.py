@@ -1,11 +1,22 @@
 import os
+import fitz #pdf extraction
 def extract_pdf(file_path: str) :
     """
     Extracts text from a PDF file using PyMuPDF.
+    returns text from pdf as a string or "" if fails
     """
-    pass
-    return ""
+    text_in_doc = ""
+    try:
+        with fitz.open(file_path) as pdf_doc:
+            for page_num in range(len(pdf_doc)):
+                page = pdf_doc[page_num]
 
+                text_in_doc += page.get_text("text") + "\n"
+                #print(text_in_doc)
+        return text_in_doc
+    except Exception as e:
+        print(f"     ❌ PDF Extraction Error on {file_path}: {e}")
+        return ""
 def extract_docx(file_path: str) :
     """
     Extracts text from a Word document using python-docx.
@@ -37,6 +48,7 @@ def process_tenders(filepath):
                     print(f"  -> [PDF] Processing: {doc}")
                     result = extract_pdf(doc_path)
 
+
                 elif file_extension == '.docx':
                     print(f"  -> [DOCX] Processing: {doc}")
                     result = extract_docx(doc_path)
@@ -45,7 +57,7 @@ def process_tenders(filepath):
                     print(f"  -> [TXT] Processing: {doc}")
                     if doc == f"{item}.txt":#the web scraped text in txt file
                         #print("This is the metadata text file!")
-                        pass 
+                        pass
                     else:
                         print("txt file downloaded, must scan this too")
                         print(f"  -> [TXT] Processing: {doc}")
