@@ -4,12 +4,14 @@ def extract_pdf(file_path: str) :
     Extracts text from a PDF file using PyMuPDF.
     """
     pass
+    return ""
 
 def extract_docx(file_path: str) :
     """
     Extracts text from a Word document using python-docx.
     """
     pass
+    return ""
 
 def process_tenders(filepath):
     """
@@ -41,6 +43,12 @@ def process_tenders(filepath):
                 elif file_extension == '.txt':
                     #check if downloaded txt might perhaps be different to the txt file scraped off website
                     print(f"  -> [TXT] Processing: {doc}")
+                    if doc == f"{item}.txt":#the web scraped text in txt file
+                        #print("This is the metadata text file!")
+                        pass 
+                    else:
+                        print("txt file downloaded, must scan this too")
+                        print(f"  -> [TXT] Processing: {doc}")
 
 
 
