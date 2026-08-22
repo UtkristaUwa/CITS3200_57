@@ -25,3 +25,706 @@ Address for Lodgement: Electronic lodgement through AusTender at www.tenders.gov
 Addenda Available: View Addenda
 
 ================================================================================
+
+
+============================================================
+DOCUMENT ATTACHMENT: Scrivener Dam Independent Technical Advisor - 2026-2029 -Addendum 1.DOCX
+============================================================
+
+ATM Questions and Answers (Addendum 1)
+All enquiries regarding this ATM or this addendum should be emailed to the Contact Officer at 
+
+
+
+============================================================
+DOCUMENT ATTACHMENT: Scrivener Dam Independent Technical Advisor - 2026-2029 - Approach to Market.DOCX
+============================================================
+
+Approach to Market
+To establish Contract for Procurement of the Scrivener Dam Independent Technical Advisor - 2026-2029
+Reference ID: A26/6
+UNSPSC: 81100000 Professional engineering services
+This Approach to Market (ATM) is for the provision of a suitably qualified and experienced consultant to provide expert and independent technical advice for the dam safety management of Scrivener Dam. 
+The Commonwealth of Australia as represented by National Capital Authority (the Customer) is seeking submissions for the provision of the consultancy services (the Requirement) as described in this ATM comprising:
+this CCS ATM, including the Statement of Requirement
+the CCS ATM Response Form
+the CCS ATM Annexes (if any)
+the Commonwealth ATM Terms
+the Additional Contract Terms (if any)
+the Commonwealth Contract Terms
+the Commonwealth Contracting Suite Glossary and Interpretation.
+In submitting a response, Potential Suppliers are required to comply with all requirements set out in the Commonwealth Approach to Market Terms (a copy of which is included in this document), and if successful, agree to enter into a contract which incorporates the Commonwealth Contract Terms available at https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs#ccs-terms.
+*Tenderers are to note that the Commonwealth ATM Terms are inserted as an image and may not be recognised as searchable text. 
+The Selling to Government website provides information to help businesses understand how to sell to the Australian Government. If you have any general questions about how the Australian Government procures goods and services, please contact the Selling to Government team at sellingtogov@finance.gov.au. 
+For questions relating specifically to this ATM, please contact the ATM Contact Officer set out at A.A.5(a). 
+Statement of Requirement
+A.A.1	Key Information and Dates
+Approach to Market
+Proposed Contract
+A.A.2	The Requirement
+The National Capital Authority (NCA) is seeking to engage a suitably qualified and experienced consultant for Independent Technical Advisor (ITA) services at Scrivener Dam. The services include regular audits to assess NCA’s compliance to the Dam Safety Management Plan, and the provision of independent technical advice for the dam safety management of Scrivener Dam. 
+Scrivener Dam:
+Scrivener Dam is located on the Molonglo River, in Canberra, and forms Lake Burley Griffin. It is an asset of National importance and is classified as a Large Dam with a 'High C' Consequence Category (in the Hydrology, Dam Break and Consequence Category assessment undertaken by SMEC in 2021) in accordance with the Australian National Committee on Large Dams (ANCOLD) definitions and guidelines.
+Dam Safety Management Plan (DSMP):
+The NCA does not currently come under the jurisdiction of a dam safety regulator within the Utilities Technical Regulator and has therefore implemented a self-regulated approach to dam safety. It has adopted a Dam Safety Code which specifies the actions to be taken to achieve this position. The NCA’s Dam Safety Code has been developed in consideration of contemporary good practice including the ACT Dam Safety Code.
+In 2014, the ACT Government enacted the Utilities (Technical Regulation) Act 2014 and Utilities (Dam Safety Code) Determination 2014, with the intent of regulating all notifiable dams in the ACT. Legal advice was obtained through the Australian Government Solicitors in 2015 which confirmed that the ACT Dam Safety Code was not enforceable on the Commonwealth and therefore, Scrivener Dam. On 13 July 2015, the regulator acknowledged NCA’s intent on remaining self-regulated, but was including the dam in the ACT Dams Register as a listed dam.
+The Dam Safety Management Plan (DSMP) is updated annually. The DSMP encompasses the Dam Safety Policy, Dam Safety Code and details actions, and responsibilities required to manage and operate Scrivener Dam in accordance with the relevant codes and guidelines. The hierarchy of the DSMP is illustrated below in Figure 1. The DSMP ensures that the NCA’s dam safety management of Scrivener Dam is in accordance with contemporary good practice, including guidelines set out by ANCOLD. 
+Figure 1 – Hierarchy of the DSMP
+General requirements: 
+The successful Supplier will be suitably qualified and have sound knowledge of relevant ANCOLD and ICOLD guidelines, and Australian Standards as appropriate and will support contemporary good practice for dam safety management as applied to Scrivener Dam.
+The successful Supplier will provide technical advice and support regarding dam safety management for Scrivener Dam. The ITA will also be responsible for the Annual Validation Audits and 5-yearly Functional Audit (due 2029) of the DSMP to assess the performance of the NCA against the requirements of the individual task assignments specified in the DSMP. There are currently (as of August 2025), twenty-three individual task assignments specified in the DSMP, included at ATTACHMENT A.  
+The successful Supplier is to provide technical advice to review the following elements of the Plan and provide support when required: 
+Dam Safety Management Policy
+Dam Safety Code
+Dam Safety Governance
+Dam Safety Culture
+Industry Awareness within the NCA
+Review Design Reviews and Risk Assessments
+Establish Dam Safety Requirements for Operations, Maintenance and Surveillance
+Other technical matter
+
+Deliverables:
+Annual Validation Audit of the DSMP
+The Supplier will be required to undertake annual Validation Audits of the DSMP by 31 August each year to assess the performance of the NCA against the requirements of the DSMP and to confirm the required activities have been completed to an appropriate technical standard. A Validation Audit is an audit of technical quality and adequacy of each completed task. These audits must be undertaken by individuals with necessary technical skills to critically examine and review each task output against defined or industry standards. For example, this audit will consider key dam safety documents such as the Dam Safety Emergency Plan and will review that its content is consistent with that required by industry standards (ANCOLD Guidelines on Dam Safety Management), and that the technical details against each element of the Dam Safety Emergency Plan are sound and logical from an engineering and dam safety perspective. This review is general commenced in June each year and a draft report provided by July and finalised by 31 August each year. The NCA will provide nominated documents created during each financial year in a digital form for review.
+Estimated Level of Effort:
+To assist tenderers preparing their submissions, the Customer advises that, based on similar requirements, the estimated level of effort to complete the Annual Validation Audit is approx. 110 hours, including document review, stakeholder engagement, analysis, and reporting.
+The actual level of effort may vary depending on the number, quality, and complexity of documents provided, as well as the personnel engaged, their experience, and the efficiency of the audit approach and methodology applied.
+Functional Audit of the DSMP
+Functional Audits are undertaken at least every 5 years or when there is a significant change in dam industry practice or if there is a significant change in the NCA’s operational environment. The last Functional Audit of the DSMP was completed in June 2024 and will be required during the Contract period in August 2029. These audits examine whether all necessary tasks are appropriately specified, including actual delivery requirements, timing and frequencies. They are designed to identify if any significant changes have occurred in either the individual operating environment or in the broader industry which would require a change in activities or details. For example, a Functional Audit would review all tasks, outputs, responsibilities, and frequencies outlined in this Dam Safety Management Plan and, in particular, the Responsibility Matrix and Individual Task Assignments (ATTACHMENT A). The Functional Audit includes an independent audit of the dam surveillance program as detailed below. The audit is to be undertaken in accordance with the requirements of ISO 19011:2018 Guidelines for Auditing Management Systems. 
+Estimated Level of Effort:
+To assist tenderers preparing their submissions, the Customer advises that, based on similar requirements, the estimated level of effort to complete the 5-yearly Functional + Annual Validation Audit is approx. 175 hours, reflecting its broader scope, system-level review, and increased volume and complexity of documentation.
+The actual level of effort may vary depending on the number, quality, and complexity of documents assessed, as well as the personnel engaged, their experience, and the efficiency of the audit approach and methodology applied.
+Independent Audit of the Dam Surveillance Program
+The NCA is required to obtain an independent audit of the dam’s surveillance program every 10 years, as prescribed by Section 5.7 of the ANCOLD ‘Guidelines on Dam Safety Management’ (2003). The next independent audit of the dam’s surveillance program is scheduled to be completed in 2034, this audit is excluded from the scope of work.
+Independent Technical advice
+The supplier will be required to provide independent technical advice to the NCA regarding dam safety related matters. The cost for advice will be based on hourly rates specified in the Contract with deliverables and reporting agreed to with the NCA on a case-by-case basis. 
+A.A.2(a)	Commonwealth Supplier Code of Conduct
+The Commonwealth expects its suppliers to conduct themselves with high standards of ethics such that they consistently act with integrity and accountability.  
+If awarded a Contract, the Supplier must agree to comply with the Commonwealth Code of Conduct (Code) in accordance with the Commonwealth Contract Terms [Clause C.C.23]. 
+Clause C.C.23 requires the Supplier to comply with the Code when performing its obligations under the Contract, and to ensure its personnel and Subcontractors comply with the Code. The clause also requires the Supplier to proactively monitor and assess compliance with the Code, and to notify the Customer immediately of any breach of the Code.  
+In accordance with the Commonwealth ATM Terms [Clause A.B.10], where requested by the Customer, Potential Suppliers should provide information demonstrating that they have appropriate policies, frameworks, or similar, in place to comply with the Code.  
+Further information on the Code can be found at: https://www.finance.gov.au/government/procurement/commonwealth-supplier-code-conduct 
+A.A.2(b)	Standards
+Potential Suppliers must ensure that any goods and services proposed are capable of complying with all applicable Australian standards and any Australian and international standards specified in this Statement of Requirement. Potential Suppliers should note that they may be required to enable the Customer, or an independent assessor, to conduct periodic audits to confirm compliance with those standards.
+Web Content Accessibility
+The Supplier must ensure that any website, associated material and/or online publications (where applicable) complies with the Web Content Accessibility Guidelines available at: https://www.w3.org/WAI/intro/wcag.
+A.A.2(c)	Security Requirements
+All personnel are to provide a Nationally Coordinated Criminal History Check (NCCHC), through an ACIC-accredited body, for submission to the NCA with the Transition In plan.  
+The cost of obtaining each Nationally Coordinated Criminal History Check will be borne by the Supplier. 
+A.A.2(d)	Work Health and Safety
+Prior to commencement of the Contract, the Customer’s Contract Manager and the Supplier’s Contract Manager will identify any potential work health and safety (WHS) issues anticipated to arise during the term of the contract and assign management of each issue identified to the party best able to manage it. For all issues assigned to the Supplier, the Supplier will provide the Customer with a WHS plan for approval and no work will commence until the plan is approved unless agreed in writing by the Customer.
+Throughout the Contract Term, the Customer and the Supplier will proactively identify and cooperate to manage any WHS issues that arise.
+Prior to commencement of the Contract, the Customer’s Contract Manager and the Supplier’s Contract Manager will identify any potential work health and safety (WHS) issues anticipated to arise during the term of the contract and assign management of each issue identified to the party best able to manage it.
+Throughout the Contract Term, the Customer and the Supplier will proactively identify and cooperate to manage any WHS issues that arise.
+A.A.2(e)	Delivery and Acceptance
+The Customer must accept or reject any deliverables under the Contract in accordance with the Commonwealth Contract Terms [Clause C.C.11].
+A.A.2(f)	Meetings
+The Supplier will be required to attend meetings as follows:
+A.A.2(g)	Facilities and Assistance Offered by the Customer
+The Customer will not make any facilities or assistance available to the Supplier.
+A.A.2(h)	Customer Material
+The Customer will provide the Supplier with electronic copies of the Dam Safety Management Plan (DSMP) and any other relevant documentation required for each audit. These documents will be provided in a digital format to support the Supplier in preparing for and undertaking the audits.
+A.A.2(i)	Australian business requirement
+The Supplier must ensure that they are an ‘Australian business’ for the purpose of paragraph 5.4 of the Commonwealth Procurement Rules.
+A.A.3	ATM Distribution
+AusTender Distribution
+This ATM and any updates are subject to the AusTender Terms of Use. Any updates to this ATM will be distributed via AusTender. 
+AusTender is the Australian Government’s procurement information system. Access to and use of AusTender is subject to the AusTender Terms of Use. In participating in this ATM process, Potential Suppliers must comply with the AusTender Terms of Use and any applicable instructions, processes, procedures and recommendations as advised on AusTender.
+A.A.4	Lodgement of Responses
+AusTender
+Responses must be lodged electronically via AusTender before the Closing Time and in accordance with the Response lodgement procedures set out in this ATM documentation and on AusTender.
+All queries for technical or operational support must be directed to the AusTender Help Desk. Contact details are available on the Contact Us page of the AusTender website.
+The Closing Time will be displayed on the relevant AusTender webpage together with a countdown clock that displays, in real time, the time left until Closing Time (for more information refer to AusTender Terms of Use).
+For the purpose of determining whether a Response has been lodged before the Closing Time, the countdown clock will be conclusive.
+Response File Format, Naming Convention and Size
+The Customer will accept Responses lodged in the following formats:
+Microsoft Word (.docx)
+Microsoft Excel (.xlsx)
+PDF (.pdf)
+The Response file name/s should:
+incorporate the Potential Supplier’s full legal organisation name; and 
+reflect the various parts of the bid they represent (where the Response comprises multiple files).
+Response files must not exceed a combined file size of 10 megabytes per upload.
+Responses must be completely self-contained. No embedded files can be included. No hyperlinked or other material may be incorporated by reference.
+A.A.5	Customer’s Contact Officers
+A.A.5(a)	ATM Contact Officer
+For all matters relating to this ATM, the Contact Officer is:
+Name/Position:	James Callan, Manager Lake and Dam
+Email Address:	james.callan@nca.gov.au
+Telephone:	+61 2 6272 2974
+Note: Question Closing Date and Time are set out at item A.A.1 [Key Information and Dates].
+A.A.5(b)	Complaints Handling
+Complaints relating to this ATM should be directed to:
+Information relating to the handling of complaints is available on the Customer’s website at: https://www.nca.gov.au/contact-us.
+If your issue is not resolved refer https://www.finance.gov.au/business/procurement/complaints-handling-charter-complaints for more information relating to complaints.
+Additional Contract Terms
+An executed contract will incorporate the Commonwealth Contract Terms and also the following Additional Contract Terms:
+A.C.1	Intellectual Property
+The Customer owns the Intellectual Property Rights in the Material created under the Contract. 
+To the extent the Supplier or a third party holds any Intellectual Property Rights in any existing Material, the Supplier hereby agrees to licence the Customer to enable the Customer to exercise full rights and interests in the Intellectual Property Rights in any Material provided under the Contract. The Supplier agrees to create, execute or sign any documents and perform all acts which may be necessary to allow the use of those rights by the Customer for any purpose.
+The Customer grants to the Supplier a non-exclusive, non-transferable, irrevocable, royalty-free licence for the Contract Term to exercise the Intellectual Property Rights in the Material for the sole purpose of fulfilling its obligations under the Contract. The licence in this clause is subject to any conditions or limitations of third parties that the Customer notifies to the Supplier.
+Intellectual Property Rights in Goods provided under the Contract or pre-existing Intellectual Property of the Supplier, set out below (if any), will not change as a result of the Contract.
+A.C.2	Payment Terms
+The Customer must pay the amount of a Correctly Rendered Invoice to the Supplier within twenty (20) calendar days after receiving it, or if this day is not a Business Day, on the next Business Day.
+A.C.3	Liability Cap for Supplier
+The Supplier’s liability to pay any amount to the Customer arising out of the Contract is limited. This limit will not apply in relation to any liability arising out of or relating to:
+personal injury (including sickness or death of a person);
+unlawful or illegal acts;
+loss or, damage to, tangible property;
+any breach of, or claims relating to, intellectual property rights, confidentiality, privacy or security obligations;
+the provision of any Goods under the Contract.
+
+
+
+INSTRUCTIONS FOR POTENTIAL SUPPLIER
+Before you start
+This Response is not an offer for work.
+Read all the documentation provided by the Customer and distributed with this Response form and decide whether your organisation has the necessary skills and experience to meet the Customer’s requirement.
+Do not proceed further if:
+your organisation cannot agree to the Commonwealth Contract Terms, available at https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs. These terms are non-negotiable and will form part of the Contract if you are successful in this ATM process.
+your organisation does not meet and/or agree to the Minimum Content and Format Requirements and the Conditions for Participation (if any), set out at item A.A.1 [Key Information and Dates], as failure to do so will mean your response cannot be considered.
+your organisation is a trust where the Trustee is not empowered to sign contracts on behalf of the Trust. Before proceeding, contact the Customer’s ATM Contact Officer at item A.A.5(a) [ATM Contact Officer].
+you are an Individual without an ABN and you do not meet the Australian Taxation Office’s (ATO) definition of an independent contractor available at: https://www.ato.gov.au/business/employee-or-contractor/how-to-work-it-out--employee-or-contractor. Before proceeding, contact the ATM Contact Officer set out at item A.A.5(a) [ATM Contact Officer] to seek advice.
+The Customer will evaluate all valid Responses received by the ATM Closing Time [Item A.A.1] that meet the Minimum Content and Format Requirements and the Conditions for Participation (if any), to determine which Potential Supplier has proposed the best value for money outcome for the Customer. Responses will be evaluated as per the criteria set out below: 
+Stage 1 - Tenders will be screened to identify those Tenders or Tenderers which have failed to comply with the Minimum Content and Format Requirements. If a Tenderer is excluded at the screening stage, the Tenderer will be promptly notified and offered an opportunity for a debriefing following approval from the delegate.
+A Response may be excluded at any stage of the evaluation process if NCA identifies that it does not meet a Condition for Participation, Minimum Content and Format Requirement or other mandatory requirement.
+Stage 2 – NCA will evaluate Tenders that Comply with Stage 1 against the Weighted Evaluation criteria.
+Stage 3 - The NCA will evaluate the information provided in the Tender against any risk inherent that have not already been evaluated which may include the following:
+Stage 4 – Tenders will be evaluated against the unweighted criteria below taking into account the requirements provided by NCA using the required format (if applicable). Tenderers should provide clear and itemised pricing and detail the associated pricing mechanism, assumptions and caveats to allow NCA to form a clear understanding of the implications of the proposed solution on the whole-of-life costs to NCA.
+Stage 5 - Tenders will be evaluated to determine which Tender (if any) represents the best value for money for NCA, taking into account:
+the outcome of the assessment in Stage 2 – Weighted Evaluation Criteria
+the outcome of the assessment in Stage 3 - Risk assessment
+the outcome of the assessment in Stage 4 – Unweighted Criteria; and
+any other factors considered relevant by NCA in relation to value for money.
+Participation in this ATM is at your organisation’s risk and cost. Please note this is a competitive process and your organisation may incur costs in responding. If you are unsuccessful, you will be unable to recoup these costs.
+
+Format Requirements
+You MUST use this form (CCS ATM Response Form) to submit your Response, which MUST comply with the Commonwealth ATM Terms, available at: https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs.
+As this form is set out to facilitate the evaluation of responses, Potential Suppliers are to use the form as provided and are not permitted to make any changes to the structure or formatting of the document.
+Guidance for completing your Response
+Specific questions about this ATM must be directed to the ATM Contact Officer set out at Item A.A.5(a) [ATM Contact Officer] before Question Closing Date and Time set out at item A.A.1 [Key Information and Dates]. 
+In preparation of this Response, please note the Commonwealth Indigenous Procurement Policy (IPP) available at: https://www.niaa.gov.au/indigenous-affairs/economic-development/indigenous-procurement-policy-ipp may apply to the Customer in respect of this procurement. During evaluation of responses, the Customer may consider the Supplier’s ability to assist the Customer to meet its IPP obligations.
+Ensure your Response is as concise as possible while including all information that your organisation wants the evaluation team to consider. Do not include general marketing material or assume that the evaluation team has any knowledge of your organisation’s capabilities or personnel.
+Do not include pricing in any other part of your response except in the relevant Pricing Schedule.
+The successful Supplier will have demonstrated its ability to provide the best value for the Customer. This will not necessarily be the lowest price.
+Submit the form as required by Item A.A.4 [Lodgement of Responses].
+If your organisation is unsuccessful with this Response, you may request a debrief to assist with future responses. The ATM Contact Officer set out at Item A.A.5(a) [ATM Contact Officer] can arrange this for you.
+Potential Supplier’s Contact Officer
+For all matters relating to this Response, the Potential Supplier’s Contact Officer is:
+Part 1 – Potential Supplier’s Details
+1.1	Potential Supplier’s Details
+1.2	Previous Judicial Decisions
+1.3	Workplace Gender Equality
+1.4	Indigenous Businesses
+1.5	Australian Businesses
+1.6	New Zealand Businesses
+1.7	Potential Supplier’s Contract Manager
+For matters relating to the proposed Contract, the Potential Supplier’s Contract Manager will be:
+1.8	Potential Supplier’s Address for Notices (if different from the Contract Manager)
+Part 2 – Executive Summary
+2.1	Executive Summary of Potential Supplier’s Proposal
+2.2	Conditions for Participation
+Part 3 – Ability to Meet the Requirement
+3.1	Detailed Proposal to Meet the Customer’s Requirement
+Commonwealth Supplier Code of Conduct
+Standards
+Part 4 – Potential Supplier’s Demonstrated Capability and Capacity
+4.1 Statement of Skills and Experience
+4.2 Specified Personnel
+# If requested at A.A.2(b)
+4.3	Subcontractors
+Scope of Works to be Subcontracted
+4.4	Conflicts of Interest
+The Potential Supplier has identified the following potential Conflicts of Interest and management strategies:
+4.5	Pre-existing Intellectual Property of Potential Supplier
+4.6	Confidentiality of Potential Supplier’s Information
+The Potential Supplier has assessed that the commercial information in the table below meets the requirements available at https://www.finance.gov.au/government/procurement/buying-australian-government/additional-reporting-confidentiality and is seeking that information be kept confidential.
+Part 5 – Previous Performance
+5.1	Previous Performance
+5.2	Referees
+Part 6 – Total Costs to be incurred by the Customer
+6.1	Pricing
+Fixed Price (including all expenses)
+Adjustment to Fixed Pricing for Contract Variation/Extension
+Contract Extension Option
+6.2 Schedule of Rates* 
+Adjustment to Fixed Pricing for Contract Variation/Extension
+* Payment for contract variations will be determined using the Schedule of Rates and provision of a fixed price quotation, or as agreed with Customer. 
+6.3	Proposed Payment Schedule
+6.4	Additional Facilities and Assistance
+6.5	Non-Compliance
+
+
+
+============================================================
+DOCUMENT ATTACHMENT: Scrivener Dam Independent Technical Advisor - 2026-2029 -Addendum 1.DOCX
+============================================================
+
+ATM Questions and Answers (Addendum 1)
+All enquiries regarding this ATM or this addendum should be emailed to the Contact Officer at 
+
+
+
+============================================================
+DOCUMENT ATTACHMENT: Scrivener Dam Independent Technical Advisor - 2026-2029 - Attachment A.PDF
+============================================================
+
+ 
+31 August 2025 
+ 
+ 
+Activity
+Entity
+ 
+Frequency 
+Item 
+Description 
+National Capital Authority (Note 1) 
+Dam Safety & 
+Surveillance 
+Contractor 
+O&M Contractor 
+Independent 
+Technical Advisor 
+NCA Board 
+Chief 
+Executive 
+Chief 
+Operating 
+Officer 
+Director 
+Major 
+Projects 
+Manager 
+Lake and 
+Dam 
+Senior Officer 
+Lake and Dam 
+Dam Safety 
+Engineer 
+Director 
+Principal Dams 
+Engineer 
+ 
+SMEC
+Complex Co
+GHD
+NB – 001
+Dam Safety Management Policy
+A
+R
+S
+S
+S(Note 2)
+Annually
+NB – 002
+Dam Safety Code
+A
+R
+S
+S
+Annually
+NB – 003
+Dam Safety Governance
+A
+R
+S
+S
+Annually
+NB – 004
+Dam Safety Culture
+A
+R
+S
+S
+S
+S
+S
+Ongoing
+CE – 001
+Organisational Roles & Responsibilities
+A
+R
+Annually
+CE – 002
+Resourcing
+A
+R
+Ongoing
+COO – 001
+Audit and Maintain DSMP
+A
+S (note 3)
+R
+R (Note 4)
+Quarterly
+COO – 002
+Delivery of Major Dam Safety Projects
+A
+R (note 5)
+S
+As required
+DMP – 001
+Delivery of DSMP
+A
+R
+S
+S
+S
+Ongoing
+DMP – 002
+Document Control of DSMP
+A
+R
+S
+Annually
+DMP – 003
+Stakeholder Management
+A
+R
+S
+Ongoing
+DMP – 004
+Emergency Preparedness
+A
+R
+S
+R
+S
+Annually
+DMP – 005
+Identify and Prioritise Dam Safety Upgrading Projects 
+A/R
+R
+S
+R
+S
+Annually
+DMP – 006 
+Undertake Design Reviews & Risk Assessments  
+ 
+ 
+ 
+A 
+S 
+S
+R 
+ 
+S 
+15 Yearly 
+(Maximum) 
+DMP – 007
+Industry awareness
+A
+S
+S
+R
+S
+S
+Annually
+DMP – 008 
+Establish Dam Safety Requirements for Operations, 
+Maintenance and Surveillance  
+ 
+ 
+ 
+A 
+S 
+S 
+R 
+S 
+S 
+Ongoing 
+MLD – 001
+Implement Dam Safety Surveillance
+A
+R
+S
+Quarterly
+MLD – 002
+Operate and Maintain Dam
+A
+R
+S
+Six Monthly
+MLD – 003
+Manage Security
+A
+S
+R
+Annually
+MLD – 004
+Manage Public Safety 
+A
+S
+R
+Annually
+MLD – 005
+Report Dam Safety Performance 
+A
+S
+R
+S
+Quarterly
+MLD – 006
+Manage Dam Safety Records 
+A/R
+S
+S
+S
+Ongoing
+MLD – 007
+Manage Work Health and Safety
+A
+S
+R
+Ongoing
+Role Definitions: 
+ 
+Accountable (A): 
+One person is ultimately Accountable for a task, objective or decision, and has veto power over it. 
+ 
+ 
+ 
+ 
+The Accountable Person must get the job done, either by doing it or by assigning Responsibility it to others. 
+ 
+Responsible (R): 
+The Responsible person(s) do the actual work. Responsibility may be shared, but the Accountable Person must clearly assign the degrees of Responsibility.  It is strongly recommended that there is only 
+one Responsible Person for each task on the RACI Matrix. 
+ 
+Support (S): 
+Provides extensive support but is not fully responsible for the function. 
+ 
+1 
+Notes: All functions are to be carried out within agreed and established NCA management arrangements and schedules of delegation.  
+2 
+The Independent Technical Advisor may be called on to provide Support to any of the tasks as required by the Accountable or Responsible Person. This over-arching support role is not detailed on the RACI Matrix for clarity. 
+3 
+Director, Major Projects and Manager, Lake and Dam is Responsible for Quarterly Audits of Process and Supports Annual Validation and 5 yearly Functional Audits 
+4 
+Independent Technical Advisor is Responsible for Annual Validation and 5 yearly Functional Audits 
+5 
+Depending on the nature of the project and resourcing status, the Accountable Person may assign other resources as appropriate with the Responsibility for project delivery. 
+
+
+
+
+============================================================
+DOCUMENT ATTACHMENT: Scrivener Dam Independent Technical Advisor - 2026-2029 - Approach to Market.DOCX
+============================================================
+
+Approach to Market
+To establish Contract for Procurement of the Scrivener Dam Independent Technical Advisor - 2026-2029
+Reference ID: A26/6
+UNSPSC: 81100000 Professional engineering services
+This Approach to Market (ATM) is for the provision of a suitably qualified and experienced consultant to provide expert and independent technical advice for the dam safety management of Scrivener Dam. 
+The Commonwealth of Australia as represented by National Capital Authority (the Customer) is seeking submissions for the provision of the consultancy services (the Requirement) as described in this ATM comprising:
+this CCS ATM, including the Statement of Requirement
+the CCS ATM Response Form
+the CCS ATM Annexes (if any)
+the Commonwealth ATM Terms
+the Additional Contract Terms (if any)
+the Commonwealth Contract Terms
+the Commonwealth Contracting Suite Glossary and Interpretation.
+In submitting a response, Potential Suppliers are required to comply with all requirements set out in the Commonwealth Approach to Market Terms (a copy of which is included in this document), and if successful, agree to enter into a contract which incorporates the Commonwealth Contract Terms available at https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs#ccs-terms.
+*Tenderers are to note that the Commonwealth ATM Terms are inserted as an image and may not be recognised as searchable text. 
+The Selling to Government website provides information to help businesses understand how to sell to the Australian Government. If you have any general questions about how the Australian Government procures goods and services, please contact the Selling to Government team at sellingtogov@finance.gov.au. 
+For questions relating specifically to this ATM, please contact the ATM Contact Officer set out at A.A.5(a). 
+Statement of Requirement
+A.A.1	Key Information and Dates
+Approach to Market
+Proposed Contract
+A.A.2	The Requirement
+The National Capital Authority (NCA) is seeking to engage a suitably qualified and experienced consultant for Independent Technical Advisor (ITA) services at Scrivener Dam. The services include regular audits to assess NCA’s compliance to the Dam Safety Management Plan, and the provision of independent technical advice for the dam safety management of Scrivener Dam. 
+Scrivener Dam:
+Scrivener Dam is located on the Molonglo River, in Canberra, and forms Lake Burley Griffin. It is an asset of National importance and is classified as a Large Dam with a 'High C' Consequence Category (in the Hydrology, Dam Break and Consequence Category assessment undertaken by SMEC in 2021) in accordance with the Australian National Committee on Large Dams (ANCOLD) definitions and guidelines.
+Dam Safety Management Plan (DSMP):
+The NCA does not currently come under the jurisdiction of a dam safety regulator within the Utilities Technical Regulator and has therefore implemented a self-regulated approach to dam safety. It has adopted a Dam Safety Code which specifies the actions to be taken to achieve this position. The NCA’s Dam Safety Code has been developed in consideration of contemporary good practice including the ACT Dam Safety Code.
+In 2014, the ACT Government enacted the Utilities (Technical Regulation) Act 2014 and Utilities (Dam Safety Code) Determination 2014, with the intent of regulating all notifiable dams in the ACT. Legal advice was obtained through the Australian Government Solicitors in 2015 which confirmed that the ACT Dam Safety Code was not enforceable on the Commonwealth and therefore, Scrivener Dam. On 13 July 2015, the regulator acknowledged NCA’s intent on remaining self-regulated, but was including the dam in the ACT Dams Register as a listed dam.
+The Dam Safety Management Plan (DSMP) is updated annually. The DSMP encompasses the Dam Safety Policy, Dam Safety Code and details actions, and responsibilities required to manage and operate Scrivener Dam in accordance with the relevant codes and guidelines. The hierarchy of the DSMP is illustrated below in Figure 1. The DSMP ensures that the NCA’s dam safety management of Scrivener Dam is in accordance with contemporary good practice, including guidelines set out by ANCOLD. 
+Figure 1 – Hierarchy of the DSMP
+General requirements: 
+The successful Supplier will be suitably qualified and have sound knowledge of relevant ANCOLD and ICOLD guidelines, and Australian Standards as appropriate and will support contemporary good practice for dam safety management as applied to Scrivener Dam.
+The successful Supplier will provide technical advice and support regarding dam safety management for Scrivener Dam. The ITA will also be responsible for the Annual Validation Audits and 5-yearly Functional Audit (due 2029) of the DSMP to assess the performance of the NCA against the requirements of the individual task assignments specified in the DSMP. There are currently (as of August 2025), twenty-three individual task assignments specified in the DSMP, included at ATTACHMENT A.  
+The successful Supplier is to provide technical advice to review the following elements of the Plan and provide support when required: 
+Dam Safety Management Policy
+Dam Safety Code
+Dam Safety Governance
+Dam Safety Culture
+Industry Awareness within the NCA
+Review Design Reviews and Risk Assessments
+Establish Dam Safety Requirements for Operations, Maintenance and Surveillance
+Other technical matter
+
+Deliverables:
+Annual Validation Audit of the DSMP
+The Supplier will be required to undertake annual Validation Audits of the DSMP by 31 August each year to assess the performance of the NCA against the requirements of the DSMP and to confirm the required activities have been completed to an appropriate technical standard. A Validation Audit is an audit of technical quality and adequacy of each completed task. These audits must be undertaken by individuals with necessary technical skills to critically examine and review each task output against defined or industry standards. For example, this audit will consider key dam safety documents such as the Dam Safety Emergency Plan and will review that its content is consistent with that required by industry standards (ANCOLD Guidelines on Dam Safety Management), and that the technical details against each element of the Dam Safety Emergency Plan are sound and logical from an engineering and dam safety perspective. This review is general commenced in June each year and a draft report provided by July and finalised by 31 August each year. The NCA will provide nominated documents created during each financial year in a digital form for review.
+Estimated Level of Effort:
+To assist tenderers preparing their submissions, the Customer advises that, based on similar requirements, the estimated level of effort to complete the Annual Validation Audit is approx. 110 hours, including document review, stakeholder engagement, analysis, and reporting.
+The actual level of effort may vary depending on the number, quality, and complexity of documents provided, as well as the personnel engaged, their experience, and the efficiency of the audit approach and methodology applied.
+Functional Audit of the DSMP
+Functional Audits are undertaken at least every 5 years or when there is a significant change in dam industry practice or if there is a significant change in the NCA’s operational environment. The last Functional Audit of the DSMP was completed in June 2024 and will be required during the Contract period in August 2029. These audits examine whether all necessary tasks are appropriately specified, including actual delivery requirements, timing and frequencies. They are designed to identify if any significant changes have occurred in either the individual operating environment or in the broader industry which would require a change in activities or details. For example, a Functional Audit would review all tasks, outputs, responsibilities, and frequencies outlined in this Dam Safety Management Plan and, in particular, the Responsibility Matrix and Individual Task Assignments (ATTACHMENT A). The Functional Audit includes an independent audit of the dam surveillance program as detailed below. The audit is to be undertaken in accordance with the requirements of ISO 19011:2018 Guidelines for Auditing Management Systems. 
+Estimated Level of Effort:
+To assist tenderers preparing their submissions, the Customer advises that, based on similar requirements, the estimated level of effort to complete the 5-yearly Functional + Annual Validation Audit is approx. 175 hours, reflecting its broader scope, system-level review, and increased volume and complexity of documentation.
+The actual level of effort may vary depending on the number, quality, and complexity of documents assessed, as well as the personnel engaged, their experience, and the efficiency of the audit approach and methodology applied.
+Independent Audit of the Dam Surveillance Program
+The NCA is required to obtain an independent audit of the dam’s surveillance program every 10 years, as prescribed by Section 5.7 of the ANCOLD ‘Guidelines on Dam Safety Management’ (2003). The next independent audit of the dam’s surveillance program is scheduled to be completed in 2034, this audit is excluded from the scope of work.
+Independent Technical advice
+The supplier will be required to provide independent technical advice to the NCA regarding dam safety related matters. The cost for advice will be based on hourly rates specified in the Contract with deliverables and reporting agreed to with the NCA on a case-by-case basis. 
+A.A.2(a)	Commonwealth Supplier Code of Conduct
+The Commonwealth expects its suppliers to conduct themselves with high standards of ethics such that they consistently act with integrity and accountability.  
+If awarded a Contract, the Supplier must agree to comply with the Commonwealth Code of Conduct (Code) in accordance with the Commonwealth Contract Terms [Clause C.C.23]. 
+Clause C.C.23 requires the Supplier to comply with the Code when performing its obligations under the Contract, and to ensure its personnel and Subcontractors comply with the Code. The clause also requires the Supplier to proactively monitor and assess compliance with the Code, and to notify the Customer immediately of any breach of the Code.  
+In accordance with the Commonwealth ATM Terms [Clause A.B.10], where requested by the Customer, Potential Suppliers should provide information demonstrating that they have appropriate policies, frameworks, or similar, in place to comply with the Code.  
+Further information on the Code can be found at: https://www.finance.gov.au/government/procurement/commonwealth-supplier-code-conduct 
+A.A.2(b)	Standards
+Potential Suppliers must ensure that any goods and services proposed are capable of complying with all applicable Australian standards and any Australian and international standards specified in this Statement of Requirement. Potential Suppliers should note that they may be required to enable the Customer, or an independent assessor, to conduct periodic audits to confirm compliance with those standards.
+Web Content Accessibility
+The Supplier must ensure that any website, associated material and/or online publications (where applicable) complies with the Web Content Accessibility Guidelines available at: https://www.w3.org/WAI/intro/wcag.
+A.A.2(c)	Security Requirements
+All personnel are to provide a Nationally Coordinated Criminal History Check (NCCHC), through an ACIC-accredited body, for submission to the NCA with the Transition In plan.  
+The cost of obtaining each Nationally Coordinated Criminal History Check will be borne by the Supplier. 
+A.A.2(d)	Work Health and Safety
+Prior to commencement of the Contract, the Customer’s Contract Manager and the Supplier’s Contract Manager will identify any potential work health and safety (WHS) issues anticipated to arise during the term of the contract and assign management of each issue identified to the party best able to manage it. For all issues assigned to the Supplier, the Supplier will provide the Customer with a WHS plan for approval and no work will commence until the plan is approved unless agreed in writing by the Customer.
+Throughout the Contract Term, the Customer and the Supplier will proactively identify and cooperate to manage any WHS issues that arise.
+Prior to commencement of the Contract, the Customer’s Contract Manager and the Supplier’s Contract Manager will identify any potential work health and safety (WHS) issues anticipated to arise during the term of the contract and assign management of each issue identified to the party best able to manage it.
+Throughout the Contract Term, the Customer and the Supplier will proactively identify and cooperate to manage any WHS issues that arise.
+A.A.2(e)	Delivery and Acceptance
+The Customer must accept or reject any deliverables under the Contract in accordance with the Commonwealth Contract Terms [Clause C.C.11].
+A.A.2(f)	Meetings
+The Supplier will be required to attend meetings as follows:
+A.A.2(g)	Facilities and Assistance Offered by the Customer
+The Customer will not make any facilities or assistance available to the Supplier.
+A.A.2(h)	Customer Material
+The Customer will provide the Supplier with electronic copies of the Dam Safety Management Plan (DSMP) and any other relevant documentation required for each audit. These documents will be provided in a digital format to support the Supplier in preparing for and undertaking the audits.
+A.A.2(i)	Australian business requirement
+The Supplier must ensure that they are an ‘Australian business’ for the purpose of paragraph 5.4 of the Commonwealth Procurement Rules.
+A.A.3	ATM Distribution
+AusTender Distribution
+This ATM and any updates are subject to the AusTender Terms of Use. Any updates to this ATM will be distributed via AusTender. 
+AusTender is the Australian Government’s procurement information system. Access to and use of AusTender is subject to the AusTender Terms of Use. In participating in this ATM process, Potential Suppliers must comply with the AusTender Terms of Use and any applicable instructions, processes, procedures and recommendations as advised on AusTender.
+A.A.4	Lodgement of Responses
+AusTender
+Responses must be lodged electronically via AusTender before the Closing Time and in accordance with the Response lodgement procedures set out in this ATM documentation and on AusTender.
+All queries for technical or operational support must be directed to the AusTender Help Desk. Contact details are available on the Contact Us page of the AusTender website.
+The Closing Time will be displayed on the relevant AusTender webpage together with a countdown clock that displays, in real time, the time left until Closing Time (for more information refer to AusTender Terms of Use).
+For the purpose of determining whether a Response has been lodged before the Closing Time, the countdown clock will be conclusive.
+Response File Format, Naming Convention and Size
+The Customer will accept Responses lodged in the following formats:
+Microsoft Word (.docx)
+Microsoft Excel (.xlsx)
+PDF (.pdf)
+The Response file name/s should:
+incorporate the Potential Supplier’s full legal organisation name; and 
+reflect the various parts of the bid they represent (where the Response comprises multiple files).
+Response files must not exceed a combined file size of 10 megabytes per upload.
+Responses must be completely self-contained. No embedded files can be included. No hyperlinked or other material may be incorporated by reference.
+A.A.5	Customer’s Contact Officers
+A.A.5(a)	ATM Contact Officer
+For all matters relating to this ATM, the Contact Officer is:
+Name/Position:	James Callan, Manager Lake and Dam
+Email Address:	james.callan@nca.gov.au
+Telephone:	+61 2 6272 2974
+Note: Question Closing Date and Time are set out at item A.A.1 [Key Information and Dates].
+A.A.5(b)	Complaints Handling
+Complaints relating to this ATM should be directed to:
+Information relating to the handling of complaints is available on the Customer’s website at: https://www.nca.gov.au/contact-us.
+If your issue is not resolved refer https://www.finance.gov.au/business/procurement/complaints-handling-charter-complaints for more information relating to complaints.
+Additional Contract Terms
+An executed contract will incorporate the Commonwealth Contract Terms and also the following Additional Contract Terms:
+A.C.1	Intellectual Property
+The Customer owns the Intellectual Property Rights in the Material created under the Contract. 
+To the extent the Supplier or a third party holds any Intellectual Property Rights in any existing Material, the Supplier hereby agrees to licence the Customer to enable the Customer to exercise full rights and interests in the Intellectual Property Rights in any Material provided under the Contract. The Supplier agrees to create, execute or sign any documents and perform all acts which may be necessary to allow the use of those rights by the Customer for any purpose.
+The Customer grants to the Supplier a non-exclusive, non-transferable, irrevocable, royalty-free licence for the Contract Term to exercise the Intellectual Property Rights in the Material for the sole purpose of fulfilling its obligations under the Contract. The licence in this clause is subject to any conditions or limitations of third parties that the Customer notifies to the Supplier.
+Intellectual Property Rights in Goods provided under the Contract or pre-existing Intellectual Property of the Supplier, set out below (if any), will not change as a result of the Contract.
+A.C.2	Payment Terms
+The Customer must pay the amount of a Correctly Rendered Invoice to the Supplier within twenty (20) calendar days after receiving it, or if this day is not a Business Day, on the next Business Day.
+A.C.3	Liability Cap for Supplier
+The Supplier’s liability to pay any amount to the Customer arising out of the Contract is limited. This limit will not apply in relation to any liability arising out of or relating to:
+personal injury (including sickness or death of a person);
+unlawful or illegal acts;
+loss or, damage to, tangible property;
+any breach of, or claims relating to, intellectual property rights, confidentiality, privacy or security obligations;
+the provision of any Goods under the Contract.
+
+
+
+INSTRUCTIONS FOR POTENTIAL SUPPLIER
+Before you start
+This Response is not an offer for work.
+Read all the documentation provided by the Customer and distributed with this Response form and decide whether your organisation has the necessary skills and experience to meet the Customer’s requirement.
+Do not proceed further if:
+your organisation cannot agree to the Commonwealth Contract Terms, available at https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs. These terms are non-negotiable and will form part of the Contract if you are successful in this ATM process.
+your organisation does not meet and/or agree to the Minimum Content and Format Requirements and the Conditions for Participation (if any), set out at item A.A.1 [Key Information and Dates], as failure to do so will mean your response cannot be considered.
+your organisation is a trust where the Trustee is not empowered to sign contracts on behalf of the Trust. Before proceeding, contact the Customer’s ATM Contact Officer at item A.A.5(a) [ATM Contact Officer].
+you are an Individual without an ABN and you do not meet the Australian Taxation Office’s (ATO) definition of an independent contractor available at: https://www.ato.gov.au/business/employee-or-contractor/how-to-work-it-out--employee-or-contractor. Before proceeding, contact the ATM Contact Officer set out at item A.A.5(a) [ATM Contact Officer] to seek advice.
+The Customer will evaluate all valid Responses received by the ATM Closing Time [Item A.A.1] that meet the Minimum Content and Format Requirements and the Conditions for Participation (if any), to determine which Potential Supplier has proposed the best value for money outcome for the Customer. Responses will be evaluated as per the criteria set out below: 
+Stage 1 - Tenders will be screened to identify those Tenders or Tenderers which have failed to comply with the Minimum Content and Format Requirements. If a Tenderer is excluded at the screening stage, the Tenderer will be promptly notified and offered an opportunity for a debriefing following approval from the delegate.
+A Response may be excluded at any stage of the evaluation process if NCA identifies that it does not meet a Condition for Participation, Minimum Content and Format Requirement or other mandatory requirement.
+Stage 2 – NCA will evaluate Tenders that Comply with Stage 1 against the Weighted Evaluation criteria.
+Stage 3 - The NCA will evaluate the information provided in the Tender against any risk inherent that have not already been evaluated which may include the following:
+Stage 4 – Tenders will be evaluated against the unweighted criteria below taking into account the requirements provided by NCA using the required format (if applicable). Tenderers should provide clear and itemised pricing and detail the associated pricing mechanism, assumptions and caveats to allow NCA to form a clear understanding of the implications of the proposed solution on the whole-of-life costs to NCA.
+Stage 5 - Tenders will be evaluated to determine which Tender (if any) represents the best value for money for NCA, taking into account:
+the outcome of the assessment in Stage 2 – Weighted Evaluation Criteria
+the outcome of the assessment in Stage 3 - Risk assessment
+the outcome of the assessment in Stage 4 – Unweighted Criteria; and
+any other factors considered relevant by NCA in relation to value for money.
+Participation in this ATM is at your organisation’s risk and cost. Please note this is a competitive process and your organisation may incur costs in responding. If you are unsuccessful, you will be unable to recoup these costs.
+
+Format Requirements
+You MUST use this form (CCS ATM Response Form) to submit your Response, which MUST comply with the Commonwealth ATM Terms, available at: https://www.finance.gov.au/government/procurement/commonwealth-contracting-suite-ccs.
+As this form is set out to facilitate the evaluation of responses, Potential Suppliers are to use the form as provided and are not permitted to make any changes to the structure or formatting of the document.
+Guidance for completing your Response
+Specific questions about this ATM must be directed to the ATM Contact Officer set out at Item A.A.5(a) [ATM Contact Officer] before Question Closing Date and Time set out at item A.A.1 [Key Information and Dates]. 
+In preparation of this Response, please note the Commonwealth Indigenous Procurement Policy (IPP) available at: https://www.niaa.gov.au/indigenous-affairs/economic-development/indigenous-procurement-policy-ipp may apply to the Customer in respect of this procurement. During evaluation of responses, the Customer may consider the Supplier’s ability to assist the Customer to meet its IPP obligations.
+Ensure your Response is as concise as possible while including all information that your organisation wants the evaluation team to consider. Do not include general marketing material or assume that the evaluation team has any knowledge of your organisation’s capabilities or personnel.
+Do not include pricing in any other part of your response except in the relevant Pricing Schedule.
+The successful Supplier will have demonstrated its ability to provide the best value for the Customer. This will not necessarily be the lowest price.
+Submit the form as required by Item A.A.4 [Lodgement of Responses].
+If your organisation is unsuccessful with this Response, you may request a debrief to assist with future responses. The ATM Contact Officer set out at Item A.A.5(a) [ATM Contact Officer] can arrange this for you.
+Potential Supplier’s Contact Officer
+For all matters relating to this Response, the Potential Supplier’s Contact Officer is:
+Part 1 – Potential Supplier’s Details
+1.1	Potential Supplier’s Details
+1.2	Previous Judicial Decisions
+1.3	Workplace Gender Equality
+1.4	Indigenous Businesses
+1.5	Australian Businesses
+1.6	New Zealand Businesses
+1.7	Potential Supplier’s Contract Manager
+For matters relating to the proposed Contract, the Potential Supplier’s Contract Manager will be:
+1.8	Potential Supplier’s Address for Notices (if different from the Contract Manager)
+Part 2 – Executive Summary
+2.1	Executive Summary of Potential Supplier’s Proposal
+2.2	Conditions for Participation
+Part 3 – Ability to Meet the Requirement
+3.1	Detailed Proposal to Meet the Customer’s Requirement
+Commonwealth Supplier Code of Conduct
+Standards
+Part 4 – Potential Supplier’s Demonstrated Capability and Capacity
+4.1 Statement of Skills and Experience
+4.2 Specified Personnel
+# If requested at A.A.2(b)
+4.3	Subcontractors
+Scope of Works to be Subcontracted
+4.4	Conflicts of Interest
+The Potential Supplier has identified the following potential Conflicts of Interest and management strategies:
+4.5	Pre-existing Intellectual Property of Potential Supplier
+4.6	Confidentiality of Potential Supplier’s Information
+The Potential Supplier has assessed that the commercial information in the table below meets the requirements available at https://www.finance.gov.au/government/procurement/buying-australian-government/additional-reporting-confidentiality and is seeking that information be kept confidential.
+Part 5 – Previous Performance
+5.1	Previous Performance
+5.2	Referees
+Part 6 – Total Costs to be incurred by the Customer
+6.1	Pricing
+Fixed Price (including all expenses)
+Adjustment to Fixed Pricing for Contract Variation/Extension
+Contract Extension Option
+6.2 Schedule of Rates* 
+Adjustment to Fixed Pricing for Contract Variation/Extension
+* Payment for contract variations will be determined using the Schedule of Rates and provision of a fixed price quotation, or as agreed with Customer. 
+6.3	Proposed Payment Schedule
+6.4	Additional Facilities and Assistance
+6.5	Non-Compliance
+
