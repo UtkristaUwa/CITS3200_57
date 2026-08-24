@@ -1,57 +1,25 @@
 import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Container, Card, CardContent,
-<<<<<<< Updated upstream
-  CardActions, Collapse, Box, Chip
-=======
   CardActions, Box, Chip, Link, Dialog, DialogTitle, DialogContent, DialogActions
->>>>>>> Stashed changes
 } from '@mui/material';
 
 // Mock Data for the tender skeleton
-const mockTenders = [
-  {
-    title: "Tender Title",
-    isNew: true
-  }
+interface Tender {
+  id: number;
+  title: string;
+  isNew: boolean;
+  isFavorite: boolean;
+  source: string;
+}
+
+const initialTenders: Tender[] = [
+  { id: 1, title: "Tender Title", isNew: true, isFavorite: false, source: "https://example.com/tender-1" },
+  { id: 2, title: "Tender Title", isNew: false, isFavorite: false, source: "https://example.com/tender-2" },
+  { id: 3, title: "Tender Title", isNew: false, isFavorite: false, source: "https://example.com/tender-3" },
 ];
 
 // Single Tender Card Component
-<<<<<<< Updated upstream
-function TenderCard({ tender }) {
-  // State to control the expand/collapse action
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <Card sx={{ mb: 2, border: '1px solid #ccc', boxShadow: 'none' }}>
-      <CardContent>
-        {/* ==========================================
-            1. Collapsed State (Default Display)
-            Contains Title, ATM ID, Closing Date, Agency, Description
-            ========================================== */}
-        
-        {/* Title and Badge */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-          <Typography variant="h6" component="div" sx={{ textAlign: 'left' }}>
-            {tender.title}
-          </Typography>
-          {tender.isNew && <Chip label="NEW" color="primary" size="small" />}
-        </Box>
-
-        {/* Outer layer information (Left Aligned, Reordered) */}
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
-          <strong>ATM ID:</strong> 
-        </Typography>
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
-          <strong>Closing Date:</strong> 
-        </Typography>
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
-          <strong>Agency:</strong> 
-        </Typography>
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 1.5 }}>
-          <strong>Description:</strong> 
-        </Typography>
-=======
 function TenderCard({ tender, onToggleFavorite }: { tender: Tender; onToggleFavorite: (id: number) => void }) {
   // State to control the Modal/Dialog open state
   const [open, setOpen] = useState(false);
@@ -89,7 +57,6 @@ function TenderCard({ tender, onToggleFavorite }: { tender: Tender; onToggleFavo
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'left', mb: 2, fontStyle: 'italic' }}>
             AI Summary: This is a 1-3 line high-level summary of the tender opportunity, highlighting the core problem and expectations.
           </Typography>
->>>>>>> Stashed changes
 
           {/* Core Outer Information */}
           <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
@@ -195,6 +162,16 @@ function TenderCard({ tender, onToggleFavorite }: { tender: Tender; onToggleFavo
 
 // Main Page Component
 export default function BasicSkeletonApp() {
+  const [tenders, setTenders] = useState<Tender[]>(initialTenders);
+
+  const handleToggleFavorite = (id: number) => {
+    setTenders(prev =>
+      [...prev]
+        .map(t => (t.id === id ? { ...t, isFavorite: !t.isFavorite } : t))
+        .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite))
+    );
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       {/* Top Navigation Bar */}
@@ -211,8 +188,8 @@ export default function BasicSkeletonApp() {
 
       {/* Main Content: Render Cards */}
       <Container maxWidth="md">
-        {mockTenders.map((tender, index) => (
-          <TenderCard key={index} tender={tender} />
+        {tenders.map((tender) => (
+          <TenderCard key={tender.id} tender={tender} onToggleFavorite={handleToggleFavorite} />
         ))}
       </Container>
     </Box>
