@@ -1,0 +1,76 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - WH002-2026-RFI
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329418
+Scraped At : 2026-08-17 20:21:36
+
+--------------------------------------------------------------------------------
+Display Tender WH002-2026-RFI 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+RIS / PACS Replacement Programme
+Issued By Western Health
+Type:
+Request for Information
+Status:
+Open
+Number:
+WH002-2026-RFI
+UNSPSC:
+Medical software
+Region(s):
+Victoria
+Enquiries 
+Arnold Roxas (Enquiries)
+arnold.roxas@wh.org.au
+Rachel Adamson (Enquiries)
+rachel.adamson@wh.org.au
+Description
+Western Health, a Victorian Public Health Service established under the Health Services Act 1988 (VIC), oversees a comprehensive range of healthcare facilities, including acute hospitals, day hospitals, and community health centres. Western Health is currently seeking qualified respondents to participate in a Request for Information (RFI) for the replacement of its Radiology Information System (RIS) and Picture Archiving and Communication System (PACS), supporting Medical Imaging and Cardiology services across the organisation.
+This project involves the replacement of Western Health's legacy RIS/PACS environment — in continuous operation since 2007 — with a modern, resilient, enterprise-grade imaging platform. The scope includes Radiology and Cardiology PACS and RIS, a dedicated CT PACS instance, an enterprise clinical imaging repository, ultrasound structured reporting, a redundant voice-recognition reporting platform, an integrated AI platform, and an advanced analytics capability, deployed across Western Health's Sunshine, Footscray, Williamstown and Sunbury sites, with an architecture that accommodates future expansion to the New Melton Hospital, Point Cook, Ophthalmology and DEXA services. The primary objectives focus on eliminating single points of failure and establishing formal disaster recovery and cyber resilience, reducing operational friction and manual workflow steps for clinical and administrative staff, improving interoperability with Oracle Health (Cerner) and iPM, and enabling native AI-assisted reporting and enterprise-grade analytics to support Western Health's growth trajectory. Respondents are expected to meet these requirements by providing innovative and practical solutions that align with the high standards of Western Health.
+RFI Closes 01 September 2026
+RFC: Last date for Request for Clarifications is 27 August 2026 to allow time for WH response.  Please use the RFC form provided for all queries and correspondance.
+
+Specification Documents 
+You must be logged in to download documents.
+   WH002-2026-RFI_WH_RIS_PACS_Functional_Solution_Brief_Final.pdf
+Version 1 (5 Aug 2026)
+Available by Download   (1013 KB)
+   WH002-2026-RFI_WH_RIS_PACS_Vendor_Entry_Exit_Criteria_Final.pdf
+Version 1 (5 Aug 2026)
+Available by Download   (170 KB)
+   WH002-2026-RFI_WH_RIS_PACS_Cardiology_Final.xlsx
+Version 1 (5 Aug 2026)
+Available by Download   (38 KB)
+   WH002-2026-RFI_WH_Cybersecurity_Final.xlsx
+Version 1 (5 Aug 2026)
+Available by Download   (33 KB)
+   WH002-2026-RFI-RIS_PACS_RFI_Radiology_Final.xlsx
+Version 1 (5 Aug 2026)
+Available by Download   (88 KB)
+   WH002-2026-RFI_WH_RIS_PACS_DTS_Final.xlsx
+Version 1 (5 Aug 2026)
+Available by Download   (56 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC.docx
+Version 1 (5 Aug 2026)
+Available by Download   (70 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC 07.08.2026.pdf
+Version 1 (7 Aug 2026)
+Available by Download   (182 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC 07.08.2026a.pdf
+Version 1 (9 Aug 2026)
+Available by Download   (164 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC 07.08.2026b.pdf
+Version 1 (9 Aug 2026)
+Available by Download   (172 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC 10.08.2026.pdf
+Version 1 (12 Aug 2026)
+Available by Download   (218 KB)
+   WH002-2026-RFI - WH_RIS_PACS - RFC 12.08.2026.pdf
+Version 1 (14 Aug 2026)
+Available by Download   (496 KB)
+   WH002-2026-RFI_WH_RIS_PACS_Vendor_Entry_Exit_Criteria.docx
+Version 1 (14 Aug 2026)
+Available by Download   (34 KB)
+
+================================================================================

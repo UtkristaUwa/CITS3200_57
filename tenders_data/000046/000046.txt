@@ -1,0 +1,82 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - 000046
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=330485
+Scraped At : 2026-08-17 20:21:04
+
+--------------------------------------------------------------------------------
+Display Tender 000046 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Construction of Montpellier Basins Monitoring Building and Associated Civil Works
+Issued By Barwon Water
+Type:
+Request for Tender
+Status:
+Open
+Number:
+000046
+Contract Number
+000046
+UNSPSC:
+Building and Facility Construction and Maintenance Services - (50%)
+Water and wastewater treatment supply and disposal - (50%)
+Region(s):
+Victoria
+Enquiries 
+Tony Belcher
+Contractual
+Phone: +61 (4) 0407506169
+tony.belcher@barwonwater.vic.gov.au
+Description
+Construction of an Operations Monitoring Building and Associated Civil Works at Scenic Road Highton (Geelong) (Construct Only)
+Offers will be considered for a) building works only, b) civil works only, or c) building and civil works.
+Tender Briefing/Site Inspection
+Non-mandatory tender briefing session will be held:
+Location: Montpellier Water Basin No .2
+Address: 120 Scenic Road, Highton
+Time and Date: 4pm, Thursday 3rd September 2026 
+Contact Officer: Tony Belcher tony.belcher@barwonwater.vic.gov.au 
+Specification Documents 
+You must be logged in to download documents.
+   A - RFT-Invitation - Montpellier Monitoring Building and Associated Civil Works.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (95 KB)
+   B - i - Schedule 5 Project Requirements - Schedule - 2524_Sc05_Door Hardware Schedule_rev.0.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (265 KB)
+   B - i - Schedule 5 Project Requirements - Schedule - 2524_Sc04_Joinery Hardware Schedule_rev.0.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (389 KB)
+   C - RFT- Response Schedules - Montpellier Monitoring Building and Associated Civil Works.docx
+Version 1 (17 Aug 2026)
+Available by Download   (221 KB)
+   B - i - Schedule 5 Project Requirements - SQE.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (522 KB)
+   B - i - Schedule 5 Project Requirements - Specification - 2524_120 Scenic Road_Sp01_rev.0.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (1 MB)
+   B - i - Schedule 5 Project Requirements - Schedule - 2524_Sc03_Fixtures & Fittings Schedule_rev.0.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (1 MB)
+   B - i - Schedule 5 Project Requirements - Drawings - Civil - 3457E-001-101-421_[A].pdf
+Version 1 (17 Aug 2026)
+Available by Download   (9 MB)
+   B - i - Schedule 5 Project Requirements - Drawings - Building - 2524_120 Scenic Road_CD_rev.0_.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (13 MB)
+   Reference Document - PA2604385 Planning Permit PA2604385 Scenic Road Highton Form 4.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (22 MB)
+   Reference Document - Geotechnical Report - 120 Scenic Road Highton.pdf
+Version 1 (17 Aug 2026)
+Available by Download   (4 MB)
+   B - Contract - BW-VicWater_MWC_C-O_- Montpellier Monitoring Building and Associated Civil Works.pdf
+Version 2 (17 Aug 2026)
+Available by Download   (589 KB)
+   B - i - Schedule 5 Project Requirements - Schedule - 2524_Sc01_External Materials & Finishes Schedule_rev.0 (2).pdf
+Version 1 (17 Aug 2026)
+Available by Download   (1 MB)
+
+================================================================================

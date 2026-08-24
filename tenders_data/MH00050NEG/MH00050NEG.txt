@@ -1,0 +1,48 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - MH00050NEG
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=330089
+Scraped At : 2026-08-17 20:26:18
+
+--------------------------------------------------------------------------------
+Display Tender MH00050NEG 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Supply of Patient Temperature Management Equipment
+Issued By Monash Health
+Type:
+Request for Tender
+Status:
+Open
+Number:
+MH00050NEG
+UNSPSC:
+Therapeutic heating or cooling units or systems - (34%)
+Heat and cold therapy products - (33%)
+Patient care and treatment products and supplies - (33%)
+Region(s):
+Victoria
+Enquiries 
+Barry Wald (Enquiries)
+Office: +61 (04) 32170989
+Barry.Wald@monashhealth.org
+Description
+
+Invitation to Supply (ITS) – Request for Tender (RFT)
+Monash Health is seeking responses to this ITS with the intention of appointing a Preferred Supplier to provide the Requirements.Monash Health reserves the right in its sole discretion to determine which of its departments, related services, participating health services and related body corporates become a party to any contract awarded subsequent to this ITS.
+Monash Health does not make any representations regarding the volume or quantities likely to be purchased pursuant to any subsequent contract. 
+A)      Scope of Supply:
+As part of this RFT Monash Health is looking to appoint a preferred provider for the supply and support Temperature Management Systems to Monash Health. The tender needs to provide costings for all deliverables, consumables and maintenance.
+A)      A)      Submission of Responses: 
+All tenders must be submitted via the Oracle Fusion portal 
+Suppliers will need to register on Fuson to obtain tender documents and respond to the tender. Please ensure you do not duplicate registration of your organisation. Registration and log in is found at the following link.
+https://iaaotz.fa.ocs.oraclecloud.com/fscmUI/redwood/supplier-registration/register-supplier/register-supplier-verification?id=j0tYsMnLX%2BA6tM%2BjQSh4%2B1wbqsYxYyMPT3w5be4esJumj%2FINdG4P9pSP8w%3D%3D
+B)      Closing Time and Date: 
+Time: 10.00pm   (Local time in Melbourne, Victoria)   Date:   28 August 2026
+ C)      Enquiries:  
+All enquiries are to be submitted via the Fusion tender forum
+D)      Prices: 
+The prices provided are to remain fixed for the term of the contract. All prices must be firm and valid for acceptance with 120 days of the Closing Date of this ITS.
+  E)      Indicative Timeframe:
+
+================================================================================

@@ -1,0 +1,39 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - DOT45289
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329029
+Scraped At : 2026-08-17 20:20:47
+
+--------------------------------------------------------------------------------
+Display Tender DOT45289 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Traffic Signal Pole Replacement and Foundation Replacement
+Issued By Department of Transport and Planning
+Type:
+Request for Tender
+Status:
+Open
+Number:
+DOT45289
+Contract Number
+DOT45289
+UNSPSC:
+Traffic signals
+Region(s):
+Victoria
+Enquiries 
+Tenderservices
+Contractual
+Phone: +61 (3) 00000000
+tenderservices@transport.vic.gov.au
+Description
+DOT45289 - Traffic Signal Pole Replacement and Foundation Replacement
+Tender Opening Date: 3 August 2026
+Tender Closing Date: 7 October 2026
+Only Tenderers prequalified at prequalification level STS at the time of closing of the tender will be eligible to tender on this Contract.
+Request for Tender documents should be directed to: tenderservices@transport.vic.gov.au
+All Tender submissions must be lodged via http://www.tenders.vic.gov.au by 3:30pm on Wednesday, 7 October 2026.
+This is one of a package of works listed on the Advanced Tender Notice ATN-29421
+
+================================================================================

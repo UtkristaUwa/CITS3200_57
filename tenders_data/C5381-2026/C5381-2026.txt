@@ -1,0 +1,47 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - C5381-2026
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=330093
+Scraped At : 2026-08-17 20:20:56
+
+--------------------------------------------------------------------------------
+Display Tender C5381-2026 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Cowwarr Weir Switchboard Electrical Upgrades
+Issued By Southern Rural Water
+Type:
+Request for Tender
+Status:
+Open
+Number:
+C5381-2026
+Contract Number
+C5381-2026
+UNSPSC:
+Water and sewer utilities
+Region(s):
+Victoria
+Enquiries 
+Procurement Team (Enquiries)
+procurement@srw.com.au
+Description
+Southern Rural Water (SRW) is inviting Tenderers to respond to Cowwarr Weir Switchboard Electrical Upgrades.
+Cowwarr Electrical Switchboard Upgrade Project consists of:
+Replacement of the existing control room with a larger prefabricated controlbuilding, as the current facility provides inadequate space, access, and environmentalprotection for critical electrical equipment. The constrained layout limits safe working clearances, contributes to congestion, and increases risks during operation and maintenance. The new control room will provide a compliant, fit-for-purpose environment that improves safety, accessibility, and long-term operability.
+Extension of the existing control room foundation to support the new structure, as the larger prefabricated building requires an expanded footprint. This upgrade will ensure the structure meets current engineering and loading standards while providing a stable and compliant base for critical electrical infrastructure.
+Replacement of the existing switchboard with a new, modern switchboard, as the current installation has been in service for several decades and has reached the end of its serviceable life. The existing switchboard is non-compliant with AS/NZS 3000 (Wiring Rules), particularly in relation to protection, isolation, segregation, and personnel safety. The new switchboard will address these deficiencies, significantly improving safety, reliability, and compliance.
+Replacement and relocation of all site cabling infrastructure to address widespread deterioration identified during inspections, consistent with long-term environmental exposure. Existing cabling is ageing and may not meet current standards. New cabling will improve safety, reliability, and compliance, while optimising routing to suit the upgraded control room and electrical layout.
+Replacement of the head gauge and tail gauge instrumentation to address ageing and potentially unreliable equipment. Upgraded instrumentation will provide improved accuracy and reliability of water level monitoring and enable better integration with modern control and telemetry systems.
+Upgrade of site lighting systems to replace ageing and potentially degraded fittings that may not provide adequate illumination for safe operations. The new lighting will improve visibility, enhance safety for maintenance activities, and provide more efficient and reliable performance.
+Replacement of the Automatic Transfer Switch (ATS) as part of improving overall system reliability and resilience. The existing ATS is ageing and may not perform reliably during power interruptions. A new ATS will ensure safe and seamless transfer between power sources, maintaining continuity of operations.
+Upgrade of earthing systems across the site to address identified deficiencies in existing arrangements, which do not meet contemporary electrical safety expectations. The upgraded earthing system will improve fault protection and ensure compliance with current standards.
+
+This Tender has been published on TenderLink. All associated documents relating to this tender can be downloaded from TenderLink.
+TenderLink Notice # SRW-1170366
+www.tenderlink.com/srw
+
+ Any queries relating to this RFT must be made via TenderLink only.
+As per the Conditions of Tender, responses to this Tender must be submitted via TenderLink only.
+
+================================================================================

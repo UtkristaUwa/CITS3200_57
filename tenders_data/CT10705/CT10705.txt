@@ -1,0 +1,70 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - CT10705
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329034
+Scraped At : 2026-08-17 20:26:52
+
+--------------------------------------------------------------------------------
+Display Tender CT10705 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Combination Vacuum Jetting and Hydro Excavation Vehicle
+Issued By North East Water
+Type:
+Request for Tender
+Status:
+Open
+Number:
+CT10705
+UNSPSC:
+Sewer inspection machinery - (40%)
+Industrial trucks - (30%)
+Water and sewer utilities - (30%)
+Region(s):
+Victoria
+Enquiries 
+Curtis Biggs
+Technical
+Phone: +61 (04) 18718253
+cbiggs@newater.com.au
+Description
+North East Water (NEW) invites suitably qualified suppliers to submit a Tender for the supply, delivery, commissioning and training of a Combination Vacuum, Jetting and Hydro Excavation Vehicle.
+The vehicle is being procured to establish an in-house vacuum truck capability to support wastewater, water and civil maintenance operations across NEW's service area.
+The successful Supplier will provide a fully operational vehicle solution capable of supporting municipal sewer cleaning, pump station cleaning, hydro excavation, emergency response and associated maintenance activities.
+The vehicle must be supplied fully assembled, registered and ready for operational use in Victoria.
+Operational Requirements
+The proposed solution must be capable of supporting the following activities:
+Sewer network cleaning;
+Sewer blockage response;
+Emergency sewer overflow response;
+Pump station cleaning;
+Wet well cleaning;
+Treatment plant cleaning and desludging;
+Hydro excavation and non-destructive digging;
+Water and sewer asset exposure;
+Environmental incident response;
+Civil construction and maintenance support; and
+Emergency operational support activities.
+The vehicle must comply with all requirements specified in the Functional Requirements Specification (FRS) contained in Part 3A of this Request for Tender.
+Respondents should refer to the Tender documentation for the Functional Requirements Specification, evaluation criteria, key procurement dates and other requirements relevant to this procurement.
+Any enquiries regarding this Request for Tender (RFT) must be directed to North East Water Procurement at procurement@newater.com.au, referencing CT10705.
+
+Specification Documents 
+You must be logged in to download documents.
+   PART A and B - CT10705 - Vacuum_Jetting_and_Hydro Excavation Vehicle - Request for Tender (RFT).pdf
+Version 1 (3 Aug 2026)
+Available by Download   (373 KB)
+   PART C - CT10705 - Draft Contract for the Supply of Goods.pdf
+Version 1 (3 Aug 2026)
+Available by Download   (485 KB)
+   PART D - CT10705 - Request for Tender (RFT) - Respondents Offer Form.docx
+Version 1 (3 Aug 2026)
+Available by Download   (51 KB)
+   PART D1 - CT10705 - Functional Requirement Specification Response Schedule.xlsx
+Version 1 (3 Aug 2026)
+Available by Download   (16 KB)
+   PART E - CT10705 - Conditions of Tendering.pdf
+Version 1 (3 Aug 2026)
+Available by Download   (149 KB)
+
+================================================================================

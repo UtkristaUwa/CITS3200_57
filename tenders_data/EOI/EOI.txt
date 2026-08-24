@@ -1,0 +1,78 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - EOI
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=328085
+Scraped At : 2026-08-17 20:27:23
+
+--------------------------------------------------------------------------------
+Display Tender EOI 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+Pendants and AV Equipment for Operating Theatres
+Issued By Peter MacCallum Cancer Centre
+Type:
+Expression of Interest
+Status:
+Open
+Number:
+EOI
+UNSPSC:
+Healthcare Services - (50%)
+Medical Surgical Equipment Maintenance Refurbishment and Repair Services - (50%)
+Region(s):
+Victoria
+Enquiries 
+Kimberly Davis
+Technical
+Phone: +61 (410) 654266
+kim.davis@petermac.org
+Description
+
+Requirement for the replacement of Pendants and AV equipment in Theatres as well as ongoing service and maintenance.
+
+This is a joint project between Honeywell (the facility management company) and Peter Mac.   
+
+Honeywell are responsible for the replacement and maintenance of the Pendants whereas Peter Mac are responsible for the replacement and the maintenance of the AV equipment.  
+
+Given the 2 modalities need to integrate seamlessly and proved a unified solution, it was determined a singular Expression of Interest would be run, to encompass all requirements.
+
+Honeywell will have an active role in the selection of the preferred tenderer.  
+
+This project is being run as an EOI.   Peter Mac will utilise the financial detail to request funding from the Board of Directors.   Once funding is secured, the project will be awarded.   Please refer to the timeline within this document.
+
+After award, purchase orders and contracts will be issued separately for each modality with Honeywell issuing documentation for Pendants and Peter Mac issuing documentation for AV.
+Please note, all requirements will be negotiated simultaneously.
+Specification Documents 
+You must be logged in to download documents.
+   7. Supplier Code of Conduct.docx
+Version 1 (24 July 2026)
+Available by Download   (184 KB)
+   5. Clarification Questions.docx
+Version 1 (24 July 2026)
+Available by Download   (162 KB)
+   1. INVITATION TO SUPPLY PAP 2027.05 Pentants and AV Theatres.docx
+Version 1 (24 July 2026)
+Available by Download   (696 KB)
+   3. Pendant Requirement Overview.docx
+Version 1 (24 July 2026)
+Available by Download   (961 KB)
+   2. AV Requirements Overview.docx
+Version 1 (24 July 2026)
+Available by Download   (1 MB)
+   6. Modern Slavery Risk Assessment.xlsm
+Version 1 (24 July 2026)
+Available by Download   (126 KB)
+   4. Tender Specification Response.xlsx
+Version 1 (25 July 2026)
+Available by Download   (228 KB)
+   NEW DOCUMENT FOR REVIEW AR-F18-060-10A[AB-01].pdf
+Version 1 (31 July 2026)
+Available by Download   (966 KB)
+   NEW DOCUMENT FOR REVIEW AR-F18-060-10B[AB-05].pdf
+Version 1 (31 July 2026)
+Available by Download   (1 MB)
+   NEW DOCUMENTS FOR REVIEW Honeywell Ltd Australia-VCCC-2026-07-31-07-47-07-968.zip
+Version 1 (31 July 2026)
+Available by Download   (5 MB)
+
+================================================================================

@@ -1,0 +1,70 @@
+================================================================================
+VICTORIAN GOVERNMENT TENDER - RFX101887-RFP2026
+================================================================================
+
+Detail URL : https://www.tenders.vic.gov.au/tender/view?id=329526
+Scraped At : 2026-08-17 20:23:03
+
+--------------------------------------------------------------------------------
+Display Tender RFX101887-RFP2026 
+SUPPLIER PHISHING ALERT: The Government is aware of an active phishing campaign targeting Victorian Government contractors and suppliers. Cybercriminals are using publicly available procurement information to impersonate Victorian Government officials and send personalised phishing emails. These messages are designed to extract sensitive information and may be used to commit business email compromise or invoice fraud. Learn more about the supplier phishing alert at https://www.buyingfor.vic.gov.au/supplier-phishing-alert
+ICT Testing Services
+Issued By South East Water Corporation
+Type:
+Request for Tender
+Status:
+Open
+Number:
+RFX101887-RFP2026
+UNSPSC:
+Information Technology Service Delivery
+Region(s):
+Victoria
+Enquiries 
+Arun Das (Enquiries)
+Office: +61 (03) 95523000
+Arunava.Das@sew.com.au
+Arun Das
+Contractual
+Phone: +61 0431279755
+arunava.das@sew.com.au
+Description
+South East Water Corporation is a provider of water, sewerage, trade waste and water saving services for residents and businesses in an area ranging from the South East of Melbourne to South Gippsland. It is one of Melbourne’s three water retailers owned by the Victorian Government.
+South East Water is seeking proposals for the provision of end-to-end software testing and quality assurance services across its IT and Digital portfolio.
+This procurement aims to establish strategic partnerships with experienced testing providers to complement internal capabilities and support the delivery of digital transformation initiatives, technology projects, application enhancements, and ongoing operational requirements. The successful supplier(s) will play a key role in ensuring the quality, reliability, and successful implementation of technology solutions across the organisation.
+NOTE: The Local Jobs First contestability assessment is currently in progress. Suppliers should be aware that, if the procurement is deemed contestable, a Local Industry Development Plan (LIDP) may become a mandatory tender submission requirement via Addendum.
+
+Specification Documents 
+You must be logged in to download documents.
+   RFX101887-RFP2026 - Testing Partner - Invitation-to-Supply.docx
+Version 2 (6 Aug 2026)
+Available by Download   (544 KB)
+   RFX101887-RFP2026 - Testing Partner - A.2 Specifications.docx
+Version 1 (6 Aug 2026)
+Available by Download   (639 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Part D - 01. Mandatory Criteria.docx
+Version 2 (6 Aug 2026)
+Available by Download   (466 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Part D - 02. Gateway Criteria.docx
+Version 1 (6 Aug 2026)
+Available by Download   (465 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Part D - 03. Qualitative Criteria.docx
+Version 2 (6 Aug 2026)
+Available by Download   (468 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Part D - 04. Risk Assessed Criteria.docx
+Version 2 (6 Aug 2026)
+Available by Download   (467 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Part D - 05. Pricing Schedule and Checklist.docx
+Version 2 (6 Aug 2026)
+Available by Download   (453 KB)
+   RFX101887-RFP2026 - Testing Partner - Returnable Price Schedule.xlsx
+Version 2 (6 Aug 2026)
+Available by Download   (28 KB)
+   RFX101887-RFP2026 - Testing Partner - eServices Contract - Ordering Document.docx
+Version 1 (6 Aug 2026)
+Available by Download   (1 MB)
+   RFX101887-RFP2026 ICN Bidder Pack.pdf
+Version 1 (11 Aug 2026)
+Available by Download   (75 KB)
+
+================================================================================
