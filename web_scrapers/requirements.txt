@@ -6,3 +6,4 @@
 seleniumbase>=4.30
 requests>=2.31
 beautifulsoup4>=4.12
+seleniumbase>=4.30

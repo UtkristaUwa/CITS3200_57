@@ -1,0 +1,682 @@
+Victorian Government - Current Open Tenders
+Source : https://www.tenders.vic.gov.au/tenders/open
+Scraped: 2026-08-17 19:25:44
+Pages  : 3
+Count  : 63
+======================================================================
+[1] Road Safety Services Register
+    RFx Number : PROCF22-000236
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Transport Accident Commission
+    UNSPSC: 80000000 - Management and Business Professionals and Administrative Services
+    Opened     : Fri, 10 March 2023 9:15 am
+    Closing    : Fri, 01 March 2030 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=249237
+
+[2] Clinical Advisory Services Register
+    RFx Number : PROCF23-149
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Transport Accident Commission
+    UNSPSC: 85000000 - Healthcare Services
+    Opened     : Mon, 24 February 2025 5:00 pm
+    Closing    : Mon, 25 February 2030 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=285775
+
+[3] Invitation to Register - Uniforms and Personal Protective Equipment (PPE) Ethical Supplier Register.
+    RFx Number : ITR-SS-05-2018
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Treasury and Finance
+    UNSPSC 1: 53000000 - Apparel and Luggage and Personal Care Products - 50%
+    UNSPSC 2: 46000000 - Defense and Law Enforcement and Security and Safety Equipment and Supplies - 50%
+    Opened     : Tue, 04 September 2018 4:00 pm
+    Closing    : Fri, 04 August 2028 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=97410
+
+[4] Traffic Signal Pole Replacement and Foundation Replacement
+    RFx Number : DOT45289
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 46161504 - Traffic signals
+    Opened     : Mon, 03 August 2026 3:30 pm
+    Closing    : Wed, 07 October 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329029
+
+[5] Cowwarr Weir Switchboard Electrical Upgrades
+    RFx Number : C5381-2026
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Southern Rural Water
+    UNSPSC: 83101500 - Water and sewer utilities
+    Opened     : Thu, 13 August 2026 8:00 am
+    Closing    : Wed, 23 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330093
+
+[6] Construction of Montpellier Basins Monitoring Building and Associated Civil Works
+    RFx Number : 000046
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Barwon Water
+    UNSPSC 1: 72000000 - Building and Facility Construction and Maintenance Services - 50%
+    UNSPSC 2: 47100000 - Water and wastewater treatment supply and disposal - 50%
+    Opened     : Mon, 17 August 2026 12:05 pm
+    Closing    : Wed, 23 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330485
+
+[7] Level 3 Inspection and Load Assessment of the Twin Bridges Princes Hwy over Kororoit Creek (SN2663 & SN2777)
+    RFx Number : DOT44341
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30100000 - Structural components and basic shapes
+    Opened     : Thu, 13 August 2026 12:00 pm
+    Closing    : Mon, 21 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330092
+
+[8] WTP Grit & Screenings Plant
+    RFx Number : EOIMW29
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Melbourne Water
+    UNSPSC: 72121505 - Waste water and sewage treatment plant construction service
+    Opened     : Mon, 10 August 2026 10:00 am
+    Closing    : Mon, 21 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329644
+
+[9] Structural Condition and Geotechnical Inspection Services
+    RFx Number : RFT-2026-SCIS
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Phillip Island Nature Park Board of Management Inc
+    UNSPSC 1: 41113800 - Geophysical and geotechnical instruments - 34%
+    UNSPSC 2: 72000000 - Building and Facility Construction and Maintenance Services - 33%
+    UNSPSC 3: 81000000 - Engineering and Research and Technology Based Services - 33%
+    Opened     : Thu, 06 August 2026 5:00 pm
+    Closing    : Fri, 18 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329535
+
+[10] RIS / PACS Replacement Programme
+    RFx Number : WH002-2026-RFI
+    Status     : Open
+    Type       : Request for Information
+    Issued by: Western Health
+    UNSPSC: 43232610 - Medical software
+    Opened     : Wed, 05 August 2026 5:00 pm
+    Closing    : Fri, 18 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329418
+
+[11] Unoccupied Site Maintenance and Associated Works Contract
+    RFx Number : RFT-VSBA-USP-26/27
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Education
+    UNSPSC: 72000000 - Building and Facility Construction and Maintenance Services
+    Opened     : Wed, 12 August 2026 3:00 pm
+    Closing    : Thu, 17 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330079
+
+[12] Construction of DN450 Polyethylene Water Main, Drouin West
+    RFx Number : GW591
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Gippsland Water
+    UNSPSC: 83101500 - Water and sewer utilities
+    Opened     : Tue, 11 August 2026 5:10 pm
+    Closing    : Wed, 16 September 2026 4:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329783
+
+[13] Monaro Highway Landslip Repair and Drainage Improvements at Ch. 39.4km & 40.8km
+    RFx Number : DOT42687
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Thu, 13 August 2026 12:00 pm
+    Closing    : Wed, 16 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330091
+
+[14] Rectification of Uninterruptible Power Supply (UPS) Systems at Traffic Signal Sites throughout Metropolitan Melbourne
+    RFx Number : DOT43680
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 46161504 - Traffic signals
+    Opened     : Wed, 05 August 2026 2:00 pm
+    Closing    : Wed, 16 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329402
+
+[15] SoR 2026 Cleaning Services
+    RFx Number : SoR CS2026
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: SHRINE OF REMEMBRANCE TRUSTEES
+    UNSPSC: 76110000 - Cleaning and janitorial services
+    Opened     : Mon, 17 August 2026 5:00 pm
+    Closing    : Mon, 14 September 2026 4:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330498
+
+[16] Traffic Management Services Panel
+    RFx Number : VLPRJ1428
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: V/Line
+    UNSPSC: 46161500 - Traffic control
+    Opened     : Mon, 17 August 2026 2:30 pm
+    Closing    : Mon, 14 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330495
+
+[17] Provision of Traffic Management on the West Gate Bridge and Approaches
+    RFx Number : DOT45162
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 46161500 - Traffic control
+    Opened     : Wed, 05 August 2026 12:00 pm
+    Closing    : Wed, 09 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329242
+
+[18] Packing, Storage and Distribution of Prep Bags
+    RFx Number : N1000300
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Education
+    UNSPSC 1: 78120000 - Material packing and handling - 40%
+    UNSPSC 2: 78130000 - Storage - 30%
+    UNSPSC 3: 78140000 - Transport services - 30%
+    Opened     : Thu, 13 August 2026 8:05 pm
+    Closing    : Wed, 09 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330114
+
+[19] Melton RWP Potable Water Services Upgrade
+    RFx Number : GWW12159
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Greater Western Water
+    UNSPSC 1: 72000000 - Building and Facility Construction and Maintenance Services - 25%
+    UNSPSC 2: 72101509 - Fire protection system and equipment maintenance or repair service - 25%
+    UNSPSC 3: 40150000 - Industrial pumps and compressors - 25%
+    UNSPSC 4: 83101500 - Water and sewer utilities - 25%
+    Opened     : Tue, 11 August 2026 12:00 pm
+    Closing    : Wed, 09 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329954
+
+[20] Major Gravity Sewers Rehabilitation
+    RFx Number : BWRW-S1192-000048T
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Barwon Water
+    UNSPSC: 47100000 - Water and wastewater treatment supply and disposal
+    Opened     : Fri, 31 July 2026 4:15 pm
+    Closing    : Wed, 09 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328793
+
+[21] ICT Testing Services
+    RFx Number : RFX101887-RFP2026
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: South East Water Corporation
+    UNSPSC: 81160000 - Information Technology Service Delivery
+    Opened     : Thu, 06 August 2026 4:00 pm
+    Closing    : Mon, 07 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329526
+
+[22] Point Grey Café Lease
+    RFx Number : 26-0084
+    Status     : Open
+    Type       : Request for Quotation
+    Issued by: Great Ocean Road Coast and Parks Authority
+    UNSPSC: 80131500 - Lease and rental of property or building
+    Opened     : Fri, 07 August 2026 6:00 am
+    Closing    : Sun, 06 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=324521
+
+[23] Application of Protective Coating to West Gate Bridge Piers 1, 2 & 3
+    RFx Number : DOT44747
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 72141107 - Bridge construction and repair service
+    Opened     : Fri, 07 August 2026 3:30 pm
+    Closing    : Fri, 04 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329642
+
+[24] West Gate Bridge Barrier Coating Maintenance - Eastern Concrete Viaduct
+    RFx Number : DOT44466
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 72141107 - Bridge construction and repair service
+    Opened     : Fri, 07 August 2026 3:00 pm
+    Closing    : Fri, 04 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329640
+
+[25] WWTP Construction of Stage 1 Dewatering Upgrade
+    RFx Number : GW564
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Gippsland Water
+    UNSPSC: 95120000 - Permanent buildings and structures
+    Opened     : Thu, 30 July 2026 5:00 pm
+    Closing    : Thu, 03 September 2026 4:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328571
+
+[26] REDHS HVAC Replacement
+    RFx Number : REDHS202602
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Rochester and Elmore District Health Service
+    UNSPSC: 72151207 - Heating and cooling and air conditioning HVAC installation and maintenance service
+    Opened     : Wed, 05 August 2026 5:00 pm
+    Closing    : Thu, 03 September 2026 3:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329244
+
+[27] Alexandra Fire Station - Alterations & Additions
+    RFx Number : CFA-2025-0195
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Country Fire Authority Victoria
+    UNSPSC: 72000000 - Building and Facility Construction and Maintenance Services
+    Opened     : Thu, 30 July 2026 12:00 pm
+    Closing    : Thu, 03 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328565
+
+[28] Mirboo North, Willowgrove Rd & Licola Rd Motorcycle Safety Improvements
+    RFx Number : DOT44724
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Tue, 04 August 2026 3:00 pm
+    Closing    : Wed, 02 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329243
+
+[29] Intersection upgrade of Bellarine Highway and Moolap Station Road, Moolap
+    RFx Number : DOT41856
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Tue, 30 June 2026 4:30 pm
+    Closing    : Wed, 02 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=325329
+
+[30] Installation of Traffic Signals and associated works on Grubb Road at Smithton Grove, Ocean Grove
+    RFx Number : DOT44674
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 46161504 - Traffic signals
+    Opened     : Tue, 30 June 2026 10:45 am
+    Closing    : Wed, 02 September 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=325324
+
+[31] VEMTC Huntly - Rectification works to the existing Off Road Driver Training Track (ORDTT)
+    RFx Number : CFA-2026-0027
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Country Fire Authority Victoria
+    UNSPSC: 72000000 - Building and Facility Construction and Maintenance Services
+    Opened     : Wed, 05 August 2026 9:00 am
+    Closing    : Wed, 02 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329401
+
+[32] OVGA Design Review Expert
+    RFx Number : DOT29897
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Department of Transport and Planning
+    UNSPSC 1: 81101508 - Architectural engineering - 15%
+    UNSPSC 2: 81101523 - Urban design and engineering service - 15%
+    UNSPSC 3: 81101517 - Landscape architecture and design service - 12%
+    UNSPSC 4: 81101524 - City development planning service - 10%
+    UNSPSC 5: 81101500 - Civil engineering - 8%
+    UNSPSC 6: 77101700 - Environmental advisory services - 8%
+    UNSPSC 7: 93141707 - Cultural heritage preservation or promotion services - 7%
+    UNSPSC 8: 81101505 - Structural engineering - 6%
+    UNSPSC 9: 81101529 - Acoustic engineering - 5%
+    UNSPSC 10: 81101518 - Lighting engineering service - 5%
+    UNSPSC 11: 81101519 - Subdivison planning service - 4%
+    UNSPSC 12: 81101514 - Geotechnical or geoseismic engineering - 3%
+    UNSPSC 13: 81101526 - Quantity surveying service - 2%
+    Opened     : Fri, 07 August 2026 9:00 am
+    Closing    : Tue, 01 September 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=325215
+
+[33] RFT-978 SMCT Security Services (non SPC scope)
+    RFx Number : RFT-978
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: The Southern Metropolitan Cemeteries Trust
+    UNSPSC 1: 46151600 - Security and control equipment - 25%
+    UNSPSC 2: 46171610 - Security cameras - 25%
+    UNSPSC 3: 46171619 - Security or access control systems - 25%
+    UNSPSC 4: 46170000 - Security surveillance and detection - 25%
+    Opened     : Mon, 10 August 2026 2:00 pm
+    Closing    : Tue, 01 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329775
+
+[34] Design and Construct Broadford Res No. 3 Pump Station and Clonbinane Road Booster Pump Station and construct Broadford Res No.3 inlet upgrade works
+    RFx Number : RFT19-5813-25
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Goulburn Valley Water
+    UNSPSC: 83000000 - Public Utilities and Public Sector Related Services
+    Opened     : Wed, 22 July 2026 1:30 pm
+    Closing    : Tue, 01 September 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327852
+
+[35] Precinct and Event Cleaning
+    RFx Number : PR2526-217
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Melbourne &
+    UNSPSC: 76110000 - Cleaning and janitorial services
+    Opened     : Mon, 03 August 2026 3:00 pm
+    Closing    : Mon, 31 August 2026 4:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329032
+
+[36] Piangil Dissolved Air Flotation Facility Contract
+    RFx Number : C01541
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Grampians Wimmera Mallee Water Corporation
+    UNSPSC 1: 47101500 - Water treatment and supply equipment - 30%
+    UNSPSC 2: 39120000 - Electrical equipment and components and supplies - 20%
+    UNSPSC 3: 20142900 - Storage vessels and tanks - 20%
+    UNSPSC 4: 47100000 - Water and wastewater treatment supply and disposal - 20%
+    UNSPSC 5: 83101500 - Water and sewer utilities - 10%
+    Opened     : Wed, 29 July 2026 6:00 am
+    Closing    : Mon, 31 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328444
+
+[37] FY27 Linemarking Program - Loddon Mallee Region Package 1
+    RFx Number : DOT45186
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Fri, 14 August 2026 2:00 pm
+    Closing    : Fri, 28 August 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330310
+
+[38] Request for Information on recruitment of domestic and international teachers
+    RFx Number : RFISR2026
+    Status     : Open
+    Type       : Request for Information
+    Issued by: Department of Education
+    UNSPSC 1: 86000000 - Education and Training Services - 40%
+    UNSPSC 2: 86132200 - Educational support services - 30%
+    UNSPSC 3: 86130000 - Specialized educational services - 30%
+    Opened     : Mon, 10 August 2026 2:00 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329647
+
+[39] RFT - MAINTENANCE TAMPING, RAIL MILLING & GRINDING
+    RFx Number : 1222692568
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: V/Line
+    UNSPSC 1: 25121607 - Railway or tramway maintenance or service vehicle - 50%
+    UNSPSC 2: 25121703 - Railway tracks - 50%
+    Opened     : Fri, 31 July 2026 1:30 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328569
+
+[40] Mt Hotham Water Treatment UV unit supply
+    RFx Number : MH- 26 001
+    Status     : Open
+    Type       : Request for Quotation
+    Issued by: Alpine Resorts Victoria
+    UNSPSC: 47101500 - Water treatment and supply equipment
+    Opened     : Wed, 29 July 2026 12:00 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328457
+
+[41] King Road Wastewater Treatment Plant – Bulk Earthworks (Winter Storage Lagoon/ Constructed Wetlands and Interconnecting Pipework
+    RFx Number : 2026/034
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Westernport Water
+    UNSPSC: 81101522 - Earthworks engineering
+    Opened     : Mon, 20 July 2026 4:15 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327693
+
+[42] Supply and Fitting of Tyres to Victoria Police Vehicles and Related Services
+    RFx Number : T5808
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Victoria Police
+    UNSPSC 1: 92101500 - Police services - 50%
+    UNSPSC 2: 25172500 - Tires and tire tubes - 30%
+    UNSPSC 3: 73161605 - Motor vehicles parts or accessories manufacture services - 20%
+    Opened     : Thu, 16 July 2026 4:00 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327432
+
+[43] HPVITS2026-047 Orthopaedic Prostheses - Hip, Knee, and Upper Limb
+    RFx Number : HPVITS2026- 047
+    Status     : Open
+    Type       : Request for Quotation
+    Issued by: HealthShare Victoria
+    UNSPSC 1: 42321700 - Hip joint implants - 47%
+    UNSPSC 2: 42321800 - Knee joint implants - 39%
+    UNSPSC 3: 42321900 - Shoulder joint implants - 8%
+    UNSPSC 4: 42320000 - Orthopedic surgical implants - 6%
+    Opened     : Tue, 28 July 2026 12:00 pm
+    Closing    : Fri, 28 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=324597
+
+[44] Homelessness Assertive outreach expansion
+    RFx Number : P27336
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Families, Fairness and Housing
+    UNSPSC: 80000000 - Management and Business Professionals and Administrative Services
+    Opened     : Fri, 24 July 2026 3:30 pm
+    Closing    : Thu, 27 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328200
+
+[45] Strategic Works Engineering Services Partner
+    RFx Number : BWSA-000034EOI
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Barwon Water
+    UNSPSC: 81100000 - Professional engineering services
+    Opened     : Wed, 15 July 2026 2:00 pm
+    Closing    : Thu, 27 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327314
+
+[46] Supply of Patient Temperature Management Equipment
+    RFx Number : MH00050NEG
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Monash Health
+    UNSPSC 1: 42142105 - Therapeutic heating or cooling units or systems - 34%
+    UNSPSC 2: 42142100 - Heat and cold therapy products - 33%
+    UNSPSC 3: 42140000 - Patient care and treatment products and supplies - 33%
+    Opened     : Wed, 12 August 2026 4:40 pm
+    Closing    : Wed, 26 August 2026 10:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=330089
+
+[47] Fairhaven Landslip Slope Remediation CH. 28,075 - 28,250
+    RFx Number : DOT44743
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Wed, 29 July 2026 4:30 pm
+    Closing    : Wed, 26 August 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328556
+
+[48] Maryborough - Dunolly Road - Culvert Replacement of Existing Bridge Over Burnt Creek (SN4534)
+    RFx Number : DOT42820
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 72141107 - Bridge construction and repair service
+    Opened     : Fri, 24 July 2026 4:45 pm
+    Closing    : Wed, 26 August 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328202
+
+[49] Supply and installation of replacement penstock gates at Fyans Creek Road
+    RFx Number : C01509
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Grampians Wimmera Mallee Water Corporation
+    UNSPSC 1: 30172000 - Gates - 50%
+    UNSPSC 2: 30000000 - Structures and Building and Construction and Manufacturing Components and Supplies - 50%
+    Opened     : Wed, 05 August 2026 6:00 am
+    Closing    : Wed, 26 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329041
+
+[50] Combination Vacuum Jetting and Hydro Excavation Vehicle
+    RFx Number : CT10705
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: North East Water
+    UNSPSC 1: 20111610 - Sewer inspection machinery - 40%
+    UNSPSC 2: 24101500 - Industrial trucks - 30%
+    UNSPSC 3: 83101500 - Water and sewer utilities - 30%
+    Opened     : Mon, 03 August 2026 1:40 pm
+    Closing    : Mon, 24 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329034
+
+[51] Health Management Services
+    RFx Number : RFT 2582
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Ambulance Victoria
+    UNSPSC: 85000000 - Healthcare Services
+    Opened     : Tue, 28 July 2026 4:00 pm
+    Closing    : Mon, 24 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328451
+
+[52] Eduction Services Contract 2026
+    RFx Number : GWS526
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Gippsland Water
+    UNSPSC: 76121603 - Sludge disposal
+    Opened     : Tue, 21 July 2026 10:05 am
+    Closing    : Mon, 24 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327848
+
+[53] ACMI Cinema Lighting Renewal
+    RFx Number : ACMI-CINEMALX-2627
+    Status     : Open
+    Type       : Request for Quotation
+    Issued by: Australian Centre for the Moving Image
+    UNSPSC 1: 72151500 - Electrical system services - 50%
+    UNSPSC 2: 39111500 - Interior lighting fixtures and accessories - 50%
+    Opened     : Fri, 07 August 2026 1:00 pm
+    Closing    : Sun, 23 August 2026 11:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329406
+
+[54] Pendants and AV Equipment for Operating Theatres
+    RFx Number : EOI
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Peter MacCallum Cancer Centre
+    UNSPSC 1: 85000000 - Healthcare Services - 50%
+    UNSPSC 2: 85160000 - Medical Surgical Equipment Maintenance Refurbishment and Repair Services - 50%
+    Opened     : Sat, 25 July 2026 9:20 am
+    Closing    : Sat, 22 August 2026 4:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328085
+
+[55] Systems Assurance – Sourcing of Financial Statement IT Audit Services
+    RFx Number : EOI082026
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Victorian Auditor General&apos
+    UNSPSC: 84111600 - Audit services
+    Opened     : Tue, 04 August 2026 12:00 pm
+    Closing    : Sat, 22 August 2026 12:00 am
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=329237
+
+[56] Victorian School Building Authority Capital Works Program (EOI-2026R1)
+    RFx Number : EOI-VSBA-2026R1
+    Status     : Open
+    Type       : Expression of Interest
+    Issued by: Department of Education
+    UNSPSC: 72000000 - Building and Facility Construction and Maintenance Services
+    Opened     : Mon, 10 August 2026 9:00 am
+    Closing    : Fri, 21 August 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328554
+
+[57] Traffic Management Services
+    RFx Number : T421489
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Ports Victoria
+    UNSPSC: 46161500 - Traffic control
+    Opened     : Thu, 23 July 2026 10:00 am
+    Closing    : Fri, 21 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327856
+
+[58] Weed Control Services
+    RFx Number : RFT26-07
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: The Greater Metropolitan Cemeteries Trust
+    UNSPSC: 70141603 - Weed control services
+    Opened     : Thu, 23 July 2026 11:00 am
+    Closing    : Thu, 20 August 2026 5:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328075
+
+[59] Statewide Waste Management Services
+    RFx Number : PRN 00128
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Energy, Environment &
+    UNSPSC 1: 76121500 - Refuse collection and disposal - 50%
+    UNSPSC 2: 77102004 - Waste generation or disposal reporting service - 30%
+    UNSPSC 3: 76122407 - Refuse transportation fee - 20%
+    Opened     : Thu, 23 July 2026 4:30 pm
+    Closing    : Thu, 20 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=328090
+
+[60] Asset Storage and Transport Services for the Sheriff's Office Victoria
+    RFx Number : RFT 004/25-26
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Justice and Community Safety
+    UNSPSC: 78000000 - Transportation and Storage and Mail Services
+    Opened     : Wed, 15 July 2026 9:00 am
+    Closing    : Thu, 20 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327192
+
+[61] Supply and Installation of Ice Warning Systems on the Great Alpine Road
+    RFx Number : DOT40358
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Department of Transport and Planning
+    UNSPSC: 30120000 - Roads and landscape
+    Opened     : Fri, 17 July 2026 1:00 pm
+    Closing    : Wed, 19 August 2026 3:30 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327574
+
+[62] VRET Technical Advisor
+    RFx Number : POH-VRET-CNT-166
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Port of Hastings Corporation
+    UNSPSC: 81100000 - Professional engineering services
+    Opened     : Tue, 14 July 2026 5:00 pm
+    Closing    : Wed, 19 August 2026 2:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327200
+
+[63] Gippsland and North East region deer & pest animal control panel (ground shooting)
+    RFx Number : PAT-2526-1527
+    Status     : Open
+    Type       : Request for Tender
+    Issued by: Parks Victoria
+    UNSPSC 1: 77100000 - Environmental management - 70%
+    UNSPSC 2: 77000000 - Environmental Services - 20%
+    UNSPSC 3: 70000000 - Farming and Fishing and Forestry and Wildlife Contracting Services - 10%
+    Opened     : Mon, 20 July 2026 3:00 pm
+    Closing    : Tue, 18 August 2026 12:00 pm
+    Link       : https://www.tenders.vic.gov.au/tender/view?id=327687
