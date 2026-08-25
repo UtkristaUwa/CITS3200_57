@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Container, Card, CardContent,
   CardActions, Collapse, Box, Chip, Link
@@ -76,31 +76,31 @@ function TenderCard({ tender, onToggleFavorite }: { tender: Tender; onToggleFavo
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 1, textAlign: 'left' }}>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Summary:</strong> 
             </Typography>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Opening Date:</strong> 
             </Typography>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Closing Date:</strong> 
             </Typography>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Monetary:</strong> 
             </Typography>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>ATM ID:</strong> 
             </Typography>
             
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Location:</strong> 
             </Typography>
 
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               <strong>Agency:</strong> 
             </Typography>
 
