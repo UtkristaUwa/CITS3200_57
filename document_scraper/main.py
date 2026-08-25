@@ -61,6 +61,20 @@ def append_to_master_txt(master_file, text_to_append, original_document_file):
         print(f"     ✅ Successfully appended {len(text_to_append)} chars from {original_document_file}.")
     except Exception as e:
         print(f"     ❌ Failed to append to {master_file}: {e}")
+def save_to_individual_txt(target_txt_path: str, text_content: str, original_filename: str):
+    """
+    Saves extracted text to an individual .txt file named after the original document.
+    """
+    if not text_content or not text_content.strip():
+        print(f"    -> Skipping save: No text extracted from {original_filename}")
+        return
+    try:
+        # write mode  creates a new text file or overwrites an existing one
+        with open(target_txt_path, "w", encoding="utf-8") as f:
+            f.write(text_content)
+        print(f"     ✅ Saved {len(text_content)} chars to: {os.path.basename(target_txt_path)}")
+    except Exception as e:
+        print(f"     ❌ Failed to save {target_txt_path}: {e}")
 def process_tenders(filepath):
     """
     Iterates all tender directories checking for documents,
