@@ -1,0 +1,90 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520684
+================================================================================
+
+Title      : Standing Offer Arrangement - Trade Contractor - Pest Control Services in Wide Bay Burnett
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=526f99a225774c3b94933aa45ba9f7bcs520684
+Scraped At : 2026-08-25 21:50:48
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP520684
+Buyers Reference #: QBTCPC26WBB
+Opens:
+    Wednesday 12 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 10 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 08 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 09 December 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    44 Ariadne St
+    Maryborough, Queensland 4650
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The State of Queensland through the Department of Housing and Public Works (Customer) is seeking to establish a Standing Offer Arrangement (SOA) for the provision of Services to the Customer, and herby invites offers for the SOA:
+    SOA Name: Trade Contractor Pest Control Services
+    SOA Number: QBTCPC26WBB
+    For the provision of: Inspecting, identifying and treating properties to eliminate pests
+    NOTE: THIS TENDER IS FOR WIDE BAY BURNETT REGION ONLY
+    Please contact QBuildWBProcurement@hpw.qld.gov.au for any further queries in relation to this tender
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: This new Trade Contractor SOA will replace the existing SOA currently in place within the Wide Bay Burnett Region
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 7
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Building Trade, Repairs, Maint.
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Pest Control
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Darling Downs
+    3: Fitzroy
+    4: South West
+    5: Sunshine Coast
+    6: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 7 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

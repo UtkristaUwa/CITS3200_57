@@ -1,0 +1,521 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP518187
+================================================================================
+
+Title      : Provision of Principal Consultant Services for multiple CID Projects
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=43bbae0325d4463aba93ca8cbf664b1es518187
+Scraped At : 2026-08-25 21:51:42
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+VP Reference #: VP518187
+Buyers Reference #: MNPS75934
+Opens:
+    Thursday 23 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 27 August 2026 01:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 24 August 2026 01:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 24 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+Location:
+    330 Herston Rd
+    Herston, Queensland 4006
+    Australia
+WebSite: https://www.metronorth.health.qld.gov.au/
+Business Info: Metro North Health enables people to deliver excellent patient-centred care and high quality health services. We focus on collaboration with healthcare partners and an investment in systems, engagement and culture, we connect people to deliver services to a population approaching 900,000, from north of the Brisbane River to north of Kilcoy.
+Contact Name: Hassan Morshed
+Position: Principal Procurement & Contracts Officer
+Primary phone: 07 3564 0318
+Mobile phone: None Provided
+Fax number: None Provided
+Email: hassan.morshed@health.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Metro North Hospital and Health Service is looking to appoint suitably qualified and experienced Offeror/s for multiple Capital Infrastructure Delivery projects on demonstrated capability, capacity, relevant experience, technical suitability and overall value for money.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: See the tender package
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: See the tender package
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 23
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    Engineer, Research, Tech services
+    Management Advisory Services
+    Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+    2: Other Civil Construction Materials & Services
+    Engineering & Research & Technical Based Services
+    1: Engineering Consulting Services
+    Management Advisory Services
+    1: Professional Services
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+24/Jul/2026 12:08 PM:
+    Question
+    :
+    Hi
+    Can you confirm that this RFQ does not include Quantity Surveying services and MNH will separately engage a Quantity Surveyor and may also engage other specialist consultants for all project scopes at a later time?
+    Answered on 24/Jul/2026 12:59 PM
+    :
+    Yes, this tender does not include Quantity Surveying services and MNH will engage Quantity Surveyors separately. The Attachment D - Scope of Services clearly states the scopes of each project under this tender.
+24/Jul/2026 01:37 PM:
+    Question
+    :
+    1. Can you confirm that the Offeror can choose which stream(s) and project(s) they would like to submit an offer to?
+    2. Is there a preference for providers that can cover the entire scope?”
+    Answered on 24/Jul/2026 03:11 PM
+    :
+    1) "2.1 Offeror Information" section under "Part B - Response Schedules" allows Offerors to choose projects.
+    2) Offerors will be assessed based on the criteria released. For more information, please refer to "6.5 Opportunity and Objectives" & "7 Evaluation" in ITO Part A - Information for Offerors.
+24/Jul/2026 03:27 PM:
+    Question
+    :
+    Could you please confirm if there are any drawings available for this project? The documentation references drawings in Attachment F, however we couldn't locate any drawings in the files provided.
+    Answered on 27/Jul/2026 07:50 AM
+    :
+    Attachment F - Specs Drawings will be released via Addendum 01 holding the link to Kiteworks to access the files.
+24/Jul/2026 04:09 PM:
+    Question
+    :
+    Hi Hassan,
+    We are reviewing the Invitation to Offer documentation and seek clarification on the following items:
+    1. Number of projects
+    Part B, QC4 refers to Principal Consultant services across eight CID projects; however, the tender package identifies nine projects. Please confirm that all nine projects listed in the pricing schedule are included in the procurement.
+    2. Classification of PC6 – TPCH CSSD Equipment Replacement
+    Part A and the Returnable Pricing Schedule classify PC6 under Stream 02 – Building Services / Engineering-Led Projects. However, the Part B QC4 resourcing schedule and the QC2 response requirements appear to classify PC6 under Stream 01 – Clinical Equipment / Specialist Health Design. Please confirm the correct stream classification.
+    Professional indemnity insurance
+    3. Pricing workbook formulas
+    Several formulas within the “Summary Page” of Attachment E appear to reference incorrect or duplicated cells for project hours and lump-sum fees. Please confirm whether a corrected pricing workbook will be issued and, in the interim, whether offerors should refrain from amending the existing formulas.
+    4. Offer Form pricing basis
+    Attachment B requests a single Offer Sum inclusive of GST, while Attachment E requires project-specific and stage-specific fees exclusive of GST. For offerors tendering for multiple projects, please confirm whether the Offer Form should state:
+    the total for all projects tendered;
+    a separate Offer Form for each project; or
+    a reference to the completed Attachment E pricing schedule.
+    Scope of Quantity Surveying services
+    The pricing schedule requests allowances for cost estimates and claims assessments; however, several project scopes refer to a client-appointed Quantity Surveyor. Please confirm, for each project, whether the Principal Consultant is expected to engage and manage the Quantity Surveyor or coordinate with a separate MNH-appointed Quantity Surveyor.
+    Project programs
+    Attachment G appears to include a detailed program only for PC2 – COH Electrical Compliance and Upgrade Works. Please confirm whether programs will be issued for the remaining eight projects or whether offerors should develop their fee proposals based on the indicative durations stated in the individual Scope of Services documents.
+    PC5 – RBWH Kitchen Refurbishment program
+    The PC5 Scope of Services indicates that only the Pre-Design phase is currently funded and that subsequent phase dates remain to be confirmed. It also states that construction is anticipated to commence around October 2026. Please confirm the intended design, approval and procurement program and whether the October 2026 construction commencement remains current.
+    PC17 – RBWH FIP Replacement extent of engagement
+    The PC17 Scope of Services refers to available funding for design development and describes delivery through a series of tranches. Please confirm whether offerors are required to price:
+    the currently funded design work only;
+    all identified design tranches; or
+    the complete service through tender, construction and post-construction.
+    PQC registration
+    Attachment B requests the offeror’s PQC registration number, but the mandatory criteria do not appear to specify a required PQC category or level. Please confirm whether PQC registration is mandatory and, if so, the required category and level.
+    Site visits and briefing
+    Part A confirms that neither an industry briefing nor a site visit is required. Please confirm whether offerors may nevertheless request access to the relevant sites before tender close, particularly for the live-site refurbishment and infrastructure projects.
+    Contract liability
+    Attachment C, Annexure Part A, Item 24 states that the Consultant’s liability is unlimited. Please confirm whether Metro North Health will consider a reasonable limitation of liability proposed through the contractual departures schedule, particularly where the consultant maintains the required professional indemnity insurance.
+    Answered on 27/Jul/2026 09:01 AM
+    :
+    MNH will release Addendum 02 shortly addressing all your questions.
+24/Jul/2026 04:09 PM:
+    Question
+    :
+    Hi Hassan,
+    We are reviewing the Invitation to Offer documentation and seek clarification on the following items:
+    1. Number of projects
+    Part B, QC4 refers to Principal Consultant services across eight CID projects; however, the tender package identifies nine projects. Please confirm that all nine projects listed in the pricing schedule are included in the procurement.
+    2. Classification of PC6 – TPCH CSSD Equipment Replacement
+    Part A and the Returnable Pricing Schedule classify PC6 under Stream 02 – Building Services / Engineering-Led Projects. However, the Part B QC4 resourcing schedule and the QC2 response requirements appear to classify PC6 under Stream 01 – Clinical Equipment / Specialist Health Design. Please confirm the correct stream classification.
+    Professional indemnity insurance
+    3. Pricing workbook formulas
+    Several formulas within the “Summary Page” of Attachment E appear to reference incorrect or duplicated cells for project hours and lump-sum fees. Please confirm whether a corrected pricing workbook will be issued and, in the interim, whether offerors should refrain from amending the existing formulas.
+    4. Offer Form pricing basis
+    Attachment B requests a single Offer Sum inclusive of GST, while Attachment E requires project-specific and stage-specific fees exclusive of GST. For offerors tendering for multiple projects, please confirm whether the Offer Form should state:
+    the total for all projects tendered;
+    a separate Offer Form for each project; or
+    a reference to the completed Attachment E pricing schedule.
+    Scope of Quantity Surveying services
+    The pricing schedule requests allowances for cost estimates and claims assessments; however, several project scopes refer to a client-appointed Quantity Surveyor. Please confirm, for each project, whether the Principal Consultant is expected to engage and manage the Quantity Surveyor or coordinate with a separate MNH-appointed Quantity Surveyor.
+    Project programs
+    Attachment G appears to include a detailed program only for PC2 – COH Electrical Compliance and Upgrade Works. Please confirm whether programs will be issued for the remaining eight projects or whether offerors should develop their fee proposals based on the indicative durations stated in the individual Scope of Services documents.
+    PC5 – RBWH Kitchen Refurbishment program
+    The PC5 Scope of Services indicates that only the Pre-Design phase is currently funded and that subsequent phase dates remain to be confirmed. It also states that construction is anticipated to commence around October 2026. Please confirm the intended design, approval and procurement program and whether the October 2026 construction commencement remains current.
+    PC17 – RBWH FIP Replacement extent of engagement
+    The PC17 Scope of Services refers to available funding for design development and describes delivery through a series of tranches. Please confirm whether offerors are required to price:
+    the currently funded design work only;
+    all identified design tranches; or
+    the complete service through tender, construction and post-construction.
+    PQC registration
+    Attachment B requests the offeror’s PQC registration number, but the mandatory criteria do not appear to specify a required PQC category or level. Please confirm whether PQC registration is mandatory and, if so, the required category and level.
+    Site visits and briefing
+    Part A confirms that neither an industry briefing nor a site visit is required. Please confirm whether offerors may nevertheless request access to the relevant sites before tender close, particularly for the live-site refurbishment and infrastructure projects.
+    Contract liability
+    Attachment C, Annexure Part A, Item 24 states that the Consultant’s liability is unlimited. Please confirm whether Metro North Health will consider a reasonable limitation of liability proposed through the contractual departures schedule, particularly where the consultant maintains the required professional indemnity insurance.
+    Answered on 27/Jul/2026 09:01 AM
+    :
+    MNH will release Addendum 02 addressing all your questions.
+24/Jul/2026 04:22 PM:
+    Question
+    :
+    In section 1 and 6.6 of document: '1._ITO_Part_A-Information_for_Offerors', it notes an Attachment F - Specifications and / or Drawings - however this attachment has not been included within the downloadable package. Can you please confirm / provide.
+    Answered on 27/Jul/2026 09:02 AM
+    :
+    MNH will release Addendum 01 sharing the Kiteworks link to download all the specs & drawings.
+27/Jul/2026 09:38 AM:
+    Question
+    :
+    The link provided in Addenda 1 for Kiteworks requires an email or username and comes up with the following error: You need permission to access this folder or file. Please ask the folder or file owner to share it with you.
+    Can you please confirm how access is gained?
+    Answered on 27/Jul/2026 10:44 AM
+    :
+    I have added you as a downloader. You should be able to download now. Let me know if you have any further query.
+27/Jul/2026 11:29 AM:
+    Question
+    :
+    Hi Hassan,
+    Regarding, MNPS75934 -Provision of Principal Consultant Services for multiple Capital Infrastructure Delivery (CID) Projects
+    I am reaching out to gain access on kiteworks to the “Attachment F – Spec Drawings” noted in Addendum 1.
+    Answered on 27/Jul/2026 11:45 AM
+    :
+    Thanks for reaching out. Access given to andrewinwood@team2.com.au.
+27/Jul/2026 12:23 PM:
+    Question
+    :
+    Metro North Health has indicated that Project Manager, Superintendent and Quantity Surveyor services will be engaged separately from this Principal Consultant tender. Can you please confirm the expected release date for the Project Manager services tender, and whether it will also be advertised via VendorPanel?
+    Answered on 27/Jul/2026 12:32 PM
+    :
+    The Project Manager (PM) tender was released previously and is now closed; this current tender is specifically for the Principal Consultant role.
+27/Jul/2026 12:45 PM:
+    Question
+    :
+    We would like to gain access to the Attachment F - Spec Drawings noted in Addendum 1 - would you be able to grant us permission? Thank you.
+    Answered on 27/Jul/2026 12:54 PM
+    :
+    Access granted.
+27/Jul/2026 01:34 PM:
+    Question
+    :
+    Good afternoon,
+    Sorry to inform you but Part B can not be edited.
+    The document is for viewing only, all functions are greyed out
+    Can you please supply a file that can be edited?
+    Thanks
+    Answered on 27/Jul/2026 03:29 PM
+    :
+    The MSWord initially opens in "Viewing" but you need to change it in to "Editing" by clicking top right corner on the ribbon.
+29/Jul/2026 11:22 AM:
+    Question
+    :
+    We seek clarification regarding the project programs and target dates included in the Invitation to Offer documentation.
+    Attachment G appears to include a detailed program only for PC2 - COH Electrical Compliance and Upgrade Works. For the remaining projects, the individual scopes provide indicative milestones or completion targets but no detailed programs.
+    Could Metro North please:
+    provide the current approved or indicative program for each of PC5, PC6, PC7, PC8, PC9, PC12, PC17 and PC18, including the anticipated dates for design phases, approvals, procurement, construction, commissioning and completion; and
+    confirm whether the following dates remain current following the intended consultant appointment on 10 September 2026:
+    PC5 – construction commencing around October 2026;
+    PC6 – completion by 30 June 2027;
+    PC7 – completion around December 2027;
+    PC8 – completion by 30 June 2027;
+    PC9 – completion around December 2027;
+    PC12 – tender design around mid-2027 and enabling works/demolition completed by the end of 2028;
+    PC17 – construction commencing from Q4 2026; and
+    PC18 – completion around December 2027.
+    For PC5 and PC17 in particular, please also clarify how the stated construction commencement dates align with the proposed consultant appointment and the design stages currently funded.
+    If detailed programs are not available, please confirm the key dates and durations offerors should adopt when preparing their methodology, resource allocation and fee proposal.
+    Answered on 29/Jul/2026 02:24 PM
+    :
+    MNH will release the answers via Addendum. Keep an eye on the next release of Addendum.
+29/Jul/2026 11:24 AM:
+    Question
+    :
+    We seek clarification regarding the permitted formatting of the Part B Response Schedules.
+    Provided that our submission:
+    retains the prescribed section structure, question numbering and order;
+    reproduces each question and response requirement in full;
+    complies with all applicable page and word limits;
+    includes all mandatory schedules, declarations and requested information; and
+    remains clearly cross-referenced and easy to evaluate,
+    may offerors reformat the response document using their own branded graphic layout, typography, diagrams, imagery and architectural presentation style?
+    Specifically, please confirm whether the qualitative responses may be transferred into a professionally designed submission template, rather than being completed directly within the supplied Word document, provided the content, sequence and response limits remain unchanged.
+    Please also confirm whether diagrams and illustrations incorporated within each response page count toward the relevant page limit, and whether the nominated “one attachment per question” may be integrated immediately after the corresponding response.
+    Answered on 29/Jul/2026 02:39 PM
+    :
+    MNH will release the answers via Addendum. Keep an eye on the next release of Addendum.
+31/Jul/2026 08:07 AM:
+    Question
+    :
+    Good morning, we are trying to locate the electrical reports for PC2, they don't seem to be in Attachment G.
+    The engineering due diligence, building condition assessments and compliance audits have been summarised in the “Electrical Services Audit Summary Report Scope Priorities”
+    (refer Attachment G).
+    Answered on 03/Aug/2026 09:48 PM
+    :
+    We are reviewing this request and MNH will respond in next Addendum
+31/Jul/2026 12:30 PM:
+    Question
+    :
+    Hi there,
+    Noting the relatively fast 3- week turn-around time for this tender, we are concerned that there is insufficient time to finalise our engagements with the large number of sub-consultants required to deliver the various project scopes and therefore provide a compliant tender response.
+    As such, may we request 2-week extension to the tender?
+    Answered on 03/Aug/2026 09:47 PM
+    :
+    We are reviewing this request and MNH will post feedback in next Addendum
+03/Aug/2026 01:09 PM:
+    Question
+    :
+    For PC2 scope of service, under section 4.6.1, four electrical audit reports are referenced under attachment G, but are not provided. Could we please request these documents?
+    Answered on 03/Aug/2026 09:48 PM
+    :
+    We are reviewing this request and MNH will post feedback in next Addendum
+03/Aug/2026 04:54 PM:
+    Question
+    :
+    Hello,
+    We respectfully request a two-week extension to the proposal submission period to the 27 August 2026.
+    Given the scale and complexity of this package, comprising nine projects across multiple disciplines, multiple buildings and operational hospital environments, the additional time will enable our team and specialist partners to thoroughly review the requirements, validate assumptions, and develop a robust, coordinated and appropriately resourced submission.
+    This extension will ultimately support more accurate pricing, clearer scope definition, stronger risk identification, and a higher level of delivery certainty, helping ensure proposals are fully informed and aligned with the objectives of the program and each project.
+    Answered on 03/Aug/2026 09:50 PM
+    :
+    MNH will respond to this RFI in next addendum release
+04/Aug/2026 05:02 PM:
+    Question
+    :
+    Hi Hassan,
+    We sent the email to you for access permission to the Attachment F – Specs Drawings this morning. Please give us access permission for the link.
+    Thanks,
+    Answered on 04/Aug/2026 10:13 PM
+    :
+    Access granted
+06/Aug/2026 05:16 PM:
+    Question
+    :
+    Hello,
+    Can you respond to the following queries:
+    1.	We have received “VP518187_Addendum_7. Attachment E - Returnable Pricing Schedule V2.0.xlsx”, which from the file description is part of Addendum 7. Is there a coversheet for this Addendum or any additional information provided as part of this Addendum?
+    2.	We have not received Addendum 6, is this correct?
+    3.	Attachment G titled Program_COH Elec_.mpp appears to be for TPCH HV works, not for works associated with “PC2 COH Electrical compliance and upgrade works”. Can you please provide the current approved or indicative program for PC2.
+    4.	Further to Addendum 5, Can you confirm the scope for “PC2 COH Electrical compliance and upgrade works” If the scope is to be based on the audit reports provided for PC2, can you identify which recommendations are to be included in the scope for “PC2 COH Electrical compliance and upgrade works”.
+    5.	Further to Addendum 5, and the as-installed drawings provided for Cooinda and Brighton and to assist in understanding scope, can the relevant drawings be identified.
+    6.	Further to Addendum 5, the PC2 Zillmere folder only contains a spreadsheet, not drawings.
+    Thank you for your assistance.
+    Answered on 07/Aug/2026 12:33 AM
+    :
+    1. We have received “VP518187_Addendum_7. Attachment E - Returnable Pricing Schedule V2.0.xlsx”, which from the file description is part of Addendum 7. Is there a coversheet for this Addendum or any additional information provided as part of this Addendum?
+    ANS: The pricing schedule was released under Addendum 01. "7" is the file name here.
+    2. We have not received Addendum 6, is this correct?
+    ANS: Addendum 07 released. Its about releasing the folder in Kiteworks named, "Addendum 6 Attachments".
+    3. Attachment G titled Program_COH Elec_.mpp appears to be for TPCH HV works, not for works associated with “PC2 COH Electrical compliance and upgrade works”. Can you please provide the current approved or indicative program for PC2.
+    ANS: MNH will respond this query in Addendum 07.
+    4. Further to Addendum 5, Can you confirm the scope for “PC2 COH Electrical compliance and upgrade works” If the scope is to be based on the audit reports provided for PC2, can you identify which recommendations are to be included in the scope for “PC2 COH Electrical compliance and upgrade works”.
+    ANS: MNH will respond this query in Addendum 07.
+    5. Further to Addendum 5, and the as-installed drawings provided for Cooinda and Brighton and to assist in understanding scope, can the relevant drawings be identified.
+    ANS: MNH will respond this query in Addendum 07.
+    6. Further to Addendum 5, the PC2 Zillmere folder only contains a spreadsheet, not drawings.
+    ANS: MNH will respond this query in Addendum 07.
+07/Aug/2026 01:21 PM:
+    Question
+    :
+    Hi Hassan
+    Can you please attach a link that takes you to the Kiteworks folder as stated in Addendum 6.
+    Thank you in advance.
+    Answered on 13/Aug/2026 10:52 AM
+    :
+    Hi,
+    We have granted your access in Kiteworks and you should be getting an email from Kiteworks directly with the link to access.
+    Here is the link: https://sft.health.qld.gov.au/w/f-d3343d01-b766-4190-92d5-ddfe2fc554dd of the folder but the link you'll receive via email will work I believe.
+13/Aug/2026 11:31 AM:
+    Question
+    :
+    Good morning
+    The link provided in the last addendum does not work.
+    Answered on 13/Aug/2026 12:31 PM
+    :
+    You should have received an email from Kiteworks with the link with access. I have granted access for you.
+13/Aug/2026 12:20 PM:
+    Question
+    :
+    Hi there,
+    Could you please advise where we can find floor plans and/or budgets for PC5 and PC6?
+    Answered on 13/Aug/2026 12:33 PM
+    :
+    MNH will post answer in Addendum 08 which will be released shortly
+13/Aug/2026 12:25 PM:
+    Question
+    :
+    Hi,
+    In relation to the 'lump sum fee breakdown' tab of the price response, tenderers are asked to confirm what value addition and efficiencies can be proposed if multi-disciplinary services are awarded. Can you please confirm where you would like us to respond to this question. Are we able to include wording around this in our non-price document?
+    Answered on 13/Aug/2026 12:34 PM
+    :
+    Yes, you can do that or can add tab to the existing Returnable Pricing Schedule to mention.
+13/Aug/2026 04:34 PM:
+    Question
+    :
+    Afternoon,
+    Can we please have clarification on the following:
+    PC12 RBWH and Herston HV Replacement Preparatory Works
+    1.	Section 8.1.5 of PC12-Scope of services states " A significant amount of inground survey, 3D point cloud survey and services audits have been conducted/completed by MNH previously. MN will provide all information of these as part of this ITO. " Can MNH please provide copies of these Audits and Surveys to assist us in having a better understanding of the scope of works for pricing.
+    PC2 Community and Oral Health Electrical Upgrades.
+    1.	The summary or Recommendations and Audit summary report for Cooinda House do not identify the quantity of distribution boards that are required to be upgraded. Please provide schedule of condition of existing distribution boards and single line schematic drawing identifying which distribution boards are required to be replaced.
+    2.	The summary or Recommendations and Audit summary report for Zillmere Campus do not identify the quantity of distribution boards that are required to be upgraded. Please provide schedule of condition of existing distribution boards and single line schematic drawing identifying which distribution boards are required to be replaced.
+    Building Certifier
+    1.	Can you confirm whether Building Certifier is engaged by MNHHS or the Principal Consultant. The scope of the Building Certifier will be strongly dependent on the outcome of the Pre-Design/Feasibility stages for each project
+    Thank you.
+    Answered on 13/Aug/2026 11:15 PM
+    :
+    MNH will respond to your queries in Addendum 09 which will be released shortly.
+18/Aug/2026 10:08 AM:
+    Question
+    :
+    Morning, PC5 – RBWH Kitchen Refurbishment & Compliance Upgrade
+    1.	Can RBWH please clarify whether the kitchen is to change to Meals on Demand (MoD) from the current tray line as this will significantly impact the design.
+    2.	Can MNHHS please provide pdf drawings of the existing kitchen layout and surrounds.
+    Answered on 18/Aug/2026 04:15 PM
+    :
+    refer to released Addendum 09
+18/Aug/2026 12:51 PM:
+    Question
+    :
+    Regarding PC5 - RBWH Kitchen Refurbishment and Compliance Upgrade Project;
+    Could you please confirm whether the kitchen will transition from the current tray line model to a Meals on Demand (MoD) system, given that this change would have significant cost implications for both our services and the overall project, and considering that Queensland Health is implementing MoD in new hospital developments and recent kitchen redevelopments at Cairns, Prince Charles, and Caboolture hospitals?
+    Answered on 18/Aug/2026 04:15 PM
+    :
+    refer to Addendum 09
+18/Aug/2026 02:13 PM:
+    Question
+    :
+    Afternoon, PC5 – RBWH Kitchen Refurbishment & Compliance Upgrade:
+    1.	Can MNHHS please provide a copy of the “RBWH CAR Summary: Patient Services, June 2025” report that is mentioned in PC5 Scope of services.
+    2.	Can MNHHS please provide a copy of the “RBWH Kitchen Infrastructure Audit, 8 March 2024” that is mentioned in PC5 Scope of services
+    Answered on 20/Aug/2026 03:42 PM
+    :
+    Refer to the released Addendum 10
+19/Aug/2026 08:31 AM:
+    Question
+    :
+    SC17 _Fire panel replacement
+    Please provide clarification on the following items to enable the preparation of an accurate tender submission:
+    1.	Existing System Documentation
+    o	Please confirm whether baseline information, including as-built drawings and associated documentation for the FDAS, OWS, and EWIS systems, is available and will be provided.
+    o	If this information is not available, please advise whether tenderers are required to allow for a detailed site survey to verify existing installations and system configurations.
+    2.	Field Device Replacement Requirements
+    o	Please confirm whether the proposed replacement of field devices is to be undertaken on a like-for-like ("apple-to-apple") basis, or whether all replacement devices and associated works are required to comply with the current Building Code and applicable Australian Standards.
+    3.	BCA Consultant and Architectural Services
+    o	Please advise whether the scope and fees associated with the Building Code Consultant (BCA Consultant) and Architectural Consultant are to be included within this tender submission, or whether these consultants have already been separately engaged by the principal.
+    4.	Building Code Compliance
+    o	We note that full compliance with current Building Code requirements may not be achievable without the complete replacement of existing system cabling. Please confirm whether any upgrades required to achieve current code compliance are to be included within the tender scope.
+    5.	Cabling Condition Assessment
+    o	Please advise whether a dilapidation report, condition assessment, or similar investigation has been completed for the existing cabling infrastructure.
+    o	If available, please provide a copy of the report and any associated recommendations.
+    6.	Fire Alarm Network Cabling
+    o	Please confirm whether an existing fire alarm network cable is available and suitable for the proposed site-wide fire alarm panel networking solution.
+    o	If available, please provide details of the cable type, route, condition, and any available test result.
+    We request your response to the above items to assist in accurately defining the scope of works, risks, and associated costs for the tender submission.
+    Answered on 20/Aug/2026 03:43 PM
+    :
+    Refer to the released Addendum 10
+19/Aug/2026 11:29 AM:
+    Question
+    :
+    Hi Team
+    With the release of new information for the various project packages, we would respectful request a one-week extension to the proposal submission period to the 4th September 2026.
+    The additional time will enable our team and specialist partners to thoroughly review the new information provided, validate assumptions, and develop a robust, coordinated and appropriately resourced submission.
+    This extension will ultimately support more accurate pricing, clearer scope definition, stronger risk identification, and a higher level of delivery certainty, helping ensure proposals are fully informed and aligned with the objectives of the program and each project.
+    Thank you.
+    Answered on 20/Aug/2026 03:43 PM
+    :
+    Refer to the released Addendum 10
+21/Aug/2026 09:19 AM:
+    Question
+    :
+    Hi Hassan
+    Regarding your response about a one-week extension request, you cited Addendum 10. However, Addendum 10 only contains the Kitchen Infrastructure Report for RBWH Ned Hanson Bldg and does not mention an extension.
+    Thank you in advance.
+    Answered on 21/Aug/2026 11:05 AM
+    :
+    I think you are referring to the Addendum 10 attachments in Kiteworks.
+    I referred to the release in vendor panel Addendum 10, point no. 3 which states as below:
+    "Thank you for your correspondence regarding the “MNPS75934 - Provision of Principal Consultant Services for multiple Capital” tender and your request for a further extension to the submission deadline.
+    Following careful consideration by the panel, we regret to inform you that we are unable to grant an additional extension beyond the current closing date of 27 August 2026.
+    In maintaining tender probity and fairness across all participating offerors, MNH must balance providing adequate time to respond to addenda with adhering to strict program timelines and operational commitments.
+    Having already extended the initial closing date by two weeks, we consider the current timeframe sufficient for offerors to incorporate the recent updates into their submissions.
+    Please ensure your tender submission is lodged in full via VendorPanel prior to the closing time on 27 August 2026.
+    Thank you for your continued interest and engagement with this procurement process."
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+27/Jul/2026 09:13 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Addendum -01_27-07-2026.pdf
+    2. Added: 	 (Addendum) 2. ITO Part B - Response Schedules V2.0.docx
+    3. Added: 	 (Addendum) 7. Attachment E - Returnable Pricing Schedule V2.0.xlsx
+    Please consider these addenda when responding.
+27/Jul/2026 11:31 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -02_Kiteworks Access.pdf
+    Please consider this addendum when responding.
+27/Jul/2026 03:31 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -03_27-07-2026.pdf
+    Please consider this addendum when responding.
+30/Jul/2026 08:14 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -04_30-07-2026.pdf
+    Please consider this addendum when responding.
+04/Aug/2026 10:48 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -05_04-08-2026.pdf
+    Please consider this addendum when responding.
+07/Aug/2026 12:29 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -06_07-08-2026.pdf
+    Please consider this addendum when responding.
+11/Aug/2026 03:34 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -07_11-08-2026.pdf
+    Please consider this addendum when responding.
+13/Aug/2026 11:11 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -08_13-08-2026.pdf
+    Please consider this addendum when responding.
+18/Aug/2026 04:14 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -09_18-08-2026.pdf
+    Please consider this addendum when responding.
+20/Aug/2026 03:08 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum -10_20-08-2026.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 23 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

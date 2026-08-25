@@ -1,0 +1,99 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521761
+================================================================================
+
+Title      : ITSM Platform Review
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=08d3a2bed6214bf391464623afb8dac8s521761
+Scraped At : 2026-08-25 21:50:26
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: University of Southern Queensland
+VP Reference #: VP521761
+Buyers Reference #: HUB#115850
+Opens:
+    Wednesday 19 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 11 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 07 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 09 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: University of Southern Queensland
+Location:
+    487-535 West St
+    Kearneys Spring, Queensland 4350
+    Australia
+WebSite: http://www.unisq.edu.au
+Business Info: University of Southern Queensland
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The University of Southern Queensland (UniSQ) is seeking responses for the provision and implementation of a modern Information Technology Service Management (ITSM) platform to support reliable, secure, scalable, and efficient service management across the University.
+    The scope of this procurement includes the supply of the ITSM platform, implementation services, configuration, data migration, system integration, user training, ongoing support, and managed service requirements. The proposed solution must align with industry best practice service management frameworks, including ITIL, and support UniSQ's operational and strategic objectives.
+    UniSQ's objective is to establish an ITSM solution that is cyber security and privacy compliant, integration-ready, and capable of enhancing service reliability, user experience, workflow automation, reporting and analytics, knowledge management, governance, and continual service improvement. The solution should also support UniSQ's broader digital transformation roadmap and future service delivery requirements.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 13
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: IT Services
+    2: Services - Application Expertise
+    3: Services - Architecture & Design
+    4: Services - Business Process Expertise
+    5: Services - Cloud Services
+    6: Services - Data Storage Services
+    7: Services - Learning Services
+    8: Services - Managed Services
+    9: Services - Networks
+    10: Services - Other
+    11: Services - Risk Management
+    12: Services - Security Management
+    13: Services - Software Support & Maintenance
+    14: Services - Support
+    15: Software - Computer Software
+    16: Software - Development
+    17: Software - Other
+    18: Software - Programs
+    19: Software - SaaS
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Darling Downs
+    3: West Moreton
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+19/Aug/2026 01:47 PM: Under review and will be released NLT 21 Aug 26.
+24/Aug/2026 11:39 AM: make available
+
+----------------------------------------
+NOTE: This tender lists 13 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

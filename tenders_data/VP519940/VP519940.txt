@@ -1,0 +1,83 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519940
+================================================================================
+
+Title      : Expression of Interest (EOI) Tiaro Bypass-Bruce Highway (Gympie-Maryborough)
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=df289d5886ee4af1af90ca85e0013795s519940
+Scraped At : 2026-08-25 21:51:15
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - WBB
+VP Reference #: VP519940
+Buyers Reference #: CN-24518
+Opens:
+    Thursday 06 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 08 September 2026 12:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 03 September 2026 12:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 06 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - WBB
+Location:
+    23 Quay St
+    Bundaberg Central, Queensland 4670
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Program Delivery & Operations branch - Wide Bay Burnett (WBB) District.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Contract no. CN-24518 (371601 – 228/10B)
+    Contractors pre-qualified at level R4/ B3/ F150 plus or higher are invited to submit expressions of interest for construction of the Bruce Highway (Gympie – Maryborough), Tiaro Bypass.
+    Prequalified contractors are to email BUND_PPS@tmr.qld.gov.au to be registered for access to the expression of interest documents which will be available on the Energy and Public Works QBuild eTender website https://etender.hpw.qld.gov.au/
+    Submissions are to be electronic via the Energy and Public Works QBuild eTender website https://etender.hpw.qld.gov.au/
+    Where a prequalification level is stated, the Principal is not obliged to provide documents, consider or accept an expression of interest unless the company is appropriately registered under the Department of Transport and Main Roads Prequalification System for the levels outlined in the expression of interest.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: None...
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Bridge Construction & Maintenance
+    2: Building Construction Materials & Services
+    3: Other Civil Construction Materials & Services
+    4: Pavement Stabilisation Services & Materials
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 0 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

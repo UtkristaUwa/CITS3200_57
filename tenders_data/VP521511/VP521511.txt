@@ -1,0 +1,100 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521511
+================================================================================
+
+Title      : Connecting Kin (T210) and Equipping Kin (T211), – South East Region (Region wide service)
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=aa1cf998aa6c4b4e9f02ebb4e39546b6s521511
+Scraped At : 2026-08-25 21:50:32
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Families, Seniors, Disability Serv & Child Safety
+VP Reference #: VP521511
+Buyers Reference #: DFSDSCS257
+Opens:
+    Monday 17 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 14 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 10 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 26 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Families, Seniors, Disability Serv & Child Safety
+Location:
+    111 George St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.families.qld.gov.au/
+Business Info: Department of Families, Seniors, Disability Services and Child Safety - The department's vision is for Queensland’s children, young people, seniors, carers and people with disability to be safe, empowered in their families, communities and culture and thriving socially and economically
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Customer (being the Department of Families, Seniors, Disability Services, and Child Safety, (the department)) is seeking quotes for one service provider to deliver the following two service types:
+    Connecting Kin (T210) services are responsible for targeted family mapping and engagement leading to new family connection or family members making application to be assessed as kinship carers (engagement focused). Outsourced non-government Connecting Kin services may work in conjunction with current regional Child Safety Finding Kin teams.
+    Equipping Kin (T211) services are responsible for supporting initial kinship carer assessments, including provisional approval assessments. Services will provide all necessary supports to have kinship carers approved so they can commence caring (assessment focused). Outsourced non-government Equipping Kin services may work in conjunction with current regional Child Safety Finding Kin teams.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: As per the RFQ document
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: As per the RFQ document
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Community & Social Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Community & Social Services
+    1: Adoption & Foster Care Services
+    2: Out Of Home Care (OOCC) Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

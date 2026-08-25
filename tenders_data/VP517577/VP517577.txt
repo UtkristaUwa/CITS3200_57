@@ -1,0 +1,120 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP517577
+================================================================================
+
+Title      : RBWH Programmable Logic Controllers Replacement Project – Principal Contractor
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=68a897c673764f17ae9773c89441e4ebs517577
+Scraped At : 2026-08-25 21:51:21
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+VP Reference #: VP517577
+Buyers Reference #: MNHHS200118
+Opens:
+    Tuesday 04 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 07 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 02 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 05 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+Location:
+    building 1 level 6/15 Green Square Cl
+    Fortitude Valley, Queensland 4006
+    Australia
+WebSite: https://www.metronorth.health.qld.gov.au/
+Business Info: Metro North Health enables people to deliver excellent patient-centred care and high quality health services. We focus on collaboration with healthcare partners and an investment in systems, engagement and culture, we connect people to deliver services to a population approaching 900,000, from north of the Brisbane River to north of Kilcoy.
+Contact Name: Mason Otto
+Position: Principal Procurement & Contracts Officer
+Primary phone: 099999999
+Mobile phone: None Provided
+Fax number: None Provided
+Email: mason.otto@health.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Refer ITO.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 13
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    ELEC, Lighting, Equip & Services
+    Engineer, Research, Tech services
+    Indust. Automat'n, Process Control
+    Instrumentation Equipment and Supplies
+    Mechanical Plant, Equip, Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+    Electrical Systems, Lighting, Equipment & Services
+    1: Electrical Equipment & Components & Supplies
+    2: Electrical Services
+    Engineering & Research & Technical Based Services
+    1: Engineering Consulting Services
+    Industrial Automation & Process Control
+    1: Programmable Logic Controllers (PLCs)
+    2: SCADA Systems & Services
+    Instrumentation Equipment and Supplies
+    1: Controllers
+    Mechanical Plant & Equipment & Services
+    1: Building Management & Control Systems
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+05/Aug/2026 02:13 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) 18d -RBWH Revit file register.xlsx
+    2. Added: 	 (Addendum) MNHHS200118 Addendum #1.pdf
+    Please consider these addenda when responding.
+13/Aug/2026 04:09 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MNHHS200118 Addendum #2.pdf
+    Please consider this addendum when responding.
+18/Aug/2026 02:54 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Add 3 Att 1 PC-PG Config.zip
+    2. Added: 	 (Addendum) MNHHS200118 Addendum #3.pdf
+    Please consider these addenda when responding.
+21/Aug/2026 03:47 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 MNHHS200118 Addendum #4.zip
+    Please consider this attachment when responding.
+25/Aug/2026 04:14 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Add 5 Att A- BTA-RBWH-RP-2511-01_1 - BMCS Interface Engineering Report.pdf
+    2. Added: 	 (Addendum) MNHHS200118 Addendum #5.pdf
+    Please consider these addenda when responding.
+
+----------------------------------------
+NOTE: This tender lists 13 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

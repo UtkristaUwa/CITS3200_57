@@ -1,0 +1,94 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521958
+================================================================================
+
+Title      : Standing Offer Arrangement - Trade Contractor - Pest Control Services - SOUTH WEST QLD REGION
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=47e0932df5674aab8fb53d6af797cdfes521958
+Scraped At : 2026-08-25 21:50:22
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP521958
+Buyers Reference #: QBTCPC26SWQ
+Opens:
+    Thursday 20 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 17 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 15 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 16 December 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    120-124 Mort St
+    Toowoomba City, Queensland 4350
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The State of Queensland through the Department of Housing and Public Works (Customer) is seeking to establish a Standing Offer Arrangement (SOA) for the provision of Services to the Customer, and herby invites offers for the SOA:
+    SOA Name: Trade Contractor Pest Control Services
+    SOA Number: QBTCPC26SWQ
+    For the provision of: Pest Control services
+    NOTE: THIS TENDER IS FOR SOUTH WEST QUEENSLAND REGION ONLY
+    Please contact QBuildSWQProcurement@hpw.qld.gov.au for any further queries in relation to this tender.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Building Trade, Repairs, Maint.
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Building Maintenance & Services
+    2: Pest Control
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

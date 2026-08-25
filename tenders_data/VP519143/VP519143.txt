@@ -1,0 +1,176 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519143
+================================================================================
+
+Title      : Digital Radiography Fixed Xray
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c87a39fe1d7b4d84b8d7599c73f86252s519143
+Scraped At : 2026-08-25 21:51:32
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+VP Reference #: VP519143
+Buyers Reference #: SP26-507
+Opens:
+    Thursday 30 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 31 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 24 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 28 January 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+Location:
+    199 Ipswich Rd
+    Woolloongabba, Queensland 4102
+    Australia
+WebSite: https://www.metrosouth.health.qld.gov.au/
+Business Info: We're committed to providing high quality care and improving the health and wellbeing of people in our community. Together we will create Australia’s healthiest community.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: The procurement involves the supply, installation, and commissioning of replacement X-Ray equipment at Princess Alexandra Hospital. This includes associated hardware, software, integration with existing imaging systems, and staff training.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    Princess Alexandra Hospital (PAH) is a 780-bed tertiary referral centre and one of Queensland’s leading academic and research hospitals. PA Hospital is a high-volume tertiary referral centre providing emergency, specialist and statewide services. Demand for diagnostic imaging continues to increase, as evidenced by growth in advanced imaging activity and the expansion of hospital infrastructure. This results in the need to investment in additional medical imaging capacity.
+    The fixed Digital Radiography (DR) systems located within the Princess Alexandra Hospital (PAH) Emergency Department (ED) and Tuberculosis (TB) Clinic are critical clinical assets that support timely diagnosis, patient management, and service delivery. As a major tertiary referral hospital and one of Metro South Health’s busiest facilities, PAH relies on high-performing and reliable imaging equipment to support emergency care, infectious disease management, and increasing patient demand.
+    The existing DR systems, including the shared X-ray machine servicing the Resus 1 and Resus 2 rooms within the ED, and the DR servicing the TB Clinic, have been identified as high-priority replacements under the Health Technology Equipment Replacement (HTER) Program due to their age, performance limitations, and alignment with Metro South Health’s strategic equipment lifecycle planning. Replacement of these ageing systems will improve image quality, patient throughput, operational efficiency, and equipment reliability, while ensuring ongoing compliance with contemporary clinical and technical standards. An infrastructure readiness assessment conducted by Metro South Health Engineering confirmed that the ED and TB Clinic rooms are suitable for the proposed upgrades, supporting progression to procurement and installation planning.
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: Refer to ITO documents
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 15
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+31/Jul/2026 11:57 AM:
+    Question
+    :
+    Can floor plans for the two Resus areas and the TB Clinic be provided for new room layout designs to be generated?
+    Can the proposed delivery pathways to both locations be provided?
+    Answered on 17/Aug/2026 02:20 PM
+    :
+    Hi,
+    Refer to the released Addendums & Clarifications.
+    Regards
+    Jason
+11/Aug/2026 11:28 AM:
+    Question
+    :
+    Dear Procurement Team
+    We would like to kindly request a one-week extension to the tender submission deadline, moving it to Monday, 24 August. The additional time would be greatly appreciated and would enable our team to incorporate key insights and learnings from the rescheduled site visit on 13 August into our submission. We appreciate your consideration of this request and look forward to your response.
+    Answered on 17/Aug/2026 02:21 PM
+    :
+    Hi,
+    Refer to Addendums & Clarifications.
+    Regards
+    Jason
+11/Aug/2026 11:31 AM:
+    Question
+    :
+    Dear Procurement Team
+    Re: Site drawings/ floorplan & Site measurements
+    Would it be possible to get room measurements, and if available site and/or room layouts drawings?
+    Could you also kindly confirm whether the trauma bays are separated by curtain, or partition/ shield?
+    Answered on 17/Aug/2026 02:24 PM
+    :
+    Hi,
+    Refer to the Addendums & Clarifications
+    Regards
+    Jason
+11/Aug/2026 12:06 PM:
+    Question
+    :
+    Dear Procurement team, apologies we need to make a correction to the request below. We noted the addenda items regarding the site drawings; and regarding the request for an extension was for a week following 24th August e.g 6th September.
+    We would still appreciate feedback regarding whether the trauma bays are separated by curtain, or partition/ shield?
+    Answered on 17/Aug/2026 02:25 PM
+    :
+    Hi,
+    Refer to Addendums & Clarifications
+    Regards
+    Jason
+14/Aug/2026 12:05 PM:
+    Question
+    :
+    We would like to submit multiple products- specific for each room. How would you like us to present the answers- extra tab or extra column? Many thanks.
+    Answered on 17/Aug/2026 02:28 PM
+    :
+    Hi,
+    Alternative products can be captured in an additional column to the right of the current template.
+    regards
+    Jason
+19/Aug/2026 04:35 PM:
+    Question
+    :
+    In the Excel file, tab 2. Network Security question 1.2.7, it requests the completion of a Medical Device Security Risk Assessment, but this file was not available for download. Would you please supply this document, or confirm if question 1.2.7 is not applicable?
+    Answered on 21/Aug/2026 07:16 AM
+    :
+    This is a legacy reference in the document. The questions are already covered within the IT sections of the document.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+30/Jul/2026 03:45 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 Part 4b - MSHSP26-507 - SOP - Digital Radiology.xlsx
+    Please consider this attachment when responding.
+03/Aug/2026 04:06 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Access Routes MSHSP26 - 507.pdf
+    2. Added: 	 (Addendum) Emergency Resus 1 & 2.pdf
+    3. Added: 	 (Addendum) MSHSP26-507 - Addendum No 1.pdf
+    4. Added: 	 (Addendum) TB Clinic.pdf
+    Please consider these addenda when responding.
+03/Aug/2026 04:07 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 Part 4b - MSHSP26-507 - SOP - Digital Radiology.xlsx
+    Please consider this attachment when responding. Updates Per Addendum 1
+05/Aug/2026 10:49 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MSHSP26-507 - Addendum No 2.pdf
+    Please consider this addendum when responding.
+06/Aug/2026 02:34 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 MSHSP26-507 - Clarification No 1.pdf
+    Please consider this attachment when responding.
+17/Aug/2026 02:19 PM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 MSHSP26-507 - Addendum No 4.pdf
+    2. Added: 	 PAH Building 37 XRAY.zip
+    3. Added: 	 PAH Resus 1 & 2 XRAY.zip
+    Please consider these attachments when responding.
+
+----------------------------------------
+NOTE: This tender lists 15 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

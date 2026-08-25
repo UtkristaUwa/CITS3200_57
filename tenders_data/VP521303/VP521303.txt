@@ -1,0 +1,194 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521303
+================================================================================
+
+Title      : Planning and Delivery Lead
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9706bb5a5f374a31a0427fc792485372s521303
+Scraped At : 2026-08-25 21:50:38
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - PRS
+VP Reference #: VP521303
+Buyers Reference #: CN-27466
+Opens:
+    Friday 14 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 28 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 28 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 18 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - PRS
+Location:
+    140 Creek St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Passenger Rollingstock and Signalling (PRS) branch.
+Contact Name: Nicole Brunton
+Position: Senior Advisor (Procurement)
+Primary phone: 0754396934
+Mobile phone: None Provided
+Fax number: None Provided
+Email: nicole.z.brunton@tmr.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Planning and Delivery Lead
+    Tender documents as attached
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 4
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    Engineer, Research, Tech services
+    Railway, Tramway and Track
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Bridge Construction & Maintenance
+    2: Building Construction Materials & Services
+    3: Road Building Products & Maintenance & Services
+    Engineering & Research & Technical Based Services
+    1: Engineering Consulting Services
+    2: Project Management
+    Railway, Tramway and Track
+    1: Buildings and Structures
+    2: Engineering Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Gold Coast
+    3: South West
+    4: Sunshine Coast
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+16/Aug/2026 11:11 AM:
+    Question
+    :
+    Dear Nicole,
+    We are preparing a response to CN-27466 and would be grateful for clarification on the following before we finalise our offer.
+    1. Closing date
+    The RFQ states a closing time of 2:00pm on Thursday 27 August 2026. VendorPanel VP521303 lists 2:00pm on Friday 28 August 2026. Could you please confirm which governs? We are working to the earlier date in the meantime.
+    2. Mandatory criterion — Key Personnel (c)
+    The third mandatory Key Personnel requirement is "previous experience with Queensland Department of Transport and Main Roads and Queensland Rail in the delivery of roads and/or rail infrastructure projects". We would appreciate confirmation on two points:
+    (a) Whether experience with both agencies is required, or whether substantial experience with either is sufficient.
+    (b) Whether experience gained delivering projects on TMR or Queensland Rail assets through a principal contractor, joint venture or alliance satisfies the requirement, or whether direct engagement by the agency is required. A significant proportion of senior rail delivery experience in Queensland is gained in that structure rather than through direct engagement, and a narrow reading would exclude candidates who have spent years delivering these agencies' projects.
+    3. Basis of the 1,840 hours
+    Evaluation Criteria 3 refers to availability "assumed at 1840 hours over contract term". Please confirm whether 1,840 hours is a maximum, an estimate for evaluation purposes, or a minimum commitment, and whether hours are drawn down against an approved forecast.
+    4. Service location and site travel
+    The supporting projects extend from Torbanlea to Varsity Lakes. Clause 8.2 of the General Contract Conditions reimburses travel only where the Customer requests the Supplier to travel away from the agreed service location. Could you confirm the intended service location for this engagement, and how travel to the supporting project sites is to be treated — as within the agreed service location and absorbed in the hourly rate, or as reimbursable travel requiring prior approval? This materially affects how we price.
+    5. Price review over the extension option
+    The Contract Details do not specify a price review mechanism, so under clause 8.3 of the General Contract Conditions the hourly rate would remain fixed across the initial term and the twelve-month extension option — a period of up to twenty-four months. Please confirm whether that is TMR's intention, or whether an escalation mechanism will apply to the extension.
+    6. Framing of Evaluation Criteria 1
+    Evaluation Criteria 1 seeks demonstrated experience undertaking comparable assignments and also requires a detailed CV for the nominated resource. Could you confirm whether responses should be framed around the nominated Key Personnel, the supplier organisation, or both?
+    We are happy to discuss any of the above by telephone if that is easier.
+    Kind regards,
+    Ian
+    Answered on 18/Aug/2026 11:12 AM
+    :
+    Please see responses below.
+    1. Closing date is Friday 28 August 2026 @ 2.00pm. I will issue an addendum shortly.
+    2(a) Experience with either TMR or Queensland Rail is sufficient, provided the candidate can demonstrate direct interface and engagement with the other agency as part of the project scope. For example, experience on a TMR project that required engagement with Queensland Rail.
+    2(b) Experience may be gained as a consultant, principal contractor or through an alliance arrangement, provided a contractual relationship with the relevant agency can be clearly demonstrated.
+    3. The 1840 hours represents the full-time cap for the contract term. Pricing must be submitted on this basis.
+    4. The service location is 140 Creek Street, Brisbane. Any approved travel will be arranged and funded by the principal, including the sue of pool vehicles where required. Incidentals and the use of private vehicles for personal convenience must be included in the hourly rate. Travel is expected to be infrequent, typically one or two trips to Ormeau per month and one trip to Torbanlea per quarter.
+    5. Tenderers are encouraged to propose a pricing approach for any extension option (for example, a fixed increase or indexation methodology). This will be considered as part of the Value for Money assessment.
+    6. Evaluation Criterion 1 should be addressed with reference to the nominated Key Personnel.
+18/Aug/2026 07:41 AM:
+    Question
+    :
+    The closing date in the RFQ is 2:00 PM on 27 August 2026 which does not match the system that states Friday 28 August 2026 02:00 PM.
+    Would you be able to kindly confirm the correct closing date?
+    Answered on 18/Aug/2026 11:05 AM
+    :
+    The tender closes on Friday 28 August 2026 @ 2.00pm. We had hoped to release the tender on the Thursday which is why the original close date was stated as Thursday. I will issue an addendum shortly.
+    Thanks
+18/Aug/2026 09:34 AM:
+    Question
+    :
+    Subject: Follow-up — Supplier Query, CN-27466 Planning and Delivery Lead (VP521303)
+    Dear Nicole,
+    We submitted a supplier query on this RFQ on 16 August and have not yet received a response. With the closing time approaching, we'd appreciate a reply at your earliest convenience so we have time to finalise our offer.
+    For ease of reference, our outstanding questions were:
+    1. Closing date. The RFQ document states closing at 2:00pm Thursday 27 August 2026, while VendorPanel shows a different date. Could you confirm the correct closing date and time?
+    2. Mandatory criterion (c). This requires "previous experience with Queensland Department of Transport and Main Roads and Queensland Rail in the delivery of roads and/or rail infrastructure projects." Could you confirm whether this requires the nominated Key Personnel to have experience with both agencies, or whether experience with either would satisfy the requirement — and whether experience gained through a contractor, subcontractor or joint-venture arrangement (rather than direct engagement by the agency) would be accepted?
+    3. *Basis of the 1,840 hours.* The RFQ states the quantum is "assumed" at 1,840 hours. Is this a firm basis for pricing, or indicative only, and how are hours to be recorded and invoiced across the term?
+    4. Agreed service location and travel. General Contract Conditions clause 8.2 limits travel reimbursement to travel the Customer requests away from the "agreed service location," which isn't defined in the RFQ. Could you confirm what the agreed service location will be for this engagement, and how travel to the various supporting project sites will be treated?
+    5. Price review over the extension. The contract term includes a possible 12-month extension at the Customer's discretion, and we can't see a price review mechanism in the General Contract Conditions. Can you confirm whether the offered rate is intended to be fixed for the full potential term of up to 24 months, or whether a review would apply at the extension point?
+    6. Evaluation Criteria 1 format. Could you clarify what's expected within the two-page limit for the experience and capability response — specifically, whether the detailed CV is included within that two-page limit or may be provided as a separate attachment?
+    We appreciate this is a busy period and would be grateful for a response as soon as practicable given the timeframe remaining.
+    Kind regards,
+    Ian
+    Answered on 18/Aug/2026 11:04 AM
+    :
+    Apologies for the delay, we had a panel member away yesterday. I will be issuing a response shortly.
+    Thanks
+18/Aug/2026 01:02 PM:
+    Question
+    :
+    The RfQ states a mandatory requirement for a degree in Engineering. Would TMR accept a relaxation to the requirement if the resource demonstrates exceptional capability in all EC's?
+    Answered on 18/Aug/2026 02:26 PM
+    :
+    The Department are seeking a candidate with Engineering qualifications as a mandatory requirement as specified in the RFQ.
+    Thanks
+20/Aug/2026 09:06 AM:
+    Question
+    :
+    Good morning.
+    BG&E has recently become part of the SYSTRA Group. SYSTRA is currently engaged, through a joint venture with EGIS, to provide Independent Certifier (IC) services to QTMP. BG&E observes that the Planning & Delivery Lead role appears to sit within the project delivery function and outside the IC reporting structure depicted in the RFQ organisational chart. BG&E is not involved in the IC commission and proposes to maintain appropriate information barriers and organisational separation. BG&E seeks confirmation as to whether TMR considers any additional conflict management measures necessary in relation to a submission for this role.
+    Answered on 20/Aug/2026 09:40 AM
+    :
+    Morning, unfortunately this conflict would not be able to be managed.
+    Thanks
+24/Aug/2026 05:16 PM:
+    Question
+    :
+    The mandatory criteria require previous experience with the Queensland Department of Transport and Main Roads and Queensland Rail in the delivery of roads and/or rail infrastructure projects. Will TMR consider candidates with equivalent interstate or international rail infrastructure experience as meeting the intent of this requirement, or is direct experience with TMR and Queensland Rail mandatory?
+    Answered on 25/Aug/2026 04:08 PM
+    :
+    Unfortunately, we are looking for direct experience with TMR and Queensland Rail experience being mandatory.
+25/Aug/2026 03:34 PM:
+    Question
+    :
+    Hi TMR team,
+    With regrads to Planning and Delivery Lead, we have identified two strong candidates suitable for the role.
+    Could you please advise how you would like us to structure the submission with regard to page limits if we were to submit two candidates, particularly for Evaluation Criteria 1 - Experience/Capability and Evaluation Criteria 2 - Methodology/Approach sections?
+    Thankyou.
+    Answered on 25/Aug/2026 04:13 PM
+    :
+    The specified page limits apply per evaluation criterion and not per candidate. Therefore, if you choose to submit two candidates, your response for each criterion must remain within the 2-page limit.
+    Suppliers should structure their responses as they see fit to demonstrate how both candidates meet the requirements of the role while remaining within the prescribed page limits.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+20/Aug/2026 09:41 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) CN-27466 - Addendum-or-Clarification Number 1.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 4 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

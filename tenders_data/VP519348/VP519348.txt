@@ -1,0 +1,184 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519348
+================================================================================
+
+Title      : MSH SP26-501 Logan Ear Nose and Throat Expansion
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=bbf0e38526d641c4bf505da459caa5e6s519348
+Scraped At : 2026-08-25 21:51:28
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+VP Reference #: VP519348
+Buyers Reference #: SP26-501
+Opens:
+    Friday 31 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 04 September 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 31 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 16 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+Location:
+    199 Ipswich Rd
+    Woolloongabba, Queensland 4102
+    Australia
+WebSite: https://www.metrosouth.health.qld.gov.au/
+Business Info: We're committed to providing high quality care and improving the health and wellbeing of people in our community. Together we will create Australia’s healthiest community.
+Contact Name: Eilish Tuohy
+Position: Principal Procurement Specialist
+Primary phone: 07 3564 0323
+Mobile phone: None Provided
+Fax number: None Provided
+Email: eilish.tuohy@health.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Metro South Health is seeking a suitably qualified Principal Contractor to deliver the Logan Hospital Ear, Nose and Throat (ENT) Expansion project under a Design and Construct contract. The project involves reviewing and completing the existing 80% detailed design, refurbishment and expansion of the current ENT Department into adjacent clinical space, construction works, services integration, commissioning and handover within a live hospital environment. The expansion will increase clinical capacity, improve patient access and support growing demand for ENT, Audiology and associated specialist services.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: The successful Contractor will be responsible for reviewing, validating, coordinating and completing the existing detailed design documentation, delivering the refurbishment and expansion works, managing all project interfaces and subcontractors, integrating required building services, and completing commissioning, defects management and handover. Works must be delivered in a staged manner within an operational hospital environment and in accordance with applicable legislation, standards and project requirements.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 14
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+    2: Other Civil Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+04/Aug/2026 08:28 AM:
+    Question
+    :
+    Could you please advise if there will be a site inspection for this project
+    Answered on 04/Aug/2026 09:38 AM
+    :
+    Metro South will look to organise a site inspection next week (10th - 14th of August 2026). An addendum will be issued with details once confirmed.
+07/Aug/2026 02:49 PM:
+    Question
+    :
+    Hi Eilish,
+    Regarding the Tender Requirements, we just wanted to double check two items as in the past, the project didn’t require them despite being listed in the Tender Requirements:
+    -	PQC – Will this be a PQC project? Can you please confirm if we meet the requirements to tender on the project or would you like us to reach out to PQC Registrar for the confirmation?
+    -	Work Health and Safety Accreditation Scheme – Will this be a requirement for the project pending the value?
+    Thanks,
+    Bernie.
+    Answered on 13/Aug/2026 03:13 PM
+    :
+    Please see Addendum 2.
+07/Aug/2026 03:09 PM:
+    Question
+    :
+    Hi Team, please see below RFIs from several Subcontractors/Consultants.
+    Will a Revit model be made available?
+    Is the project documentation/model required to comply with the QH Building Information Requirements (2022). If so, what tier is the project?
+    Is there a current Design BIM Management Plan or is one required?
+    Is Aconex set up or intended to be used for documentation control and communication?
+    Please confirm Wall Vinyl quantity (noted on Finishes plan legend only).
+    Thanks,
+    Answered on 13/Aug/2026 03:13 PM
+    :
+    Please see Addendum 2.
+13/Aug/2026 02:32 PM:
+    Question
+    :
+    1. With ref to drawing 13541-ES30 (A) , this drawing appears to depict the legend symbol for 4 x Type L5 600 x 300 fixtures ( 2 x ESS & 2 x NON ESS) but they are noted in their Tag as being Type L4. Please confirm Fixture type and quantity in this location (I presume L5's but need to be sure).
+    2. It is noted that the document "Part 1a Scope Of Works" indicates on page 5, Sect 3.6 that the existing DB-1.2.6 is at capacity and to allow for a (1) new Sub-board.
+    The second attached drawing 13541-ES40 (A) appears to indicate at the top of this drawing to allow for 2 x Sub - DB's with the following extract information
+    CONTRACTOR TO PROVIDE LINE ITEM PRICING FOR 2x24 POLE WALL
+    MOUNTED DISTRIBUTION BOARDS (DBs) TO BE SUPPLIED AND INSTALLED
+    IN SMOKED SEALED CUPBOARD IN THIS LOCATION. ALLOW FOR RAPID
+    TEST SYSTEM TO BE INSTALLED IN EACH DB. ALLOW FOR A 32A 3PH
+    SUPPLY FROM DB-1.2.6 TO EACH DB (2x SUPPLIES IN TOTAL).
+    CONTRACTOR TO PROVIDE CREDIT TO LOGAN HOSPITAL IN THE EVENT
+    DBs AND ASSOCIATED SUPPLIES ARE NOT REQUIRED
+    Please advise quantity of DB's to allow for and if there is any further drawings/schematics/layouts etc for these to enable us to obtain accurate pricing?
+    Answered on 17/Aug/2026 10:50 AM
+    :
+    Please refer Addendum 3.
+14/Aug/2026 07:45 AM:
+    Question
+    :
+    could you please provide a FF&E and furniture schedule
+    Answered on 17/Aug/2026 10:51 AM
+    :
+    Please refer Addendum 3.
+14/Aug/2026 09:06 AM:
+    Question
+    :
+    On room data sheet for GF.08 Joinery is labeled J09 in the top section J10 in the schedule and J11 in the bottom section going by the sizing on drawing JD08 I am assuming J11 is the correct label could you please confirm.
+    Answered on 17/Aug/2026 10:51 AM
+    :
+    Please refer Addendum 3.
+14/Aug/2026 03:07 PM:
+    Question
+    :
+    Can you please provide room data sheets for GF.13, GF.14, GF.15, GF.16
+    Answered on 20/Aug/2026 11:34 AM
+    :
+    Please see Addendum 4.
+17/Aug/2026 03:04 PM:
+    Question
+    :
+    Hi Team, we kindly request an extension of time with this tender after visiting site today.
+    Thanks,
+    Answered on 20/Aug/2026 11:34 AM
+    :
+    Please see Addendum 4.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+04/Aug/2026 09:36 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Part 4a - Returnable Pricing Schedule (Labour Rates Update).xlsx
+    2. Added: 	 (Addendum) SP26-501 Addendum 1.pdf
+    Please consider these addenda when responding.
+06/Aug/2026 11:40 AM:
+    Please note: The following attachment has been recently added in regard to a site inspection.
+    1. Added: 	 Notification 1.pdf
+13/Aug/2026 03:09 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Part 1 - Invitation to Tender - MC Update.pdf
+    2. Added: 	 (Addendum) Part 4 - Offer Response Form - MC Update.docx
+    3. Added: 	 (Addendum) SP26-501 Addendum No 2.pdf
+    Please consider these addenda when responding.
+17/Aug/2026 10:56 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) 24017_GF.08_C_RDS_Flex Room 3 - Joinery Update.pdf
+    2. Added: 	 (Addendum) SP26-501 Addendum No 3.pdf
+    Please consider these addenda when responding.
+20/Aug/2026 11:50 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) SP26-501 Addendum No 4.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 14 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

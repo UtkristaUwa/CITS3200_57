@@ -1,0 +1,105 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP516477
+================================================================================
+
+Title      : Standard Offer Arrangement - Wound Care, Bandages & Dressings
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=0cccf0f5b8d3461b87a009713aac77b8s516477
+Scraped At : 2026-08-25 21:51:24
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Consumables
+VP Reference #: VP516477
+Buyers Reference #: CSD127811
+Opens:
+    Monday 03 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 03 September 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 21 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 10 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Consumables
+Location:
+    41 O’Connell Tce
+    Bowen Hills, Queensland 4006
+    Australia
+WebSite: https://www.health.qld.gov.au/system-governance/suppliers/procurement/about
+Business Info: System Procurement leads the procurement of goods and services, excluding ICT and infrastructure, on behalf of the Department of Health and Hospital and Health Services.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    CLARIFICATION (added 06.08.2026)
+    Queensland Health wishes to clarify the status of this publication.
+    No response is required. This is an Industry Announcement provided for information only. It is not an Invitation to Offer (ITO), Expression of Interest (EOI) or Request for Information (RFI). Suppliers are not required to submit any response in relation to this announcement.
+    The VendorPanel closing date is not a submission deadline. The closing date displayed (3 September 2026, 5:00 pm AEST) reflects only the period this announcement remains available for viewing within VendorPanel. No supplier action is required before this date. Please disregard any automated VendorPanel wording requesting a response.
+    Invitation to Offer (ITO). The formal ITO will be released as a separate VendorPanel publication at a later date. It will include all requirements relating to supplier submissions, evaluation criteria, product sample requirements (if applicable), submission instructions and procurement timeframes. In the meantime, suppliers are encouraged to review the announcement and indicative volumes to prepare for the ITO.
+    Original Announcement:
+    Queensland Health is developing a competitive Invitation to Offer to establish a Standing Offer Arrangement (SOA) for wound care consumables, consolidating two legacy arrangements (SOA274 and SOA286) across Queensland's 16 Hospital and Health Services.
+    This is an industry announcement only, not an Invitation to Offer, and no response is sought at this stage. The attached announcement and indicative volumes outline the scope, procurement objectives, indicative timing, and how suppliers can prepare ahead of the formal ITO.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    This procurement will establish a Standing Offer Arrangement (SOA) for wound care consumables across Queensland Health, which comprises 16 Hospital and Health Services (HHSs) delivering care across the state.
+    The SOA will consolidate two legacy arrangements, SOA274 (Wound Care Products) and SOA286 (Bandages, Surgical Sponges, Tapes, Surgical Pens, Scalpel Blades & Stitch Cutters), into a single statewide arrangement. Once established, it will be the required route for Hospital and Health Services to purchase in scope products under the Queensland Procurement Policy.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 2
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+06/Aug/2026 11:52 AM:
+    A clarification has been added to the top of this publication.
+    In summary: this is an Industry Announcement for information only. And no supplier response is required. The closing date displayed in VendorPanel is a viewing period only, not a submission deadline. The formal ITO will be released separately at a later date.
+    Please refer to the clarification in the publication for full detail.
+
+----------------------------------------
+NOTE: This tender lists 2 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,121 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520432
+================================================================================
+
+Title      : Wheelset Overhauls
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6db6abee40224da2b46af8c50c54be8bs520432
+Scraped At : 2026-08-25 21:51:01
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Rail
+VP Reference #: VP520432
+Buyers Reference #: QRP-23-127
+Opens:
+    Monday 10 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 07 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 31 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 28 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Rail
+Location:
+    305 Edward St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: http://www.queenslandrail.com.au
+Business Info:
+    Founded in 1865, Queensland Rail has a proud history of connecting Queensland communities and supporting local jobs, industries and economies. We are committed to providing a customer-focused, safe, modern and world-class rail service for Queenslanders.
+    With total assets of $8.0 billion, and a network that extends more than 6,600 kilometres across the state, we are also focused on providing customers and Queenslanders with an efficient and value for money service.
+    Our 7,500 strong workforce delivers services across our South East Queensland and Regional networks, including Travel and Tourism services and Regional Freight.
+    Our South East Queensland team provides 8,392 services each week, supporting our customers to reach their destination safely and on-time. In 2019-2020, 44 million passenger trips were taken on the South East Queensland network (a decrease of approximately 20 per cent compared to 2018-2019, associated with COVID-19).
+    The Regional networks commuter and rail tourism markets are serviced by the Travel and Tourism products. These comprise eight services connecting Regional communities across Queensland with other Regional centres and the South East Queensland corner. These services support the Queensland tourism industry through the provision of unique rail tourism experiences including special events and charters through the operation of a small fleet of heritage services.
+    Our Regional networks and Freight team provides rail access for freight operators and other Queensland Rail supply chain customers to enable the critical transport of resources and general freight across the state.
+    We are proud of the role we play in providing vital passenger and freight services and we are dedicated to ensuring that our systems, procedures and practices reflect the highest standards of corporate governance.
+Contact Name: Amber Hunt
+Position: Senior Category Specialist
+Primary phone: +61 07 3072 0727
+Mobile phone: None Provided
+Fax number: None Provided
+Email: amber.hunt@qr.com.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Queensland Rail is seeking to engage a suitably qualified and experienced supplier to provide wheelset overhaul services to support the ongoing maintenance, safety, reliability and performance of its rollingstock fleet.
+    The scope of services includes the inspection, overhaul, repair, testing and certification of wheelsets in accordance with Queensland Rail's technical, operational and quality requirements. The successful supplier will be expected to deliver safe, compliant and cost-effective services while maintaining high standards of workmanship and supporting fleet availability objectives.
+    The contract is anticipated to commence following completion of the procurement process and contract award, with services to be provided over the term of the resulting agreement. Detailed requirements, volumes and service expectations are outlined within the Request documentation.
+    Services will primarily support Queensland Rail operations within Queensland. Wheelsets will be supplied to and from locations specified in the Request documentation, with work to be undertaken at the supplier's facilities unless otherwise agreed.
+    Suppliers should review the Request documentation in full to understand the detailed scope, technical requirements, evaluation criteria and commercial arrangements associated with this opportunity.
+    How to Access the Event:
+    Tenders who wish to access the tender documents must have an SAP Ariba network account to do business with Queensland Rail to enable visibility of your ARIBA profile.
+    To register, please refer to the ARIBA Registration of Company guide.
+    You then must also register interest by emailing the Queensland Rail Contact Officer (amber.hunt@qr.com.au) providing the following details:
+    - Name of Tendering Organisation
+    - ARIBA Network ID (ANID)
+    - ABN
+    - Name of Tender Representative
+    - Email address of Tender Representative
+    - Phone Number
+    Queensland Rail will only accept tender responses submitted via the ARIBA Sourcing System.
+    For this Tender (QRP-25-22), the information uploaded on VendorPanel is not all the Tender information, however it is enough for the suppliers / interested tenderers to determine whether the scope of works is suitable for their company profile.
+    If a company is interested, please follow the above-mentioned steps.
+    ARIBA Sourcing, Queensland Rail's tendering system, it the only tendering tool that tenderes must use to submit there responses. Queensland Rail will not accept any physical responses or responses via the VendorPanel website.
+    Refer to the attached document ARIBA Guide for Suppliers for instructions on how to navigate ARIBA Sourcing (once you have registered).
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Railway, Tramway and Track
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Railway, Tramway and Track
+    1: Maintenance Services
+    2: Other Materials
+    3: Other Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================
