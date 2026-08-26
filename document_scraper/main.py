@@ -35,7 +35,8 @@ def extract_docx(file_path: str) :
     except Exception as e:
         print(f"     ❌ DOCX Extraction Error on {file_path}: {e}")
         return ""
-
+#entirely unused function, remove later
+#todo remove fxn
 def append_to_master_txt(master_file, text_to_append, original_document_file):
     """
 
@@ -93,33 +94,28 @@ def process_tenders(filepath):
             scraped_txt_file = os.path.join(tender_path, f"{item}.txt")#txt file containing scraped info from web
 
             for doc in os.listdir(tender_path):
-                doc_path = os.path.join(tender_path,doc)
-                _, file_extension = os.path.splitext(doc)
+                doc_path = os.path.join(tender_path, doc)
+                file_name_no_ext, file_extension = os.path.splitext(doc)
                 file_extension = file_extension.lower()
 
-                if file_extension==".pdf":
+                # Target output path: e.g. document.pdf -> document.txt
+                output_txt_path = os.path.join(tender_path, f"{file_name_no_ext}.txt")
+
+                if file_extension == ".pdf":
                     print(f"  -> [PDF] Processing: {doc}")
                     result = extract_pdf(doc_path)
-                    append_to_master_txt(scraped_txt_file, result, doc)
-
+                    save_to_individual_txt(output_txt_path, result, doc)
 
                 elif file_extension == '.docx':
                     print(f"  -> [DOCX] Processing: {doc}")
                     result = extract_docx(doc_path)
-
-                    append_to_master_txt(scraped_txt_file, result, doc)
+                    save_to_individual_txt(output_txt_path, result, doc)
 
                 elif file_extension == '.txt':
-                    #check if downloaded txt might perhaps be different to the txt file scraped off website
-                    print(f"  -> [TXT] Processing: {doc}")
-                    if doc == f"{item}.txt":#the web scraped text in txt file
-                        #print("This is the metadata text file!")
-                        pass
+                    if doc == f"{item}.txt":
+                        pass  # Skip web-scraped metadata file
                     else:
-                        print("txt file downloaded, must scan this too")
-                        print(f"  -> [TXT] Processing: {doc}")
-
-
+                        print(f"  -> [TXT] Existing text file: {doc}")
 
 
 if __name__ == "__main__":
