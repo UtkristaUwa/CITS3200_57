@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/UtkristaUwa/CITS3200_57/ingestion/tender.schema.json",
+  "title": "TenderAI tender record",
+  "description": "Shape a teammate formats a scraped tender into before submitting it with validate_and_submit.py. This is the SAME shape that gets stored in BigQuery's `tenders` table, minus the bookkeeping fields (tender_id, content_hash, first_seen_at, last_scanned_at, updated_at) which are computed by upsert_tender() and must never be set by hand.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source_id", "source_url", "title"],
+  "properties": {
+    "source_reference_id": {
+      "type": ["string", "null"],
+      "description": "The portal's own ID/code for this tender (e.g. an RFx number). Used together with source_id to detect whether this is a new tender or an update to one already stored. If a source has no stable reference ID, leave this null and source_url is used instead."
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Which portal this came from, matching a row in the `sources` table (e.g. \"vic-buyingfor\")."
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Direct link back to the tender's listing/detail page."
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "issuing_agency": { "type": ["string", "null"] },
+    "category": {
+      "type": ["string", "null"],
+      "enum": ["tender", "rfq", "eoi", "grant", null]
+    },
+    "status": {
+      "type": ["string", "null"],
+      "enum": ["open", "closed", "awarded", "unknown", null]
+    },
+    "publish_date": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "ISO date, e.g. \"2026-08-01\"."
+    },
+    "closing_date": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "value_amount": { "type": ["number", "null"] },
+    "value_currency": { "type": ["string", "null"] },
+    "value_notes": { "type": ["string", "null"] },
+    "location": { "type": ["string", "null"] },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Plain text only — no HTML/markdown."
+    },
+    "contact_name": { "type": ["string", "null"] },
+    "contact_email": { "type": ["string", "null"] },
+    "contact_phone": { "type": ["string", "null"] },
+    "lodgment_address": { "type": ["string", "null"] },
+    "documents": {
+      "type": "array",
+      "default": [],
+      "description": "Plain-text-extracted attachments. No original file is archived (see schema doc design principles) — extracted_text is the only copy that survives.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file_name"],
+        "properties": {
+          "document_id": {
+            "type": ["string", "null"],
+            "description": "Leave null — assigned automatically if omitted."
+          },
+          "file_name": { "type": "string", "minLength": 1 },
+          "file_type": { "type": ["string", "null"], "enum": ["pdf", "docx", "rtf", "other", null] },
+          "extracted_text": { "type": ["string", "null"] },
+          "parsed_at": {
+            "type": ["string", "null"],
+            "description": "ISO timestamp. Leave null to default to submit time."
+          }
+        }
+      }
+    },
+    "raw_extra": {
+      "type": ["object", "null"],
+      "description": "Catch-all for source-specific fields not modelled above. Keep it JSON-serialisable."
+    }
+  }
+}

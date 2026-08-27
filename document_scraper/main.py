@@ -35,7 +35,8 @@ def extract_docx(file_path: str) :
     except Exception as e:
         print(f"     ❌ DOCX Extraction Error on {file_path}: {e}")
         return ""
-
+#entirely unused function, remove later
+#todo remove fxn
 def append_to_master_txt(master_file, text_to_append, original_document_file):
     """
 
@@ -61,6 +62,20 @@ def append_to_master_txt(master_file, text_to_append, original_document_file):
         print(f"     ✅ Successfully appended {len(text_to_append)} chars from {original_document_file}.")
     except Exception as e:
         print(f"     ❌ Failed to append to {master_file}: {e}")
+def save_to_individual_txt(target_txt_path: str, text_content: str, original_filename: str):
+    """
+    Saves extracted text to an individual .txt file named after the original document.
+    """
+    if not text_content or not text_content.strip():
+        print(f"    -> Skipping save: No text extracted from {original_filename}")
+        return
+    try:
+        # write mode  creates a new text file or overwrites an existing one
+        with open(target_txt_path, "w", encoding="utf-8") as f:
+            f.write(text_content)
+        print(f"     ✅ Saved {len(text_content)} chars to: {os.path.basename(target_txt_path)}")
+    except Exception as e:
+        print(f"     ❌ Failed to save {target_txt_path}: {e}")
 def process_tenders(filepath):
     """
     Iterates all tender directories checking for documents,
@@ -79,33 +94,28 @@ def process_tenders(filepath):
             scraped_txt_file = os.path.join(tender_path, f"{item}.txt")#txt file containing scraped info from web
 
             for doc in os.listdir(tender_path):
-                doc_path = os.path.join(tender_path,doc)
-                _, file_extension = os.path.splitext(doc)
+                doc_path = os.path.join(tender_path, doc)
+                file_name_no_ext, file_extension = os.path.splitext(doc)
                 file_extension = file_extension.lower()
 
-                if file_extension==".pdf":
+                # Target output path: e.g. document.pdf -> document.txt
+                output_txt_path = os.path.join(tender_path, f"{file_name_no_ext}.txt")
+
+                if file_extension == ".pdf":
                     print(f"  -> [PDF] Processing: {doc}")
                     result = extract_pdf(doc_path)
-                    append_to_master_txt(scraped_txt_file, result, doc)
-
+                    save_to_individual_txt(output_txt_path, result, doc)
 
                 elif file_extension == '.docx':
                     print(f"  -> [DOCX] Processing: {doc}")
                     result = extract_docx(doc_path)
-
-                    append_to_master_txt(scraped_txt_file, result, doc)
+                    save_to_individual_txt(output_txt_path, result, doc)
 
                 elif file_extension == '.txt':
-                    #check if downloaded txt might perhaps be different to the txt file scraped off website
-                    print(f"  -> [TXT] Processing: {doc}")
-                    if doc == f"{item}.txt":#the web scraped text in txt file
-                        #print("This is the metadata text file!")
-                        pass
+                    if doc == f"{item}.txt":
+                        pass  # Skip web-scraped metadata file
                     else:
-                        print("txt file downloaded, must scan this too")
-                        print(f"  -> [TXT] Processing: {doc}")
-
-
+                        print(f"  -> [TXT] Existing text file: {doc}")
 
 
 if __name__ == "__main__":
