@@ -5,6 +5,7 @@ import axios from 'axios';
 // VITE_API_BASE_URL in frontend/.env.local for anything else (e.g. a
 // deployed Cloud Run URL).
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+const TENDERS_ENDPOINT_URL = import.meta.env.VITE_TENDERS_ENDPOINT_URL ?? `${API_BASE_URL}/tenders`;
 
 // Mirrors api/app/models.py's DocumentOut/TenderOut exactly — keep these
 // two in sync manually if the backend model changes, the same way
@@ -65,7 +66,7 @@ export interface GetTendersParams {
  * stack trace.
  */
 export async function getTenders(params: GetTendersParams = {}): Promise<Tender[]> {
-  const url = `${API_BASE_URL}/tenders`;
+  const url = TENDERS_ENDPOINT_URL;
   try {
     const { data } = await axios.get<Tender[]>(url, {
       params: {
