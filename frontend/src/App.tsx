@@ -156,18 +156,17 @@ function TenderCard({
             >
               {tender.description ?? 'No description extracted for this tender.'}
             </Box>
-
           </Box>
-        </Collapse>
-      </CardContent>
-
-      {/* View More / View Less button centered at the bottom */}
-      <CardActions sx={{ justifyContent: 'center' }}>
-        <Button size="small" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'View Less' : 'View More'}
-        </Button>
-      </CardActions>
-    </Card>
+        </DialogContent>
+        
+        {/* Close Button at the bottom of the modal */}
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 
