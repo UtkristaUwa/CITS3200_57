@@ -1,11 +1,28 @@
 import { useEffect, useState } from 'react';
 import {
-  AppBar, Toolbar, Typography, Button, Container, Card, CardContent,
-  CardActions, Collapse, Box, Chip, Link, CircularProgress, Alert
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Card,
+  CardContent,
+  CardActions,
+  Box,
+  Chip,
+  Link,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Divider,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getTenders, type Tender } from './lib/api';
-
-const DESCRIPTION_PREVIEW_LENGTH = 160;
 
 function formatDate(value: string | null): string {
   if (!value) return 'Not specified';
@@ -20,7 +37,6 @@ function formatMoney(tender: Tender): string {
     try {
       return new Intl.NumberFormat('en-AU', { style: 'currency', currency }).format(tender.value_amount);
     } catch {
-      // Unrecognised currency code — fall back to a plain number rather than throwing.
       return `${tender.value_amount} ${currency}`;
     }
   }
@@ -28,9 +44,8 @@ function formatMoney(tender: Tender): string {
   return 'Not disclosed';
 }
 
-// Simple client-side "new" heuristic — there's no is_new field in the
-// schema. Anything upsert_tender() first saw within the last 7 days counts.
 function isRecentlySeen(tender: Tender): boolean {
+  if (!tender.first_seen_at) return false;
   const ageDays = (Date.now() - new Date(tender.first_seen_at).getTime()) / 86_400_000;
   return ageDays <= 7;
 }
@@ -40,34 +55,22 @@ function TenderCard({
   tender,
   isFavorite,
   onToggleFavorite,
+  onOpenDetails,
 }: {
   tender: Tender;
   isFavorite: boolean;
   onToggleFavorite: (tenderId: string) => void;
+  onOpenDetails: (tender: Tender) => void;
 }) {
-  // State to control the expand/collapse action
-  const [expanded, setExpanded] = useState(false);
-
-  const descriptionPreview = tender.description
-    ? tender.description.length > DESCRIPTION_PREVIEW_LENGTH
-      ? `${tender.description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
-      : tender.description
-    : 'Not specified';
-
   return (
-    <Card sx={{ mb: 2, border: '1px solid #ccc', boxShadow: 'none' }}>
-      <CardContent>
-        {/* ==========================================
-            1. Collapsed State (Default Display)
-            Contains Title, ATM ID, Closing Date, Agency, Description
-            ========================================== */}
-
+    <Card sx={{ mb: 2, border: '1px solid #e0e0e0', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+      <CardContent sx={{ pb: 1 }}>
         {/* Title and Badges */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-          <Typography variant="h6" component="div" sx={{ textAlign: 'left' }}>
-            {tender.title}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+          <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
+            {tender.title || 'Untitled Tender'}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, ml: 1 }}>
             {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
             <Chip
               label="FAVORITE"
@@ -79,7 +82,42 @@ function TenderCard({
           </Box>
         </Box>
 
-        {/* Outer layer information (Left Aligned, Reordered) */}
+        {/* Ramon's Feedback: 1~3 Line AI Summary Box on Top */}
+        <Box
+          sx={{
+            p: 1.5,
+            mb: 2,
+            bgcolor: '#f4f7fb',
+            borderRadius: 1.5,
+            borderLeft: '4px solid #1976d2',
+            textAlign: 'left',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+            <AutoAwesomeIcon sx={{ fontSize: 16, color: '#1976d2' }} />
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#1976d2', textTransform: 'uppercase' }}>
+              AI Summary
+            </Typography>
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#333',
+              fontSize: '0.875rem',
+              lineHeight: 1.4,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {tender.description
+              ? tender.description.slice(0, 180) + '…'
+              : 'No AI summary generated for this tender yet.'}
+          </Typography>
+        </Box>
+
+        {/* Key Metadata Fields */}
         <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
           <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
         </Typography>
@@ -90,9 +128,6 @@ function TenderCard({
           <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
         </Typography>
         <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
-          <strong>Description:</strong> {descriptionPreview}
-        </Typography>
-        <Typography variant="body2" sx={{ textAlign: 'left', mb: 1.5 }}>
           <strong>Source:</strong>{' '}
           {tender.source_url ? (
             <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
@@ -102,84 +137,159 @@ function TenderCard({
             'Not specified'
           )}
         </Typography>
-
-        {/* ==========================================
-            2. Expanded State (After clicking View More)
-            Contains Summary, Opening Date, Closing Date, Monetary, ATM ID, Location, Agency, Description
-            ========================================== */}
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <Box sx={{ mt: 2, p: 2, bgcolor: '#f9f9f9', borderRadius: 1, textAlign: 'left' }}>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2, color: '#888' }}>
-              {/* tender_enrichment isn't wired up yet — this stays a placeholder
-                  until the AI summarisation endpoint exists. Not a bug. */}
-              <strong>Summary:</strong> Not generated yet.
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>Monetary:</strong> {formatMoney(tender)}
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>Location:</strong> {tender.location ?? 'Not specified'}
-            </Typography>
-
-            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-              <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
-            </Typography>
-
-            {/* Description at the bottom, full text this time */}
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              <strong>Description:</strong>
-            </Typography>
-            <Box
-              sx={{
-                mt: 1,
-                p: 2,
-                border: '1px dashed #ccc',
-                borderRadius: 1,
-                minHeight: '80px',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {tender.description ?? 'No description extracted for this tender.'}
-            </Box>
-          </Box>
-        </Collapse>
       </CardContent>
 
-      {/* View More / View Less button centered at the bottom */}
-      <CardActions sx={{ justifyContent: 'center' }}>
-        <Button size="small" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'View Less' : 'View More'}
+      {/* Action to trigger full-screen modal */}
+      <CardActions sx={{ justifyContent: 'center', pt: 0, pb: 1.5 }}>
+        <Button size="small" variant="text" onClick={() => onOpenDetails(tender)}>
+          View More
         </Button>
       </CardActions>
     </Card>
   );
 }
 
-// Main Page Component
+// Tender Detail Modal Component
+function TenderDetailModal({
+  tender,
+  open,
+  onClose,
+}: {
+  tender: Tender | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!tender) return null;
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
+      slotProps={{
+        backdrop: {
+          sx: { backgroundColor: 'rgba(0, 0, 0, 0.55)' },
+        },
+      }}
+    >
+      <DialogTitle sx={{ m: 0, p: 2.5, pr: 6, fontWeight: 600 }}>
+        {tender.title || 'Tender Details'}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 12,
+            top: 12,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <Divider />
+
+      <DialogContent dividers sx={{ p: 3, textAlign: 'left' }}>
+        {/* Full AI Summary in Modal */}
+        <Box sx={{ p: 2, mb: 3, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+            <AutoAwesomeIcon sx={{ fontSize: 18, color: '#1976d2' }} />
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1976d2' }}>
+              AI Summary & Insights
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: '#444', lineHeight: 1.6 }}>
+            {tender.description
+              ? tender.description.slice(0, 300) + '…'
+              : 'Summary placeholder: Full key requirements, timeline, and scope summary will appear here once the AI enrichment pipeline is run.'}
+          </Typography>
+        </Box>
+
+        {/* Structured Grid Metadata */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 3 }}>
+          <Typography variant="body2">
+            <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Monetary Value:</strong> {formatMoney(tender)}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Location:</strong> {tender.location ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Category:</strong> {tender.category ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Status:</strong> {tender.status ?? 'Active'}
+          </Typography>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Full Tender Description */}
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+          Full Tender Description
+        </Typography>
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: '#fafafa',
+            border: '1px solid #e0e0e0',
+            borderRadius: 1,
+            maxHeight: '300px',
+            overflowY: 'auto',
+            whiteSpace: 'pre-wrap',
+            fontSize: '0.875rem',
+            lineHeight: 1.6,
+          }}
+        >
+          {tender.description ?? 'No description extracted for this tender.'}
+        </Box>
+
+        {/* Source Link */}
+        {tender.source_url && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2">
+              <strong>Original Portal Link:</strong>{' '}
+              <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
+                {tender.source_url}
+              </Link>
+            </Typography>
+          </Box>
+        )}
+      </DialogContent>
+
+      <DialogActions sx={{ p: 2 }}>
+        <Button onClick={onClose} variant="contained" color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+// Main App Component
 export default function BasicSkeletonApp() {
   const [tenders, setTenders] = useState<Tender[]>([]);
-  // Starring isn't wired to the backend yet — user_tender_status needs an
-  // authenticated endpoint before this can persist. Kept local-only for now,
-  // tracked by tender_id so it survives a re-render without depending on
-  // array order.
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Modal State
+  const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -216,16 +326,25 @@ export default function BasicSkeletonApp() {
     });
   };
 
+  const handleOpenDetails = (tender: Tender) => {
+    setSelectedTender(tender);
+    setModalOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setModalOpen(false);
+  };
+
   const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
       {/* Top Navigation Bar */}
       <AppBar position="static" color="default" sx={{ mb: 3 }}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'left' }}>
+          <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 700 }}>
             TenderAI
           </Typography>
           <Button color="inherit">Feed</Button>
@@ -263,8 +382,12 @@ export default function BasicSkeletonApp() {
               tender={tender}
               isFavorite={favorites.has(tender.tender_id)}
               onToggleFavorite={handleToggleFavorite}
+              onOpenDetails={handleOpenDetails}
             />
           ))}
+
+        {/* Global Dialog Modal */}
+        <TenderDetailModal tender={selectedTender} open={modalOpen} onClose={handleCloseDetails} />
       </Container>
     </Box>
   );
