@@ -1,10 +1,14 @@
 # TenderAI Summary Engine 
-# Ver. 0.1.0
+# Ver. 0.2.0
 
 """
 Inputs:
-    Takes any scraped input from some tender <--- Tenitatively hardcoded with the data from a single AUSTENDER Tender
-    Exact nature and format of input TBD
+    A directory of .txt files for one tender - the scraped landing page
+    plus any attached documents, all as plain text, no naming convention,
+    no structured dict alongside them. Every file in the directory gets
+    the same relevance check - there's no reliable way to tell "this is
+    the landing page" from "this is an attachment" up front, and a good
+    relevance check should recognise the landing page as relevant anyway.
 Outputs:
     HEADLINE:      ~20 max headline for the tender (to go on the homepage like we discussed)
     DESCRIPTION:   2-4 paragraphs to help the user decide if the tender is worth their time
@@ -76,7 +80,9 @@ class DocumentFacts(BaseModel):
             "drawings-as-tables, standard contract boilerplate, or anything "
             "else with no bearing on whether a client should pursue this "
             "tender. True if it contains anything about scope, value, "
-            "dates, eligibility, deliverables, or requirements."
+            "dates, eligibility, deliverables, or requirements - this "
+            "includes the tender's own landing page, which is always "
+            "relevant unless it's genuinely empty of substance."
         )
     )
     facts: str = Field(
@@ -89,10 +95,17 @@ class DocumentFacts(BaseModel):
     )
 
 
-DOC_MAP_SYSTEM_INSTRUCTION = """You are triaging one document from a larger
-set of attached tender documents. Your only job is to decide if it contains
-information relevant to a business deciding whether to bid on this tender,
-and if so, extract that information as compact facts.
+DOC_MAP_SYSTEM_INSTRUCTION = """You are triaging one document from a
+tender's directory of scraped .txt files. That directory has no fixed
+structure - it might be just the tender's landing page on its own, or the
+landing page plus a handful of attachments, or a landing page buried among
+a dozen unrelated specification files. You don't know in advance which
+file (if any) is the landing page, so judge each document purely on its
+own content.
+
+Your only job is to decide if THIS document contains information relevant
+to a business deciding whether to bid on this tender, and if so, extract
+that information as compact facts.
 
 Most attachments in a tender package are NOT relevant to this decision:
 detailed engineering specifications, part numbers, drawing sheets, standard
@@ -102,7 +115,9 @@ spec sheet's contents just because it's long.
 
 What IS relevant: scope of work, contract value/term, key dates, eligibility
 or mandatory criteria, evaluation methodology, anything unusual about the
-process, or anything explicitly excluded from scope.
+process, or anything explicitly excluded from scope. A tender's landing
+page will almost always be relevant, since it's normally where the agency,
+title, status, dates and reference numbers live.
 """
 
 
@@ -128,6 +143,25 @@ def iter_tender_documents(directory: str):
     for name in sorted(os.listdir(directory)):
         if name.lower().endswith(".txt"):
             yield os.path.join(directory, name)
+
+
+def list_tender_documents(directory: str) -> list[dict]:
+    """
+    Reads every .txt in directory into {file_name, extracted_text} - this
+    is the raw per-document list for the DB record, separate from the
+    relevance-filtered facts used to build the prompt. Original file type
+    isn't recoverable from a .txt on its own, so it's just left out rather
+    than guessed.
+    """
+    documents = []
+    for path in iter_tender_documents(directory):
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            text = f.read()
+        documents.append({
+            "file_name": os.path.basename(path),
+            "extracted_text": text,
+        })
+    return documents
 
 # ===
 # Prompt Construction
@@ -156,35 +190,26 @@ Rules:
   amended or flagged as non-standard for this tender. The material that
   matters is almost always in the "Statement of Requirement" section
   near the start of the document.
-- If the notice and the attached document repeat the same information,
-  say it once. If the attached document has more detail than the notice
-  (which is typical), the description should be built mainly from the
-  attached document.
+- If two documents repeat the same information, say it once. Where one
+  document has more detail than another (which is typical of a landing
+  page vs. an attachment), the description should be built mainly from
+  whichever has the most substance.
 - Write for someone skimming a list of 50 tenders, not someone who will
   read the source documents. Be concrete: names, numbers, quantities,
   locations.
 """
 
 
-def build_prompt(notice_fields: dict, attached_documents: str | None = None) -> str:
+def build_prompt(document_facts: str | None) -> str:
     """
-    notice_fields: whatever key/value pairs we have after scraping the tender's main listing page
-    (in reality this will come well formatted and normal from the DB)
-    attached_documents: extracted text from any attached documents (Can be None)
+    document_facts: the combined, relevance-filtered facts pulled from
+    every .txt in the tender's directory (landing page + attachments
+    alike) - see gather_document_facts.
     """
+    if not document_facts:
+        return "## Tender facts\n\n(no relevant facts found in the source documents)"
 
-    # TODO: Currently iterating thru a dict and concatenating it all, need 2 configure for proper DB input
-    # Not an issue if i just get the DB to pass up a JSON obj tho
-    parts = ["## Tender notice fields\n"]
-    for key, value in notice_fields.items():
-        if value:
-            parts.append(f"- {key}: {value}")
-
-    if attached_documents:
-        parts.append("\n## Attached documents\n")
-        parts.append(attached_documents.strip())
-
-    return "\n".join(parts)
+    return f"## Tender facts (extracted from source documents)\n\n{document_facts}"
 
 
 # ===
@@ -198,8 +223,8 @@ def build_prompt(notice_fields: dict, attached_documents: str | None = None) -> 
     reraise=True,
 )
 
-def summarise_tender(notice_fields: dict, attached_documents: str | None = None) -> TenderSummary:
-    prompt = build_prompt(notice_fields, attached_documents)
+def summarise_tender(document_facts: str | None) -> TenderSummary:
+    prompt = build_prompt(document_facts)
 
     response = client.models.generate_content(
         model=MODEL,
@@ -218,7 +243,9 @@ def summarise_tender(notice_fields: dict, attached_documents: str | None = None)
 def gather_document_facts(documents_dir: str) -> str | None:
     """
     Maps every .txt in documents_dir to compact facts and drops irrelivant
-    documents. Pulled out on its own so now so the field extractor can reuse the same mapped facts instead of re-running map_document
+    documents (landing page included - it goes through the same check as
+    everything else). Pulled out on its own so the field extractor can
+    reuse the same mapped facts instead of re-running map_document
     on every document a second time.
     """
     all_facts = []
@@ -236,44 +263,21 @@ def gather_document_facts(documents_dir: str) -> str | None:
     return "\n\n".join(all_facts) if all_facts else None
 
 
-def summarise_tender_full(notice_fields: dict, documents_dir: str) -> TenderSummary:
+def summarise_tender_full(documents_dir: str) -> TenderSummary:
     """
-    Full process for a tender with multiple attatched documents; maps each
-    document to a compact list of facts and drops irrelivant documents, 
-    and only then does it produce the final headline + body item
+    Full process for a tender's directory; maps every .txt to a compact
+    list of facts and drops irrelivant ones, and only then does it
+    produce the final headline + body item
     """
-    combined_document_text = gather_document_facts(documents_dir)
-    return summarise_tender(notice_fields, combined_document_text)
-
-
+    document_facts = gather_document_facts(documents_dir)
+    return summarise_tender(document_facts)
 
 
 # Dummy hardcoded run to test output with the given prompt
 if __name__ == "__main__":
 
-    # Like from the tender's landing page
-    notice_fields = {
-        "ATM ID": "Notice 2 - 25/3151",
-        "Title": "Notice of Intended Procurement - Bulk Fuel Farm",
-        "Agency": "Department of Climate Change, Energy, the Environment and Water",
-        "Category": "24110000 - Containers and storage",
-        "Close Date & Time": "18-Aug-2026 2:00 pm (ACT Local Time)",
-        "Publish Date": "21-Jul-2026",
-        "Location": "ACT, NSW, VIC, SA, WA, QLD, NT, TAS",
-        "ATM Type": "Notice",
-        "Description": (
-            "This is a pre-release notice only to provide advance notification "
-            "that the Australian Antarctic Division (AAD) of the Department of "
-            "Climate Change, Energy, the Environment and Water anticipates that "
-            "it will commence a single stage, open tender process in Q3 2026 for "
-            "the supply of components for a Special Antarctic Blend (SAB) Bulk "
-            "Storage Infrastructure to support the Macquarie Island Station "
-            "Project (MISP)."
-        ),
-    }
-
-    # Expects a directory of .txt files, one per attached document
-    summary = summarise_tender_full(notice_fields, "tenders/dummy")
+    # Expects a directory of .txt files - landing page + any attachments, mixed together
+    summary = summarise_tender_full("tenders/dummy")
 
     print("HEADLINE:\n", summary.headline)
     print("\nDESCRIPTION:\n", summary.description)
