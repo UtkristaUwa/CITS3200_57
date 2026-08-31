@@ -215,11 +215,11 @@ def summarise_tender(notice_fields: dict, attached_documents: str | None = None)
 
     return response.parsed
 
-def summarise_tender_full(notice_fields: dict, documents_dir: str) -> TenderSummary:
+def gather_document_facts(documents_dir: str) -> str | None:
     """
-    Full process for a tender with multiple attatched documents; maps each
-    document to a compact list of facts and drops irrelivant documents, 
-    and only then does it produce the final headline + body item
+    Maps every .txt in documents_dir to compact facts and drops irrelivant
+    documents. Pulled out on its own so now so the field extractor can reuse the same mapped facts instead of re-running map_document
+    on every document a second time.
     """
     all_facts = []
     for path in iter_tender_documents(documents_dir):
@@ -233,7 +233,16 @@ def summarise_tender_full(notice_fields: dict, documents_dir: str) -> TenderSumm
         if result.relevant and result.facts.strip():
             all_facts.append(f"### {os.path.basename(path)}\n{result.facts}")
 
-    combined_document_text = "\n\n".join(all_facts) if all_facts else None
+    return "\n\n".join(all_facts) if all_facts else None
+
+
+def summarise_tender_full(notice_fields: dict, documents_dir: str) -> TenderSummary:
+    """
+    Full process for a tender with multiple attatched documents; maps each
+    document to a compact list of facts and drops irrelivant documents, 
+    and only then does it produce the final headline + body item
+    """
+    combined_document_text = gather_document_facts(documents_dir)
     return summarise_tender(notice_fields, combined_document_text)
 
 
