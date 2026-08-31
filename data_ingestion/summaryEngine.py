@@ -70,72 +70,64 @@ class TenderSummary(BaseModel):
     )
 
 # ===
-# Document Mapping
+# Document Triage & Relevance Filtering
 # =========
 
-class DocumentFacts(BaseModel):
+class DocumentRelevance(BaseModel):
     relevant: bool = Field(
         description=(
-            "False if this document is pure specification data, engineering "
-            "drawings-as-tables, standard contract boilerplate, or anything "
-            "else with no bearing on whether a client should pursue this "
-            "tender. True if it contains anything about scope, value, "
-            "dates, eligibility, deliverables, or requirements - this "
-            "includes the tender's own landing page, which is always "
-            "relevant unless it's genuinely empty of substance."
+            "True if this document contains information relevant to understanding "
+            "the tender, extracting key metadata (title, agency, dates, contacts, "
+            "reference IDs, URLs), scope of work, contract value/term, deliverables, "
+            "mandatory criteria, evaluation methodology, addenda, or submission instructions. "
+            "False if it is pure boilerplate (standard unamended contract templates), "
+            "blank response forms, or low-level engineering drawings / raw CAD / spec sheets "
+            "with no administrative or bid-evaluation value."
         )
     )
-    facts: str = Field(
-        description=(
-            "If relevant=True: a compact bullet list (plain text, one fact "
-            "per line) of only the tender-relevant facts in this document — "
-            "no prose, no restating what's already obvious from the "
-            "filename. If relevant=False: empty string."
-        )
+    reason: Optional[str] = Field(
+        default=None,
+        description="Brief 1-sentence reason for keeping or dropping the document."
     )
 
 
-DOC_MAP_SYSTEM_INSTRUCTION = """You are triaging one document from a
-tender's directory of scraped .txt files. That directory has no fixed
-structure - it might be just the tender's landing page on its own, or the
-landing page plus a handful of attachments, or a landing page buried among
-a dozen unrelated specification files. You don't know in advance which
-file (if any) is the landing page, so judge each document purely on its
-own content.
+DOC_TRIAGE_SYSTEM_INSTRUCTION = """You are triaging documents from an Australian government tender package.
+Your job is to decide whether this document contains useful content for understanding the tender, extracting key metadata (agency, dates, contact info, reference IDs, value, location, etc.), or evaluating scope and requirements.
 
-Your only job is to decide if THIS document contains information relevant
-to a business deciding whether to bid on this tender, and if so, extract
-that information as compact facts.
+Mark relevant=True for:
+- Tender landing pages and overview notices (always relevant)
+- Statement of Requirements / Scope of Works / Approach to Market
+- Addenda, clarifications, and Q&A documents
+- Evaluation criteria, conditions of participation, specifications with substantive scope
 
-Most attachments in a tender package are NOT relevant to this decision:
-detailed engineering specifications, part numbers, drawing sheets, standard
-contract clause text, and response-form templates carry no bid/no-bid
-signal. Mark these relevant=False and move on — don't try to summarise a
-spec sheet's contents just because it's long.
-
-What IS relevant: scope of work, contract value/term, key dates, eligibility
-or mandatory criteria, evaluation methodology, anything unusual about the
-process, or anything explicitly excluded from scope. A tender's landing
-page will almost always be relevant, since it's normally where the agency,
-title, status, dates and reference numbers live.
+Mark relevant=False for:
+- Blank response form templates
+- Standard legal contract boilerplate with no custom terms (e.g. generic Commonwealth Contracting Suite terms)
+- Pure technical drawing tables, part-number lists, or low-level CAD schedules with no high-level scope context
 """
 
 
-def map_document(path: str) -> DocumentFacts:
+def is_document_relevant(path: str) -> bool:
+    """Check if a document is relevant to the tender extraction and summary process."""
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         text = f.read()
 
+    # Empty or near-empty documents are not relevant
+    if not text.strip():
+        return False
+
     response = client.models.generate_content(
         model=MODEL,
-        contents=f"Filename: {os.path.basename(path)}\n\n{text}",
+        contents=f"Filename: {os.path.basename(path)}\n\n{text[:15000]}",  # first 15k chars usually suffice for triage
         config=types.GenerateContentConfig(
-            system_instruction=DOC_MAP_SYSTEM_INSTRUCTION,
+            system_instruction=DOC_TRIAGE_SYSTEM_INSTRUCTION,
             response_mime_type="application/json",
-            response_schema=DocumentFacts,
+            response_schema=DocumentRelevance,
             temperature=0.1,
         ),
     )
-    return response.parsed
+    decision: DocumentRelevance = response.parsed
+    return decision.relevant
 
 
 def iter_tender_documents(directory: str):
@@ -148,10 +140,7 @@ def iter_tender_documents(directory: str):
 def list_tender_documents(directory: str) -> list[dict]:
     """
     Reads every .txt in directory into {file_name, extracted_text} - this
-    is the raw per-document list for the DB record, separate from the
-    relevance-filtered facts used to build the prompt. Original file type
-    isn't recoverable from a .txt on its own, so it's just left out rather
-    than guessed.
+    is the raw per-document list for the DB record.
     """
     documents = []
     for path in iter_tender_documents(directory):
@@ -163,53 +152,81 @@ def list_tender_documents(directory: str) -> list[dict]:
         })
     return documents
 
+
+def gather_relevant_documents(documents_dir: str) -> list[dict]:
+    """
+    1. Triages every .txt in documents_dir to drop useless files (blank templates,
+       pure CAD tables, boilerplate clauses).
+    2. Keeps the raw text of all relevant documents without lossy compression.
+    """
+    doc_paths = list(iter_tender_documents(documents_dir))
+    if not doc_paths:
+        return []
+
+    # If there is only one document (e.g. the scraped tender landing page), it is inherently relevant
+    if len(doc_paths) == 1:
+        with open(doc_paths[0], "r", encoding="utf-8", errors="replace") as f:
+            return [{"file_name": os.path.basename(doc_paths[0]), "raw_text": f.read()}]
+
+    relevant_docs = []
+    for path in doc_paths:
+        try:
+            if is_document_relevant(path):
+                with open(path, "r", encoding="utf-8", errors="replace") as f:
+                    relevant_docs.append({
+                        "file_name": os.path.basename(path),
+                        "raw_text": f.read(),
+                    })
+        except Exception as e:
+            # One problematic document shouldn't kill the whole tender processing
+            print(f"  [skipped {os.path.basename(path)} during triage: {e}]")
+            continue
+
+    return relevant_docs
+
+
+def build_tender_context(relevant_documents: list[dict]) -> str:
+    """
+    Combines the raw text of all relevant documents into a structured context block.
+    """
+    if not relevant_documents:
+        return "(no relevant source documents found)"
+
+    parts = []
+    for doc in relevant_documents:
+        parts.append(f"=== DOCUMENT: {doc['file_name']} ===\n{doc['raw_text']}")
+    return "\n\n".join(parts)
+
+
 # ===
 # Prompt Construction
 # =========
 
-# Attempts to keep gemini from halucinating and/or embellishing details
 SYSTEM_INSTRUCTION = """You are a procurement analyst summarising Australian
 government tender notices for a business development team
 deciding which tenders to pursue.
 
 Rules:
-- Base your summary ONLY on the material provided. Never invent contract
-  values, dates, or scope details that aren't present.
-- Government tender notices are full of repeated legal boilerplate
-  ("this is not a commitment by the Commonwealth to purchase...",
-  disclaimers, contact-procedure instructions). Do not summarise the
-  boilerplate itself — extract the substance underneath it.
-- Attached documents using the Commonwealth Contracting Suite (CCS)
-  template — recognisable by headings like "Additional Contract Terms",
-  "Commonwealth Contract Terms", "CCS ATM Response Form", or a
-  "Commonwealth Contracting Suite Glossary and Interpretation" section —
-  contain large sections of standard clause text (IP ownership, payment
-  terms, response-form submission instructions) that is near-identical
-  across almost every Commonwealth tender. This is boilerplate, not
-  content: ignore it entirely unless a clause has been specifically
-  amended or flagged as non-standard for this tender. The material that
-  matters is almost always in the "Statement of Requirement" section
-  near the start of the document.
-- If two documents repeat the same information, say it once. Where one
-  document has more detail than another (which is typical of a landing
-  page vs. an attachment), the description should be built mainly from
-  whichever has the most substance.
-- Write for someone skimming a list of 50 tenders, not someone who will
-  read the source documents. Be concrete: names, numbers, quantities,
-  locations.
+- Base your summary ONLY on the raw source documents provided. Never invent
+  contract values, dates, or scope details that aren't present.
+- Government tender notices are full of repeated legal boilerplate.
+  Do not summarise the boilerplate itself — extract the substance underneath it.
+- Focus on what's actually being procured, scope of work, key dates, eligibility,
+  mandatory requirements, contract value/term, and anything unusual.
+- If two documents repeat the same information, say it once.
+- Write for someone skimming a list of tenders. Be concrete: names, numbers,
+  quantities, locations.
 """
 
 
-def build_prompt(document_facts: str | None) -> str:
+def build_prompt(raw_context: str | None) -> str:
     """
-    document_facts: the combined, relevance-filtered facts pulled from
-    every .txt in the tender's directory (landing page + attachments
-    alike) - see gather_document_facts.
+    raw_context: combined raw text from the kept relevant documents.
     """
-    if not document_facts:
-        return "## Tender facts\n\n(no relevant facts found in the source documents)"
+    if not raw_context or not raw_context.strip():
+        return "## Tender Source Documents\n\n(no relevant documents found)"
 
-    return f"## Tender facts (extracted from source documents)\n\n{document_facts}"
+    return f"## Tender Source Documents\n\n{raw_context}"
 
 
 # ===
@@ -217,14 +234,13 @@ def build_prompt(document_facts: str | None) -> str:
 # =========
 
 @retry(
-    retry=retry_if_exception_type(genai_errors.ServerError),  # 503s etc NOT client errors
+    retry=retry_if_exception_type(genai_errors.ServerError),
     stop=stop_after_attempt(4),
-    wait=wait_exponential(multiplier=2, min=2, max=30),  # 2s, 4s, 8s, ~16s
+    wait=wait_exponential(multiplier=2, min=2, max=30),
     reraise=True,
 )
-
-def summarise_tender(document_facts: str | None) -> TenderSummary:
-    prompt = build_prompt(document_facts)
+def summarise_tender(raw_context: str | None) -> TenderSummary:
+    prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
         model=MODEL,
@@ -233,51 +249,26 @@ def summarise_tender(document_facts: str | None) -> TenderSummary:
             system_instruction=SYSTEM_INSTRUCTION,
             response_mime_type="application/json",
             response_schema=TenderSummary,
-            temperature=0.2, # "temperature" controls the randomness of the model's output.
-            # Set it low but not 0 in an attempts to prevent any hallucination, but also have the output phrased in a user-friendly manner
+            temperature=0.2,
         ),
     )
 
     return response.parsed
 
-def gather_document_facts(documents_dir: str) -> str | None:
-    """
-    Maps every .txt in documents_dir to compact facts and drops irrelivant
-    documents (landing page included - it goes through the same check as
-    everything else). Pulled out on its own so the field extractor can
-    reuse the same mapped facts instead of re-running map_document
-    on every document a second time.
-    """
-    all_facts = []
-    for path in iter_tender_documents(documents_dir):
-        try:
-            result = map_document(path)
-        except Exception as e:
-            # one bad attachment (corrupt file, unsupported type) shouldn't
-            # kill the whole tender's summary — log and move on
-            print(f"  [skipped {os.path.basename(path)}: {e}]")
-            continue
-        if result.relevant and result.facts.strip():
-            all_facts.append(f"### {os.path.basename(path)}\n{result.facts}")
-
-    return "\n\n".join(all_facts) if all_facts else None
-
 
 def summarise_tender_full(documents_dir: str) -> TenderSummary:
     """
-    Full process for a tender's directory; maps every .txt to a compact
-    list of facts and drops irrelivant ones, and only then does it
-    produce the final headline + body item
+    Full process for a tender's directory:
+    1. Filter out irrelevant files.
+    2. Summarise directly from the raw text of the remaining relevant documents.
     """
-    document_facts = gather_document_facts(documents_dir)
-    return summarise_tender(document_facts)
+    relevant_docs = gather_relevant_documents(documents_dir)
+    raw_context = build_tender_context(relevant_docs)
+    return summarise_tender(raw_context)
 
 
 # Dummy hardcoded run to test output with the given prompt if ran on its own
 if __name__ == "__main__":
-
-    # Expects a directory of .txt files - landing page + any attachments, mixed together
     summary = summarise_tender_full("tenders_data/26-0084")
-
     print("HEADLINE:\n", summary.headline)
     print("\nDESCRIPTION:\n", summary.description)

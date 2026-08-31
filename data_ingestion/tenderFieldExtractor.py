@@ -5,19 +5,11 @@
 Separate to the summaryEngine.py which fills the rest of the DB row for a tender.
 Reuses the same client/model/document-mapping from summaryEngine.
 
-Everything here is pulled straight from the tender's directory of .txt files
-(landing page + attachments, no fixed naming, no dict handed in from
-elsewhere) - so unlike earlier versions, this now also has to figure out
-title/category/status/source_reference_id/source_url from the text itself,
-since nothing else reaches this pipeline.
-
-source_id (which portal this came from) is deliberately NOT extracted here -
-it's not something the document text can tell you, has to be supplied by
-whatever's calling this.
+source_id (which portal this came from) is not extracted here
 
 Fields solved by the summaryEngine:
     description - AI summary of the tender ala gemini
-    last_scanned - should be handled elsewhere? idk TODO correctly
+    last_scanned - Datetime of last scan
 
 Setup: see setup instructions 4 the summaryEngine.py
 """
@@ -37,7 +29,8 @@ from summaryEngine import (
     genai_errors,
     build_prompt,
     summarise_tender,
-    gather_document_facts,
+    gather_relevant_documents,
+    build_tender_context,
     list_tender_documents,
 )
 
@@ -64,7 +57,7 @@ class TenderFields(BaseModel):
     source_reference_id: Optional[str] = Field(
         description=(
             "The tender's own reference number/ID as stated in the source "
-            "(e.g. an ATM ID or tender number like '1222692568'). None if "
+            "(e.g. an ATM ID or tender number like '1222692568' or '26-0084'). None if "
             "not stated."
         )
     )
@@ -84,7 +77,7 @@ class TenderFields(BaseModel):
     category: Optional[str] = Field(
         description=(
             "The type of procurement notice, exactly as labelled in the "
-            "source (e.g. 'Request for Tender', 'Notice', 'Expression of "
+            "source (e.g. 'Request for Tender', 'Request for Quotation', 'Notice', 'Expression of "
             "Interest'). Record it as stated, don't normalise it into some "
             "other wording. None if not labelled anywhere."
         )
@@ -146,7 +139,7 @@ class TenderFields(BaseModel):
         ),
     )
     contact_name: Optional[str] = Field(
-        description="Name of the named contact person for enquiries. None if not stated."
+        description="Name of the named contact person or contact entity for enquiries. None if not stated."
     )
     contact_email: Optional[str] = Field(
         description="Contact email for enquiries. None if not stated."
@@ -167,10 +160,8 @@ class TenderFields(BaseModel):
 
 
 FIELD_EXTRACTION_SYSTEM_INSTRUCTION = """You are extracting structured data
-from a directory of scraped .txt files for one Australian government
-tender - the landing page and any attached documents, mixed together with
-no fixed naming or order - already reduced to compact facts, for insertion
-into a database.
+from raw scraped text documents of an Australian government tender (landing page
+and any relevant attachments) for insertion into a database.
 
 Rules:
 - Every field must come directly from the source material. Never infer,
@@ -178,11 +169,11 @@ Rules:
   matters most for the value fields and the dates. If it's not there,
   leave it None.
 - title/category/status/source_reference_id/source_url normally live on
-  whichever document is the tender's landing page, but you aren't told
-  which file that is - just pull them from wherever they actually appear.
-- Contact info vs lodgment: contact_name/email/phone is who to ask
-  questions to. lodgment_address is where/how to actually submit a
-  response - sometimes the same, sometimes different, don't assume.
+  the tender's landing page / notice header, but pull them from wherever
+  they appear.
+- Detail URL: Look for lines like "Detail URL :" or direct links to the tender notice.
+- Contact info: Extract contact_name, contact_email, and contact_phone under enquiry/contact sections.
+- Lodgment: lodgment_address is where/how to actually submit a response (e.g. portal name/URL, email, physical address).
 - Distinguish "not stated anywhere" (-> None) from "explicitly stated as
   not yet available" (-> record that statement). Both are different from
   guessing, and both are useful, just not the same thing.
@@ -199,16 +190,14 @@ Rules:
 # API Call
 # =========
 
-# TODO: same as in the summary engine need to figure out what the optimal set up for this is
-# Shouldnt be too pressing since time isnt really a constraint here
 @retry(
     retry=retry_if_exception_type(genai_errors.ServerError),
     stop=stop_after_attempt(4),
     wait=wait_exponential(multiplier=2, min=2, max=30),
     reraise=True,
 )
-def extract_tender_fields(document_facts: str | None) -> TenderFields:
-    prompt = build_prompt(document_facts)
+def extract_tender_fields(raw_context: str | None) -> TenderFields:
+    prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
         model=MODEL,
@@ -217,35 +206,34 @@ def extract_tender_fields(document_facts: str | None) -> TenderFields:
             system_instruction=FIELD_EXTRACTION_SYSTEM_INSTRUCTION,
             response_mime_type="application/json",
             response_schema=TenderFields,
-            temperature=0.1,  # data extraction, not writing - go lower than the summary call
+            temperature=0.1,  # data extraction purposes so lower than the summary engine
         ),
     )
 
     fields = response.parsed
-    # safety net - model is instructed to only pick from TAG_TAXONOMY but
-    # nothing stops it drifting, so filter rather than trust blindly
+    # Model is instructed to only pick from TAG_TAXONOMY but it might drift off so we filter here
     fields.tags = [t for t in fields.tags if t in TAG_TAXONOMY]
     return fields
 
 
 def build_db_record(documents_dir: str) -> dict:
     """
-    documents_dir: a tender's directory of .txt files - landing page plus
-    any attachments, no naming convention, all treated the same.
+    documents_dir: a tender's directory of .txt files.
 
-    Runs the summary + field extraction off the SAME mapped facts (only
-    maps documents once), builds the raw "documents" list itself by
-    reading the directory, and stamps last_scanned.
+    1. Triages and drops irrelevant files, keeping raw text of relevant ones.
+    2. Runs summary + field extraction directly from the raw context of relevant files.
+    3. Builds the raw 'documents' list for DB storage and stamps last_scanned.
 
     source_id is left None - which portal a tender came from isn't in the
     document text itself, so that has to be filled in by whatever calls
     this (or added afterwards).
     """
-    document_facts = gather_document_facts(documents_dir)
+    relevant_docs = gather_relevant_documents(documents_dir)
+    raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
 
-    summary = summarise_tender(document_facts)
-    fields = extract_tender_fields(document_facts)
+    summary = summarise_tender(raw_context)
+    fields = extract_tender_fields(raw_context)
 
     return {
         "source_id": None,
@@ -275,7 +263,6 @@ def build_db_record(documents_dir: str) -> dict:
 
 # Dummy hardcoded run to test output
 if __name__ == "__main__":
-
     record = build_db_record("tenders_data/26-0084")
     for k, v in record.items():
         print(f"{k}: {v}")
