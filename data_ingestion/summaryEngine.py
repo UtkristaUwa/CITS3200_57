@@ -13,8 +13,8 @@ Outputs:
     HEADLINE:      ~20 max headline for the tender (to go on the homepage like we discussed)
     DESCRIPTION:   2-4 paragraphs to help the user decide if the tender is worth their time
 Setup:
-    Install SDK:   pip install google-genai
-    set API Key:   export GEMINI_API_KEY="key goes here"
+    Install Required:   pip install pydantic tenacity google-genai
+    set API Key:        export GEMINI_API_KEY="key goes here"
 """
 
 import os
@@ -273,11 +273,11 @@ def summarise_tender_full(documents_dir: str) -> TenderSummary:
     return summarise_tender(document_facts)
 
 
-# Dummy hardcoded run to test output with the given prompt
+# Dummy hardcoded run to test output with the given prompt if ran on its own
 if __name__ == "__main__":
 
     # Expects a directory of .txt files - landing page + any attachments, mixed together
-    summary = summarise_tender_full("tenders/dummy")
+    summary = summarise_tender_full("tenders_data/26-0084")
 
     print("HEADLINE:\n", summary.headline)
     print("\nDESCRIPTION:\n", summary.description)
