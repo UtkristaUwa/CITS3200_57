@@ -9,7 +9,7 @@ source_id (which portal this came from) is not extracted here
 
 Fields solved by the summaryEngine:
     description - AI summary of the tender ala gemini
-    last_scanned - Datetime of last scan
+    last_scanned_at - Datetime of last scan
 
 Setup: see setup instructions 4 the summaryEngine.py
 """
@@ -222,7 +222,7 @@ def build_db_record(documents_dir: str) -> dict:
 
     1. Triages and drops irrelevant files, keeping raw text of relevant ones.
     2. Runs summary + field extraction directly from the raw context of relevant files.
-    3. Builds the raw 'documents' list for DB storage and stamps last_scanned.
+    3. Builds the raw 'documents' list for DB storage and stamps last_scanned_at.
 
     source_id is left None - which portal a tender came from isn't in the
     document text itself, so that has to be filled in by whatever calls
@@ -257,7 +257,7 @@ def build_db_record(documents_dir: str) -> dict:
         "lodgment_address": fields.lodgment_address,
         "documents": documents,
         "raw_extra": None,
-        "last_scanned": datetime.now(timezone.utc).isoformat(),
+        "last_scanned_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
