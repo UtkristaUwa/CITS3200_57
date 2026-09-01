@@ -26,12 +26,12 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await sendPasswordResetEmail(auth, email);
+        await sendPasswordResetEmail(auth, email, {
+        url: `${window.location.origin}/reset-password`,
+        handleCodeInApp: true,
+        });
     } catch (err: unknown) {
-      // Deliberately ignore auth/user-not-found — always show the same
-      // success state whether or not the email exists. Same reasoning as
-      // the login page: don't let this form be used to check who has an
-      // account on an invite-only system.
+      // Chosen to ignore auth/user-not-found because we want it to always show the same success state whether or not the email exists for security reasons
       console.error('Password reset request failed:', err);
     } finally {
       setLoading(false);
