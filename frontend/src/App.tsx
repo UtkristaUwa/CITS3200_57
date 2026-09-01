@@ -19,9 +19,18 @@ import {
   DialogActions,
   IconButton,
   Divider,
+  TextField,
+  Collapse,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { getTenders, type Tender } from './lib/api';
 
 function formatDate(value: string | null): string {
@@ -82,7 +91,7 @@ function TenderCard({
           </Box>
         </Box>
 
-        {/* Ramon's Feedback: 1~3 Line AI Summary Box on Top */}
+        {/* AI Summary Box */}
         <Box
           sx={{
             p: 1.5,
@@ -139,7 +148,6 @@ function TenderCard({
         </Typography>
       </CardContent>
 
-      {/* Action to trigger full-screen modal */}
       <CardActions sx={{ justifyContent: 'center', pt: 0, pb: 1.5 }}>
         <Button size="small" variant="text" onClick={() => onOpenDetails(tender)}>
           View More
@@ -162,119 +170,49 @@ function TenderDetailModal({
   if (!tender) return null;
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      scroll="paper"
-      slotProps={{
-        backdrop: {
-          sx: { backgroundColor: 'rgba(0, 0, 0, 0.55)' },
-        },
-      }}
-    >
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth scroll="paper" slotProps={{ backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.55)' } } }}>
       <DialogTitle sx={{ m: 0, p: 2.5, pr: 6, fontWeight: 600 }}>
         {tender.title || 'Tender Details'}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 12,
-            top: 12,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
+        <IconButton aria-label="close" onClick={onClose} sx={{ position: 'absolute', right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-
       <Divider />
-
       <DialogContent dividers sx={{ p: 3, textAlign: 'left' }}>
-        {/* Full AI Summary in Modal */}
         <Box sx={{ p: 2, mb: 3, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
             <AutoAwesomeIcon sx={{ fontSize: 18, color: '#1976d2' }} />
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1976d2' }}>
-              AI Summary & Insights
-            </Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1976d2' }}>AI Summary & Insights</Typography>
           </Box>
           <Typography variant="body2" sx={{ color: '#444', lineHeight: 1.6 }}>
-            {tender.description
-              ? tender.description.slice(0, 300) + '…'
-              : 'Summary placeholder: Full key requirements, timeline, and scope summary will appear here once the AI enrichment pipeline is run.'}
+            {tender.description ? tender.description.slice(0, 300) + '…' : 'Summary placeholder.'}
           </Typography>
         </Box>
-
-        {/* Structured Grid Metadata */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 3 }}>
-          <Typography variant="body2">
-            <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Monetary Value:</strong> {formatMoney(tender)}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Location:</strong> {tender.location ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Category:</strong> {tender.category ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Status:</strong> {tender.status ?? 'Active'}
-          </Typography>
+          <Typography variant="body2"><strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}</Typography>
+          <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
+          <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
+          <Typography variant="body2"><strong>Closing Date:</strong> {formatDate(tender.closing_date)}</Typography>
+          <Typography variant="body2"><strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}</Typography>
+          <Typography variant="body2"><strong>Location:</strong> {tender.location ?? 'Not specified'}</Typography>
+          <Typography variant="body2"><strong>Category:</strong> {tender.category ?? 'Not specified'}</Typography>
+          <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
         </Box>
-
         <Divider sx={{ my: 2 }} />
-
-        {/* Full Tender Description */}
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-          Full Tender Description
-        </Typography>
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: '#fafafa',
-            border: '1px solid #e0e0e0',
-            borderRadius: 1,
-            maxHeight: '300px',
-            overflowY: 'auto',
-            whiteSpace: 'pre-wrap',
-            fontSize: '0.875rem',
-            lineHeight: 1.6,
-          }}
-        >
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
+        <Box sx={{ p: 2, bgcolor: '#fafafa', border: '1px solid #e0e0e0', borderRadius: 1, maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap', fontSize: '0.875rem', lineHeight: 1.6 }}>
           {tender.description ?? 'No description extracted for this tender.'}
         </Box>
-
-        {/* Source Link */}
         {tender.source_url && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2">
-              <strong>Original Portal Link:</strong>{' '}
-              <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
-                {tender.source_url}
-              </Link>
+              <strong>Original Portal Link:</strong> <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">{tender.source_url}</Link>
             </Typography>
           </Box>
         )}
       </DialogContent>
-
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="contained" color="primary">
-          Close
-        </Button>
+        <Button onClick={onClose} variant="contained" color="primary">Close</Button>
       </DialogActions>
     </Dialog>
   );
@@ -291,9 +229,17 @@ export default function BasicSkeletonApp() {
   const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // --- UI State for Search & Filters ---
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Static filter selections
+  const [jurisdiction, setJurisdiction] = useState('');
+  const [year, setYear] = useState('');
+  const [tag, setTag] = useState('');
+
   useEffect(() => {
     let cancelled = false;
-
     setLoading(true);
     setError(null);
     getTenders({ limit: 50 })
@@ -301,27 +247,19 @@ export default function BasicSkeletonApp() {
         if (!cancelled) setTenders(data);
       })
       .catch((err: unknown) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Something went wrong loading tenders.');
-        }
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Something went wrong loading tenders.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const handleToggleFavorite = (tenderId: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
-      if (next.has(tenderId)) {
-        next.delete(tenderId);
-      } else {
-        next.add(tenderId);
-      }
+      if (next.has(tenderId)) next.delete(tenderId);
+      else next.add(tenderId);
       return next;
     });
   };
@@ -331,10 +269,9 @@ export default function BasicSkeletonApp() {
     setModalOpen(true);
   };
 
-  const handleCloseDetails = () => {
-    setModalOpen(false);
-  };
+  const handleCloseDetails = () => setModalOpen(false);
 
+  // Apply basic sorting (favorites at top)
   const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
@@ -355,6 +292,87 @@ export default function BasicSkeletonApp() {
 
       {/* Main Content */}
       <Container maxWidth="md">
+        
+        {/* === FILTER & SEARCH SECTION === */}
+        <Box sx={{ mb: 4, p: 2, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            {/* Main Text Search Bar */}
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search tenders by keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {/* Toggle Button for Advanced Filters */}
+            <Button 
+              variant={showFilters ? "contained" : "outlined"} 
+              startIcon={<FilterListIcon />}
+              onClick={() => setShowFilters(!showFilters)}
+              sx={{ flexShrink: 0 }}
+            >
+              Filters
+            </Button>
+          </Box>
+
+          {/* Expandable Advanced Filters Area */}
+          <Collapse in={showFilters}>
+            <Box sx={{ display: 'flex', gap: 2, mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
+              
+              <FormControl size="small" fullWidth>
+                <InputLabel>Jurisdiction</InputLabel>
+                <Select
+                  value={jurisdiction}
+                  label="Jurisdiction"
+                  onChange={(e) => setJurisdiction(e.target.value)}
+                >
+                  <MenuItem value=""><em>All</em></MenuItem>
+                  <MenuItem value="WA">Western Australia (WA)</MenuItem>
+                  <MenuItem value="QLD">Queensland (QLD)</MenuItem>
+                  <MenuItem value="NSW">New South Wales (NSW)</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl size="small" fullWidth>
+                <InputLabel>Year</InputLabel>
+                <Select
+                  value={year}
+                  label="Year"
+                  onChange={(e) => setYear(e.target.value)}
+                >
+                  <MenuItem value=""><em>All</em></MenuItem>
+                  <MenuItem value="2026">2026</MenuItem>
+                  <MenuItem value="2027">2027</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl size="small" fullWidth>
+                <InputLabel>Tags</InputLabel>
+                <Select
+                  value={tag}
+                  label="Tags"
+                  onChange={(e) => setTag(e.target.value)}
+                >
+                  <MenuItem value=""><em>All Topics</em></MenuItem>
+                  <MenuItem value="homelessness">Homelessness</MenuItem>
+                  <MenuItem value="education">Education</MenuItem>
+                  <MenuItem value="finance">Finance</MenuItem>
+                </Select>
+              </FormControl>
+
+            </Box>
+          </Collapse>
+        </Box>
+        {/* === END FILTER & SEARCH SECTION === */}
+
         {loading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <CircularProgress />
@@ -362,15 +380,12 @@ export default function BasicSkeletonApp() {
         )}
 
         {!loading && error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
+          <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
         )}
 
         {!loading && !error && sortedTenders.length === 0 && (
           <Alert severity="info">
-            No tenders yet — nothing's been submitted to BigQuery. Run{' '}
-            <code>ingestion/validate_and_submit.py</code> against some real data first.
+            No tenders yet — nothing's been submitted to BigQuery.
           </Alert>
         )}
 
@@ -386,7 +401,6 @@ export default function BasicSkeletonApp() {
             />
           ))}
 
-        {/* Global Dialog Modal */}
         <TenderDetailModal tender={selectedTender} open={modalOpen} onClose={handleCloseDetails} />
       </Container>
     </Box>
