@@ -12,6 +12,8 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { auth } from '../lib/firebase';
+import { Link as RouterLink } from 'react-router-dom';
+import { Link } from '@mui/material';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -75,6 +77,10 @@ export default function LoginPage() {
               required
               fullWidth
             />
+
+            <Box sx={{ textAlign: 'right' }}>
+                <Link component={RouterLink} to="/forgot-password" variant="body2">Forgot password?</Link>
+            </Box>
 
             <Button type="submit" variant="contained" size="large" disabled={loading} fullWidth>
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Log in'}
