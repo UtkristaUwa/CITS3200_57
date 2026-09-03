@@ -28,7 +28,11 @@ from pydantic import BaseModel, Field
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 # Initialize Gemini Client
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+client = genai.Client(
+    vertexai = True,
+    project="tenderai-dev",
+    location="australia-southeast1")
+
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 # ===
