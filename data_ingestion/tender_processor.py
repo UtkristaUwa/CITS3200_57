@@ -90,14 +90,14 @@ class TenderSummary(BaseModel):
 
 
 class TenderFields(BaseModel):
-    source_reference_id: Optional[str] = Field(
+    source_id: Optional[str] = Field(
         description=(
             "The tender's own reference number/ID as stated in the source "
             "(e.g. an ATM ID or tender number like '1222692568' or '26-0084'). None if "
             "not stated."
         )
     )
-    source_url: Optional[str] = Field(
+    source_reference_id: Optional[str] = Field(
         description=(
             "A URL for viewing the tender online, if one appears in the "
             "source text (e.g. a 'Detail URL' line). None if no URL is "
@@ -239,10 +239,11 @@ Rules:
   estimate, or calculate a value that isn't explicitly stated - this
   matters most for the value fields and the dates. If it's not there,
   leave it None.
-- title/category/status/source_reference_id/source_url normally live on
+- title/category/status/source_id/source_reference_id normally live on
   the tender's landing page / notice header, but pull them from wherever
   they appear.
-- Detail URL: Look for lines like "Detail URL :" or direct links to the tender notice.
+- source_id: The tender's reference number / ATM ID (e.g. '26-0084').
+- source_reference_id: Detail URL / link for viewing the tender online.
 - Contact info: Extract contact_name, contact_email, and contact_phone under enquiry/contact sections.
 - Lodgment: lodgment_address is where/how to actually submit a response (e.g. portal name/URL, email, physical address).
 - Distinguish "not stated anywhere" (-> None) from "explicitly stated as
@@ -421,7 +422,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
 # Unified Pipeline & Database Record Builder
 # ==============================================================================
 
-def process_tender(documents_dir: str, source_id: Optional[str] = None) -> dict:
+def process_tender(documents_dir: str) -> dict:
     """
     Full tender processing pipeline:
     1. Triages and drops irrelevant files, keeping raw text of relevant ones.
@@ -440,17 +441,13 @@ def process_tender(documents_dir: str, source_id: Optional[str] = None) -> dict:
     publish_date_bq = fields.publish_date.split("T")[0] if fields.publish_date else None
     closing_date_bq = fields.closing_date.split("T")[0] if fields.closing_date else None
 
-    # 3. Composite tender ID if available (otherwise left to DB/caller)
-    tender_id = f"{source_id}_{fields.source_reference_id}" if (source_id and fields.source_reference_id) else fields.source_reference_id
-
-    # 4. Pack tags or extra metadata into raw_extra
+    # 3. Pack tags or extra metadata into raw_extra
     raw_extra = json.dumps({"tags": fields.tags}) if fields.tags else None
 
     return {
-        "tender_id": tender_id,
+        "tender_id": None,
         "source_reference_id": fields.source_reference_id,
-        "source_id": source_id,
-        "source_url": fields.source_url,
+        "source_id": fields.source_id,
         "title": fields.title,
         "issuing_agency": fields.issuing_agency,
         "category": fields.category,
@@ -478,22 +475,3 @@ def process_tender(documents_dir: str, source_id: Optional[str] = None) -> dict:
 # Backwards compatibility alias
 build_db_record = process_tender
 
-
-# ==============================================================================
-# CLI / Standalone Runner
-# ==============================================================================
-
-if __name__ == "__main__":
-    target_dir = "tenders_data/26-0084"
-    if not os.path.exists(target_dir) and os.path.exists(os.path.join("..", target_dir)):
-        target_dir = os.path.join("..", target_dir)
-
-    print(f"Processing tender directory: {target_dir}...")
-    record = process_tender(target_dir, source_id="vic_buyingfor")
-    
-    print("\n--- EXTRACTED DB RECORD ---")
-    for key, value in record.items():
-        if key != "documents":
-            print(f"{key}: {value}")
-        else:
-            print(f"documents: [{len(value)} document(s)]")

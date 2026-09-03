@@ -1,0 +1,21 @@
+# ==============================================================================
+# CLI / Standalone Runner
+# ==============================================================================
+
+if __name__ == "__main__":
+    target_dir = "tenders_data/26-0084"
+    if not os.path.exists(target_dir) and os.path.exists(os.path.join("..", target_dir)):
+        target_dir = os.path.join("..", target_dir)
+
+    print(f"Processing tender directory: {target_dir}...")
+    record = process_tender(target_dir, source_id="vic_buyingfor")
+    
+    print("\n--- EXTRACTED DB RECORD ---")
+    for key, value in record.items():
+        if key != "documents":
+            print(f"{key}: {value}")
+        else:
+            print(f"documents: [{len(value)} document(s)]")
+
+# optional peram for process_tender() if source_id is metadata
+, source_id: Optional[str] = None
