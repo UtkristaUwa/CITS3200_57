@@ -263,6 +263,6 @@ def build_db_record(documents_dir: str) -> dict:
 
 # Dummy hardcoded run to test output
 if __name__ == "__main__":
-    record = build_db_record("tenders_data/26-0084")
+    record = build_db_record("../tenders_data/26-0084")
     for k, v in record.items():
         print(f"{k}: {v}")
