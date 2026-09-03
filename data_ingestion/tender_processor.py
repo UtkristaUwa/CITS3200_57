@@ -16,25 +16,16 @@ Environment:
     export GEMINI_API_KEY="your_api_key_here"
 """
 
-from __future__ import annotations
-
 import os
-import sys
 import json
-import uuid
-import hashlib
-import logging
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Optional
 
 from google import genai
 from google.genai import types
 from google.genai import errors as genai_errors
 from pydantic import BaseModel, Field
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
-
-# Ignore noisy automation warnings from SDK
-logging.getLogger("google_genai.models").setLevel(logging.ERROR)
 
 # Initialize Gemini Client
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
@@ -441,25 +432,18 @@ def process_tender(documents_dir: str, source_id: Optional[str] = None) -> dict:
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
 
-    # 1. Deterministic content hash for change detection
-    content_hash = hashlib.sha256(raw_context.encode("utf-8")).hexdigest()
-
-    # 2. AI Summarisation & Extraction
+    # 1. AI Summarisation & Extraction
     summary = summarise_tender(raw_context)
     fields = extract_tender_fields(raw_context)
 
-    # 3. Clean dates for BigQuery DATE format (YYYY-MM-DD)
+    # 2. Clean dates for BigQuery DATE format (YYYY-MM-DD)
     publish_date_bq = fields.publish_date.split("T")[0] if fields.publish_date else None
     closing_date_bq = fields.closing_date.split("T")[0] if fields.closing_date else None
 
-    # 4. Generate unique tender ID if not present
-    tender_id = (
-        f"{source_id}_{fields.source_reference_id}"
-        if (source_id and fields.source_reference_id)
-        else str(uuid.uuid4())
-    )
+    # 3. Composite tender ID if available (otherwise left to DB/caller)
+    tender_id = f"{source_id}_{fields.source_reference_id}" if (source_id and fields.source_reference_id) else fields.source_reference_id
 
-    # 5. Pack tags or extra metadata into raw_extra if desired
+    # 4. Pack tags or extra metadata into raw_extra
     raw_extra = json.dumps({"tags": fields.tags}) if fields.tags else None
 
     return {
@@ -483,7 +467,7 @@ def process_tender(documents_dir: str, source_id: Optional[str] = None) -> dict:
         "contact_phone": fields.contact_phone,
         "lodgment_address": fields.lodgment_address,
         "documents": documents,
-        "content_hash": content_hash,
+        "content_hash": None,
         "first_seen_at": None,
         "last_scanned_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": None,
@@ -500,10 +484,7 @@ build_db_record = process_tender
 # ==============================================================================
 
 if __name__ == "__main__":
-    # Allow passing tender directory from command line: python tender_processor.py <path>
-    target_dir = sys.argv[1] if len(sys.argv) > 1 else "tenders_data/26-0084"
-    
-    # Resolve path if run from inside data_ingestion directory or root
+    target_dir = "tenders_data/26-0084"
     if not os.path.exists(target_dir) and os.path.exists(os.path.join("..", target_dir)):
         target_dir = os.path.join("..", target_dir)
 
