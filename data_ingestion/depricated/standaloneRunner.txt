@@ -19,3 +19,7 @@ if __name__ == "__main__":
 
 # optional peram for process_tender() if source_id is metadata
 , source_id: Optional[str] = None
+
+# random
+# Backwards compatibility alias
+build_db_record = process_tender
