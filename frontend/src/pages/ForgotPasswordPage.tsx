@@ -27,8 +27,8 @@ export default function ForgotPasswordPage() {
 
     try {
         await sendPasswordResetEmail(auth, email, {
-        url: `${window.location.origin}/reset-password`,
-        handleCodeInApp: true,
+          url: `${window.location.origin}/reset-password`,
+          handleCodeInApp: false,
         });
     } catch (err: unknown) {
       // Chosen to ignore auth/user-not-found because we want it to always show the same success state whether or not the email exists for security reasons
