@@ -19,9 +19,18 @@ import {
   DialogActions,
   IconButton,
   Divider,
+  TextField,
+  Collapse,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { getTenders, type Tender } from '../lib/api';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -281,6 +290,33 @@ export default function TendersPage() {
   const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // --- UI State for Search & Filters ---
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // States for Dropdowns
+  const [jurisdiction, setJurisdiction] = useState('');
+  const [category, setCategory] = useState('');
+  const [status, setStatus] = useState('');
+  const [year, setYear] = useState('');
+  
+  // States for Ranges (Date and Value)
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
+  const [minValue, setMinValue] = useState('');
+  const [maxValue, setMaxValue] = useState('');
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setJurisdiction('');
+    setCategory('');
+    setStatus('');
+    setYear('');
+    setMinDate('');
+    setMaxDate('');
+    setMinValue('');
+    setMaxValue('');
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -325,7 +361,54 @@ export default function TendersPage() {
     setModalOpen(false);
   };
 
-  const sortedTenders = [...tenders].sort(
+  // === CLIENT-SIDE FILTERING LOGIC ===
+  const filteredTenders = tenders.filter((tender) => {
+    // 1. Keyword Search 
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchTitle = tender.title?.toLowerCase().includes(query) ?? false;
+      const matchDesc = tender.description?.toLowerCase().includes(query) ?? false;
+      if (!matchTitle && !matchDesc) return false;
+    }
+    
+    // 2. Jurisdiction / Location 
+    if (jurisdiction) {
+      const tenderLoc = tender.location?.toLowerCase() || '';
+      const selectedLoc = jurisdiction.toLowerCase();
+      if (!tenderLoc.includes(selectedLoc)) return false;
+    }
+
+    // 3. Category & Status 
+    if (category && tender.category?.toLowerCase() !== category.toLowerCase()) return false;
+    if (status && tender.status?.toLowerCase() !== status.toLowerCase()) return false;
+
+    // 4. Year Filter 
+    if (year) {
+      const targetDate = tender.closing_date || tender.publish_date;
+      if (!targetDate || !targetDate.startsWith(year)) return false;
+    }
+    
+    // 5. Value Range Filter 
+    if (minValue !== '') {
+      if (tender.value_amount == null || tender.value_amount < Number(minValue)) return false;
+    }
+    if (maxValue !== '') {
+      if (tender.value_amount == null || tender.value_amount > Number(maxValue)) return false;
+    }
+    
+    // 6. Date Range Filter 
+    if (minDate) {
+      if (!tender.closing_date || new Date(tender.closing_date) < new Date(minDate)) return false;
+    }
+    if (maxDate) {
+      if (!tender.closing_date || new Date(tender.closing_date) > new Date(maxDate)) return false;
+    }
+
+    return true; 
+  });
+
+  // Apply sorting on the FILTERED list, not the raw tenders list
+  const sortedTenders = [...filteredTenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
 
@@ -343,6 +426,139 @@ export default function TendersPage() {
       </AppBar>
 
       <Container maxWidth="md">
+        
+        {/* === FILTER & SEARCH SECTION === */}
+        <Box sx={{ mb: 4, p: 2, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search tenders by keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="action" />
+                    </InputAdornment>
+                  ),
+                }
+              }}
+            />
+            <Button 
+              variant={showFilters ? "contained" : "outlined"} 
+              startIcon={<FilterListIcon />}
+              onClick={() => setShowFilters(!showFilters)}
+              sx={{ flexShrink: 0 }}
+            >
+              Filters
+            </Button>
+          </Box>
+
+          <Collapse in={showFilters}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
+              
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <FormControl size="small" fullWidth>
+                  <InputLabel>Jurisdiction</InputLabel>
+                  <Select value={jurisdiction} label="Jurisdiction" onChange={(e) => setJurisdiction(e.target.value)}>
+                    <MenuItem value=""><em>All</em></MenuItem>
+                    <MenuItem value="Western Australia">Western Australia (WA)</MenuItem>
+                    <MenuItem value="Victoria">Victoria (VIC)</MenuItem>
+                    <MenuItem value="New South Wales">New South Wales (NSW)</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" fullWidth>
+                  <InputLabel>Year</InputLabel>
+                  <Select value={year} label="Year" onChange={(e) => setYear(e.target.value)}>
+                    <MenuItem value=""><em>All Time</em></MenuItem>
+                    <MenuItem value="2026">2026</MenuItem>
+                    <MenuItem value="2025">2025</MenuItem>
+                    <MenuItem value="2024">2024</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" fullWidth>
+                  <InputLabel>Category</InputLabel>
+                  <Select value={category} label="Category" onChange={(e) => setCategory(e.target.value)}>
+                    <MenuItem value=""><em>All</em></MenuItem>
+                    <MenuItem value="tender">Tender</MenuItem>
+                    <MenuItem value="rfq">RFQ</MenuItem>
+                    <MenuItem value="eoi">EOI</MenuItem>
+                    <MenuItem value="grant">Grant</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" fullWidth>
+                  <InputLabel>Status</InputLabel>
+                  <Select value={status} label="Status" onChange={(e) => setStatus(e.target.value)}>
+                    <MenuItem value=""><em>All</em></MenuItem>
+                    <MenuItem value="open">Open</MenuItem>
+                    <MenuItem value="closed">Closed</MenuItem>
+                    <MenuItem value="awarded">Awarded</MenuItem>
+                    <MenuItem value="unknown">Unknown</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" fullWidth disabled>
+                  <InputLabel>Tags (Coming soon)</InputLabel>
+                  <Select value="" label="Tags (Coming soon)">
+                    <MenuItem value=""><em>Pending AI</em></MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  type="date"
+                  label="Closing After"
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  value={minDate}
+                  onChange={(e) => setMinDate(e.target.value)}
+                />
+                <TextField
+                  size="small"
+                  fullWidth
+                  type="date"
+                  label="Closing Before"
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  value={maxDate}
+                  onChange={(e) => setMaxDate(e.target.value)}
+                />
+                <TextField
+                  size="small"
+                  fullWidth
+                  type="number"
+                  label="Min Value ($)"
+                  value={minValue}
+                  onChange={(e) => setMinValue(e.target.value)}
+                />
+                <TextField
+                  size="small"
+                  fullWidth
+                  type="number"
+                  label="Max Value ($)"
+                  value={maxValue}
+                  onChange={(e) => setMaxValue(e.target.value)}
+                />
+              </Box>
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                <Button size="small" color="inherit" onClick={handleResetFilters}>
+                  Clear All Filters
+                </Button>
+              </Box>
+
+            </Box>
+          </Collapse>
+        </Box>
+        {/* === END FILTER & SEARCH SECTION === */}
+
         {loading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <CircularProgress />
@@ -357,8 +573,7 @@ export default function TendersPage() {
 
         {!loading && !error && sortedTenders.length === 0 && (
           <Alert severity="info">
-            No tenders yet — nothing's been submitted to BigQuery. Run{' '}
-            <code>ingestion/validate_and_submit.py</code> against some real data first.
+            No tenders match your current filters.
           </Alert>
         )}
 
