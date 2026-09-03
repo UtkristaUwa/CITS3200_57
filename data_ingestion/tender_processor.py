@@ -31,9 +31,10 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_ex
 client = genai.Client(
     vertexai = True,
     project="tenderai-dev",
-    location="australia-southeast1")
+    location="australia-southeast1"
+)
 
-MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+MODEL = "gemini-3.6-flash"
 
 # ===
 # Tag Taxonomy
