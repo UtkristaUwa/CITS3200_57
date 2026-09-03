@@ -3,7 +3,11 @@ import TendersPage from './pages/TendersPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import { RequireAuth, RedirectIfAuthed } from './lib/RequireAuth';
+import { RequireAuth, RedirectIfAuthed, RequireAdmin } from './lib/RequireAuth';
+import AdminLayout from './layouts/AdminLayout';
+import UserManagementPage from './pages/UserManagementPage';
+import SystemHealthPage from './pages/SystemHealthPage';
+import ConfigPage from './pages/ConfigPage';
 
 export default function App() {
   return (
@@ -38,6 +42,20 @@ export default function App() {
           <ResetPasswordPage />
         }
       />
+
+      <Route
+        path="/admin"
+        element={
+          <RequireAdmin>
+            <AdminLayout />
+          </RequireAdmin>
+        }
+      >
+        <Route index element={<UserManagementPage />} />
+        <Route path="users" element={<UserManagementPage />} />
+        <Route path="health" element={<SystemHealthPage />} />
+        <Route path="config" element={<ConfigPage />} />
+      </Route>
     </Routes>
   );
 }

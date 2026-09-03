@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   Container,
@@ -32,8 +30,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { getTenders, type Tender } from '../lib/api';
-import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import TopNav from '../components/TopNav';
 
 function formatDate(value: string | null): string {
   if (!value) return 'Not specified';
@@ -414,17 +411,7 @@ export default function TendersPage() {
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
-      <AppBar position="static" color="default" sx={{ mb: 3 }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 700 }}>
-            TenderAI
-          </Typography>
-          <Button color="inherit">Favorites</Button>
-          <Button color="inherit">Admin</Button>
-          <Button color="inherit" onClick={() => signOut(auth)}>Logout</Button>
-        </Toolbar>
-      </AppBar>
-
+      <TopNav />
       <Container maxWidth="md">
         
         {/* === FILTER & SEARCH SECTION === */}
