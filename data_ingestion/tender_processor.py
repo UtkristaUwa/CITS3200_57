@@ -34,7 +34,7 @@ client = genai.Client(
     location="australia-southeast1"
 )
 
-MODEL = "gemini-3.6-flash"
+MODEL = "gemini-2.5-flash"
 
 # ===
 # Tag Taxonomy
