@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import TendersPage from './pages/TendersPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { RequireAuth, RedirectIfAuthed } from './lib/RequireAuth';
 
 export default function App() {
@@ -20,6 +22,20 @@ export default function App() {
           <RedirectIfAuthed>
             <LoginPage />
           </RedirectIfAuthed>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <RedirectIfAuthed>
+            <ForgotPasswordPage />
+          </RedirectIfAuthed>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <ResetPasswordPage />
         }
       />
     </Routes>
