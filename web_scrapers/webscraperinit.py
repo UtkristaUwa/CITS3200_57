@@ -195,7 +195,7 @@ def download_tender_documents(client: httpx.Client, doc_page_url: str, tender_fo
 # ==============================================================================
 # 4. FULL DETAILS PAGE PARSER
 # ==============================================================================
-def process_tender_details(client: httpx.Client, detail_url: str) -> None:
+def process_tender_details(client: httpx.Client, detail_url: str, output_dir: str) -> None:
     """Scrapes metadata from the Full Details page, writes TXT, and downloads docs."""
     debug(f"\n  [HTTP GET] Fetching Full Details: {detail_url}")
     try:
@@ -229,7 +229,7 @@ def process_tender_details(client: httpx.Client, detail_url: str) -> None:
 
         # 3. Create unique tender folder
         folder_name = sanitize_filename(atm_id)
-        tender_folder = os.path.join(OUTPUT_DIR, folder_name)
+        tender_folder = os.path.join(output_dir, folder_name)
         os.makedirs(tender_folder, exist_ok=True)
 
         # 4. Save metadata TXT
@@ -308,7 +308,7 @@ def run_scraper(limit: int = 10, output_dir: str = "tenders_data") -> None:
 
                 tenders_scraped += 1
                 debug(f"\n[{tenders_scraped}/{limit}] Ingesting Tender...")
-                process_tender_details(client, full_detail_url)
+                process_tender_details(client, full_detail_url, output_dir=output_dir)
                 time.sleep(0.5)
 
             page_num += 1
