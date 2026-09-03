@@ -9,6 +9,9 @@ from typing import Dict
 from web_scrapers.webscraperinit import run_scraper as run_web_scraper
 from document_scraper.main import process_tenders as run_doc_scraper
 
+# Improt tender processing code
+from data_ingestion.tender_processor import process_tender
+
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
@@ -62,6 +65,13 @@ def main():
 
             if not extracted_texts:
                 logger.warning(f"No text files found for {tender_folder_name}. Skipping.")
+                continue
+
+            # Run tender processing on current tender
+            try:
+                print(process_tender(tender_path))
+            except Exception as e:
+                logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
 
             # ==================================================================
