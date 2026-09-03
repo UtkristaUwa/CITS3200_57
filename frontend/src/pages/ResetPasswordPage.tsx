@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { useNavigate, useSearchParams, Link as RouterLink } from 'react-router-dom';
+import { useSearchParams, Link as RouterLink } from 'react-router-dom';
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
 import {
   Box,
@@ -17,7 +17,6 @@ import { auth } from '../lib/firebase';
 type Status = 'verifying' | 'ready' | 'invalid' | 'submitting' | 'success';
 
 export default function ResetPasswordPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const oobCode = searchParams.get('oobCode');
 
