@@ -433,6 +433,16 @@ def process_tender(documents_dir: str) -> dict:
     2. Runs summarisation & field extraction directly from the raw context.
     3. Formats fields to match the BigQuery database schema.
     """
+
+    # print directory structure for debugging
+    for root, dirs, files in os.walk(documents_dir):
+        level = root.replace(documents_dir, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            print(f"{subindent}{f}")
+
     relevant_docs = gather_relevant_documents(documents_dir)
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
