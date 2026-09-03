@@ -40,3 +40,26 @@ export function RedirectIfAuthed({ children }: { children: ReactNode }) {
 
   return <>{children}</>;
 }
+
+// This wraps any route that should only be reachable by an admin user and requires both being logged in and having isAdmin as true.
+export function RequireAdmin({ children }: { children: ReactNode }) {
+  const { user, loading, isAdmin } = useAuth();
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
