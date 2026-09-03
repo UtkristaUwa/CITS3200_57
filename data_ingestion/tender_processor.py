@@ -305,11 +305,13 @@ def is_document_relevant(path: str) -> bool:
         contents=f"Filename: {os.path.basename(path)}\n\n{text[:15000]}",
         config=types.GenerateContentConfig(
             system_instruction=DOC_TRIAGE_SYSTEM_INSTRUCTION,
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=DocumentRelevance,
             temperature=0.1,
         ),
     )
+    
     decision: DocumentRelevance = response.parsed
     return decision.relevant
 
@@ -388,6 +390,7 @@ def summarise_tender(raw_context: str | None) -> TenderSummary:
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=SUMMARY_SYSTEM_INSTRUCTION,
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=TenderSummary,
             temperature=0.2,
@@ -411,6 +414,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=FIELD_EXTRACTION_SYSTEM_INSTRUCTION,
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=TenderFields,
             temperature=0.1,

@@ -51,7 +51,7 @@ def main():
             if not os.path.isdir(tender_path):
                 continue
 
-            logger.info(f"Extracting texts for tender: {tender_folder_name}")
+            # logger.info(f"Extracting texts for tender: {tender_folder_name}")
 
             # Dictionary to hold filename -> file content
             extracted_texts: Dict[str, str] = {}
