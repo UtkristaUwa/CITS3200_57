@@ -470,8 +470,3 @@ def process_tender(documents_dir: str) -> dict:
         "updated_at": None,
         "raw_extra": raw_extra,
     }
-
-
-# Backwards compatibility alias
-build_db_record = process_tender
-
