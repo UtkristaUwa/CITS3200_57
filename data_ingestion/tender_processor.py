@@ -434,7 +434,7 @@ def process_tender(documents_dir: str) -> dict:
     2. Runs summarisation & field extraction directly from the raw context.
     3. Formats fields to match the BigQuery database schema.
     """
-
+    print("start of process_tender function")
     # print directory structure for debugging
     for root, dirs, files in os.walk(documents_dir):
         level = root.replace(documents_dir, '').count(os.sep)

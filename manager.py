@@ -56,16 +56,16 @@ def main():
             # Dictionary to hold filename -> file content
             extracted_texts: Dict[str, str] = {}
 
-            # Read the web-scraped metadata .txt and the document .txt files
-            for filename in os.listdir(tender_path):
-                if filename.endswith(".txt"):
-                    file_path = os.path.join(tender_path, filename)
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                        extracted_texts[filename] = f.read()
+            # # Read the web-scraped metadata .txt and the document .txt files
+            # for filename in os.listdir(tender_path):
+            #     if filename.endswith(".txt"):
+            #         file_path = os.path.join(tender_path, filename)
+            #         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            #             extracted_texts[filename] = f.read()
 
-            if not extracted_texts:
-                logger.warning(f"No text files found for {tender_folder_name}. Skipping.")
-                continue
+            # if not extracted_texts:
+            #     logger.warning(f"No text files found for {tender_folder_name}. Skipping.")
+            #     continue
 
             # Run tender processing on current tender
             try:
