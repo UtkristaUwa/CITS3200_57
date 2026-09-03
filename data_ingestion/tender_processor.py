@@ -465,6 +465,7 @@ def process_tender(documents_dir: str) -> dict:
         "lodgment_address": fields.lodgment_address,
         "documents": documents,
         "content_hash": None,
+        "tags": None,
         "first_seen_at": None,
         "last_scanned_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": None,
