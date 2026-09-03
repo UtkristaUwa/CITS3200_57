@@ -1,0 +1,94 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520558
+================================================================================
+
+Title      : CQ Trade Contract Painting Services
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=bacb05d8e6144e45bde625f52847875bs520558
+Scraped At : 2026-08-25 21:50:55
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP520558
+Buyers Reference #: QBTCPA26CQ
+Opens:
+    Tuesday 11 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 08 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 04 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 06 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    level 3/149 Bolsover St
+    Rockhampton City, Queensland 4700
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The State of Queensland through the Department of Housing and Public Works (Customer) is seeking to establish a Standing Offer Arrangement (SOA) for the provision of Services to the Customer, and herby invites offers for the SOA:
+    SOA Name: Trade Contractor Painting Services
+    SOA Number: QBTCPA26CQ
+    For the provision of Painting services within Central Queensland
+    NOTE: THIS TENDER IS FOR CENTRAL QUEENSLAND REGION ONLY.
+    Please contact QBuildCQProcurement@hpw.qld.gov.au for any further queries in relation to this arrangement.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 2
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Building Trade, Repairs, Maint.
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Painting Supplies & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 2 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

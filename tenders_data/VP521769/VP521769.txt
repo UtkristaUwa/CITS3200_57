@@ -1,0 +1,110 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521769
+================================================================================
+
+Title      : ITO | Linen Hire and Laundry Service
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3d94d82a317b43598fb22e20cc9a6e8cs521769
+Scraped At : 2026-08-25 21:50:28
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: TAFE Queensland
+VP Reference #: VP521769
+Buyers Reference #: TQC0013881
+Opens:
+    Wednesday 19 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 09 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 02 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 07 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: TAFE Queensland
+Location:
+    100 Bridge St
+    East Toowoomba, Queensland 4350
+    Australia
+WebSite: https://www.tafeqld.edu.au/
+Business Info: TAFE Queensland are Queensland's largest, most experienced training provider. We deliver practical, industry-relevant training across a range of industries from entry-level certificates to bachelor degrees, at more than 60 locations across Queensland.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    TAFE Queensland seeks to establish a Standing Offer Arrangement (SOA) with multiple suppliers for the provision of Linen Hire and Laundry Services.
+    TAFE Queensland operates across six regions throughout Queensland, delivering practical, industry relevant training programs and supporting a diverse range of campus facilities. Five regions operate facilities including, but not limited to, training kitchens, hospitality training environments, student accommodation, healthcare training areas, and general campus amenities. These facilities require reliable, high quality linen hire and laundry services to support hygiene, presentation, and operational efficiency.
+    Suppliers are invited to respond to this Invitation to Offer (ITO) in accordance with the requirements outlined in the attached documents.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Domestic & Consumer ELEC
+    Personal & Domestic Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Domestic Products, & Consumer Electronic Products
+    1: Bedclothes & Linen & Towels
+    Personal & Domestic Services
+    1: Linen & Laundry Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Darling Downs
+    3: Far North
+    4: Gold Coast
+    5: Northern
+    6: South West
+    7: Sunshine Coast
+    8: West Moreton
+    9: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+24/Aug/2026 08:13 AM:
+    Question
+    :
+    Q1 - Can you provide more detailed usage information for each site so transport and volumes can be better understood and considered in our offer.
+    Q2 - With delivery to a campus where multiple areas are using the linen service is it expected that the provider deliver to each user area or will delivery be to one central point at the campus and collected from this staging area by users
+    Q3 - Can you clarify what contract term you are seeking to implement with successful provider eg 1 2 or 3 years
+    Answered on 24/Aug/2026 08:47 AM
+    :
+    Q1. Can you provide more detailed usage information for each site so transport and volumes can be better understood and considered in our offer?
+    Response:
+    TAFE Queensland has provided the best available information to support suppliers in preparing their offers. The volumes included within the procurement documentation are indicative only and have been developed for evaluation purposes.
+    Please refer to Attachment A – Specification and Attachment C – Linen Hire & Laundry Pricing List (Pricing Scenario tab) for indicative demand information.
+    As outlined in the Specification, service demand varies by campus and is influenced by factors such as student enrolments, training schedules, practical class delivery, events, facility utilisation, and seasonal activity. Accordingly, TAFE Queensland is unable to provide guaranteed site-specific usage volumes. Suppliers should base their offers on their capacity to service nominated locations and accommodate fluctuations in demand throughout the contract term.
+    The current estimated demand across the TAFE Queensland network is approximately 2,750 to 4,300 items per week; however, actual volumes may be higher or lower depending on operational requirements.
+    Q2. With delivery to a campus where multiple areas are using the linen service, is it expected that the provider deliver to each user area or will delivery be to one central point at the campus and collected from this staging area by users?
+    Response:
+    For the purposes of tender evaluation, suppliers should assume that delivery and collection will occur at a single nominated delivery point within each campus.
+    Specific delivery arrangements may vary between campuses and service areas and will be confirmed during implementation with the successful supplier(s). Suppliers may identify any assumptions, site requirements, or alternative service delivery approaches within their offer submission.
+    Q3. Can you clarify what contract term you are seeking to implement with the successful provider, e.g. 1, 2 or 3 years?
+    Response:
+    The contract term is stated in both the Invitation to Offer and Attachment A – Specification. The proposed Standing Offer Arrangement term is three (3) years, with an option for TAFE Queensland to extend the arrangement by up to two (2) additional periods of twelve (12) months each, at TAFE Queensland's discretion. The maximum potential term is therefore five (5) years.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

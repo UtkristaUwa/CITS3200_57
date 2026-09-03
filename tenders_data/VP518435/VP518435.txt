@@ -1,0 +1,253 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP518435
+================================================================================
+
+Title      : Executive Recruitment Standing Offer Arrangement (SOA)
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a2c73ef5fbf84568b2f738f4cf23ae4es518435
+Scraped At : 2026-08-25 21:51:41
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Public Sector Commission
+VP Reference #: VP518435
+Buyers Reference #: QG-PSC2026-4
+Opens:
+    Monday 27 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 26 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Saturday 15 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Sunday 25 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Public Sector Commission
+Location:
+    1 William St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.psc.qld.gov.au/
+Business Info:
+    The Queensland Public Sector Commission (PSC) is a small, dynamic, independent central agency in the Queensland Government. We are dedicated to supporting Queensland’s diverse public sector workforce.
+    The work that we do builds the capability of our sector service, delivering a high-performing, inclusive and future-focused public sector for Queensland
+Contact Name: Sally O'brien
+Position: Procurement and Finance Advisor
+Primary phone: 07 3003 2893
+Mobile phone: None Provided
+Fax number: None Provided
+Email: sally.obrien@psc.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Suppliers are invited to submit an offer for SOA ITO No. QG-PSC2026-4 to provide Executive Recruitment Services for roles classified at the Senior Executive Service (SES) levels SES 2 to SES 4 (and equivalent), as well as Chief Executive (CE) roles.
+    The Standing Offer Arrangement (SOA) will consist of three categories of service, as follows:
+    1. Executive Recruitment Services
+    2. Chief Executive Recruitment Services; and
+    3. Services stipulated under “selection and assessment (including scribing services)” component only for roles which are not classified as Senior Executive Service (SES) or Chief Executive (CE) roles.
+    Suppliers are required to be willing and able to provide the full, end-to-end suite of services required under the SOA to apply, as specified in Part B: SOA Details
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 13
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: HR Services & Recruitment
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Human Resource Services & Recruitment
+    1: Human Resource Consultants
+    2: Personnel Recruitment
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+30/Jul/2026 04:10 PM:
+    Question
+    :
+    We are asked to submit a Word and PDF version of Part C, the Response Schedule.
+    Within the Response Schedule many questions note: Maximum of one [1] A4 page, Arial font, size 11".
+    If we are providing our responses to those question as an attachment:
+    - What is the required naming convention for those files?
+    - Must we provide a Word and PDF version of those response documents?
+    - Can the response documents be contained within one (1) PDF document if each page clearly states the particular question being responded to?
+    Answered on 03/Aug/2026 09:58 AM
+    :
+    (edited on 03/Aug/2026 11:01 AM)
+    Hello
+    Thank you for your question, this will be addressed in the upcoming Addendum due to be posted today.
+03/Aug/2026 04:07 PM:
+    Question
+    :
+    Our organisation provides board-level search and recruitment services only; we do not undertake executive recruitment. Based on the eligibility criteria published for this Standing Offer Arrangement, it appears executive recruitment experience may be a requirement. Could you please confirm whether providers who specialise exclusively in board member search and recruitment (rather than executive recruitment) are eligible to apply, so we can determine whether to submit an offer? Or if not, under which offer should we apply.
+    Answered on 05/Aug/2026 08:21 AM
+    :
+    Thanks for your enquiry. We have addressed this as part of the Industry Briefing, a recording of which is available via the recently published Addendum 2. Specifically, I refer you to slide 9 of the Industry Briefing (out of scope services).
+    PSC cannot comment on any other ITOs or SOAs.
+03/Aug/2026 05:26 PM:
+    Question
+    :
+    Dear team,
+    I hope everyone is well.
+    Could you please confirm whether the evaluation of Executive Recruitment Services and Chief Executive Recruitment Services will be undertaken independently, or whether there is any evaluation preference for suppliers offering both categories?
+    Many thanks.
+    Warm regards,
+    Renee
+    Answered on 05/Aug/2026 08:23 AM
+    :
+    Thanks for your enquiry. This has been answered as part of the recently published Addendum 2.
+05/Aug/2026 10:06 AM:
+    Question
+    :
+    To better understand the scope of the scribing services requirement, could you clarify whether suppliers are expected to provide scribing services directly, or whether the panel is intended to facilitate the supply of scribes under temporary labour hire arrangements?
+    If the latter, could you please confirm whether this arrangement is intended to replace the current A737 Panel, or whether the two panels will operate alongside one another?
+    Answered on 07/Aug/2026 08:05 AM
+    :
+    Hello, thank you for your question. This will be addressed via an upcoming Addendum.
+05/Aug/2026 10:17 AM:
+    Question
+    :
+    Good Morning - can you please advise if the definition of "Chief Executive" in the Chief Executive Recruitment Services component includes only CEO roles or if other senior executive roles such as CFO, COO, CIO, CMO etc are also included ?
+    Answered on 06/Aug/2026 08:55 AM
+    :
+    Hello, thank you for your question. This will be addressed via an upcoming Addendum.
+05/Aug/2026 01:01 PM:
+    Question
+    :
+    Hi can you please confirm if Senior and Executive Healthcare roles are included under this SOA? or any clarification on the specialities of roles that ill be covered?
+    Answered on 06/Aug/2026 08:55 AM
+    :
+    Hello, thank you for your question. This will be addressed via an upcoming Addendum.
+05/Aug/2026 03:31 PM:
+    Question
+    :
+    Part A states "Supplier to provide details of any proposed departures in Part C: Supplier Response Schedules"; however, Part C does not appear to contain a section for proposing departures to the SOA Details, SOA Conditions or General Contract Conditions. Could the Principal please confirm where departures should be documented?
+    Answered on 10/Aug/2026 01:24 PM
+    :
+    Hi, thank you for your question. This has been addressed in the recently published Addendum 3.
+10/Aug/2026 01:38 PM:
+    Question
+    :
+    The ITO and Supplier Response Schedule request information regarding a supplier’s physical presence in Queensland, including Queensland locations and capacity to service regional and remote areas.
+    Could the Principal please confirm whether having a physical office or permanent premises in Queensland is a mandatory requirement for suppliers, or whether suppliers without a Queensland office may still submit a conforming offer where they can demonstrate the capability, resources, networks and delivery model to service Queensland Government agencies across metropolitan, regional and remote locations?
+    Answered on 11/Aug/2026 08:16 AM
+    :
+    Good morning, thank you for your question. This will be addressed in the upcoming Addendum 4.
+    Thank you.
+11/Aug/2026 11:58 AM:
+    Question
+    :
+    What information are we required to provide in the CV's of key personnel for question 4.1?
+    Answered on 17/Aug/2026 09:24 AM
+    :
+    Hello, thank you for your question. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+13/Aug/2026 02:24 PM:
+    Question
+    :
+    Good afternoon,
+    We are looking to reference a separate document in our response to Sections 4 and 5 of the Response Schedule to ensure we remain within the page limit.
+    Could you please confirm whether we are permitted to include imagery, diagrams or graphics within that supporting document, or whether the responses must be text only?
+    Thank you.
+    Kind regards,
+    Troocoo
+    Answered on 17/Aug/2026 09:24 AM
+    :
+    Hello, thank you for your question. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+13/Aug/2026 06:43 PM:
+    Question
+    :
+    Pricing for Multiple Vacancies
+    The definitions in the SOA Details references a “role” as meaning one or more vacancies at the same Executive Level, advertised at the same time. Schedule 2.1 (Pricing) refers to a percentage fee for each “role”. Does this mean that the same total fee would apply for the recruitment of a role, regardless of the number of individual vacancies/successful placements for that “role”?
+    Included Activities for Defined Service Categories
+    We wish clarify some of the defined service categories and their included activities, as some of the descriptions are broad and we can see some potential overlap in these. We wondered how this might then affect pricing under the weighted percentage model where a client was not engaging all service categories. For example:
+    -	If we were asked to provide an initial longlist/shortlist based only on review of written applications against the role requirements including selection criteria, which service category would that fit into? (it appears to fit in both 2.4 or 2.5)
+    -	If we were asked to undertake preliminary screening interviews with selected candidates prior to the selection panel determining a final shortlist, which service category would that fit into? (it appears to fit in either 2.3(d), 2.4, or 2.5)
+    Other Common Activities
+    There are some other activities which would be required for most recruitment engagements regardless of the nominated categories, but are currently specified in only one (for example, candidate care (2.6 a), administrative support (2.6 b), conflict of interest declarations (2.4 c), provision of final engagement report (2.7 d) and register of candidates (2.7 e)
+    When pricing for these activities where there may be some overlap, or where a client has different interpretation of the definitions of the included activities, what is the anticipated approach? Is it expected that we would negotiate pricing with customers, even if that might mean some variation on the approved weighted percentages? For example, if a client wants us to manage candidate care but does not want to engage the “selection and assessment” service category as a whole, would we negotiate a partial percentage given that activity is included in the service category?
+    Key Personnel for Service Category 3 (Selection and Assessment Component only)
+    Would the requirement for key personnel to be approved for engagement under the SOA also apply to key personnel who would only be engaged to provide lower level scribing services and would not deliver SES/CE Recruitment Services? If so, do we need to submit details in relation to those key personnel in our tender response?
+    Answered on 17/Aug/2026 09:25 AM
+    :
+    Hello, thank you for your questions. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+14/Aug/2026 10:34 AM:
+    Question
+    :
+    Further to Addendum 4 whereby the mandatory criteria relating to customer data being hosted solely within Australia now being desirable, and the removal of some relevant clauses in the Part B SOA Details, in Part C Supplier response schedule there are a number of questions relating to this requiring yes or no answers to whether Suppliers and Subcontractors agree to host all data in Australia (1.3 Sub Contractors, 2.1 Mandatory Requirements, 3.7 System Security). Will an updated Part C Supplier Response document be provided removing/changing these questions? Or is there a standard response all submitters can use here to indicate these are no longer required?
+    Answered on 17/Aug/2026 09:25 AM
+    :
+    Hello, thank you for your question. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+14/Aug/2026 11:22 AM:
+    Question
+    :
+    Do the changes noted in Addendum 4 regarding Australian hosting of Customer data apply to AI systems? Some AI systems can ringfence data but they are hosted in overseas territories. In other words do the changes allow for use of AI where hosting is overseas?
+    Answered on 17/Aug/2026 09:25 AM
+    :
+    Hello, thank you for your question. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+11/Aug/2026 09:13 AM:
+    Question
+    :
+    Is there an eligible customer list of who can access this SOA specifically?
+    Answered on 17/Aug/2026 09:23 AM
+    :
+    (edited on 17/Aug/2026 09:23 AM)
+    Hello, thank you for your question. This will be addressed as part of the upcoming Addendum 5. Thanks again.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+27/Jul/2026 11:23 AM: 27/07/2026 Revised wording of the 'Details' section of the request only. No other changes to the request have been made.
+27/Jul/2026 11:45 AM: 27/07/2026 #2 Revised wording of the 'Details' section of the request only due to duplication of information. No other changes to the request have been made.
+30/Jul/2026 03:48 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: (Addendum) Addendum 1 - ITO - Executive Recruitment SOA.pdf
+    Please consider this addendum when responding.
+05/Aug/2026 08:21 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: (Addendum) Addendum 2 - Attachment 1 - Industry Briefing Presentation.pdf
+    2. Added: (Addendum) Addendum 2 - ITO - Executive Recruitment SOA.pdf
+    Please consider these addenda when responding.
+10/Aug/2026 01:22 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: (Addendum) Addendum 3 - ITO - Executive Recruitment SOA.pdf
+    Please consider this addendum when responding.
+13/Aug/2026 09:02 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: (Addendum) Addendum 4 - ITO - Executive Recruitment SOA.pdf
+    Please consider this addendum when responding.
+20/Aug/2026 03:14 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: (Addendum) Addendum 5 - ITO - Executive Recruitment SOA.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 13 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,166 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519757
+================================================================================
+
+Title      : Dredging of the North Channel, South Channel and Coomera River
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=948b193741cf42099f1f70f89bcf4806s519757
+Scraped At : 2026-08-25 21:51:19
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Gold Coast Waterways Authority
+VP Reference #: VP519757
+Buyers Reference #: GCWA27301-05
+Opens:
+    Tuesday 04 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 27 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Saturday 22 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 03 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Gold Coast Waterways Authority
+Location:
+    40-44 Seaworld Dr
+    Main Beach, Queensland 4217
+    Australia
+WebSite: https://www.gcwa.qld.gov.au/
+Business Info:
+    Vision - Enhancing the Waterways Experience
+    Focus Areas and Objectives -
+    Access: Understand waterways attributes and use patterns; Continuously improve access to the waterways.
+    Connections: Enhance and manage the channel network for the benefit of waterways users.
+    Destinations: Define, promote and enhance waterways destinations.
+    Engagement: Engage with community and stakeholders effectively.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Dredging of the North Channel, South Channel and Coomera River and deposition offshore at Narrowneck
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 23
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    Marine Transp. Products & Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Dredging
+    Marine Transport & Products & Services
+    1: Dredging
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    New South Wales
+    1: Mid-North Coast
+    2: Richmond-Tweed
+    Queensland
+    1: Brisbane
+    2: Gold Coast
+    3: Sunshine Coast
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+05/Aug/2026 01:27 PM:
+    Question
+    :
+    The documents include GCWA27301-05_Part_11-Returnable_Schedules.pdf, but will a Word version of this file be available?
+    Thanks in advance.
+    Answered on 18/Aug/2026 07:20 AM
+    :
+    WORD version uploaded to QTenders
+14/Aug/2026 11:02 AM:
+    Question
+    :
+    A friendly nudge to ask if you could please provide a Word version of GCWA27301-05_Part_11-Returnable_Schedules.pdf for download.
+    Thank you.
+    Answered on 18/Aug/2026 07:27 AM
+    :
+    WORD version of Returnable Schedules uploaded to QTender on 14/08/2026
+14/Aug/2026 11:34 AM:
+    Question
+    :
+    In Schedule 8 of Part 11 Returnable Schedules (p11), the instruction says "The Tenderer shall provide the names and positions of the key personnel proposed to be used for this
+    project. Attach a Curriculum Vitae detailing relevant experience for each."
+    Does this mean a separate CV for each key person in addition to the information to be written into the tables provided in this schedule?
+    Answered on 18/Aug/2026 07:22 AM
+    :
+    CV's for each key personnel is required.
+    The info box in Schedule 8 is to provide a brief overview - primarily why has this person been chosen to do this role.
+17/Aug/2026 01:35 PM:
+    Question
+    :
+    Could the Principal please confirm whether tenderers are permitted to submit a tender for the bed levelling component as a standalone scope, without tendering for the broader dredging works?
+    Answered on 18/Aug/2026 07:23 AM
+    :
+    Sorry but no, tenderers cannot be awarded just one portion of the works.
+18/Aug/2026 01:23 PM:
+    Question
+    :
+    Hi,
+    We'd appreciate a couple of clarifications about timing and responsibilities:
+    1. MEP timing: the anticipated award is Friday, 4 September 2026, and the pre-start meeting is Monday, 14 September. Requiring the MEP at least five business days before that meeting appears to mean submission on approximately Monday, 7 September—effectively one business day after the anticipated award. Could you please confirm if this is correct?
+    2. Weekly pH monitoring: There seems to be inconsistency/ambiguity about who is responsible for weekly pH monitoring. Part 6 – Dredge Management Plan, section 5.1.1, Table 8: Water Quality Monitoring Program (page 45) assigns weekly pH monitoring to the dredging contractor, whereas Part 8 – Technical Specification, section 14, Water Quality Monitoring & Seagrass states that GCWA’s water-quality consultant will perform it. Because the contract applies the more onerous requirement on the Contractor where documents conflict, the Contractor may otherwise need to allow for it unless GCWA clarifies responsibility. So, could you please clarify whether the Principal or the Contractor is responsible for weekly pH monitoring?
+    Answered on 18/Aug/2026 02:29 PM
+    :
+    1. MEP TIMING
+    The MEP is required within 10 business days of award of contract and at least 5 business days prior to commencement of dredging - whichever is the earliest.
+    2. WEEKLY pH MONITORING
+    The dredging Contractor must record pH levels as part of their water quality monitoring responsibilities (which include visual plumes and petroleum, scum and litter monitoring).
+    GCWA's Water Quality Monitoring consultant must include recording of pH levels in their real-time telemetry at monitoring points.
+    For clarity: the Contractor confirms pH levels adjacent to the dredge and the WQM consultant confirms pH levels adjacent to sensitive receptors.
+21/Aug/2026 05:15 PM:
+    Question
+    :
+    Three Questions:
+    -	South Channel Area B Dredge Depth. Design and maximum dredge depths are the same (-3.0m LAT; Part 5 Table 1). The corresponding design and maximum volumes in Table 2 are not the same. Can you confirm the maximum depth for South Channel Area B.
+    -	Batter Tolerance. The design drawings (Part 5 Appendix B1 & B2) typical dredge section show the design and maximum dredge profile which includes a dredge batter that extends up from the maximum dredge depth. Part 8 Clause 12.3 states “Where the dredged depth exceeds the minimum depth, the line of the batter shall be extended downwards until it meets the actual dredged depth.” This description does not sound consistent with the batter tolerance shown in the drawings. Please confirm that the maximum profile shown in the drawing is correct.
+    -	Coomera River Area F Methodology. Part 5 Table 2 indicates that bed levelling is the expected disposal option for Area F, but Price Schedule includes disposal at Narrowneck with bed levelling as “RATE ONLY”. Please clarify.
+    Thank you
+    Answered on 24/Aug/2026 12:25 PM
+    :
+    1 - SOUTH CHANNEL DEPTH
+    SMP Table 2 is correct. RFT Part 5 Table 1 is incorrect.
+    South Channel Area B design depth is -4.5m LAT +0.5m insurance = -5.0mLAT maximum payable dredge depth.
+    2 - BATTER TOLERANCE
+    Maximum volume calculations are based on the profile provided in the design drawings.
+    The details specified in Part 8 Clause 12.3 aim to clarify that the batter must extend from the toe of the actual dredged depth.
+    The latter is the required and expected configuration.
+    3 - COOMERA AREA F
+    Sorry for the confusion.
+    Although deposition at Narrowneck is the preferred option, it is anticipated that the cost associated with removing only 269m³ to achieve the design depth would be disproportionate and not cost-effective. Accordingly, bed levelling is expected to be instructed as the more practical approach.
+    However, the current scope is still for deposition at Narroweneck and the cost sheet must reflect this.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+05/Aug/2026 01:28 PM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 GCWA27301-05 Part 5 - Project Brief Appendix B1 - Nth Channel Sth Channel Drawings.pdf
+    2. Added: 	 GCWA27301-05 Part 6 - DMP Appendix A1 - Nth Channel Sth Channel Drawings.pdf
+    Please consider these attachments when responding.
+14/Aug/2026 11:42 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 GCWA27301-05 Part 11 - Returnable Schedules.docx
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 23 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,111 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519747
+================================================================================
+
+Title      : Ports North - FY26 Heritage Wharves Maintenance
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8f1724ed8b16458599413a255ec2b9cds519747
+Scraped At : 2026-08-25 21:51:20
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Far North Queensland Ports Corporation Ltd
+VP Reference #: VP519747
+Buyers Reference #: CNS 26-22-01
+Opens:
+    Tuesday 04 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 04 September 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 28 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 25 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Far North Queensland Ports Corporation Ltd
+Location:
+    Hartley St
+    Cairns City, Queensland 4870
+    Australia
+WebSite: https://www.portsnorth.com.au/
+Business Info: Ports North is responsible for the development and management of the declared Ports of Cairns, Cape Flattery, Karumba, Mourilyan, Skardon River, Quintell Beach, Thursday Island, Burketown and Cooktown. We are committed to supporting economic growth of Far North Queensland, through the movement of cargo bound for domestic and international markets. We believe Ports North not only connects the communities of Far North Queensland to each other, but we also connect Far North Queensland to the world.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Ports North (the Principal) is a Queensland Government Owned Corporation (GOC) responsible for the development and management of the declared Ports of Cairns, Cape Flattery, Karumba, Mourilyan, Skardon River, Quintell Beach, Thursday Island, Burketown and Cooktown. Ports North’s operations and facilities are vital to the economic development of the regional centres they service and the State's tourism and export performance.
+    Wharves 1-5 and the Wharf 6 Taper in the Port of Cairns were constructed prior to 1915 and are heritage listed. The wharves have a long history of maintenance and repairs. As part of the ongoing Maintenance Strategy for the Heritage Wharves multiple piles, beams and deck soffit areas have been identified as requiring structural repairs.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    In general, the scope of work includes:
+    • Implementation of all Project Management Plans and Insurances necessary for the works (WH&S, QA, EMP, TMP, Program)
+    • Provision of appropriate access and environmental controls, including containment measures.
+    • Removal of degraded concrete by high pressure hydro-demolition.
+    • Replacement of severely corroded reinforcement bars.
+    • Reinstatement of concrete.
+    • Application of silanes to the new concrete surfaces.
+    • Provision of records and as-constructed information.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+    Gas Energy, Infrastructure, Equipment
+    Marine Transp. Products & Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Other Maintenance & Services
+    Construction & Operation
+    1: Demolition Services
+    2: Other Civil Construction Materials & Services
+    Gas Energy, Infrastructure, Equipment, Services
+    1: Maintenance and Support Services
+    Marine Transport & Products & Services
+    1: Marine Maintenance Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Far North
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+07/Aug/2026 01:52 PM:
+    Question
+    :
+    1. There does not seem to have quantities in the BOQ. Drawings have broad quantities (54 piles for instance). Could you please provide all quantities to price accordingly (m2 of repairs per type)
+    2. The contract mentions liquidated damages in case program is not met. However, it does not seem to have any targeted completion date. Please provide an indication as to when the works are intended to start and intended to be completed.
+    3. There is a note in the specification making reference to galvashied anodes, however, it is not clear whether or not these are required. Please confirm.
+    Answered on 10/Aug/2026 12:12 PM
+    :
+    Please see below responses to your Request for Information.
+    1 - A Bill of Quantities has not been published as part of the Tender invitation. Refer to Part C Clause 1.6-1.9. Refer also to Part D, Appendix C, Clause 4.
+    2 - It is not expected that a timeframe to completion can be accurately determined at the start of the project. Target Completion Date will be determined jointly by the Principal and successful Contractor as the works are underway; as detailed condition survey efforts inform the extent of work to be completed; and as the general rate of progress is established and observed on site by the project team.
+    3 - Part D, Appendix C, Clause 1.1 makes reference to AS 2239. However, the Specification currently does not require that sacrificial anodes are installed as part of concrete patch repairs. If Tenderers consider this a valuable component of repair methodology, they are invited to provide an optional Rate to Design, Supply and Install anodes (say a Rate per 10 or 20 anodes), for consideration by the Principal. The provision of this optional Rate is not mandatory.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

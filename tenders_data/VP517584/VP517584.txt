@@ -1,0 +1,132 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP517584
+================================================================================
+
+Title      : Sippy Downs Campus Building Refurbishments
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7c31e52435024be386f9ac55c00d1389s517584
+Scraped At : 2026-08-25 21:51:44
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: UniSC
+VP Reference #: VP517584
+Buyers Reference #: UniSC2684
+Opens:
+    Monday 20 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 01 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 27 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Saturday 31 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: UniSC
+Location:
+    90 Sippy Downs Dr
+    Sippy Downs, Queensland 4556
+    Australia
+WebSite: https://www.usc.edu.au/
+Business Info: Educational institution in which students study for degrees and academic research is undertaken.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The tender comprises of two scopes, with separable portions, which University Sunshine Coast may elect to award to one supplier, or separate the scopes based on value delivery and program requirements. The tender is set out as:
+    PART B.1 – BUILDING B REFURBISHMENT - 1 separable portion
+    The University of the Sunshine Coast (UniSC) invites qualified contractors to tender for the delivery of the Building B Fresh Project at the Sippy Downs Campus under a Design and Construct contract. The project delivers a comprehensive program of internal and external refurbishment works to Building B - the University’s original and historically significant campus building.
+    The successful supplier will be responsible for delivering the required works in accordance with UniSC requirements and the issued design documentation, within an operational university environment. The works will require effective coordination, staging and interface management, including alignment with early works delivered separately by UniSC. Further details of the scope, technical requirements, exclusions and contractual conditions are provided in Part B.1 of this Request for Tender.
+    PART B.2 – BATHROOM AND OFFICE REFURBISHMENT - 4 separable portions
+    The University of the Sunshine Coast (UniSC) wishes to invite qualified suppliers to provide design and construction services for the refurbishment and upgrade of selected bathroom amenities across Buildings I, K and Q1, and office facilities within Building I, at the Sippy Downs Campus.
+    The scope of services includes the design, documentation, and delivery of refurbishment works to existing facilities, incorporating demolition, replacement of finishes and fixtures, minor reconfiguration where required, and associated building services upgrades. Works will focus on modernizing amenities and office environments while maintaining functionality and integrating with existing building infrastructure. Further details of the scope, technical requirements, exclusions and contractual conditions are provided in Part B.2 of this Request for Tender.
+    There is a mandatory site information session on 10 August 2026 at 11:00am. Please register your attendance by email to Procurement@usc.edu.au by COB 6 August 2026.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 26
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Sunshine Coast
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+11/Aug/2026 06:31 PM:
+    Question
+    :
+    1. May we request the plans for K- block bathrooms mentioned at the site visit.
+    2. Will UniSC offer an office for our site managers to use or will they give us a lay down space for a site shed?
+    3. With regard to Fire Isolation – Can these be undertaken by our site supervisor on a daily basis?
+    Answered on 12/Aug/2026 09:48 AM
+    :
+    1. Please see addendum notice on 11th August identifying added K-Block drawings.
+    2. The contractor will need to supply their own site office and toilets within the agreed site compound/lay down area, the location of this area will be negotiated with UniSC and the successful contractor. The contractor will be responsible for returning the site compound/lay down back to UniSC in the same condition that it was handed to the contractor.
+    3. The contractor will need to complete the online UniSC fire isolation permit a minimum of 3 days prior to the dates and times that fire isolation is required. The contractor will need to contact UniSC Security at the beginning of each day of isolation to ensure the area/s have been isolated, the contractor will also need to contact UniSC Security at the end of each day of isolation to ensure the fire systems are returned to active. If fire isolation is required for an extended period of time (several days and nights) this can be requested by the contractor via the online UniSC fire isolation permit.
+18/Aug/2026 04:29 PM:
+    Question
+    :
+    Can you please confirm Light specifications to be used and priced.
+    Addendum 2 Dated 11 Aug states Lighting T-Schedule should be followed. Can you please advise what relevance the following 3x Light fitting documents have:
+    - VP517584_UniSC - Light Spec - Ledvance LED High Output Panel
+    - VP517584_UniSC - Light Spec - MELEC_PRODUCT_BROCHURE_MRBPV3
+    - VP517584_UniSC - Light Spec - SAL LEd downlight
+    Regards
+    Answered on 20/Aug/2026 01:21 PM
+    :
+    The Lighting T-Schedule (located within the Part E - Architectural.zip folder) is the nominated lighting schedule for tender pricing and the delivery of works for Building B and all remaining refresh works. Tenderers are to utilise the light fittings identified within this T-Schedule.
+    For the purposes of tender pricing and delivery, the Lighting T-Schedule shall take precedence over any other lighting-related documentation provided. The three Lighting specs mentioned will be removed from the tender pack to avoid confusion.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+22/Jul/2026 01:04 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 UniSC2684 - Part B.3 Design Standards.zip
+    Please consider this attachment when responding.
+27/Jul/2026 11:08 AM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 UniSC - Light Spec - Ledvance LED High Output Panel.pdf
+    2. Added: 	 UniSC - Light Spec - MELEC_PRODUCT_BROCHURE_MRBPV3.pdf
+    3. Added: 	 UniSC - Light Spec - SAL LEd downlight.pdf
+    Please consider these attachments when responding.
+29/Jul/2026 11:04 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 UniSC2684 - Addendum 1.pdf
+    Please consider this attachment when responding.
+11/Aug/2026 03:52 PM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 PART F - 006 ECM_1333192_v1_SSC0637016.pdf
+    2. Added: 	 PART F - 016 ECM_1332930_v1_SSC0636885.pdf
+    3. Added: 	 PART F - Building I Showers.pdf
+    4. Added: 	 PART F - Building K_Amenities M2.pdf
+    5. Added: 	 UniSC Signage Manual V1.9.pdf
+    6. Added: 	 UniSC2684 - Addendum 2.pdf
+    Please consider these attachments when responding.
+17/Aug/2026 04:07 PM:
+    Please note: The following attachment has been recently amended due to the file not previously uploading correctly.
+    1. Amended: 	 UniSC Signage Manual [V1.10].pdf
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 26 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

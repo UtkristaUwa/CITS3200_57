@@ -1,0 +1,105 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519257
+================================================================================
+
+Title      : Expression of Interest (EOI) Road Safety Systems Program (RSSP) ICT Managed Services
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=f1dd7171b1674f928331f7cc55396855s519257
+Scraped At : 2026-08-25 21:51:22
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - ITB
+VP Reference #: VP519257
+Buyers Reference #: TMRICT26068
+Opens:
+    Monday 03 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 31 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 24 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 28 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - ITB
+Location:
+    532 Beams Rd
+    Carseldine, Queensland 4034
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Information Technology branch (ITB).
+Contact Name: Alicia Anderson
+Position: ICT Procurement Specialist
+Primary phone: 0730666905
+Mobile phone: None Provided
+Fax number: None Provided
+Email: alicia.m.anderson@tmr.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Customer requires a Supplier to provide managed services including the provision of ongoing operational support and maintenance (ITIL) and ongoing software development services for future enhancements to the three workstreams under its Road Safety Systems Program (RSSP):
+    1. Camera and Image Data Management System (CIDMS);
+    2. Planning and Scheduling Services (PSS); and
+    3. Data, Analytics and Reporting Platform (DARP).
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: Suppliers must execute the published Deed of Confidentiality and email it to the Customer's Contact listed in Section 1, Item 4 of the Expression of Interest (EOI) document before access will be given to the Supporting Documentation outlined in Section 2, Item 5.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: IT Services
+    2: Services - Application Expertise
+    3: Services - Architecture & Design
+    4: Services - Cloud Services
+    5: Services - Consultants
+    6: Services - Maintenance Agreements
+    7: Services - Managed Services
+    8: Services - Networks
+    9: Services - Outsourced Services
+    10: Services - Security Management
+    11: Services - Software Support & Maintenance
+    12: Services - Support
+    13: Services - Testing Services
+    14: Software - Computer Software
+    15: Software - Development
+    16: Software - Other
+    17: Software - Programs
+    18: Software - SaaS
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+19/Aug/2026 09:33 AM: Please note the Closing Date was extended to 31 August 2026.
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

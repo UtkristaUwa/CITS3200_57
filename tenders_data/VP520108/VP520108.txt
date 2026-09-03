@@ -1,0 +1,104 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520108
+================================================================================
+
+Title      : Enterprise Governance, Risk and Compliance (GRC) Platform
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=05be5f08f9b44a7dbf7bdb28f98a5bfas520108
+Scraped At : 2026-08-25 21:50:47
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: WorkCover Queensland
+VP Reference #: VP520108
+Buyers Reference #: WCQ696
+Opens:
+    Thursday 13 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 07 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 28 August 2026 03:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 05 January 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: WorkCover Queensland
+Location:
+    Adelaide St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.worksafe.qld.gov.au/
+Business Info: WorkCover Queensland
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    WorkCover Queensland (WCQ) is seeking the provision and implementation of a modern Governance, Risk and Compliance (GRC) platform to ensure continuity of service, address current technology limitations, and support the organisation's risk maturity objectives and 2030 Strategy.
+    The procurement seeks a Software-as-a-Service (SaaS) GRC solution that maintains existing risk and compliance capabilities while providing a scalable foundation for future enhancement. The successful Supplier will provide the GRC platform together with ongoing application management and support services, including platform maintenance, upgrades, incident management and technical support.
+    WCQ also requires implementation services to transition from its current GRC platform and deliver the Transition State (further detailed in Part B – Statement of Requirements) of the new solution, including design, configuration, integration, testing, data migration support and defect resolution.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: Refer to ITO documentation.
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: Refer to ITO documentation.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 12
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: IT Services
+    2: Services - Support
+    3: Software - SaaS
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+20/Aug/2026 12:21 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) WCQ696 Enterprise GRC Platform - Industry Briefing Session.pdf
+    2. Added: 	 (Addendum) WCQ696 Enterprise GRC Platform - ITO Addendum 1.pdf
+    Please consider these addenda when responding.
+20/Aug/2026 03:15 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) WCQ696 Enterprise GRC Platform - Clarification No.1.pdf
+    Please consider this addendum when responding.
+21/Aug/2026 03:23 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) WCQ696 Enterprise GRC Platform - Clarification No.2.pdf
+    Please consider this addendum when responding.
+24/Aug/2026 02:59 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) WCQ696 Enterprise GRC Platform - Clarification No.3.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 12 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

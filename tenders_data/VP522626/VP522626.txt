@@ -1,0 +1,94 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP522626
+================================================================================
+
+Title      : Supply of Infliximab
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=82c124838ae34fdc96022e0aa3df11c7s522626
+Scraped At : 2026-08-25 21:50:09
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Pharmaceuticals
+VP Reference #: VP522626
+Buyers Reference #: 109936-4a Infliximab
+Estimated Value: $Over 3M
+Opens:
+    Tuesday 25 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 31 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 31 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 14 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Pharmaceuticals
+Location:
+    41 O’Connell Tce
+    Bowen Hills, Queensland 4006
+    Australia
+WebSite: https://www.health.qld.gov.au/system-governance/suppliers/procurement/about
+Business Info: System Procurement leads the procurement of goods and services, excluding ICT and infrastructure, on behalf of the Department of Health and Hospital and Health Services.
+Contact Name: Rowan Halberstater
+Position: Category Manager
+Primary phone: 07 2100 9840
+Mobile phone: None Provided
+Fax number: None Provided
+Email: rowan.halberstater@health.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Queensland Health is seeking offers for the supply of Infliximab in various presentation. Further details are outlined in the Part A and C in the tender documentation
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Drugs & Pharmaceutical Products
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Drugs & Pharmaceutical Products
+    1: Drugs & Pharmaceutical Products
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

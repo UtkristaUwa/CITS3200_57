@@ -1,0 +1,116 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP465869
+================================================================================
+
+Title      : Queensland Government - Preferred Supplier Panel for Grocery, Dairy and Beverages
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=726782126aed4feca28dde791b009d81s465869
+Scraped At : 2026-08-25 21:52:00
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Indirects
+VP Reference #: VP465869
+Buyers Reference #: HSQ101256
+Opens:
+    Friday 27 June 2025
+    (E. Australia Standard Time)
+Closes:
+    Sunday 31 January 2027 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Sunday 31 January 2027 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 30 July 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Health SP Indirects
+Location:
+    41 O’Connell Tce
+    Bowen Hills, Queensland 4006
+    Australia
+WebSite: https://www.health.qld.gov.au/system-governance/suppliers/procurement/about
+Business Info: System Procurement leads the procurement of goods and services, excluding ICT and infrastructure, on behalf of the Department of Health and Hospital and Health Services.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Queensland Government is seeking applications from Suppliers who wish to register to be a Preferred Supplier for Grocery, Dairy and Beverage Products. This is a follow on from the initial application request period released on QTenders in March 2021 (HSQ101256). As part of this Preferred Supplier Panel we are accepting supplier applications at any time. Suppliers who have submitted an application via the initial registration process (HSQ101256) do not need to resubmit an application.
+    The Preferred Supplier Panel categories include:
+    Grocery Products Dry Goods
+    Biscuits; baking mixes and supplies; flour and milled products; soups; stocks; powders; packaged desserts; savoury snacks; confectionary; nuts; grains; legumes; jelly; spreads; jams; preserves; sugar; sweetener; dry pasta; rice; noodles; cereals; oats; porridge; pulses; seasoning; dried herbs; spices; sauces; dressing; canned goods; vinegar; condiments; dried fruit; dried vegetables; fruit cups pureed fruit.
+    Frozen Goods
+    Meat; poultry; fish and seafood; vegetables; fruit; pies; pastries; cakes; generic prepared frozen meals; muffins; desserts, ice cream and convenience foods.
+    Miscellaneous
+    Packaged (chilled or dry) smallgoods such as sliced meats, fats and oils; butter; margarine; eggs and egg products; tofu; hommus.
+    Dairy Products All milk products (such as white milk; flavoured milk; specialty milks (soy, Ultra-high treatment and lactose free milk); long life milk; powdered milk; evaporated milk; condensed milk; buttermilk); yoghurt; custard; cream; sour cream; cheese
+    Beverages Tea; coffee; chocolate powders; juice; cordial; spring water; soft drink; sports drinks.
+    The following Categories of ‘Groceries, Dairy and Beverages’ are excluded:
+    •Fresh Food (Vegetable, Meat and Bread Products)
+    •Texture modified foods
+    •Prepared meals for Therapeutic Diet Requirements of Texture Modified Diets
+    •Thickened fluids
+    •Kitchen Consumables
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 4
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Food & Beverage Products
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Food & Beverage Products
+    1: Bread & Bakery Products
+    2: Coffee
+    3: Confectionary & Snacks
+    4: Drinks & Beverages
+    5: Dry Goods
+    6: Eggs
+    7: Fresh Fruit & Vegetables
+    8: Meat & Poultry & Small Goods
+    9: Milk & Dairy Products
+    10: Nuts & Seeds
+    11: Oils & Fats
+    12: Prepared Meals
+    13: Seafood
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 4 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

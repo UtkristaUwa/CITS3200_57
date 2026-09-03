@@ -1,1 +1,9 @@
+# QTenders (QLD) scraper dependencies.
+#
+# seleniumbase drives the search pages (rendered client-side by Blazor, so a
+# real browser is required) and brings requests + beautifulsoup4 with it, which
+# stage 2 uses to fetch the server-rendered VendorPanel detail pages.
+seleniumbase>=4.30
+requests>=2.31
+beautifulsoup4>=4.12
 seleniumbase>=4.30

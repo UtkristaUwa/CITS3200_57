@@ -1,0 +1,176 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520488
+================================================================================
+
+Title      : Provision of Soil Nailing for Mungar Road Batter Slip
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1fc5c73496eb4a969dab3664db48a3fes520488
+Scraped At : 2026-08-25 21:51:00
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - RoadTek
+VP Reference #: VP520488
+Buyers Reference #: RTWB017
+Opens:
+    Monday 10 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 04 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 02 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 25 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - RoadTek
+Location:
+    2/7 Takalvan St
+    Bundaberg West, Queensland 4670
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's RoadTek branch.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Provision of soil nailing for Mungar Road Batter Slip
+    Upslope:
+    1)	Descaling the face. Strip topsoil & clear vegetation as required.
+    2)	Supply & install soil nails, including grout & weepholes.
+    3)	Shotcreting including supply & installation of mesh.
+    Downslope:
+    4)	Strip topsoil & clear vegetation.
+    5)	General excavation & disposal of existing batter material. Excavation includes the removal of existing culvert end unit(s).
+    6)	Supply & install lower embankment.
+    7)	Supply & install 1/450 RCP culvert extension.
+    8)	Supply & install upper embankment.
+    9)	Supply & install soil nails, including grout & weepholes.
+    10)	Shotcreting including supply & installation of mesh.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    RoadTek will provide:
+    1)	Site supervision
+    2)	Site facilities (site office, lunchroom & toilets)
+    3)	Traffic control
+    4)	Initial survey set-out
+    5)	Set-up initial environmental & erosion controls
+    6)	Vegetation clearing & fauna spotter for access
+    7)	Material testing for audit purposes
+    8)	Pavement & landscaping (after downslope is complete).
+    9)	New signs & line marking.
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details:
+    Offerors must
+    - Comply with RoadTek’s safety & environmental management plans.
+    - Maintain RoadTek’s erosion sediment controls.
+    - All material compliance testing (e.g. embankment & concrete testing) & supply of material certifications (e.g. steel certs).
+    - Provide all materials, equipment, plant & labour required to complete the works.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 2
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Products & Materials
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+    Environmental & Heritage Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Products & Materials
+    1: Sand & Soils
+    Building Trade & Repairs & Maintenance Services
+    1: Landscaping
+    Construction & Operation
+    1: Building Construction Materials & Services
+    2: Drainage Services
+    3: Drilling & Boring Services
+    4: Other Civil Construction Materials & Services
+    5: Pavement Stabilisation Services & Materials
+    6: Road Building Products & Maintenance & Services
+    Environmental & Heritage Services
+    1: Erosion Control
+    2: Site Remediation
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Sunshine Coast
+    3: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+11/Aug/2026 04:36 PM:
+    Question
+    :
+    RFI – Soil Nail Material Requirements
+    Could you please provide further clarification on the soil nail materials required for this project?
+    In particular, could you please confirm:
+    Required soil nail diameter and steel type/grade
+    Steel bearing plate dimensions and thickness
+    Whether the HDPE corrugated sheathing is required over the full length of the soil nails or only over a nominated portion
+    Whether the HDPE corrugated sheathing can be substituted with galvanised steel bars with an epoxy coating, subject to the specified corrosion protection requirements
+    Thanks,
+    Shaping Australia Group, Ground Engineering
+    Answered on 24/Aug/2026 09:25 AM
+    :
+    Please see NTT-01 released today.
+17/Aug/2026 02:19 PM:
+    Question
+    :
+    The details for the diamater and finish of the soil nail bar is absent from the tender documents. Would you confirm the diameter and finish (Black of HDG) of the soil nail bar required, please?
+    Answered on 24/Aug/2026 09:26 AM
+    :
+    Please see NTT-01 released today.
+20/Aug/2026 03:06 PM:
+    Question
+    :
+    Hi Alanna,
+    Hope all is well.
+    We would like to request an extension to the tender closing date to allow us to finalise our submission.
+    We appreciate your consideration and remain very interested in the opportunity.
+    Answered on 24/Aug/2026 09:25 AM
+    :
+    Please see NTT-01 released today, closing date and time has been extended to Friday 4 September, 3:00pm.
+24/Aug/2026 08:52 AM:
+    Question
+    :
+    •	Could we please get some more detail on the proposed anchor diameter and bearing plate? We would propose 25 mm Gewi galvanised bars, either with an epoxy coating or HDPE sheathing for corrosion protection.
+    •	As you mentioned that the downslope areas are prone to flooding, I’m also wondering whether the designer would be open to self-drilling anchors, such as Ischebeck Titan 40/20 Duplex coated or Dywidag 40/20 Duplex coated. Dywidag has been approved on one of our current TMR projects as an equivalent to Ischebeck Titan material and offers significant cost savings compared with Titan pricing.
+    I also can’t seem to find details for the following, which are usually required for slope stabilisation projects:
+    •	Number of suitability anchors and acceptance tests required per slope.
+    •	Required shotcrete concrete strength at 28 days.
+    •	Requirement for strip drains behind the shotcrete wall.
+    Would it also be possible to get an additional week to submit our rates, given some of the above information is not currently available?
+    Answered on 24/Aug/2026 09:27 AM
+    :
+    Please see NTT-01 released today, closing date and time has been extended to Friday 4 September, 3:00pm.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+24/Aug/2026 09:20 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) Addendum-or-Clarification (1).pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 2 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

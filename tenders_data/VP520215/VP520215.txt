@@ -1,0 +1,134 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520215
+================================================================================
+
+Title      : Provision of Cleaning Services for Bribie Island Research Facility
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=cdd88f2acf07436bbd8791848adbc02cs520215
+Scraped At : 2026-08-25 21:51:09
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Primary Industries
+VP Reference #: VP520215
+Buyers Reference #: DPI27003
+Opens:
+    Friday 07 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 01 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 26 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 22 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Primary Industries
+Location:
+    275 George St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.dpi.qld.gov.au/
+Business Info: The Department of Primary Industries are dedicated to ensuring the production and protection of Queensland’s rich natural resources. This work is of critical importance to us, Australia and the planet. Operating within diverse environments and industries, each of our four business groups plays a vital role in this mission.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Department of Primary Industries (DPI), through Research Infrastructure, requires the provision of cleaning services for Bribie Island Research Facility.
+    Cleaning tasks are completed on a scheduled basis, ranging from daily cleaning tasks to annual and on-demand activities. Tasks undertaken are grouped into five service categories:
+    1.	Flooring,
+    2.	Window Glass, Sills & Internal Walls, Ceilings
+    3.	Toilets, washrooms, showers and locker rooms,
+    4.	Kitchen and breakout areas, and
+    5.	Office areas, hallways, lab rooms and furniture
+    The Supplier will be required to supply the required consumables, plant and equipment to undertake the services. The initial contract term is till 31 October 2027; with two (2) 12-month extension options. The complete contract requirements are specified in Schedule 1 of the attached ‘Contract Details’.
+    This RFQ has a mandatory industry briefing on 9:00am AEST Tuesday, 18 August 2026. Suppliers will meet at: 144 North Street, Woorim QLD 4507. Please register for the site visit via email no later than 2:00pm AEST, Friday, 14 August 2026 via procurement@dpi.qld.gov.au.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Cleaning Services, Equip, Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Cleaning Services & Equipment & Supplies
+    1: Commercial Cleaning
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Sunshine Coast
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+14/Aug/2026 07:14 AM:
+    Question
+    :
+    Good morning.
+    In the Request for Quote, Section 5. Evaluation Criteria – in particular the following
+    •	Service Delivery Approach and Compliance
+    •	Capacity and Resourcing
+    It states “Supplier to provide details in Schedule 1, Section 9.1. of the Contract Details.”
+    And “ Supplier to provide details in Schedule 1, Section 9.2 of the Contract Details.”
+    Are the answers / information to be entered into the relevant sections in the Request for Quote or in the contract Details document sections 9.1 & 9.2?
+    Answered on 14/Aug/2026 04:30 PM
+    :
+    Good afternoon,
+    Thank you for your question.
+    For the Evaluation Criteria "Service Delivery Approach and Compliance" and "Capacity and Resourcing", Suppliers are requested to provide their response within the Contract Details document in Section 9.1 and 9.2 only; the Supplier is not required to enter a response into the Request for Quote for these criteria.
+    Kind regards
+    DPI Procurement Services
+21/Aug/2026 11:39 AM:
+    Question
+    :
+    Can the Department of Primary Industries please clarify the following:
+    In the Contract Details Schedule 2 Price. It is stated
+    Cleaning Services classified as Routine with Appendix 2 – Cleaning Schedule inclusive of labour, equipment and overheads.
+    Does this mean that this pricing does NOT include periodicals?
+    And the pricing for periodicals is to be based on the following statement?
+    Additional Services
+    Note: The Supplier will provide the Customer a quote for the additional services in accordance with the below maximum prices:
+    Answered on 24/Aug/2026 02:36 PM
+    :
+    Thank you for your question.
+    The monthly fixed price is intended to cover all cleaning services classified as Routine in Appendix 2 – Cleaning Schedule, inclusive of labour, equipment, consumables, supervision, and overhead costs necessary to perform those routine tasks.
+    Any tasks classified as Additional Services in Appendix 2, including periodical cleaning activities, will be requested by the Customer as required and quoted separately by the Supplier. Any quotes provided must be in accordance with the maximum rates specified under the Additional Services pricing schedule.
+    Suppliers should ensure that their monthly Routine pricing includes all costs associated with delivering the Routine cleaning services outlined in Appendix 2.
+21/Aug/2026 02:55 PM:
+    Question
+    :
+    "Can the Customer provide indicative consumable usage/ordering volumes for the past 3 months (quantities only, no pricing required) to assist Suppliers in accurately quoting the Consumables Cost line in Schedule 2?"
+    "The performance criteria for bi-annual machine buffing requires no stains or grime remaining at completion. Can the Customer confirm whether this standard applies to pre-existing/ingrained staining that predates the Supplier's engagement? Will a condition report be conducted at contract commencement, and would remediation of any pre-existing staining fall within routine/bi-annual service scope or be treated as an Additional Service?"
+    "Wicking, where previously absorbed soiling migrates back to the carpet surface as it dries (typically 24–48 hours after extraction cleaning), is a recognised characteristic of the cleaning process rather than a defect in workmanship. Can the Customer confirm how this will be assessed against the KPI: will a follow-up spot treatment for wicking be included in the original service, and over what post-service period will 'completion' be assessed for this task?"
+    "Can the Customer confirm:
+    (a) the maximum height/number of storeys this requirement extends to across the Site;
+    (b) whether access equipment (e.g. EWP, scaffolding) required to safely perform this work will be provided by the Customer or is to be sourced and costed by the Supplier; and
+    (c) any site-specific access restrictions (e.g. proximity to labs or restricted areas) that would affect delivery of this task?"
+    Answered on 25/Aug/2026 01:59 PM
+    :
+    Good afternoon,
+    Thank you for your questions.
+    Please refer to Addendum 1, now available for download, which contains answers to the questions submitted.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+25/Aug/2026 01:57 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) DPI27003 Addendum No. 1.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

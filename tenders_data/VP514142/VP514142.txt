@@ -1,0 +1,94 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP514142
+================================================================================
+
+Title      : Forward Procurement Notice: Roadside Advertising - Department of Transport and Main Roads
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1cf240811ec344779fb8599a424781d1s514142
+Scraped At : 2026-08-25 21:51:54
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads-Central Qld
+VP Reference #: VP514142
+Opens:
+    Monday 22 June 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 31 December 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 31 December 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 07 January 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads-Central Qld
+Location:
+    61 Mary St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Program Delivery & Operations branch - Central Queensland Region.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Advance Notice – Forward Procurement
+    Agency: Department of Transport and Main Roads
+    Procurement Title: Roadside Advertising Opportunities – 2026
+    Procurement Category: Commercial Services / Advertising & Media
+    Procurement Method: Invitation to Offer
+    Status: Advance Notice only
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 1
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Advertising and Media Services
+    Signs & Barriers
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Advertising & Media Services
+    1: Advertising: Internet
+    2: Advertising: Print
+    3: Advertising: Radio
+    4: Advertising: Television
+    5: Donations
+    6: Letterbox drops and Mail outs
+    7: Media monitoring
+    8: Sponsorship
+    9: Staff Identification / Photo Id's
+    Signs & Barriers
+    1: Digital Signage
+    2: Road Signs
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Sunshine Coast
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 1 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================
