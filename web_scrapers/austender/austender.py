@@ -78,7 +78,14 @@ def log_in(client, username, password):
     differently across releases, so the form is read back and every hidden
     input is replayed rather than posting a fixed payload.
 
-    Returns True if the response looks like a signed-in session.
+    Deliberately does NOT try to judge success from the response body: on a
+    *successful* login AusTender still returns the login page, still containing
+    a password field and the word "invalid", while the session cookies it just
+    set work fine. The authoritative check is whether a documents page actually
+    resolves, which collect_documents() reports per tender and run_scraper()
+    summarises at the end.
+
+    Returns True if the form was found and submitted without a transport error.
     """
     response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
     response.raise_for_status()
@@ -87,7 +94,7 @@ def log_in(client, username, password):
         "form[action*='Login'], form"
     )
     if form is None:
-        log.error("no login form found at %s", LOGIN_URL)
+        log.error("no login form found at %s -- has the page changed?", LOGIN_URL)
         return False
 
     payload = {
@@ -107,17 +114,11 @@ def log_in(client, username, password):
     result = client.post(
         post_url, data=payload, headers=headers, follow_redirects=True, timeout=25.0
     )
-
-    body = result.text.lower()
-    if "invalid" in body or "incorrect" in body:
-        log.error("AusTender rejected the credentials")
+    if result.status_code >= 400:
+        log.error("login POST returned HTTP %s", result.status_code)
         return False
-    if "log off" in body or "logout" in body:
-        log.info("AusTender session established")
-        return True
-    # Signed in but the marker moved: treat the cookie jar as authoritative and
-    # let the first document request prove it either way.
-    log.warning("could not confirm AusTender login; continuing with session cookies")
+
+    log.info("submitted AusTender credentials; session cookies set")
     return True
 
 
@@ -330,6 +331,23 @@ def run_scraper(limit=10, output_dir=None, pause=0.5):
             page += 1
 
     log.info("AusTender: scraped %d tender(s)", len(records))
+
+    gated = sum(1 for record in records if record.documents_require_login)
+    if records and gated == len(records):
+        # Every single tender refused us. Without credentials that is simply
+        # what AusTender does; with them it means the session never took.
+        if username and password:
+            log.error(
+                "documents were gated on all %d tender(s) despite logging in -- "
+                "check AUSTENDER_USERNAME/AUSTENDER_PASSWORD",
+                gated,
+            )
+        else:
+            log.warning(
+                "documents were gated on all %d tender(s) -- set "
+                "AUSTENDER_USERNAME/AUSTENDER_PASSWORD to download them",
+                gated,
+            )
     return records
 
 

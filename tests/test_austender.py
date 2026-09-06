@@ -253,10 +253,64 @@ class TestCredentials:
             def post(self, url, data=None, **kwargs):
                 posted.update(data or {})
                 return httpx.Response(
-                    200, text="<html>Log off</html>", request=httpx.Request("POST", url)
+                    200, text="ok", request=httpx.Request("POST", url)
                 )
 
         assert austender.log_in(RecordingClient(), "user@example.test", "pw") is True
         assert posted["__RequestVerificationToken"] == "TESTTOKEN123"
         assert posted["Email"] == "user@example.test"
         assert posted["Password"] == "pw"
+
+    def test_a_successful_login_is_not_judged_by_the_response_body(
+        self, local_site, monkeypatch
+    ):
+        """
+        AusTender returns the login page -- password field, the word "invalid"
+        and all -- even when the login worked and the cookies it set are good.
+        Treating that body as a failure is what made the scraper skip every
+        document it was entitled to download.
+        """
+        base_url, root = local_site
+        (root / "login.html").write_text(
+            read_fixture("austender_login.html"), encoding="utf-8"
+        )
+        monkeypatch.setattr(austender, "LOGIN_URL", f"{base_url}/login.html")
+        monkeypatch.setattr(austender, "BASE_URL", base_url)
+
+        class LoginPageEchoingClient:
+            def get(self, url, **kwargs):
+                return httpx.Client().get(url, **kwargs)
+
+            def post(self, url, **kwargs):
+                return httpx.Response(
+                    200,
+                    text=read_fixture("austender_login.html") + "invalid",
+                    request=httpx.Request("POST", url),
+                )
+
+        assert austender.log_in(LoginPageEchoingClient(), "u", "p") is True
+
+    def test_a_rejected_login_post_is_reported(self, local_site, monkeypatch):
+        base_url, root = local_site
+        (root / "login.html").write_text(
+            read_fixture("austender_login.html"), encoding="utf-8"
+        )
+        monkeypatch.setattr(austender, "LOGIN_URL", f"{base_url}/login.html")
+        monkeypatch.setattr(austender, "BASE_URL", base_url)
+
+        class FailingClient:
+            def get(self, url, **kwargs):
+                return httpx.Client().get(url, **kwargs)
+
+            def post(self, url, **kwargs):
+                return httpx.Response(403, request=httpx.Request("POST", url))
+
+        assert austender.log_in(FailingClient(), "u", "p") is False
+
+    def test_a_missing_login_form_is_reported(self, local_site, monkeypatch):
+        base_url, root = local_site
+        (root / "login.html").write_text("<html><body>Down for maintenance</body></html>")
+        monkeypatch.setattr(austender, "LOGIN_URL", f"{base_url}/login.html")
+
+        with httpx.Client() as client:
+            assert austender.log_in(client, "u", "p") is False

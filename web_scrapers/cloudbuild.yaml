@@ -1,0 +1,28 @@
+# Builds the scraper-stage image and pushes it to the existing tender-repo
+# Artifact Registry. Run from the repo root -- the Dockerfile copies
+# web_scrapers/ out of the repo-root build context:
+#
+#   gcloud builds submit --config web_scrapers/cloudbuild.yaml --project tenderai-dev
+#
+# Cloud Build produces a linux/amd64 image, which is what Cloud Run needs; a
+# local `docker build` on an Apple Silicon machine would produce arm64 and fail
+# to start.
+substitutions:
+  _IMAGE: australia-southeast1-docker.pkg.dev/tenderai-dev/tender-repo/tender-scrapers
+  _TAG: latest
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - web_scrapers/Dockerfile
+      - -t
+      - ${_IMAGE}:${_TAG}
+      - .
+
+images:
+  - ${_IMAGE}:${_TAG}
+
+options:
+  logging: CLOUD_LOGGING_ONLY
