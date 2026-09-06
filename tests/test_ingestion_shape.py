@@ -2,8 +2,8 @@
 The scrapers' output must line up with ingestion's tender shape.
 
 Every tender.json a scraper writes is validated here against the real
-ingestion/tender.schema.json -- not a copy -- so if Kris changes the schema,
-these tests fail rather than the scrape silently producing records that
+ingestion/tender.schema.json -- not a copy -- so if that schema changes, these
+tests fail rather than the scrape silently producing records that
 validate_and_submit.py will reject.
 """
 
@@ -40,7 +40,7 @@ def assert_valid(validator, record):
     )
 
 
-class TestAgainstTheSampleKrisPosted:
+class TestAgainstTheIngestionSample:
     def test_the_sample_itself_validates(self, validator):
         """Guards the test: if this fails, the fixtures moved, not our output."""
         for record in json.loads(SAMPLE_PATH.read_text(encoding="utf-8")):

@@ -1,8 +1,8 @@
 """
 Building the ingestion record for one scraped tender.
 
-Each tender directory gets a `tender.json` in exactly the shape Kris posted in
-#db (ingestion/sample_tender.json) and validated by ingestion/tender.schema.json,
+Each tender directory gets a `tender.json` in exactly the shape defined by
+ingestion/sample_tender.json and validated by ingestion/tender.schema.json,
 so a scrape feeds straight into ingestion/validate_and_submit.py with no
 reshaping in between.
 
