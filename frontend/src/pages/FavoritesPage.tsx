@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Container, CircularProgress, Alert } from '@mui/material';
+import { Box, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard, TenderDetailModal } from '../components/TenderCard';
@@ -7,7 +7,7 @@ import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
 
-export default function TendersPage() {
+export default function FavoritesPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,12 +15,11 @@ export default function TendersPage() {
   const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setError(null);
     getTenders({ limit: 50 })
       .then((data) => {
         if (!cancelled) setTenders(data);
@@ -34,37 +33,51 @@ export default function TendersPage() {
     return () => { cancelled = true; };
   }, []);
 
-  // Pass the raw data into the custom hook to destructure all filter states and the final filtered results
-  const filterProps = useTenderFilters(tenders);
+  // Core difference: filter to keep only favorited items first, then pass to the filter hook
+  const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));
+  const filterProps = useTenderFilters(bookmarkedTenders);
 
-  // Sorting logic: prioritize favorited tenders at the top
-  const sortedTenders = [...filterProps.filteredTenders].sort(
-    (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
-  );
+  const isDataLoading = loading || loadingFavorites;
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
+
+      <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
+            My Favorites
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Manage and track your bookmarked tender opportunities.
+          </Typography>
+        </Box>
         
-        {/* Render the encapsulated FilterBar component */}
         <TenderFilterBar {...filterProps} />
 
-        {loading && (
+        {isDataLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
         )}
 
-        {!loading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {!isDataLoading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {!loading && !error && sortedTenders.length === 0 && (
-          <Alert severity="info">No tenders match your current filters.</Alert>
+        {!isDataLoading && !error && bookmarkedTenders.length === 0 && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            You haven't added any tenders to your favorites yet. Go to the Home page to discover opportunities.
+          </Alert>
         )}
 
-        {!loading && !error && sortedTenders.map((tender) => (
+        {!isDataLoading && !error && bookmarkedTenders.length > 0 && filterProps.filteredTenders.length === 0 && (
+          <Alert severity="info">
+            No favorite tenders match your current filters.
+          </Alert>
+        )}
+
+        {!isDataLoading && !error && filterProps.filteredTenders.map((tender) => (
           <TenderCard
             key={tender.tender_id}
             tender={tender}
-            isFavorite={favorites.has(tender.tender_id)}
+            isFavorite={true}
             onToggleFavorite={toggleFavorite}
             onOpenDetails={(t) => { setSelectedTender(t); setModalOpen(true); }}
           />
