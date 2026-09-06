@@ -61,6 +61,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from web_scrapers.common import (
     Document,
     build_uc_driver,
+    describe_browser_mode,
     TenderRecord,
     download_document,
     sanitise_filename,
@@ -348,7 +349,7 @@ def run_scraper(limit=0, output_dir=None, headless=True):
     `limit` of 0 means every tender. Returns the list of TenderRecords; a
     tender that fails is logged and skipped so one bad page cannot end the run.
     """
-    print(f"Launching Chrome ({'headless' if headless else 'visible window'})...")
+    print(f"Launching Chrome ({describe_browser_mode(headless)})...")
     driver = build_driver(headless)
 
     try:

@@ -189,6 +189,23 @@ class TestBrowserSetup:
         assert captured["no_sandbox"] is True
         assert "disable-dev-shm-usage" in captured["chromium_arg"]
 
+    def test_the_reported_mode_matches_what_chrome_actually_does(self, monkeypatch):
+        from web_scrapers import common
+
+        self._clean_env(monkeypatch)
+
+        assert common.describe_browser_mode(headless=True) == "headless"
+        assert common.describe_browser_mode(headless=False) == "visible window"
+
+        monkeypatch.setenv("DISPLAY", ":1001")
+
+        # Chrome is headed here, so saying "headless" would send anyone
+        # debugging a Cloudflare block down the wrong path.
+        assert common.effective_headless(headless=True) is False
+        assert common.describe_browser_mode(headless=True) == (
+            "headed on virtual display :1001"
+        )
+
     def test_a_virtual_display_overrides_headless(self, captured, monkeypatch):
         from web_scrapers import common
 

@@ -244,6 +244,18 @@ def has_display():
     return bool(os.environ.get("DISPLAY"))
 
 
+def effective_headless(headless=True):
+    """Whether Chrome will really run headless, after the display override."""
+    return False if has_display() else headless
+
+
+def describe_browser_mode(headless=True):
+    """Human-readable description of how Chrome is about to be launched."""
+    if has_display():
+        return f"headed on virtual display {os.environ.get('DISPLAY')}"
+    return "headless" if headless else "visible window"
+
+
 def build_uc_driver(headless=True):
     """
     Create the SeleniumBase UC-mode Chrome driver both browser scrapers use.
@@ -262,11 +274,7 @@ def build_uc_driver(headless=True):
     """
     from seleniumbase import Driver
 
-    options = {"uc": True, "headless": headless}
-
-    if has_display():
-        # A virtual display is available -- use it instead of headless mode.
-        options["headless"] = False
+    options = {"uc": True, "headless": effective_headless(headless)}
 
     if in_container():
         options["no_sandbox"] = True

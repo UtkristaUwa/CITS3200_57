@@ -67,6 +67,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from web_scrapers.common import (
     Document,
     build_uc_driver,
+    describe_browser_mode,
     TenderRecord,
     download_document,
     sanitise_filename,
@@ -435,7 +436,7 @@ def read_saved_urls():
 
 def collect_tenders(headless, max_pages):
     """Stage 1: walk the search results in a browser and return the tender links."""
-    print(f"Launching Chrome ({'headless' if headless else 'visible window'})...")
+    print(f"Launching Chrome ({describe_browser_mode(headless)})...")
     driver = build_driver(headless)
 
     try:
