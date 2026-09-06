@@ -104,7 +104,10 @@ and moves shared memory off the container's 64MB `/dev/shm`. All of that is
 driven by `RUNNING_IN_CONTAINER` and `DISPLAY`, so local runs are unaffected.
 
 Browser runs need more memory than the AusTender-only path: give the job at
-least 4Gi if `SOURCES` includes `vic` or `qld`.
+least 4Gi if `SOURCES` includes `vic` or `qld`. All three sources are verified
+working in Cloud Run, Cloudflare included — a GCP egress IP is not blocked by
+Buying for Victoria today, but that is the portals' call and could change, which
+is what the live tests are for.
 
 The local directory is the primary output. Mirroring to Cloud Storage is
 additive and off unless `OUTPUT_BUCKET` is set; when set, each tender folder
@@ -116,6 +119,7 @@ files to the UI is the API's job, via signed URLs.
 |---|---|---|
 | `SOURCES` | `austender` | comma-separated: `austender,vic,qld` |
 | `LIMIT` | `10` | max tenders per source (0 = no limit) |
+| `MAX_PAGES` | `0` | qld only: search pages to walk (0 = all). `LIMIT` trims only *after* pagination, so this is what shortens a QLD run. |
 | `OUTPUT_DIR` | temp dir | where to write |
 | `OUTPUT_BUCKET` | unset | mirror results to this bucket |
 | `OUTPUT_PREFIX` | `raw` | prefix within that bucket |

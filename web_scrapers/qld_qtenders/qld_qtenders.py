@@ -490,9 +490,17 @@ def collect_tenders(headless, max_pages):
             f"    URL   : {t['url']}"
             for i, t in enumerate(unique, start=1)
         ]
-        OUTPUT_FILE.write_text(
-            "\n".join(header) + "\n\n".join(blocks) + "\n", encoding="utf-8"
-        )
+        # This list is a convenience for SKIP_COLLECT reruns, not part of the
+        # scrape output, and it lands next to the source file. That directory
+        # happens to be writable in the container today because the job runs as
+        # root -- it would not be under a non-root user, and losing the whole
+        # scrape over a debugging aid would be absurd.
+        try:
+            OUTPUT_FILE.write_text(
+                "\n".join(header) + "\n\n".join(blocks) + "\n", encoding="utf-8"
+            )
+        except OSError as exc:
+            print(f"NOTE: could not write {OUTPUT_FILE.name} ({exc}) -- continuing.")
 
         print(f"\nSaved {len(unique)} tender URL(s) to {OUTPUT_FILE}")
         if duplicates:

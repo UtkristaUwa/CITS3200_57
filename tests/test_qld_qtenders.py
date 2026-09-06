@@ -140,3 +140,34 @@ class TestOutputFormat:
 
         assert records == []
         assert len(failed) == 1
+
+
+class TestUrlListIsNotLoadBearing:
+    def test_a_read_only_install_directory_does_not_lose_the_scrape(
+        self, tmp_path, monkeypatch
+    ):
+        """
+        The URL list is written next to the source file, which is only writable
+        in the container because the job happens to run as root. It is a
+        debugging aid for SKIP_COLLECT reruns -- failing to write it must never
+        cost us the tenders we just collected.
+        """
+        read_only = tmp_path / "read_only"
+        read_only.mkdir(mode=0o500)
+        monkeypatch.setattr(qld, "OUTPUT_FILE", read_only / "qld_qtenders_urls.txt")
+
+        class FakeDriver:
+            def quit(self):
+                pass
+
+        monkeypatch.setattr(qld, "build_driver", lambda headless: FakeDriver())
+        monkeypatch.setattr(qld, "load_page", lambda *a, **k: (1, 1, 1))
+        monkeypatch.setattr(
+            qld,
+            "links_on_current_page",
+            lambda driver: [{"ref": "VP1", "title": "One", "url": "https://x/1"}],
+        )
+
+        tenders = qld.collect_tenders(headless=True, max_pages=1)
+
+        assert [tender["ref"] for tender in tenders] == ["VP1"]
