@@ -1,9 +1,12 @@
-# QTenders (QLD) scraper dependencies.
+# Scraper stage dependencies.
 #
-# seleniumbase drives the search pages (rendered client-side by Blazor, so a
-# real browser is required) and brings requests + beautifulsoup4 with it, which
-# stage 2 uses to fetch the server-rendered VendorPanel detail pages.
-seleniumbase>=4.30
-requests>=2.31
+# httpx does the plain-HTTP fetching and the streaming document downloads for
+# every scraper; beautifulsoup4 parses the pages. seleniumbase is only needed
+# by the two portals that render their search results client-side (VIC, QLD)
+# and sit behind Cloudflare -- it also brings its own Chrome/chromedriver.
+httpx>=0.27
 beautifulsoup4>=4.12
 seleniumbase>=4.30
+
+# Only used when OUTPUT_BUCKET is set (i.e. in Cloud Run).
+google-cloud-storage>=2.18

@@ -47,9 +47,21 @@ Runs at `http://localhost:8000`, interactive docs at `http://localhost:8000/docs
 Copy `api/.env.example` to `api/.env` to configure; set `USE_MOCK_DATA=true` there
 if you want fixture tenders without GCP credentials.
 
+## Scrapers (`web_scrapers/`)
+```bash
+pip install -r web_scrapers/requirements.txt
+python -m web_scrapers.run_scrapers --sources austender --limit 5
+pytest                    # offline tests
+pytest --live             # also hits the real portals
+```
+Output is one directory per tender under `tenders_data/`. See
+[web_scrapers/README.md](web_scrapers/README.md) for the format, the
+per-portal document situation and the Cloud Run job.
+
 ## Deploys
 - **Frontend:** auto-deploys to Firebase Hosting on every merge to `main` via GitHub Actions (`.github/workflows/firebase-hosting-merge.yml`). PRs get a preview URL automatically.
 - **API:** not yet wired up — pending Cloud Run setup (blocked on billing, see Part 1 notes).
+- **Scrapers:** Cloud Run job `tender-scrapers` in `australia-southeast1`, run on demand.
 
 ## Who to ask
 - Cloud resources, deploy pipeline, auth/Client ID: Part 1

@@ -1,0 +1,19 @@
+<!-- AusTender /Atm/ViewDocuments/<id> as it renders for a logged-in user.
+     Synthetic: the live page redirects anonymous requests to the login form,
+     so this reproduces the documented markup -- /Atm/DownloadSoftCopy/ and
+     /Atm/DownloadAddenda/ anchors, with the filename in the title attribute or
+     in a fileName= query parameter. -->
+<html><body>
+<div class="atmDocuments">
+  <a class="rBtn" title="Approach to Market - Example Tender.docx"
+     href="/Atm/DownloadSoftCopy/0cfa9d36-97d4-495f-8065-eb1a9048fb63?fileName=Approach%20to%20Market%20-%20Example%20Tender.docx">Download</a>
+  <a class="rBtn" title="Attachment A - Statement of Requirements.pdf"
+     href="/Atm/DownloadSoftCopy/0cfa9d36-97d4-495f-8065-eb1a9048fb63?fileName=Attachment%20A%20-%20Statement%20of%20Requirements.pdf">Download</a>
+  <!-- No title attribute: the filename has to come out of the query string. -->
+  <a class="rBtn"
+     href="/Atm/DownloadAddenda/0cfa9d36-97d4-495f-8065-eb1a9048fb63?fileName=Addendum%201.pdf">Download</a>
+  <!-- Neither title nor fileName: must fall back to a generic name. -->
+  <a class="rBtn" href="/Atm/DownloadSoftCopy/0cfa9d36-97d4-495f-8065-eb1a9048fb63">Download</a>
+  <a href="/Atm/Show/0cfa9d36-97d4-495f-8065-eb1a9048fb63">Back to tender</a>
+</div>
+</body></html>

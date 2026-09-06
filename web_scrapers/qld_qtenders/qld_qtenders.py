@@ -5,9 +5,16 @@ Stage 1: walk every page of the open-tender search results and collect the link
 to each tender's detail page, writing them to a .txt file so the extraction can
 be verified.
 
-Stage 2: fetch each of those detail pages and save its full content to
-tenders_data/<VP reference>/<VP reference>.txt -- one folder per tender, ready
-to hold the attachment files once a login is available.
+Stage 2: fetch each of those detail pages and write one folder per tender
+under tenders_data/<VP reference>/ containing:
+    * <VP reference>.txt -- the tender's full detail content
+    * documents.json     -- the attachments the page reports
+    * the attachment files themselves, where they could be downloaded
+
+The public VendorPanel preview prints only a document *count* -- filenames and
+download links appear once a registered supplier account is signed in. The
+manifest therefore records one placeholder entry per undownloadable attachment
+so the shortfall is visible rather than silent.
 
     https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=N&sortBy=Opens
 
@@ -24,7 +31,7 @@ which we capture because it will become the per-tender folder name in stage 2
 
 Notes on the site:
     * The page is a Blazor app -- the tender cards are rendered client-side and
-      are NOT in the raw HTML, so a plain requests/BeautifulSoup scrape returns
+      are NOT in the raw HTML, so a plain HTTP/BeautifulSoup scrape returns
       nothing. A real browser is required.
     * Pagination is done with buttons, not links, but the ?page=N query
       parameter works when navigated to directly, which is what we do.
@@ -48,14 +55,25 @@ import re
 import time
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urljoin
 
-import requests
+import httpx
 from bs4 import BeautifulSoup
 from seleniumbase import Driver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
+from web_scrapers.common import (
+    Document,
+    TenderRecord,
+    download_document,
+    sanitise_filename,
+    tender_dir,
+    write_manifest,
+    write_tender_text,
+)
 
 URL_TEMPLATE = (
     "https://qtenders.hpw.qld.gov.au/search"
@@ -64,13 +82,19 @@ URL_TEMPLATE = (
 
 OUTPUT_FILE = Path(__file__).with_name("qld_qtenders_urls.txt")
 
-# One folder per tender, named after its VendorPanel reference (e.g. VP522442),
-# matching the tenders_data/<ID>/<ID>.txt layout already used in this repo.
-OUTPUT_DIR = Path(__file__).resolve().parents[2] / "tenders_data"
+SOURCE_ID = "qld-qtenders"
+VENDORPANEL_BASE = "https://www.vendorpanel.com.au"
+
+# Attachment links on a VendorPanel page, for the (registered-supplier) case
+# where they are rendered at all. Selected on the route, not on link text.
+DOCUMENT_LINK_SELECTOR = (
+    "a[href*='DownloadTenderDocument'], a[href*='DownloadDocument'], "
+    "a[href*='GetTenderDocument']"
+)
 
 # The detail pages live on VendorPanel and are plain server-rendered ASP.NET --
-# no JavaScript required -- so stage 2 fetches them with requests instead of a
-# browser, which is far faster than driving Chrome 125 times.
+# no JavaScript required -- so stage 2 fetches them over plain HTTP instead of
+# with a browser, which is far faster than driving Chrome 125 times.
 HTTP_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -241,8 +265,33 @@ def parse_detail(html):
         "ref": lookup.get("VP Reference #", ""),
         "buyer_ref": lookup.get("Buyers Reference #", ""),
         "documents": documents,
+        "document_links": parse_document_links(soup),
         "fields": fields,
     }
+
+
+def parse_document_links(soup):
+    """
+    Return the downloadable attachments rendered on a VendorPanel page.
+
+    The public preview prints only a document *count* -- the filenames and
+    links appear once a registered supplier account is signed in. This returns
+    an empty list for the public page and the real attachments for a signed-in
+    one, so the download path is the same either way.
+    """
+    documents = []
+    for anchor in soup.select(DOCUMENT_LINK_SELECTOR):
+        href = anchor.get("href")
+        if not href:
+            continue
+        name = anchor.get("title") or anchor.get_text(" ", strip=True)
+        documents.append(
+            Document(
+                file_name=sanitise_filename(name or "document.bin"),
+                url=urljoin(VENDORPANEL_BASE, href),
+            )
+        )
+    return documents
 
 
 def format_detail(url, detail):
@@ -283,11 +332,11 @@ def format_detail(url, detail):
     return "\n".join(lines)
 
 
-def fetch_detail(session, url, attempts=3):
+def fetch_detail(client, url, attempts=3):
     """GET a tender detail page, retrying briefly on transient failures."""
     for attempt in range(1, attempts + 1):
         try:
-            response = session.get(url, headers=HTTP_HEADERS, timeout=30)
+            response = client.get(url, headers=HTTP_HEADERS, timeout=30.0)
             response.raise_for_status()
             return response.text
         except Exception:
@@ -297,41 +346,73 @@ def fetch_detail(session, url, attempts=3):
     return None
 
 
-def save_details(tenders):
-    """Fetch every tender's detail page and write it to its own folder."""
-    session = requests.Session()
-    saved, failed = 0, []
+def save_details(tenders, output_dir=None):
+    """
+    Fetch every tender's detail page and write one folder per tender.
 
-    for index, tender in enumerate(tenders, start=1):
-        url = tender["url"]
-        listing_ref = tender.get("ref") or ""
-        try:
-            html = fetch_detail(session, url)
-            detail = parse_detail(html)
+    Each folder gets <REF>.txt, a documents.json manifest and any attachments
+    that could be downloaded. A tender that fails is recorded and skipped so
+    one bad page cannot end the run.
+    """
+    records, failed = [], []
 
-            # Prefer the reference printed on the detail page; fall back to the
-            # one captured from the search listing.
-            ref = detail["ref"] or listing_ref
-            if not ref:
-                raise ValueError("no reference number found")
-            safe_ref = re.sub(r"[^A-Za-z0-9._-]+", "_", ref).strip("_")
+    with httpx.Client(follow_redirects=True) as client:
+        for index, tender in enumerate(tenders, start=1):
+            url = tender["url"]
+            listing_ref = tender.get("ref") or ""
+            try:
+                html = fetch_detail(client, url)
+                detail = parse_detail(html)
 
-            folder = OUTPUT_DIR / safe_ref
-            folder.mkdir(parents=True, exist_ok=True)
-            out_file = folder / f"{safe_ref}.txt"
-            out_file.write_text(format_detail(url, detail), encoding="utf-8")
+                # Prefer the reference printed on the detail page; fall back to
+                # the one captured from the search listing.
+                ref = detail["ref"] or listing_ref
+                if not ref:
+                    raise ValueError("no reference number found")
 
-            docs = detail["documents"]
-            print(f"[{index}/{len(tenders)}] {safe_ref}  ({docs} attachment(s))")
-            saved += 1
-        except Exception as exc:
-            failed.append((listing_ref or url, exc))
-            print(f"[{index}/{len(tenders)}] WARNING {listing_ref or url}: "
-                  f"{exc.__class__.__name__}: {exc}")
+                folder = tender_dir(ref, output_dir)
+                write_tender_text(folder, format_detail(url, detail))
 
-        time.sleep(random.uniform(0.4, 1.0))  # be polite between requests
+                documents = detail["document_links"]
+                for document in documents:
+                    download_document(client, document, folder, headers=HTTP_HEADERS)
+                    if document.error:
+                        print(f"        WARNING: {document.file_name}: {document.error}")
 
-    return saved, failed
+                # The public preview advertises a count but no links. Record the
+                # shortfall so the manifest shows what we know we are missing.
+                advertised = detail["documents"]
+                requires_login = advertised > len(documents)
+                for position in range(len(documents), advertised):
+                    documents.append(
+                        Document(
+                            file_name=f"(document {position + 1} of {advertised})",
+                            error="requires a VendorPanel supplier login",
+                        )
+                    )
+
+                record = TenderRecord(
+                    reference=folder.name,
+                    source_id=SOURCE_ID,
+                    source_url=url,
+                    documents=documents,
+                    documents_require_login=requires_login,
+                )
+                write_manifest(folder, record)
+                records.append(record)
+
+                print(
+                    f"[{index}/{len(tenders)}] {folder.name}  "
+                    f"({record.documents_downloaded}/{advertised} attachment(s))"
+                )
+            except Exception as exc:
+                failed.append((listing_ref or url, exc))
+                print(f"[{index}/{len(tenders)}] WARNING {listing_ref or url}: "
+                      f"{exc.__class__.__name__}: {exc}")
+
+            time.sleep(random.uniform(0.4, 1.0))  # be polite between requests
+
+    return records, failed
 
 
 def read_saved_urls():
@@ -419,13 +500,14 @@ def collect_tenders(headless, max_pages):
         driver.quit()
 
 
-def main():
-    visible = os.environ.get("VISIBLE", "").lower() in ("1", "true", "yes")
-    headless = not visible
-    max_pages = int(os.environ.get("MAX_PAGES", "0"))  # 0 = all pages
-    skip_collect = os.environ.get("SKIP_COLLECT", "").lower() in ("1", "true", "yes")
-    limit = int(os.environ.get("LIMIT", "0"))  # 0 = every tender
+def run_scraper(limit=0, output_dir=None, headless=True, max_pages=0,
+                skip_collect=False):
+    """
+    Scrape open Queensland tenders into one directory each.
 
+    `limit` and `max_pages` of 0 mean "no cap". Returns the list of
+    TenderRecords written.
+    """
     # Stage 1 -- gather the tender links (needs a browser: the search results are
     # rendered client-side by Blazor).
     if skip_collect:
@@ -436,18 +518,29 @@ def main():
 
     if limit:
         tenders = tenders[:limit]
-        print(f"LIMIT set -- only fetching {len(tenders)} tender(s).")
+        print(f"Limit set -- only fetching {len(tenders)} tender(s).")
 
     # Stage 2 -- fetch each detail page over plain HTTP (no browser needed) and
     # save it into its own folder.
-    print(f"\nFetching {len(tenders)} tender detail page(s) into {OUTPUT_DIR}\n")
-    saved, failed = save_details(tenders)
+    print(f"\nFetching {len(tenders)} tender detail page(s)...\n")
+    records, failed = save_details(tenders, output_dir)
 
-    print(f"\nDone. Saved {saved}/{len(tenders)} tenders into {OUTPUT_DIR}")
+    print(f"\nDone. Saved {len(records)}/{len(tenders)} tender folder(s).")
     if failed:
         print(f"{len(failed)} failed:")
         for name, exc in failed:
             print(f"  - {name}: {exc.__class__.__name__}")
+    return records
+
+
+def main():
+    visible = os.environ.get("VISIBLE", "").lower() in ("1", "true", "yes")
+    run_scraper(
+        limit=int(os.environ.get("LIMIT", "0")),           # 0 = every tender
+        headless=not visible,
+        max_pages=int(os.environ.get("MAX_PAGES", "0")),   # 0 = all pages
+        skip_collect=os.environ.get("SKIP_COLLECT", "").lower() in ("1", "true", "yes"),
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,11 @@
+<!-- The login form AusTender serves at /RegisteredUser/Login, and which it
+     also returns (via redirect) for any document request without a session. -->
+<html><body>
+<form action="/RegisteredUser/Login" method="post">
+  <input type="hidden" name="__RequestVerificationToken" value="TESTTOKEN123" />
+  <input type="hidden" name="ReturnUrl" value="/Atm/ViewDocuments/abc" />
+  <input type="text" name="Email" />
+  <input type="password" name="Password" />
+  <button type="submit">Log in</button>
+</form>
+</body></html>
