@@ -21,9 +21,10 @@ import logging
 import os
 import sys
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
-from web_scrapers import storage
+from web_scrapers import common, storage
 
 log = logging.getLogger("run_scrapers")
 
@@ -48,12 +49,61 @@ def scrape_qld(limit, output_dir):
     return qld_qtenders.run_scraper(limit=limit, output_dir=output_dir)
 
 
-# The browser-driven scrapers need Chrome in the image; austender does not.
+# These two portals render their results client-side and sit behind Cloudflare,
+# so they need a real Chrome; austender is plain HTTP and needs none of this.
+BROWSER_SOURCES = {"vic", "qld"}
+
 SCRAPERS = {
     "austender": scrape_austender,
     "vic": scrape_vic,
     "qld": scrape_qld,
 }
+
+
+def _start_display():
+    """
+    Start an Xvfb virtual display, or return None to fall back to headless.
+
+    Started from Python rather than by wrapping the entrypoint in `xvfb-run`:
+    the wrapper gives no output if it fails to bring the server up, so a
+    failure looks identical to a slow scrape. Here it is one log line either
+    way, and a failure degrades to headless instead of hanging the job.
+    """
+    try:
+        from sbvirtualdisplay import Display
+
+        # use_xauth=False keeps this working without the xauth binary, which
+        # the xvfb package does not pull in.
+        display = Display(visible=False, size=(1920, 1080), use_xauth=False)
+        display.start()
+    except Exception as exc:
+        log.warning(
+            "could not start a virtual display (%s) -- Chrome will run headless, "
+            "which Cloudflare challenges more aggressively",
+            exc,
+        )
+        return None
+
+    log.info("virtual display started (DISPLAY=%s)", os.environ.get("DISPLAY"))
+    return display
+
+
+@contextmanager
+def virtual_display(sources):
+    """Provide a virtual display when a containerised run needs a browser."""
+    if not (common.in_container() and set(sources) & BROWSER_SOURCES):
+        yield
+        return
+
+    display = _start_display()
+    try:
+        yield
+    finally:
+        if display is not None:
+            try:
+                display.stop()
+            except Exception:
+                log.debug("virtual display did not stop cleanly", exc_info=True)
 
 
 def parse_sources(value):
@@ -117,19 +167,22 @@ def main(argv=None):
     logging.basicConfig(
         level=logging.INFO, format="[%(levelname)s] %(name)s: %(message)s"
     )
+    log.info("starting: sources=%s limit=%s", args.sources, args.limit)
     # httpx logs every request at INFO, which drowns out the scrape progress.
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
     sources = parse_sources(args.sources)
     prefix = os.environ.get("OUTPUT_PREFIX", storage.DEFAULT_PREFIX)
 
-    if args.output_dir:
-        total, failed = run(sources, args.limit, args.output_dir, prefix)
-    else:
-        # No persistent disk on Cloud Run: scrape into a temp dir, publish, drop it.
-        with tempfile.TemporaryDirectory() as temp_dir:
-            log.info("working directory: %s", temp_dir)
-            total, failed = run(sources, args.limit, temp_dir, prefix)
+    with virtual_display(sources):
+        if args.output_dir:
+            total, failed = run(sources, args.limit, args.output_dir, prefix)
+        else:
+            # No persistent disk on Cloud Run: scrape into a temp dir, publish,
+            # drop it.
+            with tempfile.TemporaryDirectory() as temp_dir:
+                log.info("working directory: %s", temp_dir)
+                total, failed = run(sources, args.limit, temp_dir, prefix)
 
     return 1 if failed and total == 0 else 0
 

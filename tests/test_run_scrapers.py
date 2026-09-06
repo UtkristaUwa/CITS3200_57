@@ -212,3 +212,87 @@ class TestBrowserSetup:
             captured.clear()
             module.build_driver(headless=True)
             assert captured["no_sandbox"] is True, module.__name__
+
+
+class TestVirtualDisplay:
+    """
+    The container starts Xvfb from Python rather than wrapping the entrypoint
+    in xvfb-run: the wrapper produces no output when it fails to bring the X
+    server up, so a failure is indistinguishable from a slow scrape.
+    """
+
+    def test_is_a_no_op_outside_a_container(self, monkeypatch):
+        monkeypatch.delenv("RUNNING_IN_CONTAINER", raising=False)
+        started = []
+        monkeypatch.setattr(
+            run_scrapers, "_start_display", lambda: started.append(True) or None
+        )
+
+        with run_scrapers.virtual_display(["vic", "qld"]):
+            pass
+
+        assert started == []
+
+    def test_is_a_no_op_when_no_browser_source_is_requested(self, monkeypatch):
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+        started = []
+        monkeypatch.setattr(
+            run_scrapers, "_start_display", lambda: started.append(True) or None
+        )
+
+        with run_scrapers.virtual_display(["austender"]):
+            pass
+
+        assert started == []
+
+    @pytest.mark.parametrize("sources", [["vic"], ["qld"], ["austender", "vic"]])
+    def test_starts_for_a_containerised_browser_run(self, monkeypatch, sources):
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+        started = []
+        monkeypatch.setattr(
+            run_scrapers, "_start_display", lambda: started.append(True) or None
+        )
+
+        with run_scrapers.virtual_display(sources):
+            pass
+
+        assert started == [True]
+
+    def test_is_stopped_afterwards(self, monkeypatch):
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+        stopped = []
+
+        class FakeDisplay:
+            def stop(self):
+                stopped.append(True)
+
+        monkeypatch.setattr(run_scrapers, "_start_display", FakeDisplay)
+
+        with run_scrapers.virtual_display(["vic"]):
+            pass
+
+        assert stopped == [True]
+
+    def test_a_failed_display_degrades_to_headless_rather_than_raising(
+        self, monkeypatch
+    ):
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+        monkeypatch.setattr(run_scrapers, "_start_display", lambda: None)
+
+        # The scrape must still run; Chrome just falls back to headless.
+        with run_scrapers.virtual_display(["vic"]):
+            ran = True
+
+        assert ran
+
+    def test_a_display_that_will_not_stop_does_not_fail_the_run(self, monkeypatch):
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+
+        class BrokenDisplay:
+            def stop(self):
+                raise RuntimeError("Xvfb already gone")
+
+        monkeypatch.setattr(run_scrapers, "_start_display", BrokenDisplay)
+
+        with run_scrapers.virtual_display(["vic"]):
+            pass  # must not raise on exit

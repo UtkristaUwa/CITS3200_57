@@ -24,7 +24,7 @@ WORKDIR /app
 # challenges true headless Chrome far more aggressively.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl gnupg xvfb \
+        ca-certificates curl gnupg xvfb xauth \
         fonts-liberation fonts-dejavu-core \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
         | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
@@ -50,8 +50,7 @@ ENV SOURCES=austender \
     LIMIT=10 \
     OUTPUT_PREFIX=raw
 
-# xvfb-run provides DISPLAY, which build_uc_driver takes as the signal to run
-# Chrome headed. -a picks a free display number; the container exits with the
-# scraper's own exit code.
-CMD ["xvfb-run", "-a", "--server-args=-screen 0 1920x1080x24", \
-     "python", "-m", "web_scrapers.run_scrapers"]
+# The virtual display is started from Python (see run_scrapers.virtual_display)
+# rather than by wrapping this in xvfb-run, so a display failure is logged and
+# degrades to headless instead of hanging the job with no output.
+CMD ["python", "-m", "web_scrapers.run_scrapers"]
