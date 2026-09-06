@@ -7,6 +7,8 @@ OUTPUT_BUCKET is set, mirrors the result to Cloud Storage.
 Configuration (all optional, all via environment so Cloud Run can set them):
     SOURCES        comma-separated: austender,vic,qld   (default: austender)
     LIMIT          max tenders per source (default 10; 0 = no limit)
+    MAX_PAGES      qld only: search pages to walk (default 0 = all). LIMIT trims
+                   the list only after pagination, so this is what shortens a run.
     OUTPUT_DIR     where to write (default: a temporary directory)
     OUTPUT_BUCKET  GCS bucket to mirror results into (default: none -- the
                    local directory is the primary output either way)
@@ -46,7 +48,15 @@ def scrape_vic(limit, output_dir):
 def scrape_qld(limit, output_dir):
     from web_scrapers.qld_qtenders import qld_qtenders
 
-    return qld_qtenders.run_scraper(limit=limit, output_dir=output_dir)
+    # QTenders paginates its search separately from the tender cap: LIMIT trims
+    # the list only after every page has been walked, so MAX_PAGES is what
+    # actually shortens a run. It is read here rather than in the scraper's own
+    # main() so it works through this entrypoint too.
+    return qld_qtenders.run_scraper(
+        limit=limit,
+        output_dir=output_dir,
+        max_pages=int(os.environ.get("MAX_PAGES", "0")),
+    )
 
 
 # These two portals render their results client-side and sit behind Cloudflare,

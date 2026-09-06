@@ -313,3 +313,37 @@ class TestVirtualDisplay:
 
         with run_scrapers.virtual_display(["vic"]):
             pass  # must not raise on exit
+
+
+class TestPerSourceOptions:
+    def test_max_pages_reaches_the_qld_scraper(self, output_dir, monkeypatch):
+        """
+        LIMIT only trims QTenders' tender list *after* every search page has
+        been walked, so MAX_PAGES is the knob that actually shortens the run.
+        It has to survive the trip through this entrypoint.
+        """
+        from web_scrapers.qld_qtenders import qld_qtenders
+
+        captured = {}
+        monkeypatch.setenv("MAX_PAGES", "2")
+        monkeypatch.setattr(
+            qld_qtenders, "run_scraper", lambda **kwargs: captured.update(kwargs) or []
+        )
+
+        run_scrapers.scrape_qld(5, output_dir)
+
+        assert captured["max_pages"] == 2
+        assert captured["limit"] == 5
+
+    def test_defaults_to_walking_every_page(self, output_dir, monkeypatch):
+        from web_scrapers.qld_qtenders import qld_qtenders
+
+        captured = {}
+        monkeypatch.delenv("MAX_PAGES", raising=False)
+        monkeypatch.setattr(
+            qld_qtenders, "run_scraper", lambda **kwargs: captured.update(kwargs) or []
+        )
+
+        run_scrapers.scrape_qld(5, output_dir)
+
+        assert captured["max_pages"] == 0
