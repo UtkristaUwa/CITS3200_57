@@ -12,7 +12,7 @@ import json
 import pytest
 
 from conftest import read_fixture
-from web_scrapers.common import MANIFEST_NAME
+from web_scrapers.common import RECORD_NAME
 from web_scrapers.qld_qtenders import qld_qtenders as qld
 
 PREVIEW_URL = (
@@ -116,19 +116,20 @@ class TestOutputFormat:
         assert folder.is_dir()
         assert (folder / "VP522442.txt").exists()
 
-    def test_manifest_records_every_attachment_as_needing_a_login(self, scraped):
+    def test_record_shows_every_attachment_as_needing_a_login(self, scraped):
         _, folder = scraped
-        manifest = json.loads((folder / MANIFEST_NAME).read_text(encoding="utf-8"))
+        record = json.loads((folder / RECORD_NAME).read_text(encoding="utf-8"))
+        scrape = record["raw_extra"]["scrape"]
 
-        assert manifest["source_id"] == "qld-qtenders"
-        assert manifest["documents_require_login"] is True
+        assert record["source_id"] == "qld-qtenders"
+        assert scrape["documents_require_login"] is True
         # All five are listed as placeholders, so the gap is visible rather than
         # looking like a tender with no attachments at all.
-        assert manifest["documents_advertised"] == 5
-        assert manifest["documents_downloaded"] == 0
+        assert scrape["documents_advertised"] == 5
+        assert scrape["documents_downloaded"] == 0
         assert all(
             "VendorPanel supplier login" in document["error"]
-            for document in manifest["documents"]
+            for document in scrape["documents_detail"]
         )
 
     def test_an_unreachable_tender_is_reported_not_raised(self, local_site, output_dir):

@@ -12,8 +12,14 @@ import httpx
 import pytest
 
 from conftest import read_fixture
-from web_scrapers.common import MANIFEST_NAME, TenderRecord, download_document, \
-    tender_dir, write_manifest, write_tender_text
+from web_scrapers.common import (
+    RECORD_NAME,
+    download_document,
+    tender_dir,
+    write_tender_record,
+    write_tender_text,
+)
+from web_scrapers.tender_record import build_record
 from web_scrapers.vic_buyingfor import vic_buyingfor as vic
 
 
@@ -116,14 +122,15 @@ class TestOutputFormat:
             for document in documents:
                 download_document(client, document, folder)
 
-        write_manifest(
+        write_tender_record(
             folder,
-            TenderRecord(
-                reference=folder.name,
+            build_record(
                 source_id=vic.SOURCE_ID,
                 source_url="https://www.tenders.vic.gov.au/tender/view?id=249237",
+                title="Road Safety Services Register",
+                reference=folder.name,
                 documents=documents,
-                documents_require_login=vic.specs_require_login(html),
+                requires_login=vic.specs_require_login(html),
             ),
         )
         return folder
@@ -131,20 +138,21 @@ class TestOutputFormat:
     def test_one_directory_named_after_the_rfx_number(self, scraped, output_dir):
         assert scraped == output_dir / "PROCF22-000236"
 
-    def test_holds_the_text_file_the_manifest_and_both_attachments(self, scraped):
+    def test_holds_the_text_file_the_record_and_both_attachments(self, scraped):
         assert sorted(p.name for p in scraped.iterdir()) == [
             "0. TAC Safe Driving Policy for Employers.PDF",
             "2. Prequalifiation Terms (v2.0).docx",
             "PROCF22-000236.txt",
-            MANIFEST_NAME,
+            RECORD_NAME,
         ]
 
-    def test_manifest_reports_the_source_and_the_downloads(self, scraped):
-        manifest = json.loads((scraped / MANIFEST_NAME).read_text(encoding="utf-8"))
+    def test_record_reports_the_source_and_the_downloads(self, scraped):
+        record = json.loads((scraped / RECORD_NAME).read_text(encoding="utf-8"))
+        scrape = record["raw_extra"]["scrape"]
 
-        assert manifest["source_id"] == "vic-buyingfor"
-        assert manifest["documents_advertised"] == 2
-        assert manifest["documents_downloaded"] == 2
+        assert record["source_id"] == "vic-buyingfor"
+        assert scrape["documents_advertised"] == 2
+        assert scrape["documents_downloaded"] == 2
 
 
 class TestBlockDetection:

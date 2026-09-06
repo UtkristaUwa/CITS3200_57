@@ -1,7 +1,7 @@
 """
 The output-format contract every scraper must honour:
 
-    tenders_data/<REF>/<REF>.txt   +   documents.json   +   the attachments
+    tenders_data/<REF>/<REF>.txt   +   tender.json   +   the attachments
 
 One directory per tender -- not one file per website.
 """
@@ -12,15 +12,15 @@ import pytest
 
 from web_scrapers.common import (
     Document,
-    TenderRecord,
-    MANIFEST_NAME,
+    RECORD_NAME,
     sanitise_filename,
     sanitise_reference,
     tender_dir,
     unique_path,
-    write_manifest,
+    write_tender_record,
     write_tender_text,
 )
+from web_scrapers.tender_record import build_record
 
 
 class TestTenderDirectory:
@@ -122,13 +122,14 @@ class TestDuplicateFilenames:
         assert unique_path(folder, "README").name == "README (2)"
 
 
-class TestManifest:
+class TestTenderRecordFile:
     def test_records_what_was_downloaded_and_what_was_not(self, output_dir):
         folder = tender_dir("ABC-1", output_dir)
-        record = TenderRecord(
-            reference="ABC-1",
+        record = build_record(
             source_id="austender",
             source_url="https://www.tenders.gov.au/Atm/Show/abc",
+            title="A tender",
+            reference="ABC-1",
             documents=[
                 Document(
                     file_name="Got it.pdf",
@@ -141,27 +142,29 @@ class TestManifest:
             ],
         )
 
-        write_manifest(folder, record)
-        payload = json.loads((folder / MANIFEST_NAME).read_text(encoding="utf-8"))
+        write_tender_record(folder, record)
+        payload = json.loads((folder / RECORD_NAME).read_text(encoding="utf-8"))
+        scrape = payload["raw_extra"]["scrape"]
 
-        assert payload["reference"] == "ABC-1"
+        assert payload["source_reference_id"] == "ABC-1"
         assert payload["source_id"] == "austender"
-        assert payload["documents_advertised"] == 2
-        assert payload["documents_downloaded"] == 1
-        assert payload["documents"][0]["local_path"] == "Got it.pdf"
-        assert payload["documents"][1]["error"] == "login required"
+        assert scrape["documents_advertised"] == 2
+        assert scrape["documents_downloaded"] == 1
+        assert scrape["documents_detail"][0]["local_path"] == "Got it.pdf"
+        assert scrape["documents_detail"][1]["error"] == "login required"
 
     def test_is_written_even_when_the_tender_has_no_attachments(self, output_dir):
         folder = tender_dir("ABC-1", output_dir)
 
-        write_manifest(
+        write_tender_record(
             folder,
-            TenderRecord(reference="ABC-1", source_id="vic-buyingfor", source_url="u"),
+            build_record(
+                source_id="vic-buyingfor", source_url="https://x.test/1", title="A tender"
+            ),
         )
-        payload = json.loads((folder / MANIFEST_NAME).read_text(encoding="utf-8"))
+        payload = json.loads((folder / RECORD_NAME).read_text(encoding="utf-8"))
 
         assert payload["documents"] == []
-        assert payload["documents_advertised"] == 0
         # An empty list plus this flag is how a consumer tells "no attachments"
         # from "attachments we could not reach".
-        assert payload["documents_require_login"] is False
+        assert payload["raw_extra"]["scrape"]["documents_require_login"] is False

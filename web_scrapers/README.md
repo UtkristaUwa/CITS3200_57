@@ -8,7 +8,7 @@ Every scraper writes **one directory per tender** — never one file per website
 tenders_data/
   ATM_2026_3494/
     ATM_2026_3494.txt      text scraped from the tender's own page
-    documents.json         manifest of every document the page advertises
+    tender.json            the tender in ingestion's 20-field shape
     Attachment A.pdf       the documents that were actually downloadable
     Addendum 1.pdf
 ```
@@ -16,26 +16,47 @@ tenders_data/
 The `.txt` file is always named after its directory, which is what
 `document_scraper/main.py` looks for when it appends extracted attachment text.
 
-`documents.json` is written even when nothing could be downloaded, so a
-consumer can tell "this tender has no attachments" from "the attachments are
-behind a login we do not have":
+`tender.json` matches [`ingestion/sample_tender.json`](../ingestion/sample_tender.json)
+and validates against [`ingestion/tender.schema.json`](../ingestion/tender.schema.json),
+so a scrape feeds straight into `ingestion/validate_and_submit.py` with no
+reshaping. That schema sets `"additionalProperties": false`, so everything the
+scraper knows that it does not model — which documents were downloadable, where
+each file landed, whether the portal demanded a login — lives under
+`raw_extra.scrape`:
 
 ```json
 {
-  "reference": "ATM_2026_3494",
   "source_id": "austender",
+  "source_reference_id": "ATM_2026_3494",
   "source_url": "https://www.tenders.gov.au/Atm/Show/...",
-  "scraped_at": "2026-09-06T03:14:39+00:00",
-  "documents_advertised": 4,
-  "documents_downloaded": 4,
-  "documents_require_login": false,
-  "documents": [{ "file_name": "...", "url": "...", "downloaded": true,
-                  "local_path": "...", "bytes_written": 1381228, "error": null }]
+  "title": "Geological Disposal Programme Options",
+  "issuing_agency": "Department of Industry, Science and Resources",
+  "category": "tender",
+  "status": "open",
+  "publish_date": "2026-08-13",
+  "closing_date": "2026-09-10",
+  "documents": [
+    { "file_name": "Attachment A.pdf", "file_type": "pdf", "extracted_text": null }
+  ],
+  "raw_extra": {
+    "scrape": {
+      "documents_advertised": 4,
+      "documents_downloaded": 4,
+      "documents_require_login": false,
+      "documents_detail": [{ "local_path": "Attachment A.pdf", "bytes_written": 1381228 }]
+    }
+  }
 }
 ```
 
+`extracted_text` is left null — pulling text out of the files is the
+document-extraction stage's job, and it fills that in before submission.
+`raw_extra.scrape` is also how a consumer tells an empty `documents` array
+meaning "this tender has no attachments" from one meaning "the portal would not
+give them to us".
+
 `web_scrapers/common.py` owns this layout. Scrapers call `tender_dir()`,
-`write_tender_text()`, `download_document()` and `write_manifest()` rather than
+`write_tender_text()`, `download_document()` and `write_tender_record()` rather than
 building paths themselves, so the format stays identical across sources.
 
 ## Sources

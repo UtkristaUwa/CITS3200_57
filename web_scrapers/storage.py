@@ -12,7 +12,7 @@ When it is set, each tender folder is mirrored to
 
     gs://<bucket>/<prefix>/<source_id>/<TENDER_REF>/...
 
-The source_id segment (read from the folder's own documents.json) keeps raw
+The source_id segment (read from the folder's own tender.json) keeps raw
 scrape output namespaced away from whatever prefix the front end will build
 document URLs from -- the bucket is shared, so raw .txt must not land in it.
 
@@ -39,13 +39,13 @@ def bucket_name():
 
 def folder_source_id(folder):
     """
-    Which portal this tender came from, read from its own manifest.
+    Which portal this tender came from, read from its own tender.json.
 
     Falls back to a placeholder rather than raising: a folder with an
     unreadable manifest should still be uploaded somewhere findable, not
     dropped.
     """
-    manifest = Path(folder) / "documents.json"
+    manifest = Path(folder) / "tender.json"
     try:
         return json.loads(manifest.read_text(encoding="utf-8"))["source_id"] or UNKNOWN_SOURCE
     except Exception:

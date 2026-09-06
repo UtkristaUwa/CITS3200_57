@@ -2,7 +2,7 @@
 Web scraper for AusTender (https://www.tenders.gov.au) -- federal ATMs.
 
 Output: one directory per tender under tenders_data/, containing the scraped
-detail text as <ATM ID>.txt, a documents.json manifest, and every attachment
+detail text as <ATM ID>.txt, a tender.json ingestion record, and every attachment
 that could be downloaded.
 
 Login:
@@ -31,12 +31,17 @@ from bs4 import BeautifulSoup
 
 from web_scrapers.common import (
     Document,
-    TenderRecord,
     download_document,
     sanitise_filename,
     tender_dir,
-    write_manifest,
+    write_tender_record,
     write_tender_text,
+)
+from web_scrapers.tender_record import (
+    build_record,
+    classify_category,
+    classify_status,
+    first_email,
 )
 
 log = logging.getLogger(__name__)
@@ -123,15 +128,31 @@ def log_in(client, username, password):
 
 
 def parse_listing(html):
-    """Return the detail-page URLs on one /atm listing page, in order, deduped."""
+    """
+    Return [{'url', 'title'}] for each tender on one /atm listing page.
+
+    Each tender is linked twice: once as its reference number, and once as a
+    "Full Details" link whose title attribute carries the actual tender name
+    ("Full Details for Provision of Natural Gas..."). The detail page itself
+    only ever shows "Current ATM View - <ID>", so this listing is the one place
+    the real title appears -- and the ingestion schema requires it.
+    """
     soup = BeautifulSoup(html, "html.parser")
-    urls, seen = [], set()
+    tenders, seen = [], {}
     for anchor in soup.select("a[href*='/Atm/Show/']"):
         href = anchor.get("href")
-        if href and href not in seen:
-            seen.add(href)
-            urls.append(urljoin(BASE_URL, href))
-    return urls
+        if not href:
+            continue
+        url = urljoin(BASE_URL, href)
+        if url not in seen:
+            seen[url] = {"url": url, "title": None}
+            tenders.append(seen[url])
+
+        title = anchor.get("title") or ""
+        match = re.match(r"\s*Full Details for\s+(.+)", title, re.I)
+        if match:
+            seen[url]["title"] = match.group(1).strip()
+    return tenders
 
 
 def parse_detail(html, detail_url):
@@ -244,11 +265,12 @@ def collect_documents(client, documents_url):
     return parse_documents(response.text), False
 
 
-def scrape_tender(client, detail_url, output_dir=None, pause=0.3):
+def scrape_tender(client, detail_url, output_dir=None, pause=0.3, title=None):
     """
     Scrape one tender into its own directory.
 
-    Returns the TenderRecord that was written to documents.json.
+    Returns the record written to tender.json. `title` comes from the listing,
+    which is the only place AusTender prints the real tender name.
     """
     response = client.get(detail_url, headers=HEADERS, timeout=20.0)
     response.raise_for_status()
@@ -266,29 +288,65 @@ def scrape_tender(client, detail_url, output_dir=None, pause=0.3):
             log.warning("  %s: %s", document.file_name, document.error)
         time.sleep(pause)
 
-    record = TenderRecord(
-        reference=detail["atm_id"],
-        source_id=SOURCE_ID,
-        source_url=detail_url,
-        documents=documents,
-        documents_require_login=requires_login,
-    )
-    write_manifest(folder, record)
+    record = build_tender_record(detail, detail_url, documents, requires_login, title)
+    write_tender_record(folder, record)
+
+    downloaded = sum(1 for d in documents if d.downloaded)
     log.info(
         "%s -> %s (%d/%d document(s))",
         detail["atm_id"],
         folder.name,
-        record.documents_downloaded,
-        record.documents_advertised,
+        downloaded,
+        len(documents),
     )
     return record
+
+
+def build_tender_record(detail, detail_url, documents, requires_login, title=None):
+    """Map AusTender's ATM fields onto ingestion's 20-field shape."""
+    fields = detail["metadata"]
+
+    # AusTender prints no contact name or phone on the ATM view -- only a
+    # lodgement address, which sometimes carries an email. Left null rather
+    # than guessed at.
+    lodgement = fields.get("Address for Lodgement")
+
+    return build_record(
+        source_id=SOURCE_ID,
+        source_url=detail_url,
+        title=title or detail["title"],
+        reference=detail["atm_id"],
+        issuing_agency=fields.get("Agency"),
+        category=classify_category(fields.get("ATM Type"), title),
+        # An open ATM listing only carries tenders still accepting responses.
+        status=classify_status("open"),
+        publish_date=fields.get("Publish Date"),
+        closing_date=fields.get("Close Date & Time"),
+        location=fields.get("Location"),
+        description=fields.get("Description"),
+        contact_email=first_email(lodgement, fields.get("Other Instructions")),
+        lodgment_address=lodgement,
+        documents=documents,
+        requires_login=requires_login,
+        raw_extra={
+            "atm_type": fields.get("ATM Type"),
+            "unspsc_category": fields.get("Category"),
+            "app_reference": fields.get("APP Reference"),
+            "panel_arrangement": fields.get("Panel Arrangement"),
+            "multi_agency_access": fields.get("Multi Agency Access"),
+            "multi_stage": fields.get("Multi-stage"),
+            "conditions_for_participation": fields.get("Conditions for Participation"),
+            "timeframe_for_delivery": fields.get("Timeframe for Delivery"),
+            "other_instructions": fields.get("Other Instructions"),
+        },
+    )
 
 
 def run_scraper(limit=10, output_dir=None, pause=0.5):
     """
     Scrape the first `limit` open ATMs into one directory each.
 
-    Returns the list of TenderRecords. Individual tenders that fail are logged
+    Returns the list of tender records. Individual tenders that fail are logged
     and skipped so one bad page cannot end the run.
     """
     username, password = credentials()
@@ -313,26 +371,32 @@ def run_scraper(limit=10, output_dir=None, pause=0.5):
                 log.error("listing page %d returned HTTP %s", page, listing.status_code)
                 break
 
-            urls = parse_listing(listing.text)
-            if not urls:
+            tenders = parse_listing(listing.text)
+            if not tenders:
                 log.info("no tenders on page %d -- end of list", page)
                 break
 
-            for detail_url in urls:
+            for tender in tenders:
                 if scraped >= limit:
                     break
                 scraped += 1
                 try:
-                    records.append(scrape_tender(client, detail_url, output_dir))
+                    records.append(
+                        scrape_tender(
+                            client, tender["url"], output_dir, title=tender.get("title")
+                        )
+                    )
                 except Exception as exc:
-                    log.error("[%d/%d] %s failed: %s", scraped, limit, detail_url, exc)
+                    log.error("[%d/%d] %s failed: %s", scraped, limit, tender["url"], exc)
                 time.sleep(pause)
 
             page += 1
 
     log.info("AusTender: scraped %d tender(s)", len(records))
 
-    gated = sum(1 for record in records if record.documents_require_login)
+    gated = sum(
+        1 for record in records if record["raw_extra"]["scrape"]["documents_require_login"]
+    )
     if records and gated == len(records):
         # Every single tender refused us. Without credentials that is simply
         # what AusTender does; with them it means the session never took.

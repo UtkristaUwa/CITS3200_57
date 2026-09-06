@@ -13,7 +13,7 @@ import pytest
 
 from conftest import read_fixture
 from web_scrapers.austender import austender
-from web_scrapers.common import MANIFEST_NAME
+from web_scrapers.common import RECORD_NAME
 
 DETAIL_URL = "https://www.tenders.gov.au/Atm/Show/0cfa9d36-97d4-495f-8065-eb1a9048fb63"
 PDF_BYTES = b"%PDF-1.4\n" + b"tender attachment" * 50
@@ -21,17 +21,26 @@ PDF_BYTES = b"%PDF-1.4\n" + b"tender attachment" * 50
 
 class TestListingPage:
     def test_finds_the_tender_detail_links(self):
-        urls = austender.parse_listing(read_fixture("austender_list.html"))
+        tenders = austender.parse_listing(read_fixture("austender_list.html"))
 
-        assert urls
-        assert all("/Atm/Show/" in url for url in urls)
-        assert all(url.startswith("https://www.tenders.gov.au/") for url in urls)
+        assert tenders
+        assert all("/Atm/Show/" in t["url"] for t in tenders)
+        assert all(t["url"].startswith("https://www.tenders.gov.au/") for t in tenders)
+
+    def test_captures_the_real_title_from_the_full_details_link(self):
+        tenders = austender.parse_listing(read_fixture("austender_list.html"))
+
+        # The detail page only shows "Current ATM View - <ID>", so the listing
+        # is the one place the tender's actual name appears.
+        assert tenders[0]["title"] == (
+            "Provision of Natural Gas for Defence Large Market Sites in QLD/VIC"
+        )
 
     def test_repeated_links_are_returned_once(self):
         html = '<a href="/Atm/Show/abc">One</a><a href="/Atm/Show/abc">Same</a>'
 
         assert austender.parse_listing(html) == [
-            "https://www.tenders.gov.au/Atm/Show/abc"
+            {"url": "https://www.tenders.gov.au/Atm/Show/abc", "title": None}
         ]
 
     def test_a_page_with_no_tenders_yields_nothing(self):
@@ -170,15 +179,18 @@ class TestScrapeTenderEndToEnd:
 
         assert (folder / "Statement of Requirements.pdf").read_bytes() == PDF_BYTES
 
-    def test_writes_a_manifest_describing_the_attachment(self, scraped):
+    def test_writes_a_tender_record_describing_the_attachment(self, scraped):
         _, folder = scraped
-        manifest = json.loads((folder / MANIFEST_NAME).read_text(encoding="utf-8"))
+        record = json.loads((folder / RECORD_NAME).read_text(encoding="utf-8"))
+        scrape = record["raw_extra"]["scrape"]
 
-        assert manifest["reference"] == "LOCAL_1"
-        assert manifest["source_id"] == "austender"
-        assert manifest["documents_advertised"] == 1
-        assert manifest["documents_downloaded"] == 1
-        assert manifest["documents"][0]["local_path"] == "Statement of Requirements.pdf"
+        assert record["source_reference_id"] == "LOCAL_1"
+        assert record["source_id"] == "austender"
+        assert scrape["documents_advertised"] == 1
+        assert scrape["documents_downloaded"] == 1
+        assert scrape["documents_detail"][0]["local_path"] == (
+            "Statement of Requirements.pdf"
+        )
 
     def test_the_directory_holds_exactly_the_expected_files(self, scraped):
         _, folder = scraped
@@ -186,7 +198,7 @@ class TestScrapeTenderEndToEnd:
         assert sorted(p.name for p in folder.iterdir()) == [
             "LOCAL_1.txt",
             "Statement of Requirements.pdf",
-            MANIFEST_NAME,
+            RECORD_NAME,
         ]
 
 
@@ -210,8 +222,8 @@ class TestScrapeRunEndToEnd:
             austender,
             "parse_listing",
             lambda html: [
-                f"{fake_austender}/Atm/Show/does-not-exist",
-                f"{fake_austender}/Atm/Show/tender-one",
+                {"url": f"{fake_austender}/Atm/Show/does-not-exist", "title": "Gone"},
+                {"url": f"{fake_austender}/Atm/Show/tender-one", "title": "Good one"},
             ],
         )
 

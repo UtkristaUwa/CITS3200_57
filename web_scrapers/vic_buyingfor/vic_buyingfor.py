@@ -9,14 +9,14 @@ Two-stage scrape:
   2. Visit each collected link and write one folder per tender under
      tenders_data/<RFx>/ (e.g. tenders_data/PROCF22-000236/) containing:
        * <RFx>.txt      -- the full text of the tender's detail page
-       * documents.json -- every specification document the page advertises
+       * tender.json    -- the tender in ingestion's 20-field shape
        * the document files themselves, where they could be downloaded
 
 Documents:
     Buying for Victoria lists each attachment's name, version and size to
     anonymous visitors but only renders the download link for a signed-in
     session ("You must be logged in to download documents"). The scraper always
-    records the full document list in documents.json, and downloads whatever
+    records the full document list in tender.json, and downloads whatever
     links are present -- so pointing it at an authenticated browser profile
     starts pulling the files with no further change.
 
@@ -62,12 +62,16 @@ from web_scrapers.common import (
     Document,
     build_uc_driver,
     describe_browser_mode,
-    TenderRecord,
     download_document,
     sanitise_filename,
     tender_dir,
-    write_manifest,
+    write_tender_record,
     write_tender_text,
+)
+from web_scrapers.tender_record import (
+    build_record,
+    classify_category,
+    classify_status,
 )
 
 URL = "https://www.tenders.vic.gov.au/tenders/open"
@@ -173,15 +177,103 @@ def links_on_current_page(driver, wait, page):
         anchors = row.find_elements(By.CSS_SELECTOR, "a.tenderRowTitle")
         if not anchors:
             continue
-        url = anchors[0].get_attribute("href")
-        code_el = row.find_elements(
-            By.CSS_SELECTOR, "td.tender-code-state span.tablesaw-cell-content b"
-        )
-        rfx = code_el[0].text.strip() if code_el else ""
-        results.append({"rfx": rfx, "url": url})
+        results.append(parse_listing_row(row, anchors[0]))
 
     print(f"  Page {page}: found {len(results)} tender link(s).")
     return results
+
+
+def _first_text(element, selector):
+    """Text of the first match for `selector`, or "" if there is none."""
+    found = element.find_elements(By.CSS_SELECTOR, selector)
+    return found[0].text.strip() if found else ""
+
+
+def parse_listing_row(row, anchor):
+    """
+    Pull one results row apart.
+
+    The row carries the title, issuing agency, status, tender type and both
+    dates. The detail page repeats none of that, so anything not captured here
+    is lost -- which is why the row is parsed rather than just its link taken.
+    """
+    code_cell = row.find_elements(By.CSS_SELECTOR, "td.tender-code-state")
+    status = type_ = ""
+    if code_cell:
+        status = _first_text(code_cell[0], "span.tender-row-state")
+        # The type is the trailing line of the cell, after the code and status.
+        lines = [line.strip() for line in code_cell[0].text.splitlines() if line.strip()]
+        if lines:
+            type_ = lines[-1]
+            if type_ in (status, _first_text(code_cell[0], "span.tablesaw-cell-content b")):
+                type_ = ""
+
+    agency = ""
+    for detail in row.find_elements(By.CSS_SELECTOR, "span.line-item-detail"):
+        text = detail.text.strip()
+        if text.lower().startswith("issued by:"):
+            agency = text.split(":", 1)[1].strip()
+
+    return {
+        "rfx": _first_text(row, "td.tender-code-state span.tablesaw-cell-content b"),
+        "url": anchor.get_attribute("href"),
+        "title": anchor.text.strip(),
+        "issuing_agency": agency,
+        "status": status,
+        "type": type_,
+        "opening_date": _first_text(row, "span.opening_date"),
+        "closing_date": _first_text(row, "span.closing_date"),
+    }
+
+
+def parse_detail_fields(html):
+    """
+    Pull the structured fields off a tender's detail page.
+
+    The "General" block is a stack of label/value rows rather than a table, so
+    the label column is read and paired with its sibling. Returns a dict keyed
+    by the portal's own labels ("Type", "Status", "Number", "Region(s)", ...)
+    plus the title, agency, description and first contact.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    fields = {}
+
+    for row in soup.select("#opportunityGeneralDetails div.row"):
+        columns = row.find_all("div", recursive=False)
+        if len(columns) < 2:
+            continue
+        label = columns[0].get_text(" ", strip=True).rstrip(":")
+        if label:
+            fields[label] = columns[1].get_text(" ", strip=True)
+
+    title_element = soup.select_one("#tenderTitle")
+    fields["title"] = title_element.get_text(" ", strip=True) if title_element else ""
+
+    # "Issued By\n<Agency>" sits in a bold div in the header.
+    agency = ""
+    header = soup.select_one("#opportunityHeader")
+    if header:
+        for block in header.select("div.weight-bold"):
+            text = block.get_text("\n", strip=True)
+            if text.lower().startswith("issued by"):
+                parts = [line for line in text.splitlines() if line.strip()]
+                agency = parts[-1].strip() if len(parts) > 1 else ""
+    fields["issuing_agency"] = agency
+
+    description = soup.select_one("#tenderDescription div.col-12")
+    fields["description"] = (
+        description.get_text(" ", strip=True) if description else ""
+    )
+
+    contact = soup.select_one("#opportunityContacts div.contact")
+    if contact:
+        items = [li.get_text(" ", strip=True) for li in contact.select("li")]
+        fields["contact_name"] = items[0].replace("(Enquiries)", "").strip() if items else ""
+        mail = contact.select_one("a[href^='mailto:']")
+        fields["contact_email"] = (
+            mail.get("href").split(":", 1)[1].strip() if mail else ""
+        )
+    return fields
 
 
 def collect_all_links(driver, wait):
@@ -315,6 +407,7 @@ def save_tender(driver, wait, index, total, tender, output_dir=None):
     write_tender_text(folder, content)
 
     html = driver.page_source
+    fields = parse_detail_fields(html)
     documents = parse_specification_documents(html)
     requires_login = specs_require_login(html)
 
@@ -327,17 +420,33 @@ def save_tender(driver, wait, index, total, tender, output_dir=None):
                     print(f"        WARNING: {document.file_name}: {document.error}")
                 polite_pause(0.3, 0.8)
 
-    record = TenderRecord(
-        reference=rfx,
+    record = build_record(
         source_id=SOURCE_ID,
         source_url=url,
+        title=fields.get("title") or tender.get("title") or tender.get("rfx"),
+        reference=fields.get("Number") or tender.get("rfx"),
+        issuing_agency=fields.get("issuing_agency") or tender.get("issuing_agency"),
+        category=classify_category(fields.get("Type"), tender.get("type")),
+        status=classify_status(fields.get("Status"), tender.get("status")),
+        # Neither date is on the detail page -- only the results row has them.
+        publish_date=tender.get("opening_date"),
+        closing_date=tender.get("closing_date"),
+        location=fields.get("Region(s)") or fields.get("Region"),
+        description=fields.get("description"),
+        contact_name=fields.get("contact_name"),
+        contact_email=fields.get("contact_email"),
         documents=documents,
-        documents_require_login=requires_login,
+        requires_login=requires_login,
+        raw_extra={
+            "portal_status_label": fields.get("Status") or tender.get("status"),
+            "portal_type_label": fields.get("Type") or tender.get("type"),
+            "unspsc_category": fields.get("UNSPSC"),
+        },
     )
-    write_manifest(folder, record)
+    write_tender_record(folder, record)
     print(
         f"        saved {folder.name}/ "
-        f"({record.documents_downloaded}/{record.documents_advertised} document(s))"
+        f"({sum(1 for d in documents if d.downloaded)}/{len(documents)} document(s))"
     )
     return record
 
@@ -346,7 +455,7 @@ def run_scraper(limit=0, output_dir=None, headless=True):
     """
     Scrape open Victorian tenders into one directory each.
 
-    `limit` of 0 means every tender. Returns the list of TenderRecords; a
+    `limit` of 0 means every tender. Returns the list of tender records; a
     tender that fails is logged and skipped so one bad page cannot end the run.
     """
     print(f"Launching Chrome ({describe_browser_mode(headless)})...")

@@ -6,21 +6,23 @@ Output format (the standard all scrapers now write):
     tenders_data/
         <TENDER_REF>/
             <TENDER_REF>.txt    the text scraped from the tender's own page
-            documents.json      manifest of every document the page advertises
+            tender.json         the tender in ingestion's 20-field shape
             <attachment files>  the documents that were actually downloadable
 
-One directory per tender -- never one file per website. The manifest is written
-even when nothing could be downloaded, so a later run (or a human) can tell the
-difference between "this tender has no attachments" and "the attachments are
-behind a login we do not have".
+One directory per tender -- never one file per website.
+
+tender.json matches ingestion/sample_tender.json and validates against
+ingestion/tender.schema.json, so a scrape feeds straight into
+ingestion/validate_and_submit.py. It is written even when nothing could be
+downloaded: its raw_extra.scrape block is how a consumer tells "this tender has
+no attachments" from "the attachments are behind a login we do not have".
 """
 
 import json
 import mimetypes
 import os
 import re
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 from urllib.parse import unquote
@@ -28,7 +30,7 @@ from urllib.parse import unquote
 # Repo-root tenders_data/ -- this file lives at <repo>/web_scrapers/common.py.
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "tenders_data"
 
-MANIFEST_NAME = "documents.json"
+RECORD_NAME = "tender.json"
 
 # Windows-illegal characters plus anything that would let a scraped filename
 # escape its tender folder.
@@ -51,22 +53,6 @@ class Document:
     local_path: Optional[str] = None       # relative to the tender folder
     bytes_written: Optional[int] = None
     error: Optional[str] = None            # why the download did not happen
-
-
-@dataclass
-class TenderRecord:
-    """Everything one scrape of one tender produced, for the manifest."""
-
-    reference: str
-    source_id: str
-    source_url: str
-    scraped_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat(timespec="seconds")
-    )
-    documents_advertised: int = 0
-    documents_downloaded: int = 0
-    documents_require_login: bool = False
-    documents: list = field(default_factory=list)
 
 
 def sanitise_reference(reference, fallback="tender"):
@@ -207,15 +193,17 @@ def download_document(client, document, folder, timeout=60.0, headers=None):
     return document
 
 
-def write_manifest(folder, record):
-    """Write documents.json describing what this tender has and what we got."""
+def write_tender_record(folder, record):
+    """
+    Write tender.json -- the tender in ingestion's 20-field shape.
+
+    Returns the path written. The record is produced by
+    tender_record.build_record; nothing here reshapes it, so what lands on disk
+    is exactly what ingestion/validate_and_submit.py expects to read.
+    """
     folder = Path(folder)
-    record.documents_advertised = len(record.documents)
-    record.documents_downloaded = sum(1 for d in record.documents if d.downloaded)
-    payload = asdict(record)
-    payload["documents"] = [asdict(d) for d in record.documents]
-    out_file = folder / MANIFEST_NAME
-    out_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    out_file = folder / RECORD_NAME
+    out_file.write_text(json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8")
     return out_file
 
 

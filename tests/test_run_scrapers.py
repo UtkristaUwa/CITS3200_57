@@ -60,10 +60,10 @@ class TestBlobPrefix:
     bucket is shared.
     """
 
-    def test_uses_the_source_id_from_the_tenders_own_manifest(self, output_dir):
+    def test_uses_the_source_id_from_the_tenders_own_record(self, output_dir):
         folder = output_dir / "ATM_2026_3494"
         folder.mkdir()
-        (folder / "documents.json").write_text('{"source_id": "austender"}')
+        (folder / "tender.json").write_text('{"source_id": "austender"}')
 
         assert storage.blob_prefix(folder) == "raw/austender/ATM_2026_3494"
 
@@ -71,12 +71,12 @@ class TestBlobPrefix:
         for reference, source in (("A1", "austender"), ("V1", "vic-buyingfor")):
             folder = output_dir / reference
             folder.mkdir()
-            (folder / "documents.json").write_text('{"source_id": "%s"}' % source)
+            (folder / "tender.json").write_text('{"source_id": "%s"}' % source)
 
         assert storage.blob_prefix(output_dir / "A1") == "raw/austender/A1"
         assert storage.blob_prefix(output_dir / "V1") == "raw/vic-buyingfor/V1"
 
-    def test_an_unreadable_manifest_still_gets_a_findable_prefix(self, output_dir):
+    def test_an_unreadable_record_still_gets_a_findable_prefix(self, output_dir):
         folder = output_dir / "ABC-1"
         folder.mkdir()
 
@@ -85,7 +85,7 @@ class TestBlobPrefix:
     def test_the_prefix_is_overridable(self, output_dir):
         folder = output_dir / "ABC-1"
         folder.mkdir()
-        (folder / "documents.json").write_text('{"source_id": "qld-qtenders"}')
+        (folder / "tender.json").write_text('{"source_id": "qld-qtenders"}')
 
         assert storage.blob_prefix(folder, "scrapes") == "scrapes/qld-qtenders/ABC-1"
 
@@ -103,7 +103,7 @@ class TestPublishing:
             folder = output_dir / reference
             folder.mkdir()
             (folder / f"{reference}.txt").write_text("body")
-            (folder / "documents.json").write_text("{}")
+            (folder / "tender.json").write_text("{}")
         (output_dir / "stray.txt").write_text("not a tender folder")
 
         uploaded = []

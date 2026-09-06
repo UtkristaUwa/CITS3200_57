@@ -8,12 +8,12 @@ be verified.
 Stage 2: fetch each of those detail pages and write one folder per tender
 under tenders_data/<VP reference>/ containing:
     * <VP reference>.txt -- the tender's full detail content
-    * documents.json     -- the attachments the page reports
+    * tender.json        -- the tender in ingestion's 20-field shape
     * the attachment files themselves, where they could be downloaded
 
 The public VendorPanel preview prints only a document *count* -- filenames and
 download links appear once a registered supplier account is signed in. The
-manifest therefore records one placeholder entry per undownloadable attachment
+record therefore holds one placeholder entry per undownloadable attachment
 so the shortfall is visible rather than silent.
 
     https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=N&sortBy=Opens
@@ -68,12 +68,16 @@ from web_scrapers.common import (
     Document,
     build_uc_driver,
     describe_browser_mode,
-    TenderRecord,
     download_document,
     sanitise_filename,
     tender_dir,
-    write_manifest,
+    write_tender_record,
     write_tender_text,
+)
+from web_scrapers.tender_record import (
+    build_record,
+    classify_category,
+    classify_status,
 )
 
 URL_TEMPLATE = (
@@ -357,7 +361,7 @@ def save_details(tenders, output_dir=None):
     """
     Fetch every tender's detail page and write one folder per tender.
 
-    Each folder gets <REF>.txt, a documents.json manifest and any attachments
+    Each folder gets <REF>.txt, a tender.json record and any attachments
     that could be downloaded. A tender that fails is recorded and skipped so
     one bad page cannot end the run.
     """
@@ -398,19 +402,16 @@ def save_details(tenders, output_dir=None):
                         )
                     )
 
-                record = TenderRecord(
-                    reference=folder.name,
-                    source_id=SOURCE_ID,
-                    source_url=url,
-                    documents=documents,
-                    documents_require_login=requires_login,
+                record = build_qld_record(
+                    url, detail, documents, requires_login, tender.get("title")
                 )
-                write_manifest(folder, record)
+                write_tender_record(folder, record)
                 records.append(record)
 
+                downloaded = sum(1 for d in documents if d.downloaded)
                 print(
                     f"[{index}/{len(tenders)}] {folder.name}  "
-                    f"({record.documents_downloaded}/{advertised} attachment(s))"
+                    f"({downloaded}/{advertised} attachment(s))"
                 )
             except Exception as exc:
                 failed.append((listing_ref or url, exc))
@@ -420,6 +421,44 @@ def save_details(tenders, output_dir=None):
             time.sleep(random.uniform(0.4, 1.0))  # be polite between requests
 
     return records, failed
+
+
+def build_qld_record(url, detail, documents, requires_login, listing_title=None):
+    """Map VendorPanel's fields onto ingestion's 20-field shape."""
+    lookup = {label: value for _, label, value in detail["fields"]}
+
+    # "Business Name" appears under both Tender Details and Buyer Details, so
+    # the buyer's copy is taken from its own section rather than the flat
+    # lookup, which would silently return whichever came last.
+    buyer = next(
+        (v for section, label, v in detail["fields"]
+         if section.lower().startswith("buyer") and label == "Business Name"),
+        None,
+    )
+
+    return build_record(
+        source_id=SOURCE_ID,
+        source_url=url,
+        title=detail["title"] or listing_title,
+        reference=detail["ref"],
+        issuing_agency=buyer or lookup.get("Business Name"),
+        category=classify_category(detail["title"], listing_title),
+        # The QTenders search this scraper walks filters to open tenders only.
+        status=classify_status("open"),
+        publish_date=lookup.get("Opens"),
+        closing_date=lookup.get("Closes"),
+        location=lookup.get("Locations") or lookup.get("Location"),
+        description=lookup.get("Details"),
+        documents=documents,
+        requires_login=requires_login,
+        raw_extra={
+            "buyers_reference": detail.get("buyer_ref"),
+            "categories": lookup.get("Categories"),
+            "supplier_lists": lookup.get("Lists"),
+            "supplier_query_cutoff": lookup.get("Supplier query cut-off"),
+            "expected_decision": lookup.get("Expected decision"),
+        },
+    )
 
 
 def read_saved_urls():
@@ -521,7 +560,7 @@ def run_scraper(limit=0, output_dir=None, headless=True, max_pages=0,
     Scrape open Queensland tenders into one directory each.
 
     `limit` and `max_pages` of 0 mean "no cap". Returns the list of
-    TenderRecords written.
+    tender records written.
     """
     # Stage 1 -- gather the tender links (needs a browser: the search results are
     # rendered client-side by Blazor).

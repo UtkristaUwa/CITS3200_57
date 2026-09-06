@@ -20,7 +20,7 @@ import httpx
 import pytest
 
 from web_scrapers.austender import austender
-from web_scrapers.common import MANIFEST_NAME
+from web_scrapers.common import RECORD_NAME
 from web_scrapers.qld_qtenders import qld_qtenders as qld
 from web_scrapers.vic_buyingfor import vic_buyingfor as vic
 
@@ -44,13 +44,16 @@ class TestAusTenderReachable:
     def test_the_listing_page_still_contains_tender_links(self, client):
         response = client.get(austender.ATM_LIST_URL, headers=austender.HEADERS)
 
-        urls = austender.parse_listing(response.text)
+        tenders = austender.parse_listing(response.text)
 
-        assert urls, "no /Atm/Show/ links on the listing page -- markup changed?"
+        assert tenders, "no /Atm/Show/ links on the listing page -- markup changed?"
+        assert any(t["title"] for t in tenders), (
+            "no tender titles on the listing page -- the ingestion record needs one"
+        )
 
     def test_a_real_detail_page_still_parses(self, client):
         listing = client.get(austender.ATM_LIST_URL, headers=austender.HEADERS)
-        detail_url = austender.parse_listing(listing.text)[0]
+        detail_url = austender.parse_listing(listing.text)[0]["url"]
 
         response = client.get(detail_url, headers=austender.HEADERS)
         detail = austender.parse_detail(response.text, detail_url)
@@ -63,7 +66,7 @@ class TestAusTenderReachable:
 class TestAusTenderDocuments:
     def test_documents_need_a_login_when_we_have_no_credentials(self, client):
         listing = client.get(austender.ATM_LIST_URL, headers=austender.HEADERS)
-        detail_url = austender.parse_listing(listing.text)[0]
+        detail_url = austender.parse_listing(listing.text)[0]["url"]
         detail = austender.parse_detail(
             client.get(detail_url, headers=austender.HEADERS).text, detail_url
         )
@@ -88,21 +91,25 @@ class TestAusTenderDocuments:
             assert austender.log_in(client, username, password), "login failed"
 
             listing = client.get(austender.ATM_LIST_URL, headers=austender.HEADERS)
-            detail_url = austender.parse_listing(listing.text)[0]
-            record = austender.scrape_tender(client, detail_url, output_dir)
+            tender = austender.parse_listing(listing.text)[0]
+            record = austender.scrape_tender(
+                client, tender["url"], output_dir, title=tender.get("title")
+            )
 
-        folder = output_dir / record.reference
-        manifest = json.loads((folder / MANIFEST_NAME).read_text(encoding="utf-8"))
+        reference = record["source_reference_id"]
+        folder = output_dir / reference
+        written = json.loads((folder / RECORD_NAME).read_text(encoding="utf-8"))
+        scrape = written["raw_extra"]["scrape"]
 
-        assert (folder / f"{record.reference}.txt").stat().st_size > 0
-        assert manifest["documents_advertised"] > 0, "tender advertised no documents"
-        assert manifest["documents_downloaded"] == manifest["documents_advertised"], (
-            f"only got {manifest['documents_downloaded']} of "
-            f"{manifest['documents_advertised']}: "
-            f"{[d['error'] for d in manifest['documents'] if d['error']]}"
+        assert (folder / f"{reference}.txt").stat().st_size > 0
+        assert scrape["documents_advertised"] > 0, "tender advertised no documents"
+        assert scrape["documents_downloaded"] == scrape["documents_advertised"], (
+            f"only got {scrape['documents_downloaded']} of "
+            f"{scrape['documents_advertised']}: "
+            f"{[d['error'] for d in scrape['documents_detail'] if d['error']]}"
         )
         # Every downloaded document is a real file sitting beside the text file.
-        for document in manifest["documents"]:
+        for document in scrape["documents_detail"]:
             assert (folder / document["local_path"]).stat().st_size > 0
 
 
