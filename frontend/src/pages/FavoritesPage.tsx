@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Container, CircularProgress, Alert } from '@mui/material';
+import { Box, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard, TenderDetailModal } from '../components/TenderCard';
@@ -43,6 +43,15 @@ export default function FavoritesPage() {
     <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
+
+      <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
+            My Favorites
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Manage and track your bookmarked tender opportunities.
+          </Typography>
+        </Box>
         
         <TenderFilterBar {...filterProps} />
 
