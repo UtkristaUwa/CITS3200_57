@@ -96,6 +96,16 @@ gcloud builds submit --tag australia-southeast1-docker.pkg.dev/tenderai-dev/tend
 gcloud run jobs execute tender-scrapers --region australia-southeast1 --project tenderai-dev
 ```
 
+The image ships Google Chrome and Xvfb, so all three sources run in the cloud,
+not just AusTender. Chrome runs *headed* against a virtual display rather than
+truly headless, because Cloudflare challenges headless Chrome much harder; the
+container also passes `--no-sandbox` (Chrome will not run as root without it)
+and moves shared memory off the container's 64MB `/dev/shm`. All of that is
+driven by `RUNNING_IN_CONTAINER` and `DISPLAY`, so local runs are unaffected.
+
+Browser runs need more memory than the AusTender-only path: give the job at
+least 4Gi if `SOURCES` includes `vic` or `qld`.
+
 The local directory is the primary output. Mirroring to Cloud Storage is
 additive and off unless `OUTPUT_BUCKET` is set; when set, each tender folder
 goes to `gs://<bucket>/raw/<source_id>/<REF>/`, namespaced away from any prefix

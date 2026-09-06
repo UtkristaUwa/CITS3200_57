@@ -17,6 +17,7 @@ behind a login we do not have".
 
 import json
 import mimetypes
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -216,3 +217,59 @@ def write_manifest(folder, record):
     out_file = folder / MANIFEST_NAME
     out_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return out_file
+
+
+# ---------------------------------------------------------------------------
+# Browser setup for the two portals that need one (VIC, QLD).
+# ---------------------------------------------------------------------------
+
+# Chrome's default shared-memory segment is 64MB in a container, which is not
+# enough to render a page -- it crashes with "session deleted because of page
+# crash". Writing shm to /tmp instead is the standard container workaround.
+CONTAINER_CHROME_ARGS = "disable-dev-shm-usage,disable-gpu"
+
+
+def in_container():
+    """
+    True when we are running inside the scraper image.
+
+    The Dockerfile sets this explicitly rather than sniffing for /.dockerenv or
+    cgroup paths, which differ between Docker, Cloud Run and Kubernetes.
+    """
+    return os.environ.get("RUNNING_IN_CONTAINER", "").lower() in ("1", "true", "yes")
+
+
+def has_display():
+    """True when an X display (real or Xvfb) is available to Chrome."""
+    return bool(os.environ.get("DISPLAY"))
+
+
+def build_uc_driver(headless=True):
+    """
+    Create the SeleniumBase UC-mode Chrome driver both browser scrapers use.
+
+    UC mode strips the automation fingerprints Cloudflare looks for. Two
+    container-specific adjustments matter here:
+
+      * Headless Chrome is markedly easier for Cloudflare to spot than a real
+        window. In the image we therefore run Chrome *headed* against an Xvfb
+        virtual display, so `headless` is ignored whenever DISPLAY is set.
+      * Chrome cannot run as root without --no-sandbox, and needs its shared
+        memory moved off the container's tiny /dev/shm.
+
+    Outside a container this behaves exactly as before, so local runs are
+    unchanged.
+    """
+    from seleniumbase import Driver
+
+    options = {"uc": True, "headless": headless}
+
+    if has_display():
+        # A virtual display is available -- use it instead of headless mode.
+        options["headless"] = False
+
+    if in_container():
+        options["no_sandbox"] = True
+        options["chromium_arg"] = CONTAINER_CHROME_ARGS
+
+    return Driver(**options)

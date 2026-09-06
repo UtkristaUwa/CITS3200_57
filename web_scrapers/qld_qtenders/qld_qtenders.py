@@ -59,7 +59,6 @@ from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
-from seleniumbase import Driver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -67,6 +66,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from web_scrapers.common import (
     Document,
+    build_uc_driver,
     TenderRecord,
     download_document,
     sanitise_filename,
@@ -117,8 +117,14 @@ RECONNECT_TIME = 4
 
 
 def build_driver(headless):
-    """Create a SeleniumBase UC-mode Chrome driver (same approach as the VIC scraper)."""
-    return Driver(uc=True, headless=headless)
+    """
+    Create the UC-mode Chrome driver, container-aware.
+
+    SeleniumBase auto-manages a matching chromedriver. Use `open_page()` (not
+    driver.get) to navigate, so each load goes through the Cloudflare-bypassing
+    reconnect handshake. See common.build_uc_driver for the container specifics.
+    """
+    return build_uc_driver(headless)
 
 
 def open_page(driver, url):

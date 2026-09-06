@@ -133,3 +133,82 @@ class TestPublishing:
         monkeypatch.setattr(storage, "upload_tender_folder", flaky)
 
         assert storage.publish(output_dir) == (1, 3)
+
+
+class TestBrowserSetup:
+    """
+    The two browser-driven scrapers have to behave differently inside the
+    image: Chrome cannot run as root without --no-sandbox, and Cloudflare
+    challenges headless Chrome much harder than a headed one on a virtual
+    display.
+    """
+
+    @pytest.fixture
+    def captured(self, monkeypatch):
+        """Capture the kwargs handed to SeleniumBase's Driver."""
+        import seleniumbase
+
+        recorded = {}
+        monkeypatch.setattr(
+            seleniumbase, "Driver", lambda **kwargs: recorded.update(kwargs) or "driver"
+        )
+        return recorded
+
+    def _clean_env(self, monkeypatch):
+        monkeypatch.delenv("RUNNING_IN_CONTAINER", raising=False)
+        monkeypatch.delenv("DISPLAY", raising=False)
+
+    def test_local_run_is_unchanged(self, captured, monkeypatch):
+        from web_scrapers import common
+
+        self._clean_env(monkeypatch)
+
+        common.build_uc_driver(headless=True)
+
+        assert captured == {"uc": True, "headless": True}
+
+    def test_local_visible_run_is_unchanged(self, captured, monkeypatch):
+        from web_scrapers import common
+
+        self._clean_env(monkeypatch)
+
+        common.build_uc_driver(headless=False)
+
+        assert captured == {"uc": True, "headless": False}
+
+    def test_in_the_container_chrome_gets_the_sandbox_and_shm_flags(
+        self, captured, monkeypatch
+    ):
+        from web_scrapers import common
+
+        self._clean_env(monkeypatch)
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+
+        common.build_uc_driver(headless=True)
+
+        assert captured["no_sandbox"] is True
+        assert "disable-dev-shm-usage" in captured["chromium_arg"]
+
+    def test_a_virtual_display_overrides_headless(self, captured, monkeypatch):
+        from web_scrapers import common
+
+        self._clean_env(monkeypatch)
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+        monkeypatch.setenv("DISPLAY", ":99")
+
+        common.build_uc_driver(headless=True)
+
+        # Headed against Xvfb: much less likely to be challenged by Cloudflare.
+        assert captured["headless"] is False
+
+    def test_both_browser_scrapers_use_the_shared_factory(self, captured, monkeypatch):
+        from web_scrapers.qld_qtenders import qld_qtenders
+        from web_scrapers.vic_buyingfor import vic_buyingfor
+
+        self._clean_env(monkeypatch)
+        monkeypatch.setenv("RUNNING_IN_CONTAINER", "1")
+
+        for module in (vic_buyingfor, qld_qtenders):
+            captured.clear()
+            module.build_driver(headless=True)
+            assert captured["no_sandbox"] is True, module.__name__
