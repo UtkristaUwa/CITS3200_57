@@ -37,7 +37,7 @@ client = genai.Client(
 
 TRIAGE_MODEL = "gemini-2.0-flash-lite"
 EXTRACTION_MODEL = "gemini-2.5-flash"
-MODEL = EXTRACTION_MODEL  # Backward compatibility alias
+MODEL = EXTRACTION_MODEL
 
 
 def is_retryable_error(exc: BaseException) -> bool:
@@ -460,15 +460,7 @@ def process_tender(documents_dir: str) -> dict:
     3. Formats fields to match the BigQuery database schema.
     """
     print("start of process_tender function")
-    # print directory structure for debugging
-    for root, dirs, files in os.walk(documents_dir):
-        level = root.replace(documents_dir, '').count(os.sep)
-        indent = ' ' * 4 * (level)
-        print(f"{indent}{os.path.basename(root)}/")
-        subindent = ' ' * 4 * (level + 1)
-        for f in files:
-            print(f"{subindent}{f}")
-
+    
     relevant_docs = gather_relevant_documents(documents_dir)
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
