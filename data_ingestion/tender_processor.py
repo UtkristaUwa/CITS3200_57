@@ -18,6 +18,7 @@ Environment:
 
 import os
 import json
+import time
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -25,7 +26,7 @@ from google import genai
 from google.genai import types
 from google.genai import errors as genai_errors
 from pydantic import BaseModel, Field
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 # Initialize Gemini Client
 client = genai.Client(
@@ -34,7 +35,18 @@ client = genai.Client(
     location="australia-southeast1"
 )
 
-MODEL = "gemini-2.5-flash"
+TRIAGE_MODEL = "gemini-2.0-flash-lite"
+EXTRACTION_MODEL = "gemini-2.5-flash"
+MODEL = EXTRACTION_MODEL  # Backward compatibility alias
+
+
+def is_retryable_error(exc: BaseException) -> bool:
+    """Retry on Vertex/Gemini server errors (5xx) and rate limits (429 RESOURCE_EXHAUSTED)."""
+    if isinstance(exc, genai_errors.ServerError):
+        return True
+    if isinstance(exc, genai_errors.APIError) and exc.code == 429:
+        return True
+    return False
 
 # ===
 # Tag Taxonomy
@@ -291,6 +303,12 @@ def list_tender_documents(directory: str) -> list[dict]:
     return documents
 
 
+@retry(
+    retry=retry_if_exception(is_retryable_error),
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=2, min=2, max=30),
+    reraise=True,
+)
 def is_document_relevant(path: str) -> bool:
     """Check if a document is relevant to the tender extraction and summary process."""
     with open(path, "r", encoding="utf-8", errors="replace") as f:
@@ -301,8 +319,8 @@ def is_document_relevant(path: str) -> bool:
         return False
 
     response = client.models.generate_content(
-        model=MODEL,
-        contents=f"Filename: {os.path.basename(path)}\n\n{text[:15000]}",
+        model=TRIAGE_MODEL,
+        contents=f"Filename: {os.path.basename(path)}\n\n{text[:6000]}", # About a page worth of characters according to google
         config=types.GenerateContentConfig(
             system_instruction=DOC_TRIAGE_SYSTEM_INSTRUCTION,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
@@ -344,6 +362,9 @@ def gather_relevant_documents(documents_dir: str) -> list[dict]:
             # One problematic document shouldn't kill the whole tender processing
             print(f"  [skipped {os.path.basename(path)} during triage: {e}]")
             continue
+        finally:
+            # Polite pacing between document triage requests to smooth out burst rates
+            time.sleep(0.5)
 
     return relevant_docs
 
@@ -376,8 +397,8 @@ def build_prompt(raw_context: str | None) -> str:
 # ==============================================================================
 
 @retry(
-    retry=retry_if_exception_type(genai_errors.ServerError),
-    stop=stop_after_attempt(4),
+    retry=retry_if_exception(is_retryable_error),
+    stop=stop_after_attempt(5),
     wait=wait_exponential(multiplier=2, min=2, max=30),
     reraise=True,
 )
@@ -386,7 +407,7 @@ def summarise_tender(raw_context: str | None) -> TenderSummary:
     prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
-        model=MODEL,
+        model=EXTRACTION_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=SUMMARY_SYSTEM_INSTRUCTION,
@@ -400,8 +421,8 @@ def summarise_tender(raw_context: str | None) -> TenderSummary:
 
 
 @retry(
-    retry=retry_if_exception_type(genai_errors.ServerError),
-    stop=stop_after_attempt(4),
+    retry=retry_if_exception(is_retryable_error),
+    stop=stop_after_attempt(5),
     wait=wait_exponential(multiplier=2, min=2, max=30),
     reraise=True,
 )
@@ -410,7 +431,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
     prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
-        model=MODEL,
+        model=EXTRACTION_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=FIELD_EXTRACTION_SYSTEM_INSTRUCTION,
