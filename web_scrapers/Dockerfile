@@ -1,15 +1,23 @@
-# Container for the scraper stage, run as a Cloud Run job.
+# NOT DEPLOYED. This image is not a service, not a job, and nothing schedules
+# it. The pipeline runs from the repo-root Dockerfile, which builds manager.py;
+# the scrapers are a library it imports.
 #
-# Build from the repo root so the whole web_scrapers/ package is in context:
-#   docker build -f web_scrapers/Dockerfile -t <image> .
+# What this file is for: the two browser-driven portals (VIC, QLD) need a real
+# Chrome, and the exact set of packages and flags that make Chrome work in a
+# container took a while to get right. Keeping it here means the requirement
+# stays executable -- you can build this and prove the browser path still works
+# without deploying anything:
 #
-# Ships Google Chrome because two of the three portals (VIC, QLD) render their
-# search results client-side and sit behind Cloudflare, so they cannot be
-# scraped over plain HTTP. AusTender alone would not need any of this.
+#   docker build -f web_scrapers/Dockerfile -t scrapers-check .
+#   docker run --rm scrapers-check --sources vic --limit 2
+#
+# The pipeline image needs the same Chrome layer or it can only run austender.
+# See INTEGRATION.md; the block between the two markers below is the part to
+# copy across.
 FROM python:3.12-slim
 
-# Unbuffered so Cloud Logging gets the scrape progress as it happens, not in
-# one lump when the task exits.
+# Unbuffered so container logs get the scrape progress as it happens, not in
+# one lump when the process exits.
 ENV PYTHONUNBUFFERED=1
 
 # Tells the scrapers to apply the container-specific Chrome flags
@@ -18,6 +26,7 @@ ENV RUNNING_IN_CONTAINER=1
 
 WORKDIR /app
 
+# --- 8< --- chrome layer: copy this into the pipeline image --- 8< ---
 # Google Chrome (not Chromium): SeleniumBase's UC mode is built and tested
 # against Chrome, and its anti-bot patches assume Chrome's exact fingerprint.
 # xvfb gives us a virtual display so Chrome can run headed -- Cloudflare
@@ -36,21 +45,17 @@ http://dl.google.com/linux/chrome/deb/ stable main" \
     && apt-get purge -y --auto-remove curl gnupg \
     && rm -rf /var/lib/apt/lists/*
 
+# SeleniumBase writes its downloaded chromedriver and its lock files next to
+# the package, so the runtime user needs somewhere writable.
+ENV HOME=/tmp
+# --- >8 --- end of the chrome layer --- >8 ---
+
 COPY web_scrapers/requirements.txt ./web_scrapers/requirements.txt
 RUN pip install --no-cache-dir -r web_scrapers/requirements.txt
 
 COPY web_scrapers/ ./web_scrapers/
 
-# SeleniumBase writes its downloaded chromedriver and its lock files next to
-# the package, so the runtime user needs somewhere writable.
-ENV HOME=/tmp
-
-# Overridable at deploy time: SOURCES, LIMIT, OUTPUT_BUCKET, OUTPUT_PREFIX.
 ENV SOURCES=austender \
-    LIMIT=10 \
-    OUTPUT_PREFIX=raw
+    LIMIT=10
 
-# The virtual display is started from Python (see run_scrapers.virtual_display)
-# rather than by wrapping this in xvfb-run, so a display failure is logged and
-# degrades to headless instead of hanging the job with no output.
-CMD ["python", "-m", "web_scrapers.run_scrapers"]
+ENTRYPOINT ["python", "-m", "web_scrapers.run_scrapers"]

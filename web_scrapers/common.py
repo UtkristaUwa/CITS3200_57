@@ -22,6 +22,8 @@ import json
 import mimetypes
 import os
 import re
+import shutil
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -242,6 +244,68 @@ def describe_browser_mode(headless=True):
     if has_display():
         return f"headed on virtual display {os.environ.get('DISPLAY')}"
     return "headless" if headless else "visible window"
+
+
+# Where Chrome actually lives, by platform. SeleniumBase can fetch a matching
+# chromedriver on demand, but it cannot install the browser itself, so a plain
+# python:slim image has no Chrome at all -- which is exactly the shape of the
+# pipeline image the manager function runs in.
+CHROME_COMMANDS = (
+    "google-chrome",
+    "google-chrome-stable",
+    "chrome",
+    "chromium",
+    "chromium-browser",
+)
+
+MACOS_CHROME_PATHS = (
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "~/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+)
+
+WINDOWS_CHROME_PATHS = (
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+)
+
+NO_CHROME_REASON = (
+    "no Chrome or Chromium on this machine -- this source drives a real "
+    "browser. In a container, install google-chrome-stable (see "
+    "web_scrapers/INTEGRATION.md); locally, install Chrome."
+)
+
+
+def chrome_binary():
+    """
+    Path to the Chrome/Chromium the browser scrapers would drive, or None.
+
+    Checked before launching rather than after, because SeleniumBase's failure
+    when the browser is missing is a driver-level exception that reads like a
+    Cloudflare block or a timeout -- it sends whoever is on call looking at the
+    portal instead of at the image.
+    """
+    for name in CHROME_COMMANDS:
+        found = shutil.which(name)
+        if found:
+            return found
+
+    candidates = ()
+    if sys.platform == "darwin":
+        candidates = MACOS_CHROME_PATHS
+    elif os.name == "nt":
+        candidates = WINDOWS_CHROME_PATHS
+
+    for candidate in candidates:
+        path = os.path.expanduser(candidate)
+        if os.path.exists(path):
+            return path
+    return None
+
+
+def chrome_available():
+    """True when a browser-driven scraper has a browser to drive."""
+    return chrome_binary() is not None
 
 
 def build_uc_driver(headless=True):

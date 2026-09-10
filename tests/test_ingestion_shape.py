@@ -18,6 +18,8 @@ from web_scrapers.austender import austender
 from web_scrapers.common import Document, RECORD_NAME
 from web_scrapers.qld_qtenders import qld_qtenders as qld
 from web_scrapers.tender_record import build_record
+from web_scrapers.nt_qtol import nt_qtol as nt
+from web_scrapers.wa_tenders import wa_tenders as wa
 
 SCHEMA_PATH = REPO_ROOT / "ingestion" / "tender.schema.json"
 SAMPLE_PATH = REPO_ROOT / "ingestion" / "sample_tender.json"
@@ -147,6 +149,76 @@ class TestQldRecord:
     def test_records_that_the_documents_need_a_login(self, record):
         assert record["raw_extra"]["scrape"]["documents_require_login"] is True
         assert record["raw_extra"]["scrape"]["documents_downloaded"] == 0
+
+
+class TestWaRecord:
+    @pytest.fixture(scope="class")
+    def record(self):
+        listing = read_fixture("wa_list.html")
+        detail = read_fixture("wa_detail.html")
+        entry = [
+            e for e in wa.parse_listing(listing) if e["reference"] == "RFP112025FSa"
+        ][0]
+        parsed = wa.parse_detail(detail, entry["url"])
+        return wa.build_tender_record(
+            parsed, entry, entry["url"], parsed["documents"], True
+        )
+
+    def test_validates(self, validator, record):
+        assert_valid(validator, record)
+
+    def test_takes_the_agency_off_the_title_block(self, record):
+        assert record["issuing_agency"] == "Forest Products Commission"
+
+    def test_normalises_the_closing_date(self, record):
+        assert record["closing_date"] == "2026-12-31"
+
+    def test_leaves_the_publish_date_null_because_wa_publishes_none(self, record):
+        assert record["publish_date"] is None
+
+    def test_records_that_the_documents_need_a_login(self, record):
+        scrape = record["raw_extra"]["scrape"]
+
+        assert scrape["documents_require_login"] is True
+        assert scrape["documents_advertised"] >= 6
+        assert scrape["documents_downloaded"] == 0
+
+    def test_documents_carry_only_schema_permitted_keys(self, record):
+        for document in record["documents"]:
+            assert set(document) == {
+                "document_id",
+                "file_name",
+                "file_type",
+                "extracted_text",
+                "parsed_at",
+            }
+
+
+class TestNtRecord:
+    @pytest.fixture(scope="class")
+    def record(self):
+        entry = nt.parse_listing(read_fixture("nt_list.html"))[0]
+        parsed = nt.parse_detail(read_fixture("nt_detail.html"), entry["url"])
+        return nt.build_tender_record(parsed, entry, entry["url"], [], True)
+
+    def test_validates(self, validator, record):
+        assert_valid(validator, record)
+
+    def test_reads_the_day_first_dates_the_right_way_round(self, record):
+        assert record["publish_date"] == "2026-09-10"
+        assert record["closing_date"] == "2026-09-21"
+
+    def test_maps_the_portals_request_type_onto_the_enum(self, record):
+        assert record["category"] == "rfq"
+
+    def test_an_empty_document_list_still_says_why(self, record):
+        """
+        QTOL names no documents at all, so an empty list is ambiguous on its
+        own -- requires_login is the only thing distinguishing "nothing
+        attached" from "we were not allowed to look".
+        """
+        assert record["documents"] == []
+        assert record["raw_extra"]["scrape"]["documents_require_login"] is True
 
 
 class TestWrittenToDisk:

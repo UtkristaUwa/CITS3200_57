@@ -1,8 +1,37 @@
-"""The job entrypoint: source selection, and one bad source not sinking the run."""
+"""
+The entrypoint the pipeline's manager function calls.
+
+Source selection, one bad source not sinking the run, and the two things the
+manager relies on: the list of tender folders that came back, and a source
+that could not run saying so instead of raising from three layers down.
+"""
+
+from pathlib import Path
 
 import pytest
 
-from web_scrapers import run_scrapers, storage
+from web_scrapers import common, run_scrapers, storage
+
+
+def writes(*references):
+    """
+    A stand-in scraper that writes real tender folders.
+
+    Real ones, not mocks: run() counts what landed on disk rather than
+    trusting a return value, which is the behaviour worth testing.
+    """
+
+    def scrape(limit, out):
+        made = []
+        for reference in (references[:limit] if limit else references):
+            folder = Path(out) / reference
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / "tender.json").write_text('{"source_id": "fake"}')
+            (folder / f"{reference}.txt").write_text("body")
+            made.append(folder)
+        return made
+
+    return scrape
 
 
 class TestSourceSelection:
@@ -25,6 +54,14 @@ class TestSourceSelection:
 
 
 class TestRun:
+    @pytest.fixture(autouse=True)
+    def chrome_is_installed(self, monkeypatch):
+        """
+        These tests are about orchestration, not the browser preflight, and
+        they must pass on a machine with no Chrome on it.
+        """
+        monkeypatch.setattr(common, "chrome_available", lambda: True)
+
     def test_runs_each_requested_source(self, output_dir, monkeypatch):
         called = []
         monkeypatch.setitem(
@@ -38,19 +75,198 @@ class TestRun:
 
         assert called == [("a", 5), ("v", 5)]
 
+    def test_hands_back_every_folder_it_wrote(self, output_dir, monkeypatch):
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", writes("A1", "A2"))
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "vic", writes("V1"))
+
+        result = run_scrapers.run(["austender", "vic"], 0, output_dir)
+
+        assert [folder.name for folder in result.tender_dirs] == ["A1", "A2", "V1"]
+        assert result.counts == {"austender": 2, "vic": 1}
+        assert result.total == 3
+        assert result.ok
+
+    def test_counts_folders_on_disk_not_records_returned(self, output_dir, monkeypatch):
+        """
+        A scraper that reports five tenders but writes two folders has lost
+        three, and the next stage can only process folders. Believing the
+        return value would hide that.
+        """
+
+        def optimistic(limit, out):
+            writes("A1", "A2")(limit, out)
+            return ["record"] * 5
+
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", optimistic)
+
+        assert run_scrapers.run(["austender"], 0, output_dir).counts == {"austender": 2}
+
+    def test_a_directory_without_a_record_is_not_a_tender(self, output_dir, monkeypatch):
+        def messy(limit, out):
+            writes("A1")(limit, out)
+            (Path(out) / "downloads").mkdir()          # scratch the portal left
+            (Path(out) / "urls.txt").write_text("x")   # not a directory at all
+
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", messy)
+
+        result = run_scrapers.run(["austender"], 0, output_dir)
+
+        assert [folder.name for folder in result.tender_dirs] == ["A1"]
+
     def test_a_failing_source_does_not_stop_the_others(self, output_dir, monkeypatch):
         def boom(limit, out):
             raise RuntimeError("portal down")
 
         monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", boom)
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "vic", writes("V1", "V2"))
+
+        result = run_scrapers.run(["austender", "vic"], 5, output_dir)
+
+        assert result.total == 2
+        assert result.counts == {"vic": 2}
+        assert "RuntimeError: portal down" in result.failed["austender"]
+        assert not result.ok
+
+    def test_the_summary_names_what_went_wrong(self, output_dir, monkeypatch):
+        def boom(limit, out):
+            raise RuntimeError("portal down")
+
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", boom)
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "vic", writes("V1"))
+
+        summary = run_scrapers.run(["austender", "vic"], 5, output_dir).summary()
+
+        assert "1 tender(s)" in summary
+        assert "failed: austender" in summary
+
+
+class TestChromePreflight:
+    """
+    The two browser sources need a real Chrome, and SeleniumBase cannot install
+    one -- on a plain python:slim image (which is what the pipeline runs today)
+    there is no browser at all. Checked before launching, because the failure
+    otherwise surfaces as a driver exception that reads like a Cloudflare block
+    and sends whoever is on call to look at the portal instead of the image.
+    """
+
+    @pytest.fixture
+    def no_chrome(self, monkeypatch):
+        monkeypatch.setattr(common, "chrome_available", lambda: False)
+
+    @pytest.fixture
+    def chrome(self, monkeypatch):
+        monkeypatch.setattr(common, "chrome_available", lambda: True)
+
+    def test_plain_http_sources_never_need_a_browser(self, no_chrome):
+        assert run_scrapers.unrunnable(["austender"]) == {}
+
+    def test_browser_sources_are_ruled_out_without_one(self, no_chrome):
+        assert set(run_scrapers.unrunnable(["austender", "vic", "qld"])) == {"vic", "qld"}
+
+    def test_nothing_is_ruled_out_when_chrome_is_installed(self, chrome):
+        assert run_scrapers.unrunnable(["austender", "vic", "qld"]) == {}
+
+    def test_the_reason_says_what_to_do_about_it(self, no_chrome):
+        reason = run_scrapers.unrunnable(["vic"])["vic"]
+
+        assert "Chrome" in reason
+        assert "INTEGRATION.md" in reason
+
+    def test_a_skipped_source_is_never_called(self, output_dir, monkeypatch, no_chrome):
+        called = []
         monkeypatch.setitem(
-            run_scrapers.SCRAPERS, "vic", lambda limit, out: ["one", "two"]
+            run_scrapers.SCRAPERS, "vic", lambda limit, out: called.append(True)
+        )
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", writes("A1"))
+
+        result = run_scrapers.run(["austender", "vic"], 5, output_dir)
+
+        assert called == []
+        assert result.counts == {"austender": 1}
+
+    def test_skipped_is_reported_apart_from_failed(self, output_dir, no_chrome):
+        """
+        Both leave no folders behind, and only one of them means the portal
+        changed shape -- the other means our image is wrong.
+        """
+        result = run_scrapers.run(["vic"], 5, output_dir)
+
+        assert result.failed == {}
+        assert "vic" in result.skipped
+        assert "skipped: vic" in result.summary()
+
+
+class TestManagerEntrypoint:
+    """`run_scraper` is what manager.py imports; its signature is the contract."""
+
+    @pytest.fixture(autouse=True)
+    def fake_sources(self, monkeypatch):
+        monkeypatch.setattr(common, "chrome_available", lambda: True)
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "austender", writes("A1", "A2"))
+        monkeypatch.setitem(run_scrapers.SCRAPERS, "vic", writes("V1"))
+
+    def test_writes_into_the_directory_it_is_given(self, output_dir):
+        result = run_scrapers.run_scraper(limit=10, output_dir=output_dir)
+
+        assert result.output_dir == output_dir
+        assert [folder.name for folder in result.tender_dirs] == ["A1", "A2"]
+        assert (output_dir / "A1" / "tender.json").exists()
+
+    def test_accepts_a_list_of_sources(self, output_dir):
+        result = run_scrapers.run_scraper(
+            limit=10, output_dir=output_dir, sources=["austender", "vic"]
         )
 
-        total, failed = run_scrapers.run(["austender", "vic"], 5, output_dir)
+        assert result.counts == {"austender": 2, "vic": 1}
 
-        assert total == 2
-        assert failed == ["austender"]
+    def test_accepts_a_comma_separated_string(self, output_dir):
+        result = run_scrapers.run_scraper(
+            limit=10, output_dir=output_dir, sources="austender,vic"
+        )
+
+        assert result.counts == {"austender": 2, "vic": 1}
+
+    def test_falls_back_to_the_environment(self, output_dir, monkeypatch):
+        monkeypatch.setenv("SOURCES", "vic")
+
+        assert run_scrapers.run_scraper(limit=10, output_dir=output_dir).counts == {"vic": 1}
+
+    def test_limit_is_per_source(self, output_dir):
+        result = run_scrapers.run_scraper(
+            limit=1, output_dir=output_dir, sources="austender,vic"
+        )
+
+        assert result.counts == {"austender": 1, "vic": 1}
+
+    def test_an_unknown_source_is_a_caller_error_and_raises(self, output_dir):
+        """
+        The one thing that does raise: everything else the manager needs to
+        keep going through, but a typo in SOURCES should not scrape nothing
+        and call it a quiet day.
+        """
+        with pytest.raises(ValueError, match="nsw"):
+            run_scrapers.run_scraper(output_dir=output_dir, sources="nsw")
+
+    def test_the_scrape_is_not_uploaded(self, output_dir, monkeypatch):
+        """Publishing is the pipeline's decision, not a side effect of scraping."""
+        published = []
+        monkeypatch.setattr(storage, "publish", lambda *a, **k: published.append(True))
+        monkeypatch.setenv("OUTPUT_BUCKET", "test-bucket")
+
+        run_scrapers.run_scraper(limit=10, output_dir=output_dir)
+
+        assert published == []
+
+
+class TestTenderDirectories:
+    def test_is_empty_for_a_directory_that_does_not_exist(self, tmp_path):
+        assert run_scrapers.tender_directories(tmp_path / "nope") == []
+
+    def test_finds_only_folders_holding_a_record(self, output_dir):
+        writes("A1", "A2")(0, output_dir)
+        (output_dir / "empty").mkdir()
+
+        assert [f.name for f in run_scrapers.tender_directories(output_dir)] == ["A1", "A2"]
 
 
 class TestBlobPrefix:
