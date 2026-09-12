@@ -124,3 +124,15 @@ def list_tenders(
             record["documents"] = [dict(d) for d in record["documents"]]
         rows.append(record)
     return rows
+def get_locations(client: bigquery.Client) -> list[str]:
+    """
+    Fetch a deduplicated list of all available locations for the frontend filter dropdown.
+    """
+    query = f"""
+        SELECT DISTINCT location
+        FROM `{settings.tenders_table}`
+        WHERE location IS NOT NULL AND TRIM(location) != ''
+        ORDER BY location
+    """
+    job = client.query(query)
+    return [row["location"] for row in job.result()]

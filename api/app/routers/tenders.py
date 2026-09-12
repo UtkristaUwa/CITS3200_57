@@ -3,7 +3,7 @@ from datetime import date
 
 from fastapi import APIRouter, Query
 
-from app.bigquery import get_client, list_tenders
+from app.bigquery import get_client, list_tenders, get_locations
 from app.config import settings
 from app.models import TenderOut
 
@@ -171,3 +171,12 @@ def get_tenders(
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
     )
     return [TenderOut(**row) for row in rows]
+@router.get("/locations", response_model=list[str])
+def list_locations() -> list[str]:
+    if settings.use_mock_data:
+        # Extract unique, non-empty locations from the local mock data
+        locations = {row.get("location") for row in _MOCK_TENDERS if row.get("location")}
+        return sorted(list(locations))
+    
+    client = get_client()
+    return get_locations(client)
