@@ -16,11 +16,23 @@ export default function FavoritesPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
+  const filterProps = useTenderFilters();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getTenders({ limit: 50 })
+    getTenders({
+      limit: 50,
+      q: filterProps.searchQuery || undefined,
+      status: filterProps.status || undefined,
+      category: filterProps.category || undefined,
+      location: filterProps.jurisdiction || undefined,
+      year: filterProps.year || undefined,
+      min_value: filterProps.minValue ? Number(filterProps.minValue) : undefined,
+      max_value: filterProps.maxValue ? Number(filterProps.maxValue) : undefined,
+      closing_after: filterProps.minDate || undefined,
+      closing_before: filterProps.maxDate || undefined,
+    })
       .then((data) => {
         if (!cancelled) setTenders(data);
       })
@@ -31,12 +43,13 @@ export default function FavoritesPage() {
         if (!cancelled) setLoading(false);
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [
+    filterProps.searchQuery, filterProps.status, filterProps.category, 
+    filterProps.jurisdiction, filterProps.year, filterProps.minValue, 
+    filterProps.maxValue, filterProps.minDate, filterProps.maxDate
+  ]);
 
-  // Core difference: filter to keep only favorited items first, then pass to the filter hook
   const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));
-  const filterProps = useTenderFilters(bookmarkedTenders);
-
   const isDataLoading = loading || loadingFavorites;
 
   return (
@@ -63,17 +76,11 @@ export default function FavoritesPage() {
 
         {!isDataLoading && !error && bookmarkedTenders.length === 0 && (
           <Alert severity="info" sx={{ mt: 2 }}>
-            You haven't added any tenders to your favorites yet. Go to the Home page to discover opportunities.
+            You haven't added any tenders to your favorites yet, or none match your current filters.
           </Alert>
         )}
 
-        {!isDataLoading && !error && bookmarkedTenders.length > 0 && filterProps.filteredTenders.length === 0 && (
-          <Alert severity="info">
-            No favorite tenders match your current filters.
-          </Alert>
-        )}
-
-        {!isDataLoading && !error && filterProps.filteredTenders.map((tender) => (
+        {!isDataLoading && !error && bookmarkedTenders.map((tender) => (
           <TenderCard
             key={tender.tender_id}
             tender={tender}
