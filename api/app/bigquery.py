@@ -4,6 +4,8 @@ from google.cloud import bigquery
 
 from app.config import settings
 
+from datetime import date
+
 # Mirrors ALL_COLUMNS in ingestion/bigquery_client.py — kept in sync manually
 # since api/ and ingestion/ are separate deployable units, not a shared package.
 ALL_COLUMNS = [
@@ -96,8 +98,10 @@ def list_tenders(
         params.append(bigquery.ScalarQueryParameter("closing_after", "DATE", closing_after))
         
     if year:
-        conditions.append("(CAST(closing_date AS STRING) LIKE @year OR CAST(publish_date AS STRING) LIKE @year)")
-        params.append(bigquery.ScalarQueryParameter("year", "STRING", f"{year}%"))
+        # Convert the frontend string "2026" to an integer for BigQuery extraction matching
+        year_int = int(year)
+        conditions.append("(EXTRACT(YEAR FROM closing_date) = @year OR EXTRACT(YEAR FROM publish_date) = @year)")
+        params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
     if q:
         conditions.append("(LOWER(title) LIKE @q OR LOWER(description) LIKE @q)")

@@ -1,4 +1,5 @@
 from typing import Literal
+from datetime import date
 
 from fastapi import APIRouter, Query
 
@@ -82,14 +83,58 @@ _MOCK_TENDERS = [
 ]
 
 
-def _matches_mock(row: dict, status: str | None, category: str | None,
-                   source_id: str | None, q: str | None) -> bool:
-    if status and row["status"] != status:
+def _matches_mock(
+    row: dict,
+    status: str | None,
+    category: str | None,
+    source_id: str | None,
+    location: str | None,
+    min_value: float | None,
+    max_value: float | None,
+    closing_before: date | None,
+    closing_after: date | None,
+    year: str | None,
+    q: str | None
+) -> bool:
+    if status and row.get("status") != status:
         return False
-    if category and row["category"] != category:
+    if category and row.get("category") != category:
         return False
-    if source_id and row["source_id"] != source_id:
+    if source_id and row.get("source_id") != source_id:
         return False
+    
+    if location:
+        tender_loc = (row.get("location") or "").lower()
+        if location.lower() not in tender_loc:
+            return False
+
+    row_val = row.get("value_amount")
+    if min_value is not None:
+        if row_val is None or row_val < min_value:
+            return False
+    if max_value is not None:
+        if row_val is None or row_val > max_value:
+            return False
+
+    row_closing_str = row.get("closing_date")
+    # Date conversion for mock logic
+    if isinstance(row_closing_str, date):
+        row_closing = row_closing_str
+    else:
+        row_closing = date.fromisoformat(str(row_closing_str)) if row_closing_str else None
+    
+    if closing_before:
+        if row_closing is None or row_closing > closing_before:
+             return False
+    if closing_after:
+        if row_closing is None or row_closing < closing_after:
+             return False
+             
+    if year:
+        target_date = str(row.get("closing_date") or row.get("publish_date") or "")
+        if not target_date.startswith(year):
+            return False
+
     if q:
         needle = q.lower()
         haystack = f"{row.get('title') or ''} {row.get('description') or ''}".lower()
@@ -104,20 +149,25 @@ def get_tenders(
     offset: int = Query(default=0, ge=0),
     status: StatusFilter | None = Query(default=None, description="Exact match on tender status"),
     category: CategoryFilter | None = Query(default=None, description="Exact match on tender category"),
-    source_id: str | None = Query(default=None, description="Exact match on which portal a tender came from"),
-    q: str | None = Query(
-        default=None, min_length=1, max_length=200,
-        description="Case-insensitive keyword search across title and description",
-    ),
+    source_id: str | None = Query(default=None, description="Exact match on portal"),
+    location: str | None = Query(default=None, description="Partial match on jurisdiction/location"),
+    min_value: float | None = Query(default=None, description="Minimum tender value"),
+    max_value: float | None = Query(default=None, description="Maximum tender value"),
+    closing_before: date | None = Query(default=None, description="Closing on or before this date"),
+    closing_after: date | None = Query(default=None, description="Closing on or after this date"),
+    year: str | None = Query(default=None, description="Year of closing or publish date"),
+    q: str | None = Query(default=None, min_length=1, max_length=200, description="Keyword search"),
 ) -> list[TenderOut]:
     if settings.use_mock_data:
-        matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, q)]
+        matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
         page = matches[offset : offset + limit]
         return [TenderOut(**row) for row in page]
 
     client = get_client()
     rows = list_tenders(
         client, limit=limit, offset=offset,
-        status=status, category=category, source_id=source_id, q=q,
+        status=status, category=category, source_id=source_id, 
+        location=location, min_value=min_value, max_value=max_value, 
+        closing_before=closing_before, closing_after=closing_after, year=year, q=q,
     )
     return [TenderOut(**row) for row in rows]
