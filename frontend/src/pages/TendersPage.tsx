@@ -16,12 +16,26 @@ export default function TendersPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { favorites, toggleFavorite } = useFavorites();
+  
+  const filterProps = useTenderFilters();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    getTenders({ limit: 50 })
+    
+    getTenders({ 
+      limit: 50,
+      q: filterProps.searchQuery || undefined,
+      status: filterProps.status || undefined,
+      category: filterProps.category || undefined,
+      location: filterProps.jurisdiction || undefined,
+      year: filterProps.year || undefined,
+      min_value: filterProps.minValue ? Number(filterProps.minValue) : undefined,
+      max_value: filterProps.maxValue ? Number(filterProps.maxValue) : undefined,
+      closing_after: filterProps.minDate || undefined,
+      closing_before: filterProps.maxDate || undefined,
+    })
       .then((data) => {
         if (!cancelled) setTenders(data);
       })
@@ -31,14 +45,15 @@ export default function TendersPage() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+      
     return () => { cancelled = true; };
-  }, []);
+  }, [
+    filterProps.searchQuery, filterProps.status, filterProps.category, 
+    filterProps.jurisdiction, filterProps.year, filterProps.minValue, 
+    filterProps.maxValue, filterProps.minDate, filterProps.maxDate
+  ]);
 
-  // Pass the raw data into the custom hook to destructure all filter states and the final filtered results
-  const filterProps = useTenderFilters(tenders);
-
-  // Sorting logic: prioritize favorited tenders at the top
-  const sortedTenders = [...filterProps.filteredTenders].sort(
+  const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
 
@@ -47,7 +62,6 @@ export default function TendersPage() {
       <TopNav />
       <Container maxWidth="md">
         
-        {/* Render the encapsulated FilterBar component */}
         <TenderFilterBar {...filterProps} />
 
         {loading && (
