@@ -1,5 +1,5 @@
 # TenderAI Unified Tender Processor
-# Ver. 1.0.0
+# Ver. 1.1.0
 
 """
 Unified Tender Ingestion & Processing Engine:
@@ -9,16 +9,21 @@ Unified Tender Ingestion & Processing Engine:
 4. Summarisation: Generates a concise headline and comprehensive description for bid evaluation.
 5. DB Record Construction: Builds a complete record formatted for the BigQuery database schema.
 
+System prompts, taxonomies, and data transformation instructions are loaded externally
+from `tender_processor.cfg` so they can be edited without altering this code.
+
 Requirements:
     pip install pydantic tenacity google-genai
 
 Environment:
     export GEMINI_API_KEY="your_api_key_here"
+    export TENDER_PROCESSOR_CONFIG="/path/to/custom_config.cfg"  # optional
 """
 
 import os
 import json
 import time
+import configparser
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -30,15 +35,10 @@ from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponen
 
 # Initialize Gemini Client
 client = genai.Client(
-    vertexai = True,
+    vertexai=True,
     project="tenderai-dev",
-    location="australia-southeast1"
+    location="australia-southeast1",
 )
-
-TRIAGE_MODEL = "gemini-2.0-flash-lite"
-EXTRACTION_MODEL = "gemini-2.5-flash"
-MODEL = EXTRACTION_MODEL
-
 
 def is_retryable_error(exc: BaseException) -> bool:
     """Retry on Vertex/Gemini server errors (5xx) and rate limits (429 RESOURCE_EXHAUSTED)."""
@@ -48,232 +48,207 @@ def is_retryable_error(exc: BaseException) -> bool:
         return True
     return False
 
-# ===
-# Tag Taxonomy
-# ===
-TAG_TAXONOMY = [
-    "construction",
-    "IT & software",
-    "professional services",
-    "supply of goods",
-    "maintenance",
-    "consulting",
-]
-
 
 # ==============================================================================
 # Pydantic Output Schemas
+# (Field descriptions are dynamically populated from tender_processor.cfg)
 # ==============================================================================
 
 class DocumentRelevance(BaseModel):
-    relevant: bool = Field(
-        description=(
-            "True if this document contains information relevant to understanding "
-            "the tender, extracting key metadata (title, agency, dates, contacts, "
-            "reference IDs, URLs), scope of work, contract value/term, deliverables, "
-            "mandatory criteria, evaluation methodology, addenda, or submission instructions. "
-            "False if it is pure boilerplate (standard unamended contract templates), "
-            "blank response forms, or low-level engineering drawings / raw CAD / spec sheets "
-            "with no administrative or bid-evaluation value."
-        )
-    )
-    reason: Optional[str] = Field(
-        default=None,
-        description="Brief 1-sentence reason for keeping or dropping the document."
-    )
+    relevant: bool = Field(...)
+    reason: Optional[str] = Field(default=None)
 
 
 class TenderSummary(BaseModel):
-    headline: str = Field(
-        description=(
-            "One sentence, max ~20 words. What is being procured and by whom. "
-            "No agency boilerplate, no dates, no 'this is a notice that...' framing. "
-            "e.g. 'AAD seeks supplier to design, build and deliver a new Antarctic "
-            "fuel storage system.'"
-        )
-    )
-    description: str = Field(
-        description=(
-            "2-4 short paragraphs for a client deciding whether this tender is "
-            "worth pursuing. Cover: what's actually being procured and the scope "
-            "of work; who is responsible for what (what's in scope vs explicitly "
-            "excluded); contract value/term if stated; key dates (publish, close, "
-            "delivery timeframes); and anything unusual (e.g. pre-release notice "
-            "vs live tender, restrictions on contacting the agency). Do not pad "
-            "with generic procurement language. If a section (e.g. value) is not "
-            "stated in the source material, omit it rather than guessing."
-        )
-    )
+    headline: str = Field(...)
+    description: str = Field(...)
 
 
 class TenderFields(BaseModel):
-    source_id: Optional[str] = Field(
-        description=(
-            "The tender's own reference number/ID as stated in the source "
-            "(e.g. an ATM ID or tender number like '1222692568' or '26-0084'). None if "
-            "not stated."
-        )
-    )
-    source_reference_id: Optional[str] = Field(
-        description=(
-            "A URL for viewing the tender online, if one appears in the "
-            "source text (e.g. a 'Detail URL' line). None if no URL is "
-            "present anywhere in the material."
-        )
-    )
-    title: Optional[str] = Field(
-        description="The tender's title/name as stated in the source. None if genuinely unclear."
-    )
-    issuing_agency: Optional[str] = Field(
-        description="The agency/department/organisation running the tender. None if genuinely unclear."
-    )
-    category: Optional[str] = Field(
-        description=(
-            "The type of procurement notice, exactly as labelled in the "
-            "source (e.g. 'Request for Tender', 'Request for Quotation', 'Notice', 'Expression of "
-            "Interest'). Record it as stated, don't normalise it into some "
-            "other wording. None if not labelled anywhere."
-        )
-    )
-    status: Optional[str] = Field(
-        description=(
-            "The tender's current status, exactly as stated in the source "
-            "(e.g. 'Open', 'Closed', 'Awarded'), lowercased. None if not "
-            "stated."
-        )
-    )
-    publish_date: Optional[str] = Field(
-        description=(
-            "ISO 8601 date (YYYY-MM-DD) the tender/notice was published. "
-            "None if not stated anywhere."
-        )
-    )
-    closing_date: Optional[str] = Field(
-        description=(
-            "ISO 8601 date, or full datetime with UTC offset if a specific "
-            "close time and timezone are given (e.g. '2026-08-18T14:00:00+10:00'). "
-            "None if not stated, or if this is a pre-release notice with no "
-            "close date set yet."
-        )
-    )
-    value_amount: Optional[float] = Field(
-        description=(
-            "A single numeric contract value, no currency symbol or commas "
-            "(e.g. 250000.0). Only set this if the source gives ONE clean "
-            "figure. Never estimate, calculate, or average a range into a "
-            "single number - if it's a range, or there's no exact figure, "
-            "leave this None and put the detail in value_notes instead."
-        )
-    )
-    value_currency: Optional[str] = Field(
-        description=(
-            "3-letter currency code (e.g. 'AUD'). Use AUD if a $ figure is "
-            "given with no other currency stated, since this is an "
-            "Australian tender portal. None if no value is stated at all."
-        )
-    )
-    value_notes: Optional[str] = Field(
-        description=(
-            "Value info that doesn't reduce to a single clean number - a "
-            "range (e.g. '$500,000 - $1,000,000 AUD'), an estimate, or a "
-            "qualifier like 'excl. GST'. None if value_amount alone covers "
-            "it, or if no value is stated anywhere."
-        )
-    )
-    location: Optional[str] = Field(
-        description="Where the work/delivery takes place (state(s), city, or specific site). None if not stated."
-    )
-    tags: list[str] = Field(
-        default_factory=list,
-        description=(
-            f"0-5 tags describing this tender, chosen ONLY from this list: "
-            f"{', '.join(TAG_TAXONOMY)}. Never invent a tag outside this "
-            "list. Empty list if nothing fits well."
-        ),
-    )
-    contact_name: Optional[str] = Field(
-        description="Name of the named contact person or contact entity for enquiries. None if not stated."
-    )
-    contact_email: Optional[str] = Field(
-        description="Contact email for enquiries. None if not stated."
-    )
-    contact_phone: Optional[str] = Field(
-        description="Contact phone number for enquiries. None if not stated."
-    )
-    lodgment_address: Optional[str] = Field(
-        description=(
-            "Where/how to submit a response (portal, email, or physical "
-            "address). If the source explicitly says this isn't available "
-            "yet (e.g. 'refer to ATM documents once released'), record that "
-            "statement rather than leaving it blank - that's still real "
-            "info, different from it just not being mentioned at all. Only "
-            "use None if the source says nothing about lodgment whatsoever."
-        )
-    )
+    source_id: Optional[str] = Field(default=None)
+    source_reference_id: Optional[str] = Field(default=None)
+    title: Optional[str] = Field(default=None)
+    issuing_agency: Optional[str] = Field(default=None)
+    category: Optional[str] = Field(default=None)
+    status: Optional[str] = Field(default=None)
+    publish_date: Optional[str] = Field(default=None)
+    closing_date: Optional[str] = Field(default=None)
+    value_amount: Optional[float] = Field(default=None)
+    value_currency: Optional[str] = Field(default=None)
+    value_notes: Optional[str] = Field(default=None)
+    location: Optional[str] = Field(default=None)
+    tags: list[str] = Field(default_factory=list)
+    contact_name: Optional[str] = Field(default=None)
+    contact_email: Optional[str] = Field(default=None)
+    contact_phone: Optional[str] = Field(default=None)
+    lodgment_address: Optional[str] = Field(default=None)
 
 
 # ==============================================================================
-# System Instructions
+# Configuration Loader & Prompt Manager
 # ==============================================================================
 
-DOC_TRIAGE_SYSTEM_INSTRUCTION = """You are triaging documents from an Australian government tender package.
-Your job is to decide whether this document contains useful content for understanding the tender, extracting key metadata (agency, dates, contact info, reference IDs, value, location, etc.), or evaluating scope and requirements.
+_DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tender_processor.cfg")
+_CONFIG_PATH: str = _DEFAULT_CONFIG_PATH
+_LAST_CONFIG_MTIME: Optional[float] = None
 
-Mark relevant=True for:
-- Tender landing pages and overview notices (always relevant)
-- Statement of Requirements / Scope of Works / Approach to Market
-- Addenda, clarifications, and Q&A documents
-- Evaluation criteria, conditions of participation, specifications with substantive scope
+# Global configuration variables populated by load_config()
+TRIAGE_MODEL: str = "gemini-2.0-flash-lite"
+EXTRACTION_MODEL: str = "gemini-2.5-flash"
+MODEL: str = EXTRACTION_MODEL
+TRIAGE_TEMPERATURE: float = 0.1
+SUMMARY_TEMPERATURE: float = 0.2
+EXTRACTION_TEMPERATURE: float = 0.1
+TRIAGE_CHAR_LIMIT: int = 6000
 
-Mark relevant=False for:
-- Blank response form templates
-- Standard legal contract boilerplate with no custom terms (e.g. generic Commonwealth Contracting Suite terms)
-- Pure technical drawing tables, part-number lists, or low-level CAD schedules with no high-level scope context
-"""
+TAG_TAXONOMY: list[str] = []
+DOC_TRIAGE_SYSTEM_INSTRUCTION: str = ""
+SUMMARY_SYSTEM_INSTRUCTION: str = ""
+FIELD_EXTRACTION_SYSTEM_INSTRUCTION: str = ""
+PROMPT_TEMPLATES: dict[str, str] = {}
 
-SUMMARY_SYSTEM_INSTRUCTION = """You are a procurement analyst summarising Australian
-government tender notices for a business development team
-deciding which tenders to pursue.
 
-Rules:
-- Base your summary ONLY on the raw source documents provided. Never invent
-  contract values, dates, or scope details that aren't present.
-- Government tender notices are full of repeated legal boilerplate.
-  Do not summarise the boilerplate itself — extract the substance underneath it.
-- Focus on what's actually being procured, scope of work, key dates, eligibility,
-  mandatory requirements, contract value/term, and anything unusual.
-- If two documents repeat the same information, say it once.
-- Write for someone skimming a list of tenders. Be concrete: names, numbers,
-  quantities, locations.
-"""
+def _parse_lenient_cfg(filepath: str) -> configparser.ConfigParser:
+    """
+    Parses a .cfg file leniently so that multiline prompts and blank lines within
+    prompt blocks do not cause ConfigParser errors.
+    """
+    with open(filepath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
 
-FIELD_EXTRACTION_SYSTEM_INSTRUCTION = """You are extracting structured data
-from raw scraped text documents of an Australian government tender (landing page
-and any relevant attachments) for insertion into a database.
+    processed_lines = []
+    in_value = False
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            # Blank line inside a multiline value or between sections
+            if in_value:
+                processed_lines.append("    \n")
+            else:
+                processed_lines.append("\n")
+        elif stripped.startswith(("[", ";", "#")):
+            in_value = False
+            processed_lines.append(line)
+        elif "=" in line and not line.startswith((" ", "\t")):
+            in_value = True
+            processed_lines.append(line)
+        else:
+            # Continuation line; ensure indentation
+            if in_value and not line.startswith((" ", "\t")):
+                processed_lines.append("    " + line)
+            else:
+                processed_lines.append(line)
 
-Rules:
-- Every field must come directly from the source material. Never infer,
-  estimate, or calculate a value that isn't explicitly stated - this
-  matters most for the value fields and the dates. If it's not there,
-  leave it None.
-- title/category/status/source_id/source_reference_id normally live on
-  the tender's landing page / notice header, but pull them from wherever
-  they appear.
-- source_id: The tender's reference number / ATM ID (e.g. '26-0084').
-- source_reference_id: Detail URL / link for viewing the tender online.
-- Contact info: Extract contact_name, contact_email, and contact_phone under enquiry/contact sections.
-- Lodgment: lodgment_address is where/how to actually submit a response (e.g. portal name/URL, email, physical address).
-- Distinguish "not stated anywhere" (-> None) from "explicitly stated as
-  not yet available" (-> record that statement). Both are different from
-  guessing, and both are useful, just not the same thing.
-- Dates: normalise to ISO 8601. Include time and timezone offset for
-  closing_date only if the source actually gives them.
-- Value: only fill value_amount when there's one clean figure. Ranges,
-  estimates, and qualifiers go in value_notes instead, and value_amount
-  stays None in that case.
-- Tags: only ever choose from the provided list. If nothing fits well,
-  return an empty list rather than forcing a loose match.
-"""
+    parser = configparser.ConfigParser(interpolation=None)
+    parser.read_string("".join(processed_lines))
+    return parser
+
+
+def load_config(config_path: Optional[str] = None):
+    """
+    Loads models, taxonomies, system instructions, and schema descriptions from an external .cfg file.
+    Updates module-level globals and re-binds Pydantic schema field descriptions.
+    """
+    global _CONFIG_PATH, _LAST_CONFIG_MTIME
+    global TRIAGE_MODEL, EXTRACTION_MODEL, MODEL
+    global TRIAGE_TEMPERATURE, SUMMARY_TEMPERATURE, EXTRACTION_TEMPERATURE, TRIAGE_CHAR_LIMIT
+    global TAG_TAXONOMY
+    global DOC_TRIAGE_SYSTEM_INSTRUCTION, SUMMARY_SYSTEM_INSTRUCTION, FIELD_EXTRACTION_SYSTEM_INSTRUCTION
+    global PROMPT_TEMPLATES
+
+    resolved_path = config_path or os.getenv("TENDER_PROCESSOR_CONFIG") or _DEFAULT_CONFIG_PATH
+
+    if not os.path.isfile(resolved_path):
+        # Check current working directory as fallback
+        alt_path = os.path.join(os.getcwd(), "tender_processor.cfg")
+        if os.path.isfile(alt_path):
+            resolved_path = alt_path
+        else:
+            raise FileNotFoundError(
+                f"Tender processor configuration file not found at '{resolved_path}'. "
+                f"Please ensure tender_processor.cfg exists or set TENDER_PROCESSOR_CONFIG."
+            )
+
+    cfg = _parse_lenient_cfg(resolved_path)
+
+    # 1. Models and hyperparameters
+    if cfg.has_section("models"):
+        TRIAGE_MODEL = cfg.get("models", "triage_model", fallback=TRIAGE_MODEL)
+        EXTRACTION_MODEL = cfg.get("models", "extraction_model", fallback=EXTRACTION_MODEL)
+        MODEL = EXTRACTION_MODEL
+        TRIAGE_TEMPERATURE = cfg.getfloat("models", "triage_temperature", fallback=TRIAGE_TEMPERATURE)
+        SUMMARY_TEMPERATURE = cfg.getfloat("models", "summary_temperature", fallback=SUMMARY_TEMPERATURE)
+        EXTRACTION_TEMPERATURE = cfg.getfloat("models", "extraction_temperature", fallback=EXTRACTION_TEMPERATURE)
+        TRIAGE_CHAR_LIMIT = cfg.getint("models", "triage_char_limit", fallback=TRIAGE_CHAR_LIMIT)
+
+    # 2. Taxonomies / Categorisation
+    if cfg.has_section("taxonomies"):
+        raw_tags = cfg.get("taxonomies", "tags", fallback="")
+        TAG_TAXONOMY.clear()
+        TAG_TAXONOMY.extend([t.strip() for t in raw_tags.split(",") if t.strip()])
+
+    # 3. System Instructions
+    if cfg.has_section("system_prompts"):
+        DOC_TRIAGE_SYSTEM_INSTRUCTION = cfg.get("system_prompts", "doc_triage", fallback="").strip()
+        SUMMARY_SYSTEM_INSTRUCTION = cfg.get("system_prompts", "summary", fallback="").strip()
+        FIELD_EXTRACTION_SYSTEM_INSTRUCTION = cfg.get("system_prompts", "field_extraction", fallback="").strip()
+
+    # 4. Field Descriptions (Data transformation & categorization instructions for Pydantic schemas)
+    if cfg.has_section("field_descriptions"):
+        descriptions = dict(cfg.items("field_descriptions"))
+
+        # Update DocumentRelevance schema
+        if "relevance_relevant" in descriptions:
+            DocumentRelevance.model_fields["relevant"].description = descriptions["relevance_relevant"]
+        if "relevance_reason" in descriptions:
+            DocumentRelevance.model_fields["reason"].description = descriptions["relevance_reason"]
+        DocumentRelevance.model_rebuild(force=True)
+
+        # Update TenderSummary schema
+        if "summary_headline" in descriptions:
+            TenderSummary.model_fields["headline"].description = descriptions["summary_headline"]
+        if "summary_description" in descriptions:
+            TenderSummary.model_fields["description"].description = descriptions["summary_description"]
+        TenderSummary.model_rebuild(force=True)
+
+        # Update TenderFields schema
+        tags_str = ", ".join(TAG_TAXONOMY)
+        for field_name in TenderFields.model_fields.keys():
+            cfg_key = f"field_{field_name}"
+            if cfg_key in descriptions:
+                desc = descriptions[cfg_key]
+                if "{tags}" in desc:
+                    desc = desc.format(tags=tags_str)
+                TenderFields.model_fields[field_name].description = desc
+        TenderFields.model_rebuild(force=True)
+
+    # 5. Prompt Formatting Templates
+    if cfg.has_section("prompt_templates"):
+        PROMPT_TEMPLATES.clear()
+        PROMPT_TEMPLATES.update(dict(cfg.items("prompt_templates")))
+
+    # Update cache tracking
+    _CONFIG_PATH = resolved_path
+    try:
+        _LAST_CONFIG_MTIME = os.path.getmtime(resolved_path)
+    except OSError:
+        _LAST_CONFIG_MTIME = None
+
+
+def _check_auto_reload():
+    """Checks if the configuration file on disk has been updated, and reloads if necessary."""
+    global _CONFIG_PATH, _LAST_CONFIG_MTIME
+    if _CONFIG_PATH and os.path.isfile(_CONFIG_PATH):
+        try:
+            mtime = os.path.getmtime(_CONFIG_PATH)
+            if _LAST_CONFIG_MTIME is not None and mtime > _LAST_CONFIG_MTIME:
+                load_config(_CONFIG_PATH)
+        except OSError:
+            pass
+
+
+# Initial load upon module import
+load_config()
 
 
 # ==============================================================================
@@ -311,6 +286,7 @@ def list_tender_documents(directory: str) -> list[dict]:
 )
 def is_document_relevant(path: str) -> bool:
     """Check if a document is relevant to the tender extraction and summary process."""
+    _check_auto_reload()
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         text = f.read()
 
@@ -318,15 +294,20 @@ def is_document_relevant(path: str) -> bool:
     if not text.strip():
         return False
 
+    text_snippet = text[:TRIAGE_CHAR_LIMIT]
+    file_name = os.path.basename(path)
+    template = PROMPT_TEMPLATES.get("triage_user_prompt", "Filename: {file_name}\n\n{text_snippet}")
+    contents = template.format(file_name=file_name, text_snippet=text_snippet)
+
     response = client.models.generate_content(
         model=TRIAGE_MODEL,
-        contents=f"Filename: {os.path.basename(path)}\n\n{text[:6000]}", # About a page worth of characters according to google
+        contents=contents,
         config=types.GenerateContentConfig(
             system_instruction=DOC_TRIAGE_SYSTEM_INSTRUCTION,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=DocumentRelevance,
-            temperature=0.1,
+            temperature=TRIAGE_TEMPERATURE,
         ),
     )
     
@@ -340,6 +321,7 @@ def gather_relevant_documents(documents_dir: str) -> list[dict]:
        pure CAD tables, boilerplate clauses).
     2. Keeps the raw text of all relevant documents without lossy compression.
     """
+    _check_auto_reload()
     doc_paths = list(iter_tender_documents(documents_dir))
     if not doc_paths:
         return []
@@ -376,9 +358,10 @@ def build_tender_context(relevant_documents: list[dict]) -> str:
     if not relevant_documents:
         return "(no relevant source documents found)"
 
+    doc_template = PROMPT_TEMPLATES.get("tender_context_doc", "=== DOCUMENT: {file_name} ===\n{raw_text}")
     parts = []
     for doc in relevant_documents:
-        parts.append(f"=== DOCUMENT: {doc['file_name']} ===\n{doc['raw_text']}")
+        parts.append(doc_template.format(file_name=doc["file_name"], raw_text=doc["raw_text"]))
     return "\n\n".join(parts)
 
 
@@ -386,10 +369,19 @@ def build_prompt(raw_context: str | None) -> str:
     """
     raw_context: combined raw text from the kept relevant documents.
     """
-    if not raw_context or not raw_context.strip():
-        return "## Tender Source Documents\n\n(no relevant documents found)"
+    empty_template = PROMPT_TEMPLATES.get(
+        "tender_prompt_empty",
+        "## Tender Source Documents\n\n(no relevant documents found)"
+    )
+    header_template = PROMPT_TEMPLATES.get(
+        "tender_prompt_header",
+        "## Tender Source Documents\n\n{raw_context}"
+    )
 
-    return f"## Tender Source Documents\n\n{raw_context}"
+    if not raw_context or not raw_context.strip():
+        return empty_template
+
+    return header_template.format(raw_context=raw_context)
 
 
 # ==============================================================================
@@ -404,6 +396,7 @@ def build_prompt(raw_context: str | None) -> str:
 )
 def summarise_tender(raw_context: str | None) -> TenderSummary:
     """Generates headline and description from raw context."""
+    _check_auto_reload()
     prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
@@ -414,7 +407,7 @@ def summarise_tender(raw_context: str | None) -> TenderSummary:
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=TenderSummary,
-            temperature=0.2,
+            temperature=SUMMARY_TEMPERATURE,
         ),
     )
     return response.parsed
@@ -428,6 +421,7 @@ def summarise_tender(raw_context: str | None) -> TenderSummary:
 )
 def extract_tender_fields(raw_context: str | None) -> TenderFields:
     """Extracts structured fields directly from raw context."""
+    _check_auto_reload()
     prompt = build_prompt(raw_context)
 
     response = client.models.generate_content(
@@ -438,7 +432,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             response_mime_type="application/json",
             response_schema=TenderFields,
-            temperature=0.1,
+            temperature=EXTRACTION_TEMPERATURE,
         ),
     )
 
@@ -460,7 +454,8 @@ def process_tender(documents_dir: str) -> dict:
     3. Formats fields to match the BigQuery database schema.
     """
     print("start of process_tender function")
-    
+    _check_auto_reload()
+
     relevant_docs = gather_relevant_documents(documents_dir)
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
