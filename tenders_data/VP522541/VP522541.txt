@@ -1,0 +1,101 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP522541
+================================================================================
+
+Title      : Request for Information - Telecommunications Expense Management Solution
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e5a5e12bf04a4ff298dc2750b09f261es522541
+Scraped At : 2026-08-25 21:50:10
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - ITB
+VP Reference #: VP522541
+Buyers Reference #: TMRICT26132
+Opens:
+    Monday 24 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 25 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 18 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 24 December 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - ITB
+Location:
+    Beams Rd
+    Carseldine, Queensland
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Information Technology branch (ITB).
+Contact Name: Michael Hintz
+Position: Principal Sourcing Specialist
+Primary phone: 07 30661073
+Mobile phone: 0431 515544
+Fax number: None Provided
+Email: michael.p.hintz@tmr.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: The Department of Transport and Main Roads (TMR) invites submissions in relation to TMR’S intention to procure a Telecommunications Expense Management Solution
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    TMR currently manages telecommunications expenditure across a range of services including fixed, mobile, and data services. These processes include invoice validation, cost allocation, reporting, and management of telecommunications service inventories.
+    Existing capabilities are supported through a combination of tools and manual processes, including a telecommunications expense management platform and ServiceNow for service and asset-related tracking activities.
+    TMR receives telecommunications invoices from multiple Suppliers which are provided in varying formats and levels of structure.
+    TMR is seeking to better understand the solutions available in the market that can consolidate telecommunications expenditure data into a single platform and improve visibility, control, management, analysis, and reporting through a consistent process. In particular, TMR is interested in approaches that enhance billing validation, support individual service level cost recovery, and improve alignment between service, billing, and inventory data.
+    While the purpose of this RFI is to assess telecommunications expense management (TEMS) capabilities. Broader ICT expenditure management capabilities are considered desirable but are not weighted equally to telecommunications capabilities and should not presented without stated TEMS capability. TMR operates in a constrained environment where enterprise financial systems (e.g. SAP and corporate expense management platforms) are managed by other business areas. Ability to integrate with these systems is highly desirable.
+
+QUESTIONS ASKED BY THE BUYER:
+----------------------------------------
+Question 1 - [Required]: Suppliers are required to complete the attached Request for Information as part of the response to this activity. Refer to attachment "TMRICT26132 - Request for Information - Telecommunications Expense Management Solution v1.0 Final".
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 1
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: Services - Managed Services
+    2: Services - Other
+    3: Services - Software Support & Maintenance
+    4: Services - Telecommunication Services
+    5: Software - Development
+    6: Software - Other
+    7: Software - Programs
+    8: Software - SaaS
+    9: Software - Sales
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 1 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

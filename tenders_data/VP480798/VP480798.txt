@@ -1,0 +1,279 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP480798
+================================================================================
+
+Title      : Long Term Maintenance Dredging (LTMD) - Queensland GOC Ports
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=354ec57668bc43b1a438afd4c762c9a7s480798
+Scraped At : 2026-08-25 21:51:55
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Port of Townsville Limited
+VP Reference #: VP480798
+Buyers Reference #: GP301
+Opens:
+    Tuesday 16 June 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 08 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 01 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Sunday 07 March 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Port of Townsville Limited
+Location:
+    Benwell Rd
+    South Townsville, Queensland 4810
+    Australia
+WebSite: https://www.townsville-port.com.au/
+Business Info:
+    The Port of Townsville is Northern Australia’s largest container and automotive port, and the country's leading exporter of copper, zinc, lead, sugar, fertiliser and molasses. Located in the heart of Northern Australia's largest city, the Port handles more than 30 diverse commodities and is a strategic defence and cruise port.
+    The Port of Lucinda is located 100 kilometres north of Townsville, and is the prime sugar export facility for the Hinchinbrook region.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: x
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 13
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    Marine Transp. Products & Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Dredging
+    Marine Transport & Products & Services
+    1: Dredging
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+18/Jun/2026 03:08 PM:
+    Question
+    :
+    Good day,
+    may we please have access to the below as mentioned in VP480798-LTMD-ITO_Part_B-Draft_contract-Att_B-Specification. Many thanks in advance,
+    Table 4.1 Site Data Registers
+    Appendix Title
+    Appendix 1a Site Pack - Bundaberg Appendix 1b Site Pack - Gladstone Appendix 1c Site Pack – Port Alma Appendix 1d Site Pack - Townsville Appendix 1e Site Pack - Cairns
+    Table 5.1 Drawings Registers
+    Appendix Title
+    Appendix 2a Drawings Pack - Bundaberg Appendix 2b Drawings Pack - Gladstone
+    Appendix 2c Drawings Pack – Port Alma
+    Appendix 2d Drawings Pack - Townsville
+    Appendix 2e Drawings Pack - Cairns
+    Answered on 19/Jun/2026 01:11 PM
+    :
+    The documentation requested is available via the link contained in the document Part A: Invitation to Offer (section 1.7 Documents that make up the ITO).
+03/Jul/2026 03:53 PM:
+    Question
+    :
+    1. Part A – Invitation to Tender, Clause 1.2 states that "it is intended that each GOC will enter into a separate Contract with one or more successful Offerors." Could you please clarify whether more than one Offeror may be appointed under this tender?
+    Is it the intention that Offerors price the entire scope (all ports), with the possibility that only certain ports may be awarded to a particular Offeror while other ports may be awarded to different Offerors? Please clarify the intended award methodology.
+    Answered on 08/Jul/2026 11:37 AM
+    :
+    It is the current intention that the same Offeror is appointed, under a separate contract, with each of the GOC Ports. However, the Offeror will be selected based on what determines overall best value for money for the GOC Ports.
+03/Jul/2026 03:53 PM:
+    Question
+    :
+    2. With reference to the indicative historical annual hours provided in the BoQ, we assume that this data is based entirely on the operation of the TSHD Brisbane River. Could you please confirm this assumption? If not, please specify which vessel(s) the historical data is based on.
+    Answered on 08/Jul/2026 11:37 AM
+    :
+    That is correct; the TSHD Brisbane provided the historical annual hours as detailed in the ITO.
+03/Jul/2026 03:53 PM:
+    Question
+    :
+    3. Could you please provide typical in-survey and out-survey data for all five ports in digital XYZ format, together with the corresponding port and channel design layouts?
+    Answered on 10/Jul/2026 05:28 PM
+    :
+    An addendum will be uploaded that includes a link to the requested information for each port.
+08/Jul/2026 04:24 PM:
+    Question
+    :
+    Have you been in contact with any preferred suppliers yet?
+    Is the Brisbane TSHD, a possible supplier or will she not be considered for these roles?
+    Answered on 09/Jul/2026 05:26 PM
+    :
+    There are no "preferred suppliers" already established as part of this procurement process. For information, a market sounding exercise was undertaken in mid-2025 to gain feedback from the market in relation to a variety of technical, commercial, environmental and legal topics. The finding from this exercise has been used to inform the procurement and contracting strategy for this LTMD ITO. Multiple organisations were invited to participate in, and responded to, this exercise including Australian and international organisations.
+    This is an open market procurement approach; all suppliers are welcome to submit Offers and will be evaluated using the same set of evaluation criteria as published in the ITO.
+13/Jul/2026 02:10 PM:
+    Question
+    :
+    Thank you for inviting us to participate in the LTMR tender for the Queensland GOC Ports.
+    We have commenced our initial review and screening of the tender documentation. However, due to a combination of a high current tender workload and resource constraints associated with the holiday period, we would like to respectfully request a one-month extension to the current submission deadline.
+    This additional time will enable us to dedicate the appropriate resources required to prepare a comprehensive, high-quality, and optimised submission.
+    We appreciate your consideration of this request and thank you for your flexibility.
+    We look forward to your favorable response
+    Answered on 16/Jul/2026 10:58 AM
+    :
+    The GOC Ports appreciate the challenges associated with resourcing constraints and have considered your request for a one-month extension to the submission deadline.
+    To ensure procurement timeframes remain aligned with project requirements and to maintain fairness to all respondents, we are unable to grant the full extension requested. However, a one-week extension to the ITO closing date can be granted.
+    An addendum will be released to formally communicate this change.
+15/Jul/2026 12:36 PM:
+    Question
+    :
+    Please advise if Dredging KPI Table 17.1 of the Specifications needs to be completed as part of the submission.
+    Answered on 20/Jul/2026 10:24 AM
+    :
+    Offerors do not need to complete the KPI table in section 17.1 of the Part B - Draft Contract - Attachment B (Specification). The values will be entered into this KPI table as part of the negotiation process with the successful Offeror, informed by the equipment and methodology details provided by them in the Response Schedule.
+20/Jul/2026 11:22 AM:
+    Question
+    :
+    1. Is there any soil investigation data available for Port Alma, such as grab samples, boreholes, vibrocores, or other geotechnical and sediment characterization data? If so, would it be possible to obtain these records?
+    2. We see that an extensive sampling campaign was carried out in Townsville. However, we currently only have access to a summary of the results and not the underlying laboratory test data for the individual samples. Would it be possible to obtain the detailed laboratory results and associated reports?
+    Answered on 23/Jul/2026 01:38 PM
+    :
+    1. There is no additional soil investigation data available for Port Alma. GPC can report from previous dredging and bed levelling campaigns the material is very light silt in the berth pocket and Shell Point Leads with some sandy silts in the Kazatch Reach and Sea Reach.
+    2. Laboratory particle size distribution test results for sediment and soil samples collected from the Port of Townsville study area will be included in an addendum for information only.
+20/Jul/2026 12:04 PM:
+    Question
+    :
+    Thank you for your invitation to tender.
+    Due to our current tender workload and resource constraints during the European summer holiday period in August, we respectfully request an extension to the submission deadline to 8 September.
+    This additional time would allow us to allocate the appropriate resources needed to prepare a comprehensive, high-quality submission.
+    We appreciate your consideration of this request and thank you for your flexibility.
+    Answered on 31/Jul/2026 04:15 PM
+    :
+    With consideration to the volume of requests for an extended ITO period, an additional two week extension will be granted. An addendum will be released to formally communicate this change.
+24/Jul/2026 04:33 PM:
+    Question
+    :
+    Based on historical data can you please provide details regarding emergency campaigns that have occurred at each of the GOC Ports.
+    Answered on 05/Aug/2026 08:03 PM
+    :
+    1. PN response: In the last 15 years emergency dredging has not been enacted for the port managed by Ports North. However extreme weather events (e.g. Cyclone Jasper) or significant siltation occurring in the past has been managed through revised schedules and additional support by the current dredging operator. In 2026 the channel silted up which was addressed through bed-levelling and took 4 days. For Cyclone Jasper (campaign year 2025), the campaign was split across three rounds, for example the first was 6 days (on the way to Weipa), the second was 10 days (on the way back from Weipa and Karumba) and the third was 18 days at the end of the dredging campaign. This was done in consultation with the current dredging operator who dredges these ports, however the scope of this ITO will only include Cairns.
+    2. POTL response: In the last 15 years no emergency dredging campaigns have occurred for the Port of Townsville. However extreme weather events have been managed in the past through revised scheduling, for example in 2011 after Cyclone Yasi.
+    3. GPC response: In the last 15 years only Bundaberg has required emergency dredging, under the terms of the current contract, due to a declared major flooding event which occurred March 2026 and required 23 days dredging (this included the usual 11 days annual maintenance dredging). Bundaberg also required emergency dredging in 2011 and 2013 following major flooding but depths were restored during the annual planned dredging campaign. Port Alma and Gladstone have not required any emergency dredging.
+29/Jul/2026 12:12 PM:
+    Question
+    :
+    Particular Condition Cl. 5.1: What is the rationale for introducing the option of a Second Nominated Dredge from the Availability Date?
+    Answered on 31/Jul/2026 11:48 AM
+    :
+    The Contract structure allows for the introduction of a Second Nominated Dredge to provide flexibility for alternative vessel strategies and innovative solutions during the Contract term. Offerors may propose a transition from an initial vessel or solution to a replacement vessel or solution at a nominated point during the Contract term.
+29/Jul/2026 12:12 PM:
+    Question
+    :
+    Particular Condition Cl. 5.1: Does GOC expect or prefer the deployment of a vessel with different specifications, or potentially a newly built vessel?
+    Answered on 31/Jul/2026 11:51 AM
+    :
+    The inclusion of a Second Nominated Dredge does not indicate any preference for a vessel with different specifications or for a newly built vessel. Rather, it provides flexibility for Offerors whose proposed long-term solution may involve a future vessel transition. The Customer will evaluate any proposed vessel(s) against the requirements and evaluation criteria set out in the ITO.
+29/Jul/2026 12:13 PM:
+    Question
+    :
+    Particular Condition Cl. 5.1: Please clarify the rationale for establishing a Delivery Date of 31 March 2028 for the Second Nominated Dredge, as stated on page 8 of the Contract Data.
+    Answered on 31/Jul/2026 11:51 AM
+    :
+    31 March 2028 aligns with the commencement of the first year of service delivery and establishes a clear contractual milestone for any Second Nominated Dredge proposed by an Offeror.
+29/Jul/2026 12:14 PM:
+    Question
+    :
+    We refer to the Particular Conditions regarding the structure and planning of the Annual Campaign.
+    To enable the Contractor to prepare a cost-effective proposal, please confirm that the dredging works across the five nominated ports will be awarded and managed as a single, continuous campaign, and that the Program Requirements issued by the JPMG under Clause 4(a)(ii) will be structured to provide an uninterrupted work programme across all five ports, thereby avoiding any unpaid idle time between individual port campaigns.
+    Answered on 31/Jul/2026 11:52 AM
+    :
+    The Customer's intention is to coordinate dredging requirements across the nominated ports through an Annual Campaign and Annual Campaign Program developed by the JPMG in consultation with the Contractor. The sequencing of port campaigns and mobilisation legs will be established through the Annual Campaign Program having regard to operational efficiency, dredging requirements and other relevant considerations. The Contract does not guarantee that Annual Campaigns will be uninterrupted or continuous in all circumstances.
+29/Jul/2026 12:14 PM:
+    Question
+    :
+    Shared Mobilisation (Clause 4(a)(iii))
+    Please confirm that the transit and mobilisation between the five nominated ports (the mobilisation legs) will be treated as part of a single continuous campaign.
+    Answered on 31/Jul/2026 11:55 AM
+    :
+    Yes. Mobilisation between nominated ports forms part of the Annual Campaign framework. Mobilisation legs are separately identified, programmed and valued under the Contract in accordance with the mobilisation provisions and Annual Campaign Program.
+29/Jul/2026 12:15 PM:
+    Question
+    :
+    Sequence of Works (Clause 4(b)(ii))
+    The Contractor is required to propose a “sequence of the dredging works … including sailing times between ports.” Once the sequence has been agreed and finalised under Clause 4(c), please confirm that GOC will maintain a continuous programme of works and will not introduce gaps, delays, or interruptions between port campaigns that could result in the dredging vessel becoming idle and unpaid.
+    Answered on 31/Jul/2026 11:56 AM
+    :
+    The Customer will seek to optimise the Annual Campaign to minimise unnecessary mobilisation and downtime. However, the Contract does not guarantee a continuous or uninterrupted programme of works, and Annual Campaigns may be amended in accordance with the Contract.
+29/Jul/2026 12:15 PM:
+    Question
+    :
+    Clause 5.5 of the Specification states that the designated DMPA may include “onshore DMPAs for the placement of Dredged Material.”
+    Please clarify whether tenderers are required, at this stage, to include in their rates and proposal any costs associated with onshore disposal methods beyond the use of a trailing suction hopper dredger (TSHD), such as discharge pipelines, booster stations, shore-based equipment, earthworks, or any other ancillary infrastructure and operations.
+    Answered on 31/Jul/2026 11:57 AM
+    :
+    Tenderers should prepare their Offers based on the ITO documentation as issued. The Specification provides that designated DMPAs may include offshore DMPAs, onshore DMPAs or alternative beneficial reuse locations, with the designated DMPA to be advised prior to each Port Campaign in accordance with the Contract.
+29/Jul/2026 12:16 PM:
+    Question
+    :
+    Clause 5.5.1 provides that the Employer will notify the Contractor of the designated DMPA prior to each Port Campaign, and Section 5.2 refers to Appendix 2 (Drawing Pack) for the layout of these areas.
+    To enable tenderers to adequately assess the scope, risks, and costs associated with onshore placement, please provide the location, coordinates, available capacity, and existing seabed and/or ground levels of all potential onshore DMPAs within the five nominated ports. This information is critical for assessing sailing distances, discharge pipeline lengths, pumping requirements, and the technical suitability of the proposed dredging vessel and associated pump-out or unloading systems.
+    Answered on 31/Jul/2026 11:59 AM
+    :
+    The information available to tenderers regarding DMPAs is contained within the ITO documentation, including the Site Packs and Drawing Packs. The designated DMPA for each Port Campaign will be identified in accordance with Clause 5.5 of the Specification. No additional information is proposed to be issued at this time.
+29/Jul/2026 12:16 PM:
+    Question
+    :
+    Clause 9(a) of the Particular Conditions defines the “Dredger – Hourly Rate” as applying to all “Operational Hours,” including time spent “placing Dredged Material within the DMPA.”
+    Given that onshore placement, particularly via pipeline discharge, typically involves different production cycles, operational constraints, and additional equipment compared with offshore placement, please clarify whether GOC intends to include a separate pricing item and/or a distinct hourly rate within Part C – Pricing Schedule to compensate for onshore disposal activities. If not, please confirm that all costs associated with onshore placement are to be incorporated within the standard Dredger Hourly Rate.
+    Answered on 31/Jul/2026 12:00 PM
+    :
+    No separate pricing item or rate for onshore placement activities is included in Part C – Rates Schedule. Tenderers are to submit pricing in accordance with the pricing schedules issued with the ITO.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+26/Jun/2026 04:09 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) GOC LTMD - Addendum no.1.pdf
+    2. Added: 	 (Addendum) VP480798 GOC Ports LTMD - Industry briefing.pdf
+    Please consider these addenda when responding.
+10/Jul/2026 05:35 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) GOC LTMD - Addendum no.2.pdf
+    Please consider this addendum when responding.
+16/Jul/2026 11:05 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) GOC LTMD - Addendum no.3.pdf
+    Please consider this addendum when responding.
+30/Jul/2026 02:12 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) GOC LTMD - Addendum no.4.pdf
+    2. Added: 	 (Addendum) VP480798 LTMD - PoTL lab test results Nov21.pdf
+    Please consider these addenda when responding.
+31/Jul/2026 04:18 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) GOC LTMD - Addendum no.5.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 13 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

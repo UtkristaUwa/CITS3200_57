@@ -1,0 +1,506 @@
+Queensland Government Tenders (QTenders) - open tender URLs
+Source  : https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=N&sortBy=Opens
+Scraped : 2026-08-25 21:50:06
+Pages   : 7
+Reported: 125 total tenders
+Found   : 125 unique tender URLs
+==============================================================================
+[1] VP522442
+    Title : North and Far North Tropical Low Environmental Recovery Program, Catchment Rehabilitation Program
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=817f38d97d1349d3a654cc9e4736d612s522442
+
+[2] VP522690
+    Title : HIQ1645 - QEII Hospital Expansion – General Art Opportunities ROI
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=29b9a583e8ea43d3a776f3de405ef062s522690
+
+[3] VP522626
+    Title : Supply of Infliximab
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=82c124838ae34fdc96022e0aa3df11c7s522626
+
+[4] VP522456
+    Title : CN-26693 - 2026-27 GRC Reseals for the Darling Downs District on the State and National Network
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9816cd12239843aca3e14f7df73084ebs522456
+
+[5] VP522541
+    Title : Request for Information - Telecommunications Expense Management Solution
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e5a5e12bf04a4ff298dc2750b09f261es522541
+
+[6] VP522472
+    Title : BHTSP Contract Administration Panel - Aug 26
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c56eac6824ec46da9e3ce940c1d9e04es522472
+
+[7] VP522303
+    Title : Facade Cleaning and Access System Inspection and Testing
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7bf22e92ceb24ccebee14cce4f267ebbs522303
+
+[8] VP522443
+    Title : Southern Queensland Women Correctional Centre and Townsville Women Correction Centre Body Scanners
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e791bdf1cce449679fabae9c10758e20s522443
+
+[9] VP521762
+    Title : Pick of the Crop 2027-28 expansion to Far North Queensland
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a3cbcd2e4ce54310a6bab940633bc49as521762
+
+[10] VP522352
+    Title : CN-26496 DRFA Event 25J Southern Cross Creek Betterment - Flinders Highway
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e9cb1e5b1a574a65981fe3f9612699bcs522352
+
+[11] VP522355
+    Title : ITO | Electrical Course Supplies
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c6167f78dc84456c9dfc823b291d5459s522355
+
+[12] VP522207
+    Title : Design and Construct - Warwick Specialist Clinic Redesign
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d26904d544d84089adaadfb006081b69s522207
+
+[13] VP521950
+    Title : Cairns Courthouse - HVAC and Mechanical Upgrade
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5de9d45df56745b092d068e40cd73bb5s521950
+
+[14] VP521700
+    Title : TL26-00375 Elliott Heads – Moore Park Emergency Service Contract
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=2a28a1c50c7a452d90d3d45be2e4982cs521700
+
+[15] VP521891
+    Title : Tier 1 Office Accommodation Design & Construct - Expression of Interest
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d7bb692b0f0746b480629d32dc922db4s521891
+
+[16] VP522003
+    Title : Pre-Market Notification - Mackay and Rockhampton Emergency Helicopter Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9ad279024d9a414995390043268e4f93s522003
+
+[17] VP521958
+    Title : Standing Offer Arrangement - Trade Contractor - Pest Control Services - SOUTH WEST QLD REGION
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=47e0932df5674aab8fb53d6af797cdfes521958
+
+[18] VP521947
+    Title : Standing Offer Arrangement - Trade Contractor - Painting Services - SOUTH WEST QLD REGION
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5133b3d7969c4d9699a3f9277a53584es521947
+
+[19] VP521607
+    Title : Head Contractor - Bundaberg SHS – Tuckshop Upgrade (With Design Responsibility)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e0cfc8bc895c4f5581049d00f2f267c8s521607
+
+[20] VP521941
+    Title : Meter to Cash Solution and Implementation Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=22228976ac9a42b990b1a5e50d7ea94ds521941
+
+[21] VP521648
+    Title : Civil , Electrical and Landscape Construction Works - Oonoonba
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1c57695f07ed4b8bb3c781b01d22a77bs521648
+
+[22] VP521761
+    Title : ITSM Platform Review
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=08d3a2bed6214bf391464623afb8dac8s521761
+
+[23] VP521832
+    Title : Expression of Interest (EOI) - Sunshine Coast Stadium Early Works (Demolition)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d4bd122f5aa94d07835a16f8ce440f55s521832
+
+[24] VP521769
+    Title : ITO | Linen Hire and Laundry Service
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3d94d82a317b43598fb22e20cc9a6e8cs521769
+
+[25] VP521711
+    Title : Glenala State School –Sports Facilities Upgrades (Eligible PQC Contractors)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1948746e31dc4d8ab4d1949bc821db1cs521711
+
+[26] VP521633
+    Title : 92783DC1-Design & Construct Water Rectification Upgrade-PIMLICO STATE HIGH SCHOOL
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6a121096afe1424f836fc9a827fc5e97s521633
+
+[27] VP521626
+    Title : Parliamentary Precinct Hydraulic Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=71070a5efafa4e7b8347c1f5202bd7efs521626
+
+[28] VP521547
+    Title : QBNQ437BLD1 – Carry out Refurbishment of F Block - SUNSET STATE SCHOOL, ABEL SMITH PARADE MOUNT ISA
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d66d6726911741758b292fdcf79e613as521547
+
+[29] VP521511
+    Title : Connecting Kin (T210) and Equipping Kin (T211), – South East Region (Region wide service)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=aa1cf998aa6c4b4e9f02ebb4e39546b6s521511
+
+[30] VP521043
+    Title : Central West Reseal and Preparation Works Program 2026/27 and 2027/28
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=ed444ff54b524a86ade6eac32d6d9375s521043
+
+[31] VP521362
+    Title : Provision of Culvert Jacking & Associated Works
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9afab30b6e1442a39f472f1926311646s521362
+
+[32] VP521352
+    Title : Connecting Kin, Equipping Kin, Supporting Kin, Supporting Foster Care –Mainstream/ATISCO's_Bundaberg
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=021929060f50450d9e02ef1dfd652903s521352
+
+[33] VP521345
+    Title : Connecting Kin, Equipping Kin, Supporting Kin, Supporting Foster Care_Mainstream/ATISCO's_SCC
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a3786bd41c304795a629dd5e5ca2e7d8s521345
+
+[34] VP521320
+    Title : Connecting Kin (T210), Equipping Kin (T211) North Queensland Region – Townsville & Mackay
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=415665daa76e43ea806253e8134e3214s521320
+
+[35] VP521312
+    Title : Supporting Kin and Supporting Foster Care AB/Torres Strait Islander Community - NQR_Townsville
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=64784ed61e284e3a8ea9f752bdbdfa0bs521312
+
+[36] VP521303
+    Title : Planning and Delivery Lead
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9706bb5a5f374a31a0427fc792485372s521303
+
+[37] VP521233
+    Title : Sales Agent Tender for 44 Herschel St
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=eb4f0b7c9fd44738acc26172cd98f038s521233
+
+[38] VP521227
+    Title : Gym Equipment Lease
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=38711c687d8d4ca1b60093ea688a5701s521227
+
+[39] VP521214
+    Title : CN-26958a EOI - ETI for Construction of Coomera Connector Stage 2 Pimpama to Coomera
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c5279509174b421885b7aa171a3bf7ces521214
+
+[40] VP520760
+    Title : QBNQ436BLD1-Carry out Pre-Paint Repairs and External Painting Works-CHARTERS TOWERS STATE HIGH
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9c7204e64b18451a849acca97f73a034s520760
+
+[41] VP521201
+    Title : Mental Health Wellbeing Investment Package ITO
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9479de5431a9499aa62fdb50f91d7db2s521201
+
+[42] VP521189
+    Title : Substation Battery Chargers
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6efa186c5d434bf3ae62b4093d722184s521189
+
+[43] VP521181
+    Title : Standing Offer Arrangement - Trade Contractor - Pest Control Services in Far North Queensland
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a0f96a50c3ef4915af91043d2317ff80s521181
+
+[44] VP521162
+    Title : EMERALD STATE HIGH SCHOOL - Stage 1 and Stage 2 - EFA
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=fdf341ce713d473c8899d800a24aa10ds521162
+
+[45] VP520108
+    Title : Enterprise Governance, Risk and Compliance (GRC) Platform
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=05be5f08f9b44a7dbf7bdb28f98a5bfas520108
+
+[46] VP520788
+    Title : QPWS Fire Protective Clothing
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=fe3c0a4b3d3d4fe3b83e8973550eaa60s520788
+
+[47] VP520684
+    Title : Standing Offer Arrangement - Trade Contractor - Pest Control Services in Wide Bay Burnett
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=526f99a225774c3b94933aa45ba9f7bcs520684
+
+[48] VP520691
+    Title : CQ Trade Contract Pest Control Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d816bdfda40640d693e9897aad91f2f3s520691
+
+[49] VP520682
+    Title : Head Contractor - Park Lake SS - Multipurpose Hall Air Conditioning - PCQ Level 2
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=27ab498e13634ed5804bcd5709785cc2s520682
+
+[50] VP520504
+    Title : Cooktown Multi-Purpose Health Service (MPHS) Redevelopment – Enabling Works - Civil Contractor
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c9953e506a8447a7a94eacaf8167bc87s520504
+
+[51] VP520609
+    Title : CQURFQ-26-32-DFM - ROK034 Student Recreation Fit-out
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3536726a8d3d44708c1b1a57ea3ce246s520609
+
+[52] VP520536
+    Title : Standing Offer Arrangement Trade Contractor Pest Control Services - NORTH QUEENSLAND REGION
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6520cdd55b49407ba9d02efe9135fbf5s520536
+
+[53] VP520585
+    Title : MONTO SHS - Construction - Block A Stage one (1) Refurbishment
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=35142156d74743188f463131f4ad2ee9s520585
+
+[54] VP520558
+    Title : CQ Trade Contract Painting Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=bacb05d8e6144e45bde625f52847875bs520558
+
+[55] VP520526
+    Title : Principal Contractor – Kowanyama Housing Roof Replacements
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=4a5e6ce1d0124c1d894ea282630692d3s520526
+
+[56] VP520497
+    Title : CN-26895 - Summerholm Road Intersection Upgrade
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=4315e73cbd554dd3a8ca650c5b52b680s520497
+
+[57] VP520234
+    Title : CN-26692 - 2026-27 SDRC Reseals for the Darling Downs District on the State and National Network
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=91a28d0429d24ee69c23649097d95a55s520234
+
+[58] VP519812
+    Title : Principal Contractor – Staff Accommodation Structural Repairs & Re-Roof at Lockhart River
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=fb06fd2ec0124b61973396a4a71e4638s519812
+
+[59] VP520488
+    Title : Provision of Soil Nailing for Mungar Road Batter Slip
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1fc5c73496eb4a969dab3664db48a3fes520488
+
+[60] VP520440
+    Title : QRP-25-16 - North Coast Line South - Culvert Replacement
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=35e8c423fcfe497eb3e01c77f8c3aa3as520440
+
+[61] VP520432
+    Title : Wheelset Overhauls
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6db6abee40224da2b46af8c50c54be8bs520432
+
+[62] VP518556
+    Title : Atherton Hospital Upgrades - Design and Construct Building Contractor
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d58935f3eb3d401ab83bd018b25bc689s518556
+
+[63] VP520340
+    Title : CN-26773 Northern Districts Reseal Package 1 - FY 2026/2027
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=efae5348c909471789e45f7c7971a462s520340
+
+[64] VP520342
+    Title : CN-26774 Northern Districts Reseal Package 2 - FY 2026/2027
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=ccf92a1c3ad04e229979f26a10078954s520342
+
+[65] VP519791
+    Title : CQURFQ-26-35-DFM - ROK Road and Carpark Repairs
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9dc65700b08b4e5c9a469b50131b2686s519791
+
+[66] VP520306
+    Title : ROI: QED 5184 2026 Shailer Park SHS - MPH - Registration of Interest (PQC eligible contractors)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c3e86881b15140e79a02ab50e0227ebbs520306
+
+[67] VP520278
+    Title : Expression of Interest - Form Technology Solution
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=2ab881b6aaf749a4924432a054048e6fs520278
+
+[68] VP520232
+    Title : Performance Health Practitioner Services (Medicine) - Brisbane
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6d4f71feaeb64bb2abccb7a12cbe5c47s520232
+
+[69] VP520146
+    Title : ROCKHAMPTON - Construction - New Neighbourhood Centre
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=daf5790b5a8041169e04ed844d302080s520146
+
+[70] VP520215
+    Title : Provision of Cleaning Services for Bribie Island Research Facility
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=cdd88f2acf07436bbd8791848adbc02cs520215
+
+[71] VP519986
+    Title : CQURFQ-26-36-DFM - ROK Fleet Carpark - Construction
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=151497f998b44cabb69bacf0b0d351das519986
+
+[72] VP520057
+    Title : QBNQ435BLD1-Carry out Asbestos Removal and Rectification Works-HOME HILL STATE SCHOOL
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=690b8e5833534b0da4299553482e1d48s520057
+
+[73] VP519978
+    Title : Marybourough Hospital - The Demaine External Refurbishment - WBHHS-MBH26008
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3bdbbee992f049099fc05f7d7d4adbacs519978
+
+[74] VP519976
+    Title : QBNQ434DEMO1-Carry out demolition and disposal of Modular Buildings-RASMUSSEN STATE SCHOOL
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=aa5c6369dee445809cf2900b1e09cbfds519976
+
+[75] VP518130
+    Title : Community Development Program - Financial Wellbeing and Social Services Sector Capability Building
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=4feacd2507ca49518f7a322e4910843as518130
+
+[76] VP519940
+    Title : Expression of Interest (EOI) Tiaro Bypass-Bruce Highway (Gympie-Maryborough)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=df289d5886ee4af1af90ca85e0013795s519940
+
+[77] VP519696
+    Title : BHH Maudsley Refurbishment
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8d549e2766654417a30f14606c3dd4aas519696
+
+[78] VP519609
+    Title : CQUIRQ-26-9-DFM - BDG003 Library Kitchenette
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=770ce072d0f145bfa5caa50e07845dc1s519609
+
+[79] VP519878
+    Title : Disaster Recovery - Human and Social Services Standing Offer Arrangement
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3bfe13243c964dc5906459ca00380485s519878
+
+[80] VP518426
+    Title : Customer Rail Transfer Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=94cd92c9ae194f388e3d2f509b990351s518426
+
+[81] VP519757
+    Title : Dredging of the North Channel, South Channel and Coomera River
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=948b193741cf42099f1f70f89bcf4806s519757
+
+[82] VP519747
+    Title : Ports North - FY26 Heritage Wharves Maintenance
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8f1724ed8b16458599413a255ec2b9cds519747
+
+[83] VP517577
+    Title : RBWH Programmable Logic Controllers Replacement Project – Principal Contractor
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=68a897c673764f17ae9773c89441e4ebs517577
+
+[84] VP519257
+    Title : Expression of Interest (EOI) Road Safety Systems Program (RSSP) ICT Managed Services
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=f1dd7171b1674f928331f7cc55396855s519257
+
+[85] VP519532
+    Title : CTG Replacement
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b20b671f850744148bd5ae13bb15784as519532
+
+[86] VP519537
+    Title : Cairns Firecoms Building Refurbishment
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a6dd06a030d24a598c13638926c88c84s519537
+
+[87] VP516477
+    Title : Standard Offer Arrangement - Wound Care, Bandages & Dressings
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=0cccf0f5b8d3461b87a009713aac77b8s516477
+
+[88] VP519531
+    Title : Belmont State School – New A Block
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7e7c6a99b29046e5a4a14694742b5d35s519531
+
+[89] VP519485
+    Title : Mackay Turf Club Jockey & Steward Room & Swab Box Upgrade
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d42cf0c062764dc7939c772063aa5856s519485
+
+[90] VP519348
+    Title : MSH SP26-501 Logan Ear Nose and Throat Expansion
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=bbf0e38526d641c4bf505da459caa5e6s519348
+
+[91] VP519269
+    Title : Aurukun Various Residences - Refurbishment Works
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=62f8814ae90e48fa9d87235c42807280s519269
+
+[92] VP519166
+    Title : Standing Offer Arrangement - Trade Contractor - Painting Services in Wide Bay Burnett
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b89a026d6872445c850194300c1e9d66s519166
+
+[93] VP519174
+    Title : Standing Offer Arrangement, Trade Contractor, Painting Services - Far North Queensland
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c37c7f414ee94297a62f2523786af60bs519174
+
+[94] VP519061
+    Title : CQUIRQ-26-8-DFM - BDG012 Safe Storage and Workshop
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=685feb0ff2a248a4a3103326908056d6s519061
+
+[95] VP519143
+    Title : Digital Radiography Fixed Xray
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c87a39fe1d7b4d84b8d7599c73f86252s519143
+
+[96] VP519107
+    Title : Logan Multi-Sports Precinct - Development Partner
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=3e3250dadbbb450ba9a7271a5c7019ecs519107
+
+[97] VP519051
+    Title : Long Axial Field of View (LAFOV) Positron Emission Tomography Computed Tomography (PET/CT) system
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5956929272214d5fbb595666b80e8b8bs519051
+
+[98] VP518326
+    Title : BHH Ridley Refurbishment
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9e6e10cb602b4e2ca5b3abae00b1f887s518326
+
+[99] VP518610
+    Title : Western QLD Surface Trough and Associated Rainfall and Flooding, Catchment Rehabilitation Program
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=904787030fb44cfb9a3901c40487e099s518610
+
+[100] VP518664
+    Title : RFP - Racing Queensland's Registered Training Organisation SMS & LMS System
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7550468fe9104b17a8b92f2f320cb125s518664
+
+[101] VP518862
+    Title : QBTCPA26NQ - Trade Contractor Painting Services - NORTH QUEENSLAND REGION
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5340a8b8674d4f1bbe0c8ce7eb157aebs518862
+
+[102] VP518734
+    Title : Eurong Office Construction Works
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a2d5a3a53ed24d0e807db7394a0ab137s518734
+
+[103] VP518722
+    Title : QBNQ433BLD1 - Carry out Refurbishment of E Block - TOWNVIEW STATE SCHOOL, 64-67 CLARKE STREET
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=f216d912bac7409da631f21860e96cd8s518722
+
+[104] VP518612
+    Title : Standing Offer Arrangement Trade Contractor Glazing Services – SOUTH EAST QUEENSLAND
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=4085391b27a544cfb311cd76d3da25das518612
+
+[105] VP518435
+    Title : Executive Recruitment Standing Offer Arrangement (SOA)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a2c73ef5fbf84568b2f738f4cf23ae4es518435
+
+[106] VP518187
+    Title : Provision of Principal Consultant Services for multiple CID Projects
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=43bbae0325d4463aba93ca8cbf664b1es518187
+
+[107] VP518113
+    Title : Lotus Glen Correctional Centre - Medical/Office, Property Store and Covered Area Extension
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e056e91a90f54416a9101b0d0b98002fs518113
+
+[108] VP517584
+    Title : Sippy Downs Campus Building Refurbishments
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7c31e52435024be386f9ac55c00d1389s517584
+
+[109] VP517477
+    Title : Provision and Installation of Two Autoclaves
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=99c43a801a8c48039d11b9d14c658e1fs517477
+
+[110] VP517458
+    Title : North Johnstone River Bridge Replacement
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=743ce0c4b68241b995c834ce1b308491s517458
+
+[111] VP517309
+    Title : Expression of Interest - Central West District Future Program of Works
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d76c29d216604be1b3a591f18377501fs517309
+
+[112] VP517161
+    Title : Standing Offer Arrangement Trade Contractor Arboriculture Services - NORTH QUEENSLAND REGION
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=cf55e59d86cc48c09288e3193b32bf45s517161
+
+[113] VP517004
+    Title : Panel - Electrical Services - Townsville, Cairns & Off-Site Cairns
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9bbcd586d2084b098c38dc0bd2213deds517004
+
+[114] VP516952
+    Title : Electorate Office Security System and EACS Upgrade Project (QLD wide)
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b56cc99575bc4b399b6f9ca53ac6d2c3s516952
+
+[115] VP516002
+    Title : New England Highway Chalk Drive Cycleway Upgrades
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=95d699c24f0a4d7292e1caf51d5d4778s516002
+
+[116] VP516050
+    Title : Mount Isa Hospital Lifts Project
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=95e021c4063c4d528913f4e786e80de7s516050
+
+[117] VP513744
+    Title : Cairns Marine Precinct Common User Facility
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8977388ddbdc45e09c950746342fd099s513744
+
+[118] VP514142
+    Title : Forward Procurement Notice: Roadside Advertising - Department of Transport and Main Roads
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=1cf240811ec344779fb8599a424781d1s514142
+
+[119] VP480798
+    Title : Long Term Maintenance Dredging (LTMD) - Queensland GOC Ports
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=354ec57668bc43b1a438afd4c762c9a7s480798
+
+[120] VP511491
+    Title : Expression of Interest - Broken River Ecotourism Precinct
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b2812909f5d146598bf22fd34ccb125es511491
+
+[121] VP507930
+    Title : QED 6264 2026 - Hermit Park State School - Grounds Enhancement
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=2d57d28755c640739bfa18907f722e07s507930
+
+[122] VP506255
+    Title : MTR-26-17A Provision of Traffic Engineering,Design & Safety Audit Support for Development Assessment
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=339f8694ad35447db14164ce9ab37e70s506255
+
+[123] VP505968
+    Title : CAPRICORNIA CORRECTIONAL CENTRE - Design and Construct - Low Security Air Conditioning Upgrade
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5dfd82cbb0714e7695cb604ffd8f54f7s505968
+
+[124] VP465869
+    Title : Queensland Government - Preferred Supplier Panel for Grocery, Dairy and Beverages
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=726782126aed4feca28dde791b009d81s465869
+
+[125] VP455349
+    Title : Expression of Interest Supply of Fill for Coolum Site
+    URL   : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=bfbbade7954f4db693dca121e7e7b7d3s455349

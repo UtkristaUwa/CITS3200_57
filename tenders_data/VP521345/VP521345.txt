@@ -1,0 +1,121 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521345
+================================================================================
+
+Title      : Connecting Kin, Equipping Kin, Supporting Kin, Supporting Foster Care_Mainstream/ATISCO's_SCC
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a3786bd41c304795a629dd5e5ca2e7d8s521345
+Scraped At : 2026-08-25 21:50:35
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Families, Seniors, Disability Serv & Child Safety
+VP Reference #: VP521345
+Buyers Reference #: DFSDSCS261
+Opens:
+    Friday 14 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 04 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 01 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 16 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Families, Seniors, Disability Serv & Child Safety
+Location:
+    111 George St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.families.qld.gov.au/
+Business Info: Department of Families, Seniors, Disability Services and Child Safety - The department's vision is for Queensland’s children, young people, seniors, carers and people with disability to be safe, empowered in their families, communities and culture and thriving socially and economically
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Connecting Kin (T210) services are responsible for targeted family mapping and engagement leading to new family connection or family members making application to be assessed as kinship carers (engagement focused). Outsourced non-government Connecting Kin services may work in conjunction with current regional Child Safety Finding Kin teams.
+    Equipping Kin (T211) services are responsible for supporting initial kinship carer assessments, including provisional approval assessments. Services will provide all necessary supports to have kinship carers approved so they can commence caring (assessment focused). Outsourced non-government Equipping Kin services may work in conjunction with current regional Child Safety Finding Kin teams.
+    Supporting Kin (T212) services are responsible for supporting approved kinship carer households, including provisional approved carers, and will support all ongoing assessments and renewals. The service will focus supports for kinship care households to support care arrangements and ensure family remain caring for as long as required (retention focused).
+    Supporting Foster Care (T214) services are responsible for supporting approved foster carer households, including provisional approved carers, and will support all ongoing assessments and renewals. The service will focus supports for foster carer households to support care arrangements and that foster carers remain engaged and caring for as long as possible (retention focused). The service will also be focused on responding to care arrangement requests via unify, managing up-to-date foster care agreements and supporting care arrangement matching with their pool of approved foster carers.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: As per the RFQ Document
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: As per the RFQ Document
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 7
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Community & Social Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Community & Social Services
+    1: Adoption & Foster Care Services
+    2: Out Of Home Care (OOCC) Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+18/Aug/2026 04:32 PM:
+    Question
+    :
+    The 'Deliverables' outlined in the RFQ do not align with the 'Response (per annum)' details contained in Attachment A. Would you please clarify the outputs sought through this RFQ?
+    Will there be a seperate RFQ for ATSICCO providers, or is the current RFQ for both maintstream and ATSICCO providers to respond to?
+    Answered on 21/Aug/2026 12:05 PM
+    :
+    Hi Luke - please see the VP_521345_Addendum_Clarification 01_DFSDSCS261 for your response that has been uploaded on the Vendor Panel.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+18/Aug/2026 04:43 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 Updated_DFSDSCS261 - Supplier Response.docx
+    Only the declaration on the final page has been amended to reflect the correct procurement number and title.
+    Please consider this attachment when responding.
+21/Aug/2026 12:07 PM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Updated_DFSDSCS261 Attachment A - Pricing Table.xlsx
+    2. Added: 	 (Addendum) VP_521345_Addendum_Clarification 01_DFSDSCS261.docx
+    Please consider these addenda when responding.
+    Please disregard the old Attachment A- Pricing Table
+25/Aug/2026 10:17 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) VP_521345_Addendum_Clarification 02_DFSDSCS261.docx
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 7 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,120 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519051
+================================================================================
+
+Title      : Long Axial Field of View (LAFOV) Positron Emission Tomography Computed Tomography (PET/CT) system
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=5956929272214d5fbb595666b80e8b8bs519051
+Scraped At : 2026-08-25 21:51:34
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+VP Reference #: VP519051
+Buyers Reference #: MNHHS200152
+Opens:
+    Thursday 30 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 27 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 24 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 25 November 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro North Hospital and Health Service
+Location:
+    330 Herston Rd
+    Herston, Queensland 4006
+    Australia
+WebSite: https://www.metronorth.health.qld.gov.au/
+Business Info: Metro North Health enables people to deliver excellent patient-centred care and high quality health services. We focus on collaboration with healthcare partners and an investment in systems, engagement and culture, we connect people to deliver services to a population approaching 900,000, from north of the Brisbane River to north of Kilcoy.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Metro North Hospital and Health Service is seeking offers for the supply, installation and commissioning of one Long Axial Field of View (LAFOV) Positron Emission
+    Tomography Computed Tomography (PET/CT) system for the Department of Nuclear Medicine, PET and Theranostics, Royal Brisbane and Women’s Hospital
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 12
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+10/Aug/2026 09:00 AM:
+    Question
+    :
+    Good morning
+    Could we please seek clarification on the following:
+    Q169 - Please advise how many camera’s you would need throughout the PET CT department. Typically we would expect one for each uptake room. How many uptake rooms are there? Are any additional needed?
+    Q170 - Please advise if you have a specific product in mind for this solution
+    Q171 - Please advise if you require digital hardware for display and AV purposes, or is this related to the software support in the MDT environment only? Is there an ideal room size we would need to cater for please.
+    Answered on 24/Aug/2026 01:59 PM
+    :
+    Refer to Addenda 2.
+20/Aug/2026 12:11 PM:
+    Question
+    :
+    May we please as for the following details on the equipment to be traded in:
+    •	Approximate availability date for each?
+    •	CT tube count and when it was last replaced. Biggest single lever on the PET?
+    •	Software options?
+    •	Serials Numbers?
+    Answered on 24/Aug/2026 01:57 PM
+    :
+    Refer Addenda 3
+20/Aug/2026 05:00 PM:
+    Question
+    :
+    Does RBWH have a list of pre-approved contractors for projects/buildings works?
+    Answered on 24/Aug/2026 01:59 PM
+    :
+    Refer to Addenda 3.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+18/Aug/2026 09:37 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MNHHS200152 Addenda 1.pdf
+    Please consider this addendum when responding.
+20/Aug/2026 09:25 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MNHHS200152 Addenda 2.pdf
+    Please consider this addendum when responding.
+24/Aug/2026 01:55 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MNHHS200152 Addenda 3.pdf
+    Please consider this addendum when responding.
+25/Aug/2026 10:38 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) MNHHS200152 Addenda 4.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 12 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

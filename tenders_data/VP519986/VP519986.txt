@@ -1,0 +1,124 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519986
+================================================================================
+
+Title      : CQURFQ-26-36-DFM - ROK Fleet Carpark - Construction
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=151497f998b44cabb69bacf0b0d351das519986
+Scraped At : 2026-08-25 21:51:10
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Central Queensland University
+VP Reference #: VP519986
+Buyers Reference #: CQURFQ-26-36-DFM
+Opens:
+    Friday 07 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 04 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 03 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Sunday 06 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Central Queensland University
+Location:
+    Bruce Hwy
+    Rockhampton, Queensland
+    Australia
+WebSite: https://www.cqu.edu.au/
+Business Info:
+    CQUniversity is one of Australia’s largest regional universities, with a presence in every mainland state and a strong reputation for excellence in education, real-world graduate outcomes, and industry collaboration.
+    With over 30,000 students studying online and on campus across the country, we offer real choices through a comprehensive range of more than 250 qualifications, from short courses and trades to undergraduate, postgraduate and research higher degrees.
+    As Queensland’s only dual-sector university, we provide flexible study pathways, industry-aligned training, and personalised support to help our students succeed, wherever they are.
+    Our strong regional focus, inclusive approach, and leadership in online learning ensure our students receive a quality education, no matter their location or background.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    CQUniversity is undertaking the consolidation of its TAFE operations into the Rockhampton North Campus as part of the University's broader campus redevelopment program. This project includes the construction of new facilities to support the expanded educational footprint.
+    To facilitate these works, the existing fleet vehicle car park is required to be relocated to accommodate the proposed building footprint.
+    This Request for Quote (RFQ) seeks submissions from suitably qualified contractors to undertake the construction of a new fleet vehicle car park, including all associated civil, security, and accessibility works necessary to deliver a complete and operational facility.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    ADDITIONAL ASSOCIATED WORKS
+    Security fencing
+    The contactor will be required to supply and install a new 2100mm high spear-top fence around the entire car park, excluding the entry driveway, equivalent to the Queensland Department of Education minimum requirements for construction and installation of school security fencing.
+    Security lighting
+    The Contractor will be required to supply and install security lighting to illuminate the car park for after-hours access.
+    CQU would ideally like to use solar type lighting that provides a minimum of 100lux for the car park with a dimming feature to 30% of total lux when no movement is detected.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 9
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Landscaping
+    2: Paving Supplies & Services
+    Construction & Operation
+    1: Building Construction Materials & Services
+    2: Other Civil Construction Materials & Services
+    3: Pavement Stabilisation Services & Materials
+    4: Road Building Products & Maintenance & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Far North
+    2: Fitzroy
+    3: Mackay
+    4: Northern
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+12/Aug/2026 02:32 PM:
+    Question
+    :
+    Good afternoon, the tender documents reference Schedules 5, 6, 7, however they seem to not be included in the files provided?
+    Answered on 19/Aug/2026 03:07 PM
+    :
+    Responded via Addendum 01.
+12/Aug/2026 03:13 PM:
+    Question
+    :
+    Hi, can it be confirmed there is no intention for the contractor to perform CBR tessting of the subgrade?
+    Answered on 19/Aug/2026 03:08 PM
+    :
+    Responded via Addendum 01.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+13/Aug/2026 11:36 AM:
+    Please note: The following attachments and addenda have been recently added.
+    1. Added: 	 Appendix F - Procurement Invitation Response Forms.pdf
+    2. Added: 	 (Addendum) CQURFQ-26-36-DFM - Addendum 01.pdf
+    Please consider these attachments and addenda when responding.
+19/Aug/2026 03:30 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) CQURFQ-26-36-DFM - Addendum 02.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 9 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

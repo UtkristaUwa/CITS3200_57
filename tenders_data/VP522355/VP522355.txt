@@ -1,0 +1,83 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP522355
+================================================================================
+
+Title      : ITO | Electrical Course Supplies
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c6167f78dc84456c9dfc823b291d5459s522355
+Scraped At : 2026-08-25 21:50:16
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: TAFE Queensland
+VP Reference #: VP522355
+Buyers Reference #: TQC0013822
+Opens:
+    Monday 24 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 24 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 17 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 22 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: TAFE Queensland
+Location:
+    100 Bridge St
+    East Toowoomba, Queensland 4350
+    Australia
+WebSite: https://www.tafeqld.edu.au/
+Business Info: TAFE Queensland are Queensland's largest, most experienced training provider. We deliver practical, industry-relevant training across a range of industries from entry-level certificates to bachelor degrees, at more than 60 locations across Queensland.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: TAFE Queensland is seeking offers from suitably qualified suppliers for the provision and delivery of electrical course supplies across its six Queensland regions. The resulting Standing Offer Arrangement is expected to commence in February 2027 for an initial three year term, with extension options available. Suppliers must be able to supply a broad range of electrical training goods and deliver to multiple TAFE Queensland campus locations throughout Queensland.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Building Trade, Repairs, Maint.
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Electrical & Lighting Maintenance Supplies & Servi
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Darling Downs
+    3: Far North
+    4: Gold Coast
+    5: Northern
+    6: Offshore (QLD)
+    7: South West
+    8: Sunshine Coast
+    9: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

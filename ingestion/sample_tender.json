@@ -1,0 +1,32 @@
+[
+  {
+    "source_id": "vic-buyingfor",
+    "source_reference_id": "PROCF22-000236",
+    "source_url": "https://www.tenders.vic.gov.au/tenders/tender/display?id=PROCF22-000236",
+    "title": "Provision of Independent Evaluation Services",
+    "issuing_agency": "Department of Families, Fairness and Housing",
+    "category": "tender",
+    "status": "open",
+    "publish_date": "2026-08-01",
+    "closing_date": "2026-09-15",
+    "value_amount": 250000,
+    "value_currency": "AUD",
+    "value_notes": null,
+    "location": "Victoria",
+    "description": "The Department is seeking an experienced provider to conduct an independent evaluation of a state-wide early childhood program.",
+    "contact_name": "Jane Smith",
+    "contact_email": "jane.smith@example.vic.gov.au",
+    "contact_phone": "+61 3 9000 0000",
+    "lodgment_address": null,
+    "documents": [
+      {
+        "file_name": "Request for Tender.pdf",
+        "file_type": "pdf",
+        "extracted_text": "1. Background\nThe Department is seeking..."
+      }
+    ],
+    "raw_extra": {
+      "portal_status_label": "Open"
+    }
+  }
+]

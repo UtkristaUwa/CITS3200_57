@@ -1,0 +1,124 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521941
+================================================================================
+
+Title      : Meter to Cash Solution and Implementation Services
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=22228976ac9a42b990b1a5e50d7ea94ds521941
+Scraped At : 2026-08-25 21:50:24
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Energy Queensland Limited
+VP Reference #: VP521941
+Buyers Reference #: Doc109773306
+Opens:
+    Wednesday 19 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 30 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 23 September 2026 03:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 29 March 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Energy Queensland Limited
+Location:
+    26 Reddacliff St
+    Newstead, Queensland 4006
+    Australia
+WebSite: https://www.energyq.com.au/
+Business Info:
+    Energy Queensland is Australia's largest, wholly government-owned electricity company.
+    We service customers and communities through our distribution businesses Energex and Ergon Energy Network, our regional Queensland retailer Ergon Energy Retail, and our integrated energy solutions provider Yurika.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Energy Queensland Limited (EQL) is seeking proposals for Meter to Cash Solution and Implementation Services via SAP Ariba.
+    Tenderers who wish to submit a response need to be registered as a Supplier on SAP Ariba. For more information, please see below.
+    EQL is seeking implementation of a Meter to Cash solution that is cloud-native, highly scalable and compliant with Australian industry standards and regulatory requirements, particularly those set by AEMO and other industry bodies.
+    Part A: Product
+    The Meter to Cash Solution must be capable of supporting both Ergon Energy and Energex entities within a single instance, with company-specific business processes, configurations, and workflows where necessary, while also enabling shared processes where appropriate.
+    Tenders must comply with the following mandatory criteria:
+    - Australian Energy Market Capability
+    • Proposed solution is deployed in production within an Australian DNSP operating in the National Electricity Market (NEM).
+    - Product Capability: Cloud-hosted solution that provides the following core capabilities:
+    • 1.0 Meter Data Management (MDM).
+    • 2.0 Network Billing Management (NBM+CIS).
+    • 3.0 Market Transactions Management (MDM +CIS).
+    • 4.0 Connection Point Management (CIS)
+    - Local Presence and Support Capability
+    • Australian-based support model.
+    • Local functional, technical and customer success resources.
+    - Cyber Security
+    • Hosted in Australia.
+    • ISO27001 Certified.
+    • SOC2 Type 2 Annual Assurance (or equivalent).
+    Part B: Implementation Services
+    The Solution will be implemented through a series of controlled delivery Stages and production releases.
+    • Stage 1: High Level Design – Business Process Gap Analysis, High Level Design and Detailed Implementation Plan (as defined in SOW1)
+    • Stage 2: Detailed Design and Build (as defined in SOW2)
+    • Stage 3: Systems Integration Testing (as defined in SOW2)
+    • Stage 4: UAT & Cutover Readiness (as defined in SOW2)
+    • Stage 5: Go-Live, Hypercare & Warranty (as defined in SOW2)
+    Tenders must comply with the following mandatory criteria.
+    - Product Experience: Tenderer must have proven experience implementing Meter-to-Cash solution(s) that meet Part A mandatory criteria.
+    - Australian Utility Experience: Tenderer must have implementation experience within the Australian Utilities market.
+    INSTRUCTIONS:
+    Tenderers who wish to submit a response need to be registered as a Supplier on SAP Ariba and receive a link to the sourcing event.
+    To register: Tenderers who are not already registered in Energy Queensland’s realm in SAP Ariba will be required to register by sending an email to the Contact Officer, SPGDigital@energyq.com.au
+    The email subject should contain the event title ‘Meter to Cash Solution and Implementation Services’ and include the following information:
+    • Business legal entity name (as displayed in the ABN lookup)
+    • ABN
+    • Registered business street address
+    • Contact name
+    • Contact phone number
+    • Contact email address
+    1.	Registered suppliers: Tenderers who are registered in Energy Queensland’s realm in SAP Ariba, need to request access to the Sourcing Event by sending an email to the Contact Officer, SPGDigital@energyq.com.au
+    The email subject should contain the event title ‘Meter to Cash Solution and Implementation Services’
+    2.	Tenderers will receive an email to access the EQL SAP Ariba realm via a link contained in the email notification. ** Please note this link will expire within 24 hours.
+    3.	Tenderers must accept the Prerequisite Bidder Agreement under the ‘Review and Accept Prerequisites’ tab to ensure all system generated notifications are received. This includes, but is not limited to, content updates and changes to Event Timing.
+    4.	If the Tenderer elects to submit a response, they must do so using SAP Ariba only. Submissions provided via email or VendorPanel will not be considered for evaluation.
+    5.	Tenderers are encouraged to read all relevant SAP Ariba documentation located at https://www.energyq.com.au/suppliers .
+    All queries are to be directed to SPGDigital@energyq.com.au
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: None...
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: Software - SaaS
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 0 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

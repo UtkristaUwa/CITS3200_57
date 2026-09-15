@@ -1,0 +1,87 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520585
+================================================================================
+
+Title      : MONTO SHS - Construction - Block A Stage one (1) Refurbishment
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=35142156d74743188f463131f4ad2ee9s520585
+Scraped At : 2026-08-25 21:50:54
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP520585
+Buyers Reference #: WB10130917BLD1
+Opens:
+    Tuesday 11 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 02 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 31 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 16 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    44 Ariadne St
+    Maryborough, Queensland 4650
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Construction - Block A Stage one (1) Refurbishment
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: None...
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+25/Aug/2026 03:11 PM: The closing date of this tender has been extended.
+
+----------------------------------------
+NOTE: This tender lists 0 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

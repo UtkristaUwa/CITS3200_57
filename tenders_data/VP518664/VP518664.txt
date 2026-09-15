@@ -1,0 +1,161 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP518664
+================================================================================
+
+Title      : RFP - Racing Queensland's Registered Training Organisation SMS & LMS System
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=7550468fe9104b17a8b92f2f320cb125s518664
+Scraped At : 2026-08-25 21:51:37
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Racing Queensland
+VP Reference #: VP518664
+Buyers Reference #: RQ04606
+Opens:
+    Wednesday 29 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 26 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 21 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 23 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Racing Queensland
+Location:
+    2 Racecourse Rd
+    Deagon, Queensland 4017
+    Australia
+WebSite: https://www.racingqueensland.com.au
+Business Info:
+    The Racing Queensland Board trading as Racing Queensland provides a platform to service the racing industry across the three codes of racing.
+    Racing Queensland's vision is to be the #1 sporting industry in the sunshine state. Our purpose is to connect Queenslanders through great racing, events and the love of our animals.,The Racing Queensland Board trading as Racing Queensland provides a platform to service the racing industry across the three codes of racing.
+    Racing Queensland's vision is to be the #1 sporting industry in the sunshine state. Our purpose is to connect Queenslanders through great racing, events and the love of our animals.,The Racing Queensland Board trading as Racing Queensland provides a platform to service the racing industry across the three codes of racing.
+    Racing Queensland's vision is to be the #1 sporting industry in the sunshine state. Our purpose is to connect Queenslanders through great racing, events and the love of our animals.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Racing Queensland’s (RQ) Registered Training Organisation is seeking offers from suitably qualified suppliers for an integrated Student Management System (SMS) and Learning Management System (LMS). RQ's preference is to engage a single supplier under a single contract for the provision, implementation, integration and ongoing support of the solution. Where a proposed solution comprises multiple products or third-party components, the supplier must assume end-to-end responsibility for delivery and ongoing support and provide a single point of accountability.
+    The successful Tenderer will be engaged via the QITC General Contract Conditions to complete the works.
+    The following documentation is available to be downloaded via VendorPanel (VP518664):
+    •	This Invitation Letter;
+    •	Appendix 1 - Specification Document;
+    •	QITC Invitation to Offer (returnable);
+    •	QITC General Contract Details;
+    •	QITC General Contract Conditions;
+    •	RQ Conditions of Tendering;
+    Offers may only be submitted electronically through VendorPanel, no later than 2p.m(AEST) on Wednesday 26th August 2026. The closing time and date nominated in this Request For Proposal is the latest time by which a submission must be logged. Late submissions may NOT be accepted.
+    Please acknowledge the receipt of this email including your intent to offer response to this RFP by selecting “Intent to Respond” in Vendorpanel.
+    Supplier Showcase: Suppliers are invited to present and demonstrate their proposed solution(s) to Racing Queensland through either an online or in-person showcase (with online attendance options available). The showcase provides an opportunity for suppliers to highlight key system capabilities, implementation approach, integration functionality, unique features, and any innovative offerings relevant to RQ's requirements.
+
+QUESTIONS ASKED BY THE BUYER:
+----------------------------------------
+Question 1 - [Required]: Have you submitted a completed and signed ITO Response Schedule?
+Question 2 - [Required]: Have all the mandatory criteria been met for your tender to be considered conforming?
+Question 3 - [Required]: Have you provided a copy of all relevant licenses and insurance?
+Question 4 - [Required]: Have you read and acknowledged all clarifications, RFIs, and addenda posted for this tender (if any)?
+Question 5 - [Required]: Have you provided a Pricing Proposal?
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    IT & Telecomms
+    Training & Development
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: Services - Learning Services
+    2: Software - Other
+    3: Software - SaaS
+    Training & Development
+    1: eLearning Services & Solution
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+30/Jul/2026 09:13 AM:
+    Question
+    :
+    Thank you for this. May we know the name of the existing LMS/SMS please?
+    Will data need to be migrated from it?
+    Answered on 04/Aug/2026 02:10 PM
+    :
+    Thank you for your question. Yes data migration is required.
+    Could you please advise the rationale for your request to identify the existing system? This information will assist us in understanding your query and determining whether any additional information can be provided to all tenderers.
+03/Aug/2026 02:54 PM:
+    Question
+    :
+    Mandatory criterion (f) requires evidence of successful implementation within at least two Australian RTOs of comparable size, while Schedule A section 2.8 asks for experience with "Registered Training Organisations (RTOs) or comparable organisations". Where a vendor's implementations to date are with comparable Australian government and public-safety organisations (including live, production-equivalent evaluation environments operating at a substantially larger scale than this engagement) rather than two completed commercial RTO contracts, will the Customer accept, as evidence against criterion (f): (a) listing on the NCVER AVETMISS Compliant Software Register with AVS-validated NAT export; (b) those comparable-organisation implementations and evaluations; and (c) hands-on evaluator access to a fully populated tenant, so the evaluation panel can verify capability directly rather than by reference alone?
+    Answered on 04/Aug/2026 02:05 PM
+    :
+    Thank you for your question.
+    No. The mandatory criterion is to remain unchanged. Racing Queensland has included this requirement to minimise implementation and operational risk associated with procuring a business-critical LMS/SMS. While we acknowledge the alternative evidence proposed, including AVETMISS compliance, implementations within comparable organisations, and access to a live demonstration environment, this does not satisfy the requirement for evidence of successful implementation within at least two Australian Registered Training Organisations (RTOs) of comparable size. As this system will underpin our student management, training delivery, compliance and regulatory reporting functions, Racing Queensland requires the assurance that comes from proven implementation experience in comparable Australian RTO environments.
+03/Aug/2026 02:55 PM:
+    Question
+    :
+    The Specification mandates strong de-risking mechanisms for the migration: a test migration on sample data, parallel runs, user acceptance testing, compliance testing evidence including AVETMISS reporting validation, and a minimum 12-month warranty on implementation deliverables. Could the Customer confirm that demonstrated performance through these mechanisms, together with the optional Supplier Showcase, will be weighed alongside criterion (f) in assessing delivery risk?
+    Answered on 04/Aug/2026 02:06 PM
+    :
+    Thank you for your question.
+    No. The implementation and de-risking mechanisms form part of the contractual requirements for the successful respondent and do not replace the mandatory requirement under criterion (f). As the LMS/SMS is a business-critical system underpinning our compliance and operations, Racing Queensland requires the assurance of proven implementation experience within Australian RTOs of comparable size. This criterion will remain unchanged and will be applied consistently to all respondents.
+03/Aug/2026 02:56 PM:
+    Question
+    :
+    Section 3.7 of the Specification states "The initial term is three (5) years", while the Invitation to Offer timetable states a 5-year principal term with two 2-year extension options. Could the Customer confirm the intended initial term?
+    Answered on 04/Aug/2026 02:08 PM
+    :
+    Thank you for your question.
+    Apologies for the discrepancy. Confirming that the initial term is indeed five (5) years + 2 x two-year optional extension.
+    5+2+2
+04/Aug/2026 09:53 AM:
+    Question
+    :
+    The mandatory requirements specify that vendors must provide evidence of successful implementation within at least two Australian Registered Training Organisations (RTOs) of comparable size.
+    Could the evaluation panel please clarify whether demonstrated successful implementation of comparable digital learning platforms for large Australian sporting organisations and national sporting bodies—with similar scale, user volumes, enterprise integrations, governance requirements, learning management functionality, security requirements and stakeholder complexity—would be considered as equivalent evidence of capability?
+    Or is prior implementation within at least two Australian RTOs a strict mandatory requirement for eligibility?
+    Answered on 04/Aug/2026 02:13 PM
+    :
+    Thank you for your question
+    The requirement for tenderers to demonstrate successful implementation within at least two Australian Registered Training Organisations (RTOs) of comparable size is a mandatory requirement of this procurement.
+04/Aug/2026 02:03 PM:
+    Question
+    :
+    Hi RQ Procurement Team,
+    Hope you're well!
+    We understand RQ currently uses a combined SMS/LMS environment, and may be considering a similar model for the replacement solution. We are interested in submitting an offer for the LMS component. In our experience, separate SMS and LMS platforms can provide a best-of-breed outcome, provide clearer separation of data and responsibilities, and reduce reliance on a single system.
+    Could RQ please confirm whether it will accept and evaluate an LMS-only submission, with the SMS procured or delivered separately?
+    Best regards,
+    Catalyst IT Australia
+    Answered on 04/Aug/2026 02:12 PM
+    :
+    Thank you for your question.
+    Racing Queensland is seeking a solution that addresses both the Student Management System (SMS) and Learning Management System (LMS) requirements outlined in the tender documentation. Accordingly, standalone LMS-only submissions will not be considered as they would not meet the full scope of the procurement.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,191 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP513744
+================================================================================
+
+Title      : Cairns Marine Precinct Common User Facility
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8977388ddbdc45e09c950746342fd099s513744
+Scraped At : 2026-08-25 21:51:53
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Far North Queensland Ports Corporation Ltd
+VP Reference #: VP513744
+Buyers Reference #: CMP-CUF-RFx-0036
+Opens:
+    Tuesday 23 June 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 26 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 26 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 24 November 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Far North Queensland Ports Corporation Ltd
+Location:
+    1 Spence St
+    Cairns City, Queensland 4870
+    Australia
+WebSite: https://www.portsnorth.com.au/
+Business Info: Ports North is responsible for the development and management of the declared Ports of Cairns, Cape Flattery, Karumba, Mourilyan, Skardon River, Quintell Beach, Thursday Island, Burketown and Cooktown. We are committed to supporting economic growth of Far North Queensland, through the movement of cargo bound for domestic and international markets. We believe Ports North not only connects the communities of Far North Queensland to each other, but we also connect Far North Queensland to the world.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    ***** Update 20 August 2026 *****
+    Final Call - CMP-CUF Co-Investment EOI
+    Expression of Interest submissions close Monday 24 August 2026 at 5pm AEST.
+    Organisations interested in investing in, designing, constructing, operating, maintaining or supporting the delivery of the CMP-CUF in any way are welcomed by Ports North to participate in the EOI.
+    Note: EOI submissions are being accepted only via the Ansarada CMP-CUF EOI Data Room. Submissions via the Queensland Procurement Solution may not be eligible.
+    To participate:
+    - register online via https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/
+    - Shortly after, Ports North will provide access to the Ansarada CMP-CUF EOI Data Room
+    - Access the EOI documentation within the CMP-CUF EOI Data Room
+    - Submit your EOI via the CMP-CUF EOI Data Room prior to 5pm AEST on Monday 24 August 2026.
+    The EOI is designed to help Ports North understand market capability of interested organisations across all aspects of the FDBOM delivery approach, and facilitate market formation through the optional sharing of organisational information ahead of the upcoming RFP process.
+    **********
+    ***** Update 13 July 2026 *****
+    The Registration for Expression of Interest documentation is now available.
+    If you would like to receive the documentation, please register online via Cairns Marine Precinct | Ports North (https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/).
+    This project listing is for information purposes only and the Queensland Procurement Solution listing will not be used to receive submissions or respond to clarifications. If you would like to be involved in this opportunity and submit an Expression of Interest you must register via the link above.
+    -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Following the joint Australian and Queensland Governments’ announcements (17 June 2026) of their ongoing commitment of the Cairns Marine Precinct - Common User Facility, Ports North is pleased to advise that the Expression of Interest (EOI) process has now commenced to engage a long-term co-investment partner.
+    This marks the next phase in delivering a nationally significant maritime infrastructure opportunity and invites prospective investors, developers, operators, and marine industry participants to engage with Ports North as the project moves toward delivery. The Common User Facility will expand the Cairns Marine Precinct’s capacity and capability to support increased vessel maintenance, repair and overhaul activity across Government, commercial, tourism, superyacht, and specialist marine markets, while enabling long-term private sector participation in a strategically located maritime hub.
+    Ports North is seeking engagement from experienced organisations with the capability and appetite to design, build, operate and maintain the facility under a mutually beneficial long term commercial arrangement. This includes organisations that can bring delivery experience, operational insight, market reach, and a clear understanding of high-performing maritime maintenance precincts. Ports North has already completed significant project design and derisking activity, details of which will be made available as the EOI process moves forward, however we’re also interested to hear of any innovative potential alternative pathways to deliver the capacity and capability uplift that the project seeks to deliver.
+    The opportunity is relevant to local, domestic, and international markets, offering regional industry a role in Cairns’ next stage of marine sector growth. For domestic proponents this means a pathway into nationally significant northern infrastructure, and for international operators and investors it presents an opportunity for a strategic foothold in a growing Asia-Pacific maritime market.
+    We would welcome the opportunity to discuss the project further with organisations and explore where capability and interest may align as the EOI process progresses.
+    Organisations are encouraged to formally register their interest online at: https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/ to ensure inclusion in all future correspondence and considerations.
+    Please feel free to contact cmpenquiry@portsnorth.com.au should you have any questions at this stage.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 1
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Construction & Operation
+    ELEC, Lighting, Equip & Services
+    Engineer, Research, Tech services
+    Environmental & Heritage Services
+    Management Advisory Services
+    Marine Transp. Products & Services
+    Utilities
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Building Construction Materials & Services
+    2: Dredging
+    3: Drilling & Boring Services
+    4: Excavation Services
+    5: Piling Services
+    6: Underground Services
+    Electrical Systems, Lighting, Equipment & Services
+    1: Electrical Services
+    2: Lighting & Light Poles
+    Engineering & Research & Technical Based Services
+    1: Engineering Consulting Services
+    2: Environmental & Sustainability Services
+    Environmental & Heritage Services
+    1: Environmental Management
+    2: Heritage Advisory Services
+    Management Advisory Services
+    1: Professional Services
+    Marine Transport & Products & Services
+    1: Dredging
+    2: Marine Maintenance Services
+    3: Stevedoring & Port Services
+    Utilities
+    1: Utility Connection Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Australian Capital Territory
+    1: Canberra
+    New South Wales
+    1: Sydney
+    Northern Territory
+    1: Darwin
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    South Australia
+    1: Adelaide
+    Tasmania
+    1: Greater Hobart
+    Victoria
+    1: Melbourne
+    Western Australia
+    1: Perth
+    Regions of service locations also include areas outside of Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+25/Jun/2026 09:32 AM:
+    Question
+    :
+    Will there be scope for Solar PV / Battery installation and maintenance?
+    Answered on 10/Jul/2026 05:14 PM
+    :
+    Hi Alexis, I recommend that you register your interest at https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/ to receive all updates and details relating to the EOI.
+    Thanks.
+09/Jul/2026 08:38 AM:
+    Question
+    :
+    Are there any documents for this request?
+    Answered on 10/Jul/2026 05:13 PM
+    :
+    Hi Simon, I recommend that you register your interest at https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/ to receive all updates and details relating to the EOI.
+    Thanks.
+29/Jul/2026 07:52 AM:
+    Question
+    :
+    Hi Tenders team,
+    I have registered my interested to this tender, I still cannot download any documents.
+    Answered on 29/Jul/2026 10:21 AM
+    :
+    Hi William, I recommend that you register your interest at https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/ to receive all updates and details relating to the EOI.
+    Thanks.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+20/Aug/2026 10:51 AM:
+    Please note: The following attachment has been recently added, and the description has been updated.
+    1. Added: 	 CMP-CUF-EOI-0036 EOI Final Call.pdf
+    ***** Update 20 August 2026 *****
+    Final Call - CMP-CUF Co-Investment EOI
+    Expression of Interest submissions close Monday 24 August 2026 at 5pm AEST.
+    Organisations interested in investing in, designing, constructing, operating, maintaining or supporting the delivery of the CMP-CUF in any way are welcomed by Ports North to participate in the EOI.
+    Note: EOI submissions are being accepted only via the Ansarada CMP-CUF EOI Data Room. Submissions via the Queensland Procurement Solution may not be eligible.
+    To participate:
+    - register online via https://www.portsnorth.com.au/ports-north-projects/cairns-marine-precinct/
+    - Shortly after, Ports North will provide access to the Ansarada CMP-CUF EOI Data Room
+    - Access the EOI documentation within the CMP-CUF EOI Data Room
+    - Submit your EOI via the CMP-CUF EOI Data Room prior to 5pm AEST on Monday 24 August 2026.
+    The EOI is designed to help Ports North understand market capability of interested organisations across all aspects of the FDBOM delivery approach, and facilitate market formation through the optional sharing of organisational information ahead of the upcoming RFP process.
+
+----------------------------------------
+NOTE: This tender lists 1 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,122 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519696
+================================================================================
+
+Title      : BHH Maudsley Refurbishment
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=8d549e2766654417a30f14606c3dd4aas519696
+Scraped At : 2026-08-25 21:51:16
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Darling Downs Hospital and Health Service
+VP Reference #: VP519696
+Buyers Reference #: DD2026-0510
+Opens:
+    Wednesday 05 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 02 September 2026 04:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 26 August 2026 04:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 30 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Darling Downs Hospital and Health Service
+Location:
+    Hogg St
+    Cranley, Queensland 4350
+    Australia
+WebSite: https://www.darlingdowns.health.qld.gov.au/
+Business Info:
+    Darling Downs Health provides exceptional patient-centred care to approximately 300,000
+    people living in a catchment spanning 90,000 square kilometres. The catchment extends
+    north to Taroom and Murgon, south to Texas, east to Toowoomba, and west to Goondiwindi and Miles.
+    Our public hospital and healthcare services comprise 30 facilities, including a large regional
+    referral hospital, an extended inpatient mental health service, three medium-sized regional
+    hub hospitals, 11 rural hospitals, four multipurpose health services, a primary health care
+    clinic, a community care unit, two general practices, and six residential aged care facilities.
+    As one of the largest health employers in regional Queensland, our services are delivered
+    with the support of a workforce of over 7,300 people.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The objective of this project is to extend the operational life and improve the utilisation of the existing Maudsley Building at the Baillie Henderson Hospital through refurbishment and adaptive reuse, transforming the former mental health ward into a contemporary administrative workplace for Darling Downs Health.
+    The project will serve as a pilot implementation of Adaptable Administrative Workspace Design Principles, providing an opportunity to evaluate activity-based working environments and inform future workplace planning initiatives across Darling Downs Health.
+    The refurbishment will address identified building deficiencies, including ventilation, moisture management, compliance and amenity issues, while maximising the value of the existing asset and supporting increasing administrative accommodation demands associated with the transition to a single-campus model at Baillie Henderson Hospital and the planned opening of the New Toowoomba Hospital.
+    Recognising that the Maudsley Building is identified for future demolition under the Baillie Henderson Hospital Master Plan, the refurbishment is intended to provide a fit-for-purpose administrative accommodation solution with an anticipated operational life of approximately 10 years, delivering a cost-effective interim outcome that meets Darling Downs Health's medium-term accommodation requirements.
+    This Request for Tender seeks to engage a Principal Contractor for two separate portions under a Design and Construct arrangement.
+    A mandatory site visit has been rescheduled to 17 August 2026. See attached Request for Tender documents for further details.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 19
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Architecture, Design, Planning
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Architecture & Urban Design & Planning Services
+    1: Architecture
+    2: Interior Design
+    Building Trade & Repairs & Maintenance Services
+    1: Building Maintenance & Services
+    Construction & Operation
+    1: Building Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Darling Downs
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+07/Aug/2026 12:12 PM:
+    Please note: The following attachments and addenda have been recently added.
+    1. Added: 	 Baillie-henderson-hospital-map.pdf
+    2. Added: 	 DD2026-0510 Request for Tender.pdf
+    3. Added: 	 (Addendum) DD2026-0510 Addendum 1.pdf
+    Please consider these attachments and addenda when responding.
+12/Aug/2026 01:28 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 DD2026-0510 Addendum 2.pdf
+    Please consider this attachment when responding.
+20/Aug/2026 10:53 AM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 DD2026-0510 Addendum 3.pdf
+    2. Added: 	 BHH Maudsley CAD files.zip
+    Please consider these attachments when responding.
+21/Aug/2026 12:58 PM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 2026 BHH Penrose Inspection Report extract.pdf
+    2. Added: 	 DD2026-0510 Addendum 4.pdf
+    3. Added: 	 DD2026-0510 Response Form 3 - Consultants Pricing Schedule.xlsx
+    Please consider these attachments when responding.
+24/Aug/2026 01:39 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 DD2026-0510 Addendum 5.pdf
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 19 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

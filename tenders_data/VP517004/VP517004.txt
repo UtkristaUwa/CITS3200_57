@@ -1,0 +1,135 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP517004
+================================================================================
+
+Title      : Panel - Electrical Services - Townsville, Cairns & Off-Site Cairns
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=9bbcd586d2084b098c38dc0bd2213deds517004
+Scraped At : 2026-08-25 21:51:49
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: James Cook University
+VP Reference #: VP517004
+Buyers Reference #: 001438
+Opens:
+    Wednesday 15 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 26 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Wednesday 19 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Sunday 25 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: James Cook University
+Location:
+    1 James Cook Dr
+    Douglas, Queensland 4814
+    Australia
+WebSite: https://www.jcu.edu.au/
+Business Info: James Cook University
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Suppliers are invited by James Cook University (JCU) to submit an offer for Tender 001438 for the provision of Electrical Services to JCU Townsville, Cairns & Off-Site Cairns Areas. This engagement forms part of a panel arrangement (as specified in the attached Schedule 2 – Scope of Work).
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    The successful suppliers will be contracted to deliver services in accordance with the terms and conditions outlined in the Agreement, supporting JCU’s operational and strategic requirements.
+    JCU is committed to advancing the economic, environmental and social objectives including maximising local supplier opportunities to participate in business, supporting regional and remote economies, and doing business with ethically, environmentally and socially responsible suppliers.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 17
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    ELEC, Lighting, Equip & Services
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Electrical & Lighting Maintenance Supplies & Servi
+    Electrical Systems, Lighting, Equipment & Services
+    1: Circuit Breakers & Fuses
+    2: Distribution Boards
+    3: Electrical Equipment & Components & Supplies
+    4: Electrical Services
+    5: Electrical Wire & Cable & Harness
+    6: Electrical Wire Management Devices & Accessories
+    7: Lamps & Light Bulbs
+    8: Lighting & Light Poles
+    9: Motor Control Centres
+    10: Switchboards & Switchgear
+    11: Testing & Tagging
+    Utilities
+    1: Electricity
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Far North
+    2: Northern
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+22/Jul/2026 08:55 AM:
+    Question
+    :
+    Hi Team,
+    Is JCU interested in offers / tenders from providers who can offer only some of the services such as only Thermography & RCD Testing? Or is JCU only wanting offers that are able to offer all services?
+    Thanks
+    Answered on 22/Jul/2026 03:11 PM
+    :
+    22 July 26 - Yes. Given the size of the portfolio, JCU will consider applications from contractors able to provide only some of the services.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+15/Jul/2026 11:29 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) 001438 - Addendum No 01 to SOW.pdf
+    Please consider this addendum when responding.
+03/Aug/2026 10:36 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) 001438 - Addendum No 02 to Closing Date & Closing Date for Questions.pdf
+    Please consider this addendum when responding.
+05/Aug/2026 08:29 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 Updated 05 Aug 26 - Tender Questions.docx
+    Please consider this attachment when responding.
+05/Aug/2026 08:44 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) 001438 - Electrical Panel Addendum No 03.pdf
+    2. Added: 	 (Addendum) Updated - 001438 - Schedule 2 - Attachment 3 - Asset List Off-Site Cairns.xlsx
+    Please consider these addenda when responding.
+05/Aug/2026 09:07 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) 001438 - Electrical Panel Addendum No 03.pdf
+    2. Added: 	 (Addendum) Updated - 001438 - Schedule 2 - Attachment 3 - Asset List Off-Site Cairns.xlsx
+    Please consider these addenda when responding.
+05/Aug/2026 10:01 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 Notification 001 - Site Visit Details.docx
+    Please consider this attachment when responding.
+05/Aug/2026 02:20 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 New - Updated 05 Aug 26 - Tender Questions.docx
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 17 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

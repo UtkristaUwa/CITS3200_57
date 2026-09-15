@@ -1,0 +1,227 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP516952
+================================================================================
+
+Title      : Electorate Office Security System and EACS Upgrade Project (QLD wide)
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b56cc99575bc4b399b6f9ca53ac6d2c3s516952
+Scraped At : 2026-08-25 21:51:50
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Queensland Parliament: Parliamentary Service
+VP Reference #: VP516952
+Buyers Reference #: 2026LAQ028
+Opens:
+    Tuesday 14 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 28 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 21 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 18 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Queensland Parliament: Parliamentary Service
+Location:
+    2A George St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.parliament.qld.gov.au/global/parliamentary-service
+Business Info: The Queensland Parliamentary Service stands as the backbone of the Legislative Assembly, empowering it to fulfil its critical functions of crafting laws, scrutinising finances, overseeing government actions, and fostering public discourse. Guided by unwavering integrity, we provide comprehensive administrative and support services to the Assembly, its committees, and Members, both within the parliamentary precinct and across the state's electorates. Our commitment to learning, innovation, client focus, and valuing our diverse workforce fuels our dedication to excellence. We are the Parliamentary Service, servants of democracy, safeguarding and strengthening the institution that shapes Queensland's future.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Queensland Parliamentary Service (QPS) is located within the Parliamentary Precinct at corner George and Alice Streets, Brisbane, and is also responsible for 93 electorates located throughout Queensland from which each Member for Parliament conducts the business of their respective electorate.
+    QPS are calling for submissions from Security Contractors to supply and install electronic security & access control systems for a statewide upgrade to the Electorate Office security systems.
+    Please read the attached documents for further details.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 5
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Security Services & Equipment
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Security Services & Equipment
+    1: Security & CCTV Systems & Maintenance
+    2: Security & Personal Safety Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+15/Jul/2026 10:45 AM:
+    Question
+    :
+    Could the Principal please advise the make and model of the existing restricted master key system currently installed throughout the electorate offices? Where new cylinders or restricted key systems are required, will equivalent restricted key systems be considered, or must all additions remain compatible with the existing system?
+    Answered on 15/Jul/2026 11:59 AM
+    :
+    Thanks for your query.
+    Please submit the required documentation outlined in the ITO documentation to register your interest in this tender.
+    Clarifications from approved Contractors will uniformly be responded to via Vendor Panel.
+16/Jul/2026 12:16 PM:
+    Question
+    :
+    Hi,
+    Good day.
+    Please provide the below.
+    14.	List of Appendices and Returnable Schedule
+    Appendix 1.0 – Bill of Materials (Issued)
+    Appendix 2.0 – EOSU Audit Discovery Package (Issued)
+    Appendix 2.1 – Brisbane RCP and Photos (Issued)
+    Appendix 2.2 – South East QLD (North) Region RCP and Photos (Issued)
+    Appendix 2.3 – South East QLD (South) Region RCP and Photos (Issued)
+    Appendix 2.4 – South East QLD (West) Region RCP and Photos (Issued)
+    Appendix 2.5 – South West QLD Region RCP and Photos (Issued)
+    Appendix 2.6 – Wide Bay Burnett RCP and Photos (Issued)
+    Appendix 2.7 – Central Queensland RCP and Photos (Issued)
+    Appendix 2.8 – North Queensland RCP and Photos (Issued)
+    Appendix 3.0 – Typical Security Layout and Configuration (Issued)
+    Appendix 4.0 – Pricing Schedule (Returnable)
+    Appendix 5.0 – EOSU Scope of Works (Issued)
+    Appendix 6.0 – Commissioning Form (Issued)
+    Appendix 7.0 – ICT Network Patching Configuration (Issued)
+    Thank you.
+    Answered on 16/Jul/2026 01:08 PM
+    :
+    Please refer to Section 1.2 in the ITO document with the following requirements:
+    Contractors interested in submitting an offer for any of the regions listed above must submit the following documents to FAS.Tenders@parliament.qld.gov.au:
+    •	Signed Non-Disclosure Agreement
+    •	A copy of the Contractor Security license
+    •	Indicate which region interested in submitting an offer for; and
+    •	Disclosure of any beneficial ownership, parent/control structures, country of origin, offshore support and foreign government links
+    Upon receipt and review of the required documentation, the appendices associated with the Contractor’s nominated region(s) will be issued directly to the Contractor.
+20/Jul/2026 08:51 AM:
+    Question
+    :
+    Hi,
+    Further to an email response where can I find 14. List of Appendices and Returnable Schedule within the system, I have downloaded all availble documents but unable to locate the list issued this
+    Appendix 1.0 – Bill of Materials (Issued)
+    Appendix 2.0 – EOSU Audit Discovery Package (Issued)
+    Appendix 2.1 – Brisbane RCP and Photos (Issued)
+    Appendix 2.2 – South East QLD (North) Region RCP and Photos (Issued)
+    Appendix 2.3 – South East QLD (South) Region RCP and Photos (Issued)
+    Appendix 2.4 – South East QLD (West) Region RCP and Photos (Issued)
+    Appendix 2.5 – South West QLD Region RCP and Photos (Issued)
+    Appendix 2.6 – Wide Bay Burnett RCP and Photos (Issued)
+    Appendix 2.7 – Central Queensland RCP and Photos (Issued)
+    Appendix 2.8 – North Queensland RCP and Photos (Issued)
+    Appendix 3.0 – Typical Security Layout and Configuration (Issued)
+    Appendix 4.0 – Pricing Schedule (Returnable)
+    Appendix 5.0 – EOSU Scope of Works (Issued)
+    Appendix 6.0 – Commissioning Form (Issued)
+    Appendix 7.0 – ICT Network Patching Configuration (Issued)
+    Answered on 21/Jul/2026 09:44 AM
+    :
+    Please refer to Section 1.2 in the ITO document with the following requirements:
+    Contractors interested in submitting an offer for any of the regions listed above must submit the following documents to FAS.Tenders@parliament.qld.gov.au:
+    • Signed Non-Disclosure Agreement
+    • A copy of the Contractor Security license
+    • Indicate which region interested in submitting an offer for; and
+    • Disclosure of any beneficial ownership, parent/control structures, country of origin, offshore support and foreign government links
+    Upon receipt and review of the required documentation, the appendices associated with the Contractor’s nominated region(s) will be issued directly to the Contractor.
+23/Jul/2026 11:15 AM:
+    Question
+    :
+    Please advise how to access Appendix 4.0 - Pricing Schedule
+    Answered on 23/Jul/2026 11:31 AM
+    :
+    Please refer to Section 1.2 in the ITO document with the following requirements:
+    Contractors interested in submitting an offer for any of the regions listed above must submit the following documents to FAS.Tenders@parliament.qld.gov.au:
+    • Signed Non-Disclosure Agreement
+    • A copy of the Contractor Security license
+    • Indicate which region interested in submitting an offer for; and
+    • Disclosure of any beneficial ownership, parent/control structures, country of origin, offshore support and foreign government links
+    Upon receipt and review of the required documentation, the appendices associated with the Contractor’s nominated region(s) will be issued directly to the Contractor.
+27/Jul/2026 11:09 AM:
+    Question
+    :
+    Are you open to using other technologies when it comes to cctv and access control?
+    Answered on 05/Aug/2026 02:43 PM
+    :
+    Thanks for your query.
+    On this occasion, we are unable to use alternative technologies.
+27/Jul/2026 11:20 AM:
+    Question
+    :
+    Good Morning,
+    Can you please advise if the QPS is open to accepting an alternative brand/product to Inner Range for this project?
+    Thank you.
+    Answered on 05/Aug/2026 02:43 PM
+    :
+    Thanks for your query.
+    On this occasion, we are unable to use alternative products/brands.
+03/Aug/2026 05:44 PM:
+    Question
+    :
+    Hello QPS Team,
+    To ensure a consistent scope and pricing allowance across all sites, please clarify the following requirements:
+    Duress system
+    Appendix 5.0 does not appear to detail the required works associated with the duress equipment listed in the Appendix 1.0 Bill of Materials.
+    Please confirm whether every site is required to have the following equipment installed where it is not already present:
+    Duress indicator lights
+    Red duress button within the PWD room
+    Where these devices are already installed and confirmed as serviceable and fit for purpose, can they be retained, or are they required to be replaced with the equipment prescribed in Appendix 1.0?
+    Takex PE beam and entry annunciator buzzer
+    The Takex PE beam and entry annunciator buzzer are not referenced within the detailed scope in Appendix 5.0 or the site requirements in Appendix 3.0.
+    Please confirm whether:
+    These devices are to be installed at every site where they are not currently fitted; or
+    They are only required at sites specifically identified within the discovery documentation or site Bill of Materials.
+    For sites where EACS is already installed, please confirm whether:
+    All existing readers must be replaced with HID/Inner Range Hybrid Signo SIFER readers; or
+    Existing compliant and serviceable readers may be retained.
+    Existing electric strikes, magnetic locks, reeds and door hardware may be retained where serviceable.
+    Non-prescribed but functional locking hardware must be replaced to achieve the uniform statewide installation.
+    Thank you
+    Answered on 24/Aug/2026 02:11 PM
+    :
+    Please refer to the Addendums issued for this ITO.
+10/Aug/2026 12:59 PM:
+    Question
+    :
+    Hi, unfortunately we are unable to gain access to the 'medium-works-conditions-contract.docx' via the hyperlink in provided document: 'ITO-Medium_Works_2026LAQ028'. We are encountering the following error 'The page you requested could not be found. It may have been moved, deleted, or you may have entered the wrong URL.' Could you please advise how we can gain access to review the contract? Thank you.
+    Answered on 24/Aug/2026 02:12 PM
+    :
+    Please refer to Addendum 3 of this ITO.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+11/Aug/2026 07:57 AM:
+    Please note: The following addenda have been recently added.
+    1. Added: 	 (Addendum) Addendum No. 3 - 2026LAQ028.docx
+    2. Added: 	 (Addendum) Appendix 8.0 - Conditions of Contract - Medium Works with Option for Design.docx
+    Please consider these addenda when responding.
+
+----------------------------------------
+NOTE: This tender lists 5 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

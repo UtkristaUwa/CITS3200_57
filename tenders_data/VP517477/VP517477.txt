@@ -1,0 +1,331 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP517477
+================================================================================
+
+Title      : Provision and Installation of Two Autoclaves
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=99c43a801a8c48039d11b9d14c658e1fs517477
+Scraped At : 2026-08-25 21:51:46
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QIMR Berghofer Medical Research Institute
+VP Reference #: VP517477
+Buyers Reference #: 2026 149
+Opens:
+    Friday 17 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 31 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Monday 24 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Monday 21 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QIMR Berghofer Medical Research Institute
+Location:
+    300 Herston Rd
+    Herston, Queensland 4006
+    Australia
+WebSite: http://www.qimrberghofer.edu.au
+Business Info: At QIMR Berghofer, we seek to discover, diagnose and deliver better treatments for some of the world’s deadliest diseases.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Supply, Delivery and Installation of Two (2) Laboratory Autoclaves
+    1. Introduction
+    QIMR Berghofer Medical Research Institute invites suitably qualified and experienced suppliers to submit an Offer for the supply, delivery, installation, commissioning, and training associated with two (2) Laboratory Autoclaves.
+    The autoclaves will be utilised as part of QIMR Berghofer's ongoing laboratory operations and will primarily be used for the sterilisation and treatment of laboratory equipment, consumables, and biological waste.
+    2. Project Overview
+    The purpose of this Invitation to Offer (ITO) is to source two (2) Laboratory Autoclaves that meet the operational, safety, and compliance requirements of QIMR Berghofer's PC3 laboratory environment.
+    The successful supplier will be responsible for providing a complete turnkey solution, including all costs associated with:
+    Supply of two (2) laboratory autoclaves.
+    Freight and transportation to site.
+    Delivery and handling.
+    Installation and commissioning.
+    Validation and testing.
+    Integration with existing services where required.
+    Operator and maintenance training.
+    Provision of user manuals and technical documentation.
+    Warranty and ongoing support services.
+    3. Site Location
+    The equipment is to be delivered and installed in:
+    QIMR Berghofer Medical Research Institute
+    Level 14, Central Building
+    300 Herston Road
+    Herston QLD 4006
+    The installation location is within a Physical Containment Level 3 (PC3) laboratory environment. Suppliers should ensure that proposed equipment is suitable for installation and operation within a PC3 facility and identify any site requirements necessary for installation.
+    4. Scope of Requirements
+    The proposed autoclaves should:
+    Be designed for laboratory and research applications.
+    Be suitable for sterilisation of laboratory equipment, glassware, instruments, consumables, and biological waste.
+    Meet all relevant Australian Standards and applicable regulatory requirements.
+    Include programmable sterilisation cycles and data recording capabilities.
+    Incorporate user-friendly control interfaces.
+    Provide appropriate safety interlocks and operator protection features.
+    Be constructed from materials suitable for laboratory environments with high durability and corrosion resistance.
+    Include maintenance and servicing requirements as part of the proposal.
+    Please be aware all organisations planning submissions must attend the Site Visit and briefing.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    Background Information
+    QIMR Berghofer Medical Research Institute is one of Australia's leading medical research organisations, conducting translational research across areas including cancer, infectious diseases, mental health, population health, and chronic disorders.
+    As part of its research activities, QIMR Berghofer operates Physical Containment Level 3 (PC3) laboratory facilities that require reliable sterilisation and decontamination equipment to support daily operations and maintain compliance with applicable biosafety requirements.
+    The Institute currently requires two (2) new laboratory autoclaves to support the sterilisation of laboratory equipment, instruments, consumables, media, and the treatment of biological waste generated through research activities. The autoclaves will be installed within the PC3 laboratory environment located on Level 14 of the Central Building at QIMR Berghofer's Herston campus.
+    The Institute is seeking a modern, reliable, and energy-efficient solution that will provide safe and effective sterilisation capabilities, minimise operational downtime, and support future laboratory requirements. The proposed equipment should be suitable for intensive laboratory use and capable of operating within a highly regulated research environment.
+    Suppliers should note that the installation location is an operational research facility with controlled access requirements. It is expected that respondents consider all aspects of delivery, logistics, site access, installation methodology, commissioning, validation, and ongoing maintenance support when preparing their submissions.
+    QIMR Berghofer seeks a turnkey solution that includes supply, delivery, installation, commissioning, user training, warranty support, and ongoing service capabilities to ensure the equipment remains fully operational throughout its lifecycle.
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details:
+    1. Biosafety and Containment Compliance
+    Provide effective sterilisation and decontamination of laboratory equipment, reusable materials, and biological waste generated within the PC3 facility.
+    Support QIMR Berghofer's obligations under the Australian/New Zealand Standard AS/NZS 2243.3 (Safety in Laboratories – Microbiological Safety and Containment) and relevant OGTR and Queensland Health requirements.
+    Ensure containment integrity is maintained throughout the sterilisation process and during routine operation.
+    2. Fit-for-Purpose PC3 Solution
+    Supply autoclaves specifically designed and validated for operation in a high-containment research environment.
+    Where applicable, provide pass-through/barrier configurations that support dirty-to-clean workflow management and minimise contamination risks.
+    Meet all applicable Australian standards, workplace health and safety requirements, and manufacturer certifications.
+    3. Reliable and Efficient Operations
+    Deliver a robust and dependable sterilisation solution capable of supporting continuous research activities.
+    Minimise equipment downtime through high reliability, preventative maintenance programs, and responsive service support.
+    Provide programmable cycles suitable for laboratory waste, liquids, equipment, instruments, and research materials.
+    4. Verification and Validation
+    Successfully commission and validate the autoclaves for use within a PC3 laboratory environment.
+    Provide Installation Qualification (IQ), Operational Qualification (OQ), and Performance Qualification (PQ) documentation and support where applicable.
+    Demonstrate and document sterilisation performance to ensure compliance with operational and regulatory requirements.
+    5. Whole-of-Life Value
+    Provide a solution that delivers value for money across the equipment lifecycle, including acquisition, operation, maintenance, and support costs.
+    Maximise equipment longevity, energy efficiency, and ease of maintenance.
+    Ensure the availability of local technical support, spare parts, and service expertise.
+    6. Safe Installation and Integration
+    Complete delivery, installation, commissioning, and validation with minimal disruption to ongoing research activities.
+    Integrate successfully with existing laboratory infrastructure and utility services.
+    Ensure all work is undertaken in accordance with QIMR Berghofer's site access, safety, and PC3 laboratory requirements.
+    7. Training and Knowledge Transfer
+    Provide comprehensive operator and maintenance training for nominated personnel.
+    Supply all operating manuals, maintenance documentation, validation records, and technical drawings required for ongoing operation and compliance.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 10
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Lab, Measure, Observe & Test Equip
+    Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Laboratory & Measuring & Observing & Testing Equip
+    1: Laboratory & Scientific Equipment
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+21/Jul/2026 02:27 PM:
+    Question
+    :
+    Hi Dhwani,
+    I would like to confirm that Kirthun Ramasingh from Getinge Australia will be attending the site briefing on the 28th July.
+    Kind Regards
+    Uma Singh
+    Getinge Australia Pty Ltd
+    Answered on 21/Jul/2026 04:01 PM
+    :
+    Thank you for your confirmation
+21/Jul/2026 02:56 PM:
+    Question
+    :
+    While reviewing the tender documentation, it was noted that the mandatory supplier briefing session is scheduled to be held at 300 Herston Road, Herston QLD 4006 on Tuesday, 28 July 2026. As attendance at this briefing is a mandatory requirement for submitting a tender, I would like to enquire whether an online attendance option is available. If so, when and will there be a link sent?
+    Answered on 21/Jul/2026 04:07 PM
+    :
+    Hi Chris
+    The onsite visit is a mandatory requirement, we believe this is necessary to enable suppliers to gain a full understanding of the site and any potential challenges that maybe presented.
+    Kind regards
+    Paul Bensley
+24/Jul/2026 10:28 AM:
+    Question
+    :
+    Hi Team, this is to advise we would be attending the briefing session. Thank you
+    Answered on 27/Jul/2026 01:59 PM
+    :
+    Thank you
+24/Jul/2026 03:51 PM:
+    Question
+    :
+    InVitro Technologies will attend site briefing on the 28th July.
+    Answered on 27/Jul/2026 02:00 PM
+    :
+    thank you
+27/Jul/2026 10:04 AM:
+    Question
+    :
+    Dear Team,
+    We only became aware of this tender over the weekend and saw today that a mandatory on-site briefing is scheduled for 28 July.
+    Unfortunately, our managers and engineers are fully committed this week and are unable to attend the briefing in person. We would like to ask whether it would be possible to receive the briefing materials via email, or alternatively, arrange a separate briefing or site visit sometime next week.
+    We would greatly appreciate your consideration and look forward to your response.
+    Kind regards,
+    Answered on 27/Jul/2026 03:12 PM
+    :
+    Thank you for your enquiry, I'm confirming we will run another walk through and will provide an update on times and dates tomorrow.
+27/Jul/2026 12:30 PM:
+    Question
+    :
+    Hello, can you please supply proper layout drawing of the site - room’s layout in dwg or pdf with all the available dimensions.
+    Answered on 28/Jul/2026 12:21 PM
+    :
+    We will provide drawings for Level 14 by the end of Wednesday 29th August.
+27/Jul/2026 12:32 PM:
+    Question
+    :
+    Hello,
+    I have another request from the vendor for an extension.
+    With this level of project complexity and without any DWG drawings, it is practically impossible to properly support you within such a short time.
+    We are talking about sterilization equipment where we absolutely need to understand the exact installation layout and room configuration, supported by proper DWG drawings and technical details of the site.
+    Without this information, we are unfortunately not able to properly verify the proposed configuration, utilities, loading/unloading logistics, service accessibility, door orientation, or potential installation constraints.
+    Is it possible to get extension on the tender.
+    Answered on 28/Jul/2026 12:20 PM
+    :
+    Hi Frances thank you for your message. I can confirm we will supply drawings within the next 24 hours. While I can't guarantee an extension will be granted I recommend making a request for the required date, it will be reviewed by the Project Team and accepted or rejected. I hope this helps.
+27/Jul/2026 03:23 PM:
+    Question
+    :
+    Hi all,
+    after briefing the initial tender document, I scheduled a 10am site visit Tuesday 28th July as noted mandatory and sign in at reception to register attendance.
+    Further detailed viewing of the document today in scheduled office time has made me aware there was an RSVP for this.
+    Is it still possible to attend this scheduled site visit tomorrow?
+    Answered on 27/Jul/2026 03:29 PM
+    :
+    Thank you for your enquiry, yes we will accept your enquiry as the RSVP even though post the required date.
+28/Jul/2026 08:10 AM:
+    Question
+    :
+    Good morning,
+    Due to illness, I am unable to attend today's session. I noticed in a previous response that a second session will be held in the near future. Is that upcoming session open to everyone?
+    Answered on 28/Jul/2026 08:58 AM
+    :
+    Hi Darren - that's no problem you will be able to attend another event, I'll provide an update today through vendor panel.
+28/Jul/2026 03:28 PM:
+    Question
+    :
+    Hi,
+    I would like to request an Extension on this project to close at the end of August. This is due to our factory staff currently on summer break in Europe. Thank you for your consideration.
+    Answered on 30/Jul/2026 08:48 AM
+    :
+    Hi Uma, I can confirm we have agreed to extend the submission date to 5pm Monday 31st August.
+30/Jul/2026 07:56 AM:
+    Question
+    :
+    Morning, I would like to RSVP to the 11am session on Tuesday 4th August. Thank you.
+    Answered on 31/Jul/2026 05:46 PM
+    :
+    Thank you
+31/Jul/2026 07:36 AM:
+    Question
+    :
+    Confirming that we will be attending the walk through on 4th August.
+    Answered on 31/Jul/2026 05:46 PM
+    :
+    Thank you
+31/Jul/2026 11:25 AM:
+    Question
+    :
+    Hi,
+    I would like to confirm Andy Robertson (Projects & Installation Manager) and Jarrod McKay (QLD Service Tech) will be attending the site visit on Tuesday 4th August on behalf of Tecniplast Australia.
+    Kind regards,
+    Ian Henton-Smith
+    Regional Sales Manager
+    Tecniplast
+    Answered on 31/Jul/2026 05:46 PM
+    :
+    Thank you
+31/Jul/2026 09:53 PM:
+    Question
+    :
+    HI Dhwani
+    Yvette Barden( Biomed Engineer) from our Team will join the tuesday Meeting at 11am
+    Thanks
+    Raj
+    Sales Director Wishmed
+    Answered on 03/Aug/2026 03:01 PM
+    :
+    Thank you
+03/Aug/2026 01:04 PM:
+    Question
+    :
+    Good afternoon,
+    I would like to confirm Jason, Craig and Simon will be attending on behalf of Next Degree tomorrow.
+    Answered on 03/Aug/2026 02:58 PM
+    :
+    Thank you
+06/Aug/2026 04:34 PM:
+    Question
+    :
+    Dear Dhwani,
+    Could you please provide us with the DWG drawings so we can use them to prepare the layout for the equipment?
+    Kind regards
+    Answered on 07/Aug/2026 11:25 AM
+    :
+    Hi Charbel
+    Thank you for your enquiry, I have uploaded a new file - CENTRAL LEVEL 14 - PC3 FACILITY.DWG - please let me know if there are any issues accessing the information.
+    Kind regards
+    Paul Bensley
+10/Aug/2026 09:18 AM:
+    Question
+    :
+    Morning,
+    Can we please get a floorplan in AutoCAD / DWG Drawing for this tender ?
+    Thanks
+    Answered on 10/Aug/2026 02:24 PM
+    :
+    Hi Felicity
+    Thank you for your question. My understanding is that the DWG files supplied should be able to be opened in Autocad - please check the last file uploaded. Please message on this platform if there are any specific details you are unable to get from the drawings and I'll get those details and reply.
+    Kind regards
+    Paul Bensley
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+20/Jul/2026 08:09 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 invitation-to-offer-2026 149 Autoclaves (HM160726) (003).docx
+    Please consider this attachment when responding.
+28/Jul/2026 03:32 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 CENTRAL LEVEL 14 - PC3 FACILITY.pdf
+    Please consider this attachment when responding.
+28/Jul/2026 03:39 PM:
+    Dear Suppliers,
+    Please be aware we will be running another walk through at 11am on Tuesday 4th August. This is being made available for those interested in making a submission but who could not attend the first walk through and those who did make the walk through but would like to attend again. Please RSVP through vendor panel before 2pm Monday 3rd August.
+28/Jul/2026 04:20 PM:
+    Dear Suppliers,
+    Given we are running a second walk through next week and that Northern Hemisphere suppliers are impacted by their vacation season we are extending the submission date to 5pm Monday 31st August 2026.
+07/Aug/2026 11:22 AM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 CENTRAL LEVEL 14 - PC3 FACILITY.DWG
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 10 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

@@ -1,0 +1,135 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP517309
+================================================================================
+
+Title      : Expression of Interest - Central West District Future Program of Works
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d76c29d216604be1b3a591f18377501fs517309
+Scraped At : 2026-08-25 21:51:47
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads-Central Qld
+VP Reference #: VP517309
+Buyers Reference #: CWD-5688
+Opens:
+    Friday 17 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 01 September 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Sunday 30 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 13 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads-Central Qld
+Location:
+    69 Ash St
+    Barcaldine, Queensland 4725
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Program Delivery & Operations branch - Central Queensland Region.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    TMR’s Central Queensland Region are seeking TMR Prequalified Construction Contractors for the purpose of submitting Expressions of Interest (EOI) for inclusion in the Central West District program of works comprising multiple standalone projects. As part of the two-stage procurement process, Early Tenderer Engagement may be undertaken by the Principal for selected projects to support detailed design development during the Implementation Phase.
+    Applicants may submit an EOI for one or more of the individual projects within the program, depending on their capability and interest.
+    The Department of Transport and Main Roads invites suitably prequalified contractors registered under these prequalification levels of:
+    • Road Contract – R1,
+    • Bridge Contract – B1 or B2, and
+    • Financial Level – F5, (desirable)
+    to submit an Expression of Interest (EOI) application
+    for inclusion in a future program of construction works within Central West District, comprising multiple standalone projects of varying scope, location and delivery requirements, as further described in Section 2.0 of this EOI.
+    This is the first stage of a two-stage procurement process. From the responses received from this EOI, up to three (3) Applicants may be shortlisted for each project using the non-financial Evaluation Criteria outlined in Section 4.3 of the EOI. Only the shortlisted respondents will progress to Stage 2 – Invitation to Tender (ITT) based on their cooperative input during the Stage 1 Early Tenderer Engagement Phase where applicable.
+    The Early Tenderer Engagement Phase is described in Section 3.0. The Stage 2 Contracts are expected to be delivered under Minor Infrastructure Contract – Construct Only (MIC-CO). TMR reserves the right not to proceed with Stage 2 of this procurement process for any or all projects listed in Section 2.0.
+    The following projects are included in the program of works for this procurement process. Each project may be delivered in smaller Contracts, and independently of each other. Applicants are not required to nominate for all projects below in order to be shortlisted.
+    • Hughenden-Winton Road Pavement Rehabilitation and Widening.
+    • Timber Bridge Replacements at the Belyando River, Clermont-Alpha Road; Windeyer Creek, Dawson Developmental Road (Springsure-Tambo); and Alpha Creek, Alpha-Tambo Road.
+    • Capricorn Highway Pavement Widening.
+    • 3-2-1 gravel stopping bay sites throughout Central West district.
+    • Maintenance of concrete structures throughout Central West district. Including bridges, major culverts and minor culverts. Completion of Level 1 bridge inspections may also be required.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 4
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Bridge Construction & Maintenance
+    2: Drainage Services
+    3: Other Civil Construction Materials & Services
+    4: Pavement Stabilisation Services & Materials
+    5: Piling Services
+    6: Road Building Products & Maintenance & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Central West
+    2: Fitzroy
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+30/Jul/2026 01:28 PM:
+    Question
+    :
+    The Contractor CV template provided in Word format (N7900 Contractor CV) appears to be an older version of the TMR CV template. We already have TMR CVs prepared for our project personnel using the current TMR-approved template from previous submissions.
+    We would therefore like to request approval to submit our existing TMR CVs, prepared on the most recent TMR template, in lieu of using the template supplied with the EOI documentation.
+    For your review and consideration.
+    Answered on 31/Jul/2026 01:18 PM
+    :
+    Hi, a NTT has now been uploaded
+    Kind regards
+31/Jul/2026 07:52 AM:
+    Question
+    :
+    We would like to formally request a three-week extension to the current EOI submission deadline.
+    This request is being made due to a combination of current staffing constraints and the significant scope and depth of information requested as part of the submission requirements. We are committed to preparing a comprehensive and high-quality response that properly addresses the Department’s requirements, and we believe that additional time would enable us to provide a more considered and complete submission.
+    Given the extent of content sought in the EOI, the additional three weeks would assist us to:
+    Finalise internal resourcing and coordination
+    Compile the required supporting information and documentation
+    Ensure our submission is accurate, thorough, and aligned with the Department’s expectations
+    We remain very interested in participating in this opportunity and appreciate the Department’s consideration of this request. We would be grateful if you could advise whether a three-week extension can be granted ASAP.
+    Answered on 31/Jul/2026 01:18 PM
+    :
+    Hi, a NTT has now been uploaded
+    Kind regards
+31/Jul/2026 09:08 AM:
+    Question
+    :
+    Good Morning,
+    with regards to completion of schedules S1 to S4, can you please advise how responses are to be provided;
+    1. Are response's to each question to be inserted directly into the schedule underneath each question? or are response's to be added to blank pages at the end of each schedule?
+    Thanks,
+    Answered on 31/Jul/2026 01:18 PM
+    :
+    Hi, a NTT has now been uploaded
+    Kind regards
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+31/Jul/2026 01:14 PM:
+    Please note: The following attachments have been recently added.
+    1. Added: 	 Curriculum Vitae.docx
+    2. Added: 	 NTT_Notice to Applicant 001.pdf
+    Please consider these attachments when responding.
+
+----------------------------------------
+NOTE: This tender lists 4 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

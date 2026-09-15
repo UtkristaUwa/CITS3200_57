@@ -1,0 +1,161 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520278
+================================================================================
+
+Title      : Expression of Interest - Form Technology Solution
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=2ab881b6aaf749a4924432a054048e6fs520278
+Scraped At : 2026-08-25 21:51:07
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Justice
+VP Reference #: VP520278
+Buyers Reference #: DoJ 1022.2627
+Opens:
+    Friday 07 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 26 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 20 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 09 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Justice
+Location:
+    50 Ann St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.justice.qld.gov.au/
+Business Info: At the Department of Justice, our mission is to create a fairer, safer, and more inclusive Queensland for everyone. We focus on enhancing the efficiency of our justice system by reducing court waiting times, bolstering victim support services, and investing in technological advancements. Our efforts extend to preventing violence against women and girls, offering vital support to victims, and safeguarding the Queensland community from potential harm.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: The Department of Justice is seeking Expressions of Interest (EOI) from suitably qualified suppliers to provide a forms technology solution and associated implementation services.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 4
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: IT & Telecomms
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    IT & Telecomms
+    1: IT Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+11/Aug/2026 05:00 PM:
+    Question
+    :
+    Will the department consider a form technology solution that is not based on Microsoft Power Platform?
+    Answered on 13/Aug/2026 04:19 PM
+    :
+    Microsoft-native solutions will be strongly preferred due to alignment with the strategic platform direction and existing departmental investment.
+13/Aug/2026 05:11 PM:
+    Question
+    :
+    Hi team,
+    I hope you're well, and was hoping you could help clarify something in the EOI documents.
+    In section 1.1, it states that the proposed solution should "utilise Microsoft Power Platform services" to deliver the capability, and Schedule A section 4.1 asks to describe how the solution "leverages and integrates with" Microsoft Power Platform services.
+    Can you confirm whether the solution is required to be natively built on Microsoft Power Platform, or whether a solution that leverages and integrates with Power Platform services (consistent with section 4.1) is acceptable?
+    Many thanks,
+    Penny
+    Answered on 14/Aug/2026 03:58 PM
+    :
+    The Department has made significant investment in Microsoft technologies, including Power Platform, Dynamics 365 and associated platform services, and respondents should demonstrate how their proposed solution aligns with and leverages this existing investment.
+    As outlined in the EOI, respondents are requested to describe how their proposed solution leverages and integrates with Microsoft Power Platform services.
+    The Department's preferred approach is a solution that makes effective use of Microsoft Power Platform capabilities and aligns with the Department's broader Microsoft technology ecosystem. However, the EOI does not prescribe a specific technology implementation approach.
+    Accordingly, respondents may propose solutions that are either:
+    •	natively built on Microsoft Power Platform; or
+    •	leverage and integrate with Microsoft Power Platform services as part of a broader solution.
+14/Aug/2026 09:00 AM:
+    Question
+    :
+    1. Approximately how many forms are currently in scope for the solution, across the two citizen-facing portals and the form.io platform? An indicative count and an indication of the proportion carrying complex logic will help size implementation and migration effort.
+    2. Will the Department be able to make the form.io form definitions and logic library available to shortlisted suppliers at the Invitation to Offer stage, and will the third-party department that hosts and maintains the platform participate in that process?
+    3. Which two citizen-facing portals are being consolidated, and are they built on different underlying technologies?
+    **Citizen Portal programme**
+    4. Is the new Citizen Portal already under contract or in delivery, and if so, is the forms technology solution expected to integrate with a portal being delivered by another supplier? Understanding the division of responsibility between the two could materially affect proposed delivery models.
+    5. What is the indicative timeline for the Citizen Portal, and is the forms solution expected to be sequenced against specific portal milestones?
+    **Interim state and co-existence**
+    6. Does the Department have a target date or outer limit for the interim co-existence state, and for the decommissioning of the form.io platform?
+    7. Is the Department's intention that all forms ultimately migrate to the new solution, or that some remain on the whole-of-Government platform indefinitely?
+    **Technical environment**
+    8. Does the Department currently hold Power Pages entitlements, and are Power Platform and Azure entitlements sourced under whole-of-Government arrangements?
+    9. Is there an existing Power Platform environment strategy, tenancy and governance model the solution would operate within, or would this be established as part of the engagement?
+    10. Are indicative transaction volumes available — annual form submissions, peak periods, and document storage volumes?
+    11. What is the highest information security classification of data expected to be handled by the solution, and does the Department require IRAP assessment or a specific accreditation pathway?
+    12. Is the identity model for citizens, businesses and authorised representatives already established — for example an existing customer identity service — or is it in scope for this solution?
+    **Evaluation and process**
+    13. Is there a page or length limit for responses to Schedule A, and does the Department accept supporting appendices submitted as additional documents under the Part 2 naming convention?
+    14. Can the Department confirm whether pricing at Schedule B should be expressed as indicative ranges, given scope is not yet defined?
+    Answered on 19/Aug/2026 03:32 PM
+    :
+    1. Approximately how many forms are currently in scope for the solution, across the two citizen-facing portals and the form.io platform? An indicative count and an indication of the proportion carrying complex logic will help size implementation and migration effort.
+    Response - There are 17 new smartforms being built and 21 form.io smartforms that are not being replaced immediately, however they must be able to be replaced post delivery of this project. We are setting the foundations of ongoing smartform service management. There is a combination of high and medium complexity in the logic.
+    2. Will the Department be able to make the form.io form definitions and logic library available to shortlisted suppliers at the Invitation to Offer stage, and will the third-party department that hosts and maintains the platform participate in that process?
+    Response - No
+    3. Which two citizen-facing portals are being consolidated, and are they built on different underlying technologies?
+    Response - This information will be provided should the department decide to move forward with a formal tender.
+    **Citizen Portal programme**
+    4. Is the new Citizen Portal already under contract or in delivery, and if so, is the forms technology solution expected to integrate with a portal being delivered by another supplier? Understanding the division of responsibility between the two could materially affect proposed delivery models.
+    Response - Citizen Portal delivery has not yet been defined.
+    5. What is the indicative timeline for the Citizen Portal, and is the forms solution expected to be sequenced against specific portal milestones?
+    Response - Citizen Portal timeline has not yet been defined.
+    **Interim state and co-existence**
+    6. Does the Department have a target date or outer limit for the interim co-existence state, and for the decommissioning of the form.io platform?
+    Response - No defined target date.
+    7. Is the Department's intention that all forms ultimately migrate to the new solution, or that some remain on the whole-of-Government platform indefinitely?
+    Response - Yes, all forms will eventually migrate to the new solution, but the migration will only commence upon completion of the Citizen Portal project.
+    **Technical environment**
+    8. Does the Department currently hold Power Pages entitlements, and are Power Platform and Azure entitlements sourced under whole-of-Government arrangements?
+    Response - This information will be provided should the department decide to move forward with a formal tender.
+    9. Is there an existing Power Platform environment strategy, tenancy and governance model the solution would operate within, or would this be established as part of the engagement?
+    Response - Yes. The Department has an established Microsoft Power Platform tenancy and environment strategy. Existing Power Platform environments are already in use and governed through departmental standards, architecture controls and operational processes.
+    10. Are indicative transaction volumes available — annual form submissions, peak periods, and document storage volumes?
+    Response - This information will be provided should the department decide to move forward with a formal tender.
+    11. What is the highest information security classification of data expected to be handled by the solution, and does the Department require IRAP assessment or a specific accreditation pathway?
+    Response - Sensitive but in the future, it may manage Protected information so while not currently required the ability for the solution be able to manage Protected information in the future is highly desired and it would undergo an IRAP assessment then.
+    12. Is the identity model for citizens, businesses and authorised representatives already established — for example an existing customer identity service — or is it in scope for this solution?
+    Response - Yes, the identity model is already established.
+    **Evaluation and process**
+    13. Is there a page or length limit for responses to Schedule A, and does the Department accept supporting appendices submitted as additional documents under the Part 2 naming convention?
+    Response - No there is no page or length limit, appendices will be accepted as long as the specifically address schedule A.
+    14. Can the Department confirm whether pricing at Schedule B should be expressed as indicative ranges, given scope is not yet defined?
+    Response - Yes
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+14/Aug/2026 04:15 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) DoJ 1022.2627 EOI Addendum 1.pdf
+    Please consider this addendum when responding.
+19/Aug/2026 03:34 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) DoJ 1022.2627 EOI Addendum 2.pdf
+    Please consider this addendum when responding.
+20/Aug/2026 10:56 AM: The closing date for responses has been extended to 2:00pm Wednesday 26 August 2026
+
+----------------------------------------
+NOTE: This tender lists 4 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

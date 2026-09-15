@@ -1,0 +1,177 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520788
+================================================================================
+
+Title      : QPWS Fire Protective Clothing
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=fe3c0a4b3d3d4fe3b83e8973550eaa60s520788
+Scraped At : 2026-08-25 21:50:48
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Dept of the Environ, Tourism, Science and Innov
+VP Reference #: VP520788
+Buyers Reference #: P253557
+Opens:
+    Thursday 13 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 08 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 25 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 22 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Dept of the Environ, Tourism, Science and Innov
+Location:
+    Grafton St
+    Cairns City, Queensland 4870
+    Australia
+WebSite: https://www.environment.desi.qld.gov.au/
+Business Info: Our department champions Queensland's environmental sustainability and innovation-driven growth. We protect and manage our natural resources, including the Great Barrier Reef, while fostering biodiversity and heritage conservation. As pioneers in scientific strategy, we spearhead environmental stewardship and support Queensland's science sector. Driving economic growth, we cultivate an innovation ecosystem, promoting entrepreneurship and investment. Collaborating across sectors, we nurture innovation precincts for sustained development
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Department of the Environment, Tourism, Science and Innovation invites Offers from Suppliers for Invitation to Offer (ITO) No. P253557 for the provision of Queensland Parks and Wildlife Services (QPWS) Fire Protective Clothing.
+    The scope of this ITO focusses on the supply of fire Personal Protective Clothing (PPC) across the State including jackets, trousers and shirts produced in accordance with Part B: Contract Details, Attachment 1 - QPWS Fire Protective Clothing Specifications for issue to fire trained staff and required to be worn by personnel when undertaking fire operations including planned burns and wildfire response.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 6
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Clothing & Safety Equipment
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Clothing & Safety Equipment
+    1: Uniforms and Corporate wardrobe
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: South West
+    11: Sunshine Coast
+    12: West Moreton
+    13: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+13/Aug/2026 09:45 PM:
+    Question
+    :
+    Hello,
+    I have tried to download a few times but I keep getting this message on some of the files.
+    How many files are there meant to be all together?
+    *** READ ME - TRUNCATED FILE NAMES ***
+    Some of the files uploaded have names that are too long to fit into a Zip file.
+    These names have been truncated, with the original file name listed below.
+    -----------
+    P253557-Part_C-ITO_Response_Schedule-Attachment_2-As_a_Service_Questionnair (1).docx = P253557-Part_C-ITO_Response_Schedule-Attachment_2-As_a_Service_Questionnaire.docx
+    Answered on 14/Aug/2026 08:45 AM
+    :
+    Good morning,
+    I can confirm that there are currently 4 documents uploaded to the system for this Invitation to Offer:
+    P253557 - Part A - Invitation to Offer.pdf
+    P25f3557 - Part B - Contract Details.pdf
+    P253557 - Part C - ITO Response Schedule - Attachment 2 - As a Service Questionnaire.docx
+    P253557 - Part C - ITO Response Schedule.docx
+    Documents can be downloaded individually by clicking on the linked item or by selecting DOWNLOAD EVERYTHING.
+    Suppliers are reminded to please follow the process outlined in Part A – Invitation to Offer, Section 1.11 Offer clarifications or questions.
+    All clarifications or questions related to the Invitation to Offer must be communicated in writing directly to the Customer contact person identified in 1.15 and in accordance with the timeframes identified in 1.4.
+13/Aug/2026 09:54 PM:
+    Question
+    :
+    Dear Ashleigh,
+    We are preparing an offer for P253557 QPWS Fire Protective Clothing and would appreciate clarification on the following in advance of the 25 August deadline.
+    We note the Customer makes no commitment to any minimum volume (Schedule 1, item 9.1) and that any data provided is not a guarantee of business (Part A, clause 2.4). We are not seeking a commitment only indicative historical data to inform responsible pricing and production planning.
+    1. Historical annual volumes for the past three financial years, by garment type (trouser, jacket, shirt), and split by men's and women's fit if available.
+    2. The approximate number of fire-trained personnel currently issued with fire PPC, and the standard issue scale per person (e.g. number of shirts, trousers and jackets issued, and the expected replacement frequency).
+    3. The typical size distribution across the range, and the approximate proportion of orders each year filled as made-to-measure.
+    4. The number of QPWS delivery locations across Queensland, and the approximate split between metropolitan Brisbane and regional sites.
+    We would also value an indication of the Customer's expectations at contract commencement. Given the specification calls for certification to AS/NZS 4824:2021 including Amendment 1, does QPWS anticipate a transition of existing issued stock to the new standard from 1 October 2026, or replacement through natural attrition? If a transition is expected, an indicative timeframe and volume would materially assist our planning.
+    We intend to offer a garment purpose-built to the QPWS specification rather than an off-the-shelf product. Production planning of that kind is sensitive to volume and size curve, which is why we are seeking the above.
+    Thank you for your assistance.
+    Answered on 18/Aug/2026 12:41 PM
+    :
+    Please refer to Addendum 1 for requested information.
+14/Aug/2026 07:46 AM:
+    Question
+    :
+    Hi,
+    Could QPWS please advise the annual usage, or indicative annual usage, of the garments requested in this tender.
+    Thank you for your assistance.
+    Answered on 18/Aug/2026 12:41 PM
+    :
+    Please refer to Addendum 1 for requested information.
+14/Aug/2026 09:19 AM:
+    Question
+    :
+    Can you please provide annual usage data for each style, broken down to male/ female style level? This will assist us to identify the most suitable sourcing model.
+    Answered on 18/Aug/2026 12:42 PM
+    :
+    Please refer to Addendum 1 for requested information.
+14/Aug/2026 10:28 AM:
+    Question
+    :
+    Good morning,
+    Concerning Part B, Attachment 1 – QPWS Fire Protective Clothing Specifications, item 4. Firefighting Shirt. This garment requirement states "must be labelled with ... AS/NZS 4602.2:2013 Classification 1" - that is not possible as AS/NZS 4602.2 is co-dependent on the garment being certified to AS/NZS 4824 (see AS/NZS 4602.2 Scope and clause 4.5 Garment).
+    The illustration shows a reflective tape configuration depicting AS/NZS 1906.4 Class R material with 'Yellow' colour background material (shirt fabric) which would suggest that AS 4602.1:2024 Class D/N Level 1 compliance is possible.
+    The shirt design may prevent the garment being AS/NZS 4824 compliant (no Class SP tape specified, business collar, design illustration button front, modesty button).
+    Should reference to AS/NZS 4602.2 be replaced with AS 4602.1:2024 Class D/N Level 1?
+    Answered on 18/Aug/2026 12:42 PM
+    :
+    Please refer to Addendum 1 for corrections in response to this clarification.
+17/Aug/2026 02:41 PM:
+    Question
+    :
+    Hi Team,
+    Can you please provide any historic usages OR approx numbers of Staff requiring the uniform and the annual QTY of garments they are issued please? Any guidance would be appreciated.
+    Answered on 18/Aug/2026 12:43 PM
+    :
+    Please refer to Addendum 1 for requested information.
+24/Aug/2026 12:03 PM:
+    Question
+    :
+    Good morning,
+    Could you please clarify whether QPWS intends to award the jackets, trousers and shirts as a single Lot to one supplier, or whether individual garment categories may be awarded separately—for example, jackets and trousers to one supplier and shirts to another?
+    Many thanks,
+    Answered on 24/Aug/2026 03:37 PM
+    :
+    Please refer to Addendum 2 for response to this question.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+18/Aug/2026 12:39 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) P253557 - Addendum 1.pdf
+    Please consider this addendum when responding.
+24/Aug/2026 03:35 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) P253557 - Addendum 2.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 6 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

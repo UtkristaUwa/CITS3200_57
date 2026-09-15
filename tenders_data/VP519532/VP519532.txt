@@ -1,0 +1,103 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519532
+================================================================================
+
+Title      : CTG Replacement
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=b20b671f850744148bd5ae13bb15784as519532
+Scraped At : 2026-08-25 21:51:22
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+VP Reference #: VP519532
+Buyers Reference #: SP26-511
+Opens:
+    Monday 03 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Monday 31 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 21 August 2026 10:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 29 December 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Metro South Hospital and Health Service
+Location:
+    199 Ipswich Rd
+    Woolloongabba, Queensland 4102
+    Australia
+WebSite: https://www.metrosouth.health.qld.gov.au/
+Business Info: We're committed to providing high quality care and improving the health and wellbeing of people in our community. Together we will create Australia’s healthiest community.
+Contact Name: Alex Ovenden
+Position: Procurement Officer
+Primary phone: 0735640318
+Mobile phone: None Provided
+Fax number: None Provided
+Email: alexander.ovenden@health.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Metro South Health (MSH) is undertaking a strategic procurement to replace ageing Cardiotocography (CTG) monitoring systems across its maternity services. CTG systems are critical clinical monitoring devices used during both antepartum and intrapartum care to monitor foetal heart rate and uterine activity, supporting the assessment of foetal wellbeing and enabling timely clinical intervention when required.
+    MSH currently operates approximately 65 CTG monitoring systems across its facilities, of which 40 units have been nominated for replacement for this procurement.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    The procurement comprises a bundled product and service solution including the supply, installation, commissioning, integration, training, warranty, maintenance, and lifecycle support of an initial tranche of 40 CTG monitoring systems.
+    The procurement will also support the establishment of a standardised CTG platform and a streamlined OEM-backed monitoring environment across Metro South Health maternity services.
+    The scope includes:
+    •	Supply of CTG monitoring systems suitable for both antepartum and intrapartum monitoring.
+    •	Associated transducers, connectivity interfaces, trolleys, telemetry components, accessories, and consumables.
+    •	Integration with Metro South Health's Integrated Electronic Medical Record (ieMR) environment and compatibility with existing patient monitoring infrastructure.
+    •	Clinical and biomedical training.
+    •	Warranty, preventative maintenance, spare parts, and lifecycle support services.
+    •	Future fleet replacement pricing and support arrangements.
+    •	Establishment of a streamlined OEM-backed maintenance and support model.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 8
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Medical Equipment. & Supplies
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Medical Equipment & Accessories & Supplies
+    1: Medical Equipment & Accessories & Supplies
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+04/Aug/2026 03:16 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 MSHSP26-511 - Clarification No 1.pdf
+    Please consider this attachment when responding.
+17/Aug/2026 02:51 PM:
+    Please note: The following attachment has been recently added.
+    1. Added: 	 MSHSP26-511 - Addendum No 1.pdf
+    Please consider this attachment when responding.
+
+----------------------------------------
+NOTE: This tender lists 8 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

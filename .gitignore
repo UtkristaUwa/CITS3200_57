@@ -45,3 +45,8 @@ env/
 .pytest_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+
+# === SeleniumBase / scraper runtime artifacts ===
+downloaded_files/
+latest_logs/
+*.lock

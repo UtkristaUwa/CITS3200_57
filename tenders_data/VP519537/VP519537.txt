@@ -1,0 +1,79 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP519537
+================================================================================
+
+Title      : Cairns Firecoms Building Refurbishment
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a6dd06a030d24a598c13638926c88c84s519537
+Scraped At : 2026-08-25 21:51:23
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP519537
+Buyers Reference #: 89292
+Opens:
+    Monday 03 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 28 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 28 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Friday 09 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    31 Grove St
+    Parramatta Park, Queensland 4870
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details: Cairns Firecoms Building Refurbishment
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: None...
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Building Maintenance & Services
+    Construction & Operation
+    1: Building Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Far North
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 0 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

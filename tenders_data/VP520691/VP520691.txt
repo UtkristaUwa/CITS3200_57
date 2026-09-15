@@ -1,0 +1,116 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP520691
+================================================================================
+
+Title      : CQ Trade Contract Pest Control Services
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=d816bdfda40640d693e9897aad91f2f3s520691
+Scraped At : 2026-08-25 21:50:50
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: QBuild
+VP Reference #: VP520691
+Buyers Reference #: QBTCPC26CQ
+Opens:
+    Tuesday 11 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Wednesday 09 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 04 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 07 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: QBuild
+Location:
+    level 3/149 Bolsover St
+    Rockhampton City, Queensland 4700
+    Australia
+WebSite: https://www.housing.qld.gov.au/about/department/business-areas/public-works/qbuild
+Business Info: A commercialsed business unit of the Department of Housing and Public Works (DHPW)
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The State of Queensland through the Department of Housing and Public Works (Customer) is seeking to establish a Standing Offer Arrangement (SOA) for the provision of Services to the Customer, and herby invites offers for the SOA:
+    SOA Name: Trade Contractor Pest Control Services
+    SOA Number: QBTCPC26CQ
+    For the provision of Pest Control Services within Central Queensland
+    NOTE: THIS TENDER IS FOR CENTRAL QUEENSLAND REGION ONLY.
+    Please contact QBuildCQProcurement@hpw.qld.gov.au for any further queries in relation to this arrangement.
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details: This new trade contract Standing Offer Arrangement (SOA) will replace the current Building UMMUS SOA.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 2
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    Horticulture & Arboriculture
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Pest Control
+    Horticulture & Arboriculture
+    1: Pesticide & Herbicide Spraying
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+12/Aug/2026 09:39 AM:
+    Question
+    :
+    Good morning,
+    In Part D – Schedule of Prices under “Termite Treatment”, it asks for confirmation that employee(s) hold a QBCC Termite Management – Chemical and a QBCC Termite Management – Physical licence. However, the services listed only require a QBCC Termite Management – Chemical licence.
+    Could you please confirm whether both licences are required, or only Chemical licensing for this tender?
+    Answered on 12/Aug/2026 01:04 PM
+    :
+    (edited on 13/Aug/2026 10:58 AM)
+    Thank you for your enquiry.
+    Tenderers are required to hold both a QBCC Termite Management – Chemical licence and a QBCC Termite Management – Physical licence.
+    While the termite treatment services currently listed in the Schedule of Rates primarily require a Termite Management – Chemical licence, the contract may include other termite management works that require a Termite Management – Physical licence. As subcontracting is not permitted under this arrangement, suppliers must be appropriately licensed to undertake the full range of potential termite-related services that may arise during the contract term.
+    Accordingly, the requirement for both licence types remains unchanged, and tenderers should ensure they can demonstrate compliance with both licensing requirements in their submission.
+    Please also note.
+    The QBCC Termite Management - Physical licence (along with the QBCC Termite Management – Chemical Licence) is only required if offering for the termite treatments, which is optional under this trade. The mandatory requirement for this SOA is the Pest Management Licence issued by Qld Health, which is required to undertake the basic and additional treatments etc.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 2 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

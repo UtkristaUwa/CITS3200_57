@@ -1,0 +1,142 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP521189
+================================================================================
+
+Title      : Substation Battery Chargers
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=6efa186c5d434bf3ae62b4093d722184s521189
+Scraped At : 2026-08-25 21:50:44
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Energy Queensland Limited
+VP Reference #: VP521189
+Buyers Reference #: Doc109581526
+Opens:
+    Friday 14 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Friday 28 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Friday 28 August 2026 05:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Wednesday 24 February 2027
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Energy Queensland Limited
+Location:
+    26 Reddacliff St
+    Newstead, Queensland 4006
+    Australia
+WebSite: https://www.energyq.com.au/
+Business Info:
+    Energy Queensland is Australia's largest, wholly government-owned electricity company.
+    We service customers and communities through our distribution businesses Energex and Ergon Energy Network, our regional Queensland retailer Ergon Energy Retail, and our integrated energy solutions provider Yurika.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Energy Queensland Limited (EQL) intends to conduct an open Request for Tender for the supply and delivery of Substation Battery Chargers. The tender will be released and managed through SAP Ariba.
+    This notice is intended to identify suppliers interested in participating in the upcoming RFT and to facilitate supplier registration in EQL’s SAP Ariba environment. Registration of interest does not constitute prequalification, create any commitment by EQL, or guarantee that a supplier will be invited to participate in or awarded any contract arising from the RFT.
+    SCOPE:
+    The proposed scope covers the supply and delivery of stationary DC battery chargers and associated equipment for use across EQL’s substation network. The detailed technical requirements and proposed equipment configurations are set out in the attached EQL Technical Specification for Substation DC Battery Chargers, S10034540.
+    Substation battery chargers are critical assets that maintain station batteries in a fully charged condition and provide regulated DC supply to substation protection, control and communication systems.These systems are required to operate reliably under a range of environmental and operating conditions and must meet strict technical, safety and compliance requirements.
+    Interested suppliers should review the attached Technical Specification S10034540 and consider whether they have the technical capability, experience, manufacturing and supply-chain capacity, quality systems and support arrangements necessary to meet EQL’s requirements. Subject to final internal approvals, the RFT is currently expected to be released through SAP Ariba on or about 1 September 2026. The RFT documentation is expected to include the proposed Standing Offer, Technical Specification, Technical Schedules, pricing schedules and other response schedules. EQL reserves the right to amend the proposed release date.
+    Suppliers wishing to participate must be registered in EQL’s SAP Ariba supplier environment and must register their interest in accordance with the instructions below. Registration in SAP Ariba does not constitute a tender response. Tender responses must be submitted through the applicable SAP Ariba event after the RFT is published.
+    TO REGISTER YOUR INTEREST
+    Suppliers already registered in EQL’s SAP Ariba supplier environment
+    To register interest, email the Contact Officer using the subject line:
+    Expression of Interest – Doc109581526 – Substation Battery Chargers
+    The email should include:
+    •	supplier legal entity name;
+    •	ABN;
+    •	SAP Ariba Network ID, if known;
+    •	primary contact name;
+    •	contact telephone number; and
+    •	contact email address.
+    Suppliers not yet registered in EQL’s SAP Ariba supplier environment
+    To register interest and commence supplier registration, email the Contact Officer using the subject line:
+    Expression of Interest – Doc109581526 – Substation Battery Chargers
+    The email must include:
+    •	business legal entity name, as recorded in the Australian Business Register;
+    •	ABN;
+    •	registered business street address;
+    •	primary contact name;
+    •	contact telephone number;
+    •	contact email address; and
+    •	a generic business email address, where available, for administration of the supplier account
+    Contact Officer
+    Philip Leyden philip.leyden@energyq.com.au
+    SUPPLIER OWNERSHIP AND CYBER SECURITY INFORMATION
+    •	As part of the RFT, tenderers may be required to provide information concerning:
+    •	direct and ultimate beneficial ownership;
+    •	parent, related and affiliated entities;
+    •	operating, manufacturing, product-development and support locations;
+    •	subcontractors and third parties involved in manufacture, firmware development or technical support;
+    •	product security architecture;
+    •	firmware-signing and update-management arrangements;
+    •	remote engineering and support-access arrangements; and
+    •	compliance with EQL’s applicable cyber security requirements.
+    Foreign ownership will not, by itself, prevent a supplier from participating in the RFT. EQL may undertake supplier-specific FOCI and cyber security assessments as part of the evaluation and shortlisting process.
+    VENDORPANEL ADVERTISEMENT CLOSING DATE
+    Suppliers should register their interest by 5:00 pm AEST on 28 August 2026.
+    EQL may, at its discretion, consider registrations received after this date. However, late registration may affect EQL’s ability to complete SAP Ariba onboarding before the RFT is released.
+    ONCE THE EVENT HAS BEEN PUBLISHED
+    1.	Tenderers will receive an email inviting them to access the EQL SAP Ariba realm via a link contained in the email notification. Please note this link will expire within 24 hours.
+    2.	Tenderers must accept the Prerequisite Bidder Agreement under the ‘Review and Accept Prerequisites’ tab to ensure all system generated notifications are received. This includes, but is not limited to, Content updates and changes to Event Timing.
+    3.	If the Tenderer elects to submit a response, they must do so using SAP Ariba only.
+    Submissions provided via email or Vendorpanel will not be considered for evaluation.
+    4.	Tenderers are encouraged to read all relevant SAP Ariba documentation located at https://www.energyq.com.au/suppliers.
+    All queries are to be directed to Philip Leyden philip.leyden@energyq.com.au
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 1
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Power Generation, Trans & Distrib.
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Power Generation & Transmission & Distribution
+    1: Power Stations & Substations
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Brisbane
+    2: Central West
+    3: Darling Downs
+    4: Far North
+    5: Fitzroy
+    6: Gold Coast
+    7: Mackay
+    8: North West
+    9: Northern
+    10: Offshore (QLD)
+    11: South West
+    12: Sunshine Coast
+    13: West Moreton
+    14: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 1 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

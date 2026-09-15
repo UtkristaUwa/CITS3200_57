@@ -1,0 +1,161 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP518734
+================================================================================
+
+Title      : Eurong Office Construction Works
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=a2d5a3a53ed24d0e807db7394a0ab137s518734
+Scraped At : 2026-08-25 21:51:38
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Dept of the Environ, Tourism, Science and Innov
+VP Reference #: VP518734
+Buyers Reference #: P264001
+Opens:
+    Tuesday 28 July 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 01 September 2026 02:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 25 August 2026 02:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 29 September 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Dept of the Environ, Tourism, Science and Innov
+Location:
+    61 Yeppoon Rd
+    Parkhurst, Queensland 4702
+    Australia
+WebSite: https://www.environment.desi.qld.gov.au/
+Business Info: Our department champions Queensland's environmental sustainability and innovation-driven growth. We protect and manage our natural resources, including the Great Barrier Reef, while fostering biodiversity and heritage conservation. As pioneers in scientific strategy, we spearhead environmental stewardship and support Queensland's science sector. Driving economic growth, we cultivate an innovation ecosystem, promoting entrepreneurship and investment. Collaborating across sectors, we nurture innovation precincts for sustained development
+Contact Name: Ainslee Lewis
+Position: Senior Procurement Officer
+Primary phone: 0459 661 870
+Mobile phone: None Provided
+Fax number: None Provided
+Email: ainslee.lewis@detsi.qld.gov.au
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Department of the Environment, Tourism, Science and Innovation, Queensland Parks and Wildlife Service (QPWS) invite suitably qualified suppliers to submit an offer for the P264001 - Eurong Office Construction Works project.
+    K'gari is a UNESCO World Heritage Area located off the coast of Queensland. Recognised as the largest sand island in the world, K'gari boasts a rich tapestry of natural and cultural values, making it a vital site for conservation and tourism. The QPWS Eurong operational base was constructed in 1989 and is no longer fit for purpose, with a refurbishment required to address current demand and operational requirements.
+    This procurement seeks a suitably qualified and experienced Principal Contractor to deliver construction works for the Eurong office refurbishment to address building asset condition requirements, optimise workstation areas and quiet rooms and enhance the incident room, kitchen and amenities.
+    This is a Prequalification (PQC) System project. Tenderers must be on the relevant PQC list by the Tender Closing Date and Time. The PQC criteria are:
+    o Procurement system contract category: Construct Only (previously Traditional Lump Sum)
+    o Service category: Refurbishment / Renovation / Repairs
+    o Project type: Administrative / Offices – Low rise – up to and including three storeys
+    o Areas of operation: Wide Bay Burnett
+    o Service activities: Non-Residential Interior Refurbishment and FitoutLow – basic office fitout, minimal services installation or alteration
+    **Important Dates**
+    Last date for Supplier Clarifications: 2:00pm Queensland Time on 25 August 2026
+    Tender Closing Date: 2:00pm Queensland Time on 1 September 2026
+    Minimum eligibility requirements are as follows:
+    • QBCC Licensing, registration and accreditation
+    • Copy of Certificate of Currency of required insurance policies
+    • Attendance at the mandatory site meeting
+    • Registration on the relevant Prequalification System (PQC) eligible list by the tender closing date and time.
+    Tenderers are advised that the following may apply to the project:
+    • Building Industry Fairness (Security of Payment) Act 2017 Project Trust Accounts
+    • Occupational Health and Safety Audits for Queensland Government building projects
+    • Queensland Charter for Local Content
+    Mandatory Site Visit
+    This Request for Tender has a mandatory site visit on Tuesday, 11 August 2026
+    Please register for the site visit via email no later than close of business Monday, 3 August 2026.
+    Registration details required are company name, name of attendee/s, vehicle registration, contact number and email of attendee/s. Each company is restricted to two representatives.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 7
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists:
+    Building Trade, Repairs, Maint.
+    Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Building Trade & Repairs & Maintenance Services
+    1: Building Maintenance & Services
+    Construction & Operation
+    1: Building Construction Materials & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+20/Aug/2026 08:09 AM:
+    Question
+    :
+    We have reviewed the tender drawings and specifications and have the following clarification items for pricing.
+    1.	Dry Fire – Existing System Interface
+    The electrical documentation requires a complete hardwired fire detection/alarm installation. Please confirm whether the new system is to operate as a standalone system for the refurbished office or is required to interface with an existing site fire alarm/FDCIE. If an interface is required, please provide the make, model and location of the existing equipment, details of the current fire contractor if applicable, and confirm who is responsible for final programming, integration and commissioning.
+    2.	Security / Access Control
+    Section 18 of the Electrical Specification includes Gallagher Command Centre, access control, intruder detection and CCTV/VMS requirements. Some parts of this section appear to be generic, including references to Council facilities and a third-floor communications room. Please confirm the project-specific security scope to be allowed for, including whether CCTV/VMS is required. Please also provide details of the existing site security/access control system, whether the new works are to be integrated into the existing system or operate independently, and who will undertake final programming, card setup and monitoring configuration.
+    3.	Fibre Connection to Existing Infrastructure
+    Drawing E401 notes that the new communications rack is to be connected to the existing infrastructure via new fibre. Please provide the location of the existing fibre head-end, required fibre type and core count, proposed route or approximate cable length, and confirm whether spare FOBOT capacity is available at the existing end. Please also confirm any QPWS ICT attendance or requirements for final migration and commissioning.
+    4.	Mechanical / Electrical Trade Demarcation
+    The Mechanical Specification states that the mechanical contractor is to provide electrical works associated with the mechanical installation, including power supplies, cabling and switchboards. The mechanical trade interface schedule and Electrical Specification appear to allocate power wiring and isolators from the distribution board to the electrical trade. Please confirm the intended trade demarcation and which requirement is to take precedence.
+    5.	Mechanical Equipment Concrete Plinths
+    The Mechanical Specification requires the mechanical contractor to provide concrete plinths and support elements, while the mechanical drawings indicate concrete plinths by other trades and the architectural drawings also show these as building works. Please confirm whether the concrete plinths for the outdoor mechanical units are to be supplied and installed by the mechanical contractor or the builder/concrete trade.
+    6.	Existing Air-Conditioning Units to Remain
+    Drawing M201 identifies existing air-conditioning units to remain, however no make, model, capacity or electrical load information is provided. Please provide available details for these units and confirm whether any servicing, relocation, electrical reconnection, controls work or testing/commissioning is required as part of the works, or whether they are simply to remain untouched and protected during construction.
+    7.	DB-OFFICE Busbar Rating
+    Drawing E501 nominates a 160A busbar rating for DB-OFFICE, while the Electrical Specification requires distribution board busbar chassis to be rated at 250A minimum. Please confirm the required rating for DB-OFFICE.
+    8.	Operable Wall Structural Support
+    Structural drawing S200 notes that the nominated roof beam supporting the operable wall is expected to have approximately 10 mm deflection and requires confirmation with the wall supplier. The nominated Lotus operable wall requires the supporting steel to have a maximum deflection of 5 mm under moving load. Please confirm the required structural design/support arrangement to satisfy the operable wall supplier's requirements.
+    9.	New Gutter Size
+    The architectural documentation nominates a 300 mm half-round gutter, while Hydraulic drawing H201 nominates a 250 mm half-round gutter. Please confirm the gutter size to be allowed for.
+    10.	Outdoor Storage – FRP / Stainless Steel
+    Drawing EO-403 contains conflicting descriptions for the outdoor storage. The plan/details nominate framed welded 316 stainless steel shelving and 358 anti-climb mesh door panels, while the section also refers to FRP shelving and an FRP door. Please confirm the required construction and materials for the shelving and door panels.
+    11.	Solid-Core Door Frame Types
+    The architectural general notes state that timber door frames are to be provided to solid-core doors unless noted otherwise. The door schedule and hardware schedule nominate different frame types, including PMS and aluminium frames to a number of the same solid-core doors. Please confirm the required frame type for each solid-core door and which schedule is to take precedence.
+    12.	Door Master Keying
+    The architectural notes require three keys per lock, while the Door Hardware Schedule refers to two keys per lock. Please confirm the required number of keys, the existing QPWS master key profile/system and the nominated locksmith or keying contact to be used for integration into the existing master key system.
+    13.	Contract Duration / Practical Completion
+    The Project Brief nominates contract award in September 2026, a target for completion before the 2026 wet season, and also states practical completion as 30 weeks from contract award. Please confirm that the contractual construction period is 30 weeks from the Letter of Acceptance and whether the reference to completion before the 2026 wet season is a target only.
+    14.	Engineering Inspection – Viewing Platforms
+    The Project Brief includes an Engineering Inspection – Viewing Platforms with Form 12 certification required from the Principal Contractor. We have not identified any works specifically described as viewing platforms within the architectural or structural documentation. Please confirm whether this inspection requirement applies to this project and, if so, identify the elements requiring inspection and Form 12 certification.
+    15.	Furniture / FFE Scope
+    The architectural drawings nominate new outdoor furniture to be coordinated with QPWS and also show modular workstations and other furniture, however we have not located a project-specific furniture/FFE schedule. The Electrical Specification separately notes that whitegoods and office/ICT equipment are Principal supplied. Please provide the applicable furniture/FFE schedule and confirm which modular workstations, loose internal furniture and outdoor furniture are to be supplied by the Contractor and which are Principal supplied.
+    16.	Hardwood Retaining Wall Alternative
+    Drawing EO-050 requests an alternative tender price for a hardwood retaining wall in lieu of the documented retaining wall. Please provide the required construction details/design criteria for the hardwood option, or confirm that a contractor-designed and RPEQ-certified hardwood retaining wall meeting the required loads and durability requirements is acceptable.
+    17.	Roof Safety System
+    The architectural general notes refer to a roof safety system “where required”, including design, supply, installation, testing and certification, however we have not identified a roof safety system layout or nominated anchor/access locations. Please confirm whether a permanent roof safety system is required as part of these works and, if required, provide the required extent and performance criteria.
+    Could you please provide clarification on the above to assist with finalisation of our tender pricing.
+    Answered on 24/Aug/2026 10:30 AM
+    :
+    Good morning,
+    Thank you for your interest in the Eurong Office Construction Works project.
+    Please refer to Addendum No. 1. for a response to your queries.
+    Responses to outstanding queries will be provided as soon as possible.
+    Kind regards
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+24/Aug/2026 10:29 AM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) P264001_Addendum No. 1.pdf
+    Please consider this addendum when responding.
+25/Aug/2026 02:26 PM:
+    Please note: The following addendum has been recently added.
+    1. Added: 	 (Addendum) P264001_Addendum No. 2.pdf
+    Please consider this addendum when responding.
+
+----------------------------------------
+NOTE: This tender lists 7 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

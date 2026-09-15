@@ -1,0 +1,115 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP522472
+================================================================================
+
+Title      : BHTSP Contract Administration Panel - Aug 26
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=c56eac6824ec46da9e3ce940c1d9e04es522472
+Scraped At : 2026-08-25 21:50:11
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads
+VP Reference #: VP522472
+Buyers Reference #: PMD28/25(R26)
+Opens:
+    Monday 24 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Tuesday 08 September 2026 11:00 AM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Tuesday 08 September 2026 11:00 AM
+    (E. Australia Standard Time)
+Expected decision:
+    Tuesday 06 October 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads
+Location:
+    313 Adelaide St
+    Brisbane City, Queensland 4000
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    The Department of Transport and Main Roads (TMR) is seeking applications for new applicants to join the BHTSP Contract Administration Panel.
+    This application process is only for new applicants wishing to join the BHTSP Contract Administration Panel (existing BHTSP Contract Administration Panel Members are not permitted to apply for this process).
+    The Department of Transport and Main Roads (TMR) is delivering the Bruce Highway Targeted Safety Program (BHTSP). The Bruce Highway is a vital 1,673 kilometre north-south corridor in Queensland, connecting Brisbane to Cairns. In January 2025, the Australian and Queensland governments announced a joint funding commitment of $9 billion towards the BHTSP to enhance safety and uplift deficient sections of the highway to achieve a three-star rating.
+    The BHTSP focuses on sections of the Bruce Highway between Gympie and Cairns with a high safety risk.
+    Projects to be delivered through the BHTSP will be awarded to prequalified contractors and prequalified on the Construction Panel. The BHTSP will be delivered in the following districts:
+    - Far North Queensland District
+    - Fitzroy District
+    - Mackay/Whitsunday District
+    - Northern District
+    - Wide Bay/Burnett District
+    Contract Administration Panel Members may be engaged to deliver a project under either a:
+    - Transport Infrastructure Contract – Construct Only (BHTSP TIC-CO Contract) (Construct only contract); or
+    - Transport Infrastructure Contract – Target Cost (TIC-TC Contract) (Design and Construct contract),
+
+BACKGROUND INFORMATION / COMPATIBILITY REQUIREMENTS:
+----------------------------------------
+Details:
+    To be eligible to apply to join the Contract Administration Panel, the Applicant must be prequalified under the Infrastructure Building and Construction Panel (IBCP) in the following categories:
+    • Contract Administrator (CA)
+    • Inspector (Roadworks) (IR)
+    • Inspector (Structures) (IS)
+    • Site Engineer (Civil) (SEC)
+    • Design Engineer (Civil) (DEC)
+    • Designer Technical Advisor (DT)
+    Panel Applicants are not required to possess every IBCP prequalification category listed above, but as a minimum the company must have CA01, IR01, and SEC01.
+
+DESIRED OUTCOMES  ('NICE TO HAVES', CONDITIONS & WARRANTIES, SLA'S, PROJECT BENEFITS):
+----------------------------------------
+Details: Ensure you use the provided Part 2 PDF form for your tender response, as submissions in other formats will not be assessed. Complete all required fields and submit via the specified method before the deadline.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: 3
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Road Building Products & Maintenance & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Far North
+    2: Fitzroy
+    3: Mackay
+    4: Northern
+    5: Wide Bay-Burnett
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+25/Aug/2026 09:55 AM:
+    Question
+    :
+    Morning. The BHTSP CAVS panel has been called and closed previously. Is this new process for new applicants only to add to the existing panel? Or is it for existing panel members to apply for additional Districts? Thank you
+    Answered on 25/Aug/2026 11:56 AM
+    :
+    Thank you for the question, this process is for new applicants only which will result in new panel members for the existing BHTSP CA panel.
+    Existing panel members are not to apply through this process.
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 3 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================

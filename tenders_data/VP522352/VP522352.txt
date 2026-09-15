@@ -1,0 +1,83 @@
+================================================================================
+QTENDERS (VENDORPANEL) DETAILS - VP522352
+================================================================================
+
+Title      : CN-26496 DRFA Event 25J Southern Cross Creek Betterment - Flinders Highway
+Detail URL : https://www.vendorpanel.com.au/PublicTenderPreviewPop.aspx?id=e9cb1e5b1a574a65981fe3f9612699bcs522352
+Scraped At : 2026-08-25 21:50:16
+
+
+TENDER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - North Qld
+VP Reference #: VP522352
+Buyers Reference #: CN-26496
+Opens:
+    Monday 24 August 2026
+    (E. Australia Standard Time)
+Closes:
+    Thursday 01 October 2026 12:00 PM
+    (E. Australia Standard Time)
+Supplier query cut-off:
+    Thursday 01 October 2026 12:00 PM
+    (E. Australia Standard Time)
+Expected decision:
+    Thursday 12 November 2026
+    (E. Australia Standard Time)
+
+BUYER DETAILS:
+----------------------------------------
+Business Name: Department of Transport and Main Roads - North Qld
+Location:
+    Flinders St
+    Townsville City, Queensland 4810
+    Australia
+WebSite: https://www.tmr.qld.gov.au/
+Business Info: The Department of Transport and Main Roads provides reliable, resilient and responsive transport networks and digital services that are safe and accessible for everyone. This procurement is led by TMR's Program Delivery & Operations branch - North Queensland Region.
+Contact Details: The buyer has elected to have their personal and contact details hidden. These details will be revealed at the buyers discretion.
+
+WHAT THE BUYER IS REQUESTING:
+----------------------------------------
+Details:
+    Suitably prequalified Contractors to levels R3 and F25 or higher are invited to tender for CN-26496 DRFA Event 25J Southern Cross Creek Betterment - Flinders Highway (Charters Towers to Hughenden - 14B)
+    Prequalified suppliers are to email NQ-Procurement at nqprocurement@tmr.qld.gov.au to be registered for access to the tender documents which will be available on the Building and Asset Services website: https://etender.hpw.qld.gov.au/.
+    Submissions are to be electronic via the Building and Asset Services eTender website https://etender.hpw.qld.gov.au/.
+    Where a prequalification level is stated, the Principal is not obliged to provide tender documents, consider or accept a tender unless the tenderer is appropriately registered under the Department of Transport and Main Roads Prequalification System for the levels outlined in the tender. This includes the registration and approval of Joint Venture applications.
+
+ATTACHMENTS TO THIS REQUEST:
+----------------------------------------
+Documents: None...
+
+SUPPLIER LISTS SELECTED:
+----------------------------------------
+Lists: Construction & Operation
+
+CATEGORIES SELECTED:
+----------------------------------------
+Categories:
+    Construction & Operation
+    1: Bridge Construction & Maintenance
+    2: Building Construction Materials & Services
+    3: Other Civil Construction Materials & Services
+    4: Pavement Stabilisation Services & Materials
+    5: Road Building Products & Maintenance & Services
+
+REGIONS OF SERVICE:
+----------------------------------------
+Locations:
+    Queensland
+    1: Northern
+    All Regions of Service locations are within Australia.
+
+INFORMATION REQUESTED BY OTHERS:
+----------------------------------------
+Information requested: None...
+
+UPDATES MADE TO THIS REQUEST:
+----------------------------------------
+Updates: None...
+
+----------------------------------------
+NOTE: This tender lists 0 attachment(s). Their filenames and downloads are not shown on the public preview page and require a VendorPanel login.
+
+================================================================================
