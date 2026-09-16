@@ -66,7 +66,7 @@ def save_attachment(folder: str, filename: str, content: bytes) -> str:
 #This function is for extracted the attachment file's contents, we also make sure the file names match between the attachement and extracted information
 def save_extracted_text(folder: str, attachment_filename: str, text: str) -> str:
     base, _ = os.path.splitext(sanitise_filename(attachment_filename))
-    path = os.path.join(folder, f"{base}.txt")
+    path = os.path.join(folder, f"{sanitise_filename(attachment_filename)}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
     return path
