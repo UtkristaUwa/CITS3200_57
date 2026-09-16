@@ -6,3 +6,5 @@ google-cloud-bigquery
 google-genai
 pydantic
 tenacity
+openpyxl
+python-dotenv
