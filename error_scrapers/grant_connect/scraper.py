@@ -268,11 +268,31 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> in
     return process_documents(client, documents, folder)
  
  
+def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
+    """
+    Walk every page of the opportunity list, stopping when a page comes
+    back with no new links (end of results) or once `limit` is reached.
+    `limit` of 0 means walk every page.
+    """
+    urls, page = [], 1
+    while True:
+        response = client.get(LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
+        response.raise_for_status()
+        page_urls = parse_listing(response.text)
+        if not page_urls:
+            break  # no more results
+        urls.extend(page_urls)
+        if limit and len(urls) >= limit:
+            return urls[:limit]
+        page += 1
+    return urls
+
+
 def run_scraper(limit: int = 0) -> int:
     """
-    Log in, then scrape every current opportunity. `limit` of 0 means
-    every opportunity found on the listing.
- 
+    Log in, then scrape every current opportunity across every page of
+    the listing. `limit` of 0 means every opportunity found.
+
     Returns the site-level code for the whole run. A failed login stops
     the run immediately -- no opportunities are attempted.
     """
@@ -280,12 +300,8 @@ def run_scraper(limit: int = 0) -> int:
         with httpx.Client(follow_redirects=True) as client:
             if not login(client):
                 return common.SITE_LOGIN_FAILED
- 
-            listing = client.get(LIST_URL, headers=HEADERS, timeout=30.0)
-            listing.raise_for_status()
-            urls = parse_listing(listing.text)
-            if limit:
-                urls = urls[:limit]
+
+            urls = collect_all_listing_urls(client, limit)
  
             tender_codes = set()
             for url in urls:
@@ -314,7 +330,7 @@ def run_scraper(limit: int = 0) -> int:
 def main():
     import logging
     logging.basicConfig(level=logging.INFO)
-    code = run_scraper(limit=2)
+    code = run_scraper(limit=20)
     print(f"GrantConnect run finished with code {code}")
  
  
