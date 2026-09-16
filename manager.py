@@ -12,6 +12,9 @@ from document_scraper.main import process_tenders as run_doc_scraper
 # Improt tender processing code
 from data_ingestion.tender_processor import process_tender
 
+# Import the BigQuery upload function
+from data_ingestion.db_loader import upload_tender
+
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
@@ -67,12 +70,29 @@ def main():
             #     logger.warning(f"No text files found for {tender_folder_name}. Skipping.")
             #     continue
 
-            # Run tender processing on current tender
+            
+            
+            # Try to process the current tender
+            logger.info("Processing tender...")
+
+            current_tender = None
+            
             try:
-                print(process_tender(tender_path))
+                current_tender = process_tender(tender_path)
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
+
+            # Try to upload to BigQuery
+            logger.info("Uploading processed tender to BigQuery...")
+
+            try:
+                upload_tender(record=current_tender, table_ref="tenderai-dev.TenderAI.tenders")
+            except Exception as e:
+                logger.error(f"Failed to upload tender to BigQuery: {e}")
+                continue
+
+            # f"{project_id}.{dataset_id}.{table_id}"project_id="your-gcp-project-id",
 
             # ==================================================================
             # TODO: call this canton
