@@ -306,7 +306,7 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> int:
             tender_codes = set()
             for url in urls:
                 try:
-                    code = scrape_opportunity(client, url)
+                    code = scrape_opportunity(client, url, output_dir)
                     if code != common.SITE_SUCCESS:
                         tender_codes.add(code)
                 except Exception:
