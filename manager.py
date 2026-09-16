@@ -13,7 +13,10 @@ from document_scraper.main import process_tenders as run_doc_scraper
 from data_ingestion.tender_processor import process_tender
 
 # Import the BigQuery upload function
-from data_ingestion.db_loader import upload_tender
+from ingestion.bigquery_client import get_client, upsert_tender
+
+# Initialize BitQuery client
+bq_client = get_client()
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
@@ -76,7 +79,7 @@ def main():
             logger.info("Processing tender...")
 
             current_tender = None
-            
+
             try:
                 current_tender = process_tender(tender_path)
             except Exception as e:
@@ -87,9 +90,10 @@ def main():
             logger.info("Uploading processed tender to BigQuery...")
 
             try:
-                upload_tender(record=current_tender, table_ref="tenderai-dev.TenderAI.tenders")
+                result = upsert_tender(bq_client, current_tender)
+                logger.info(f"BigQuery upsert result for {tender_folder_name}: {result['action']} (id={result['tender_id']})")
             except Exception as e:
-                logger.error(f"Failed to upload tender to BigQuery: {e}")
+                logger.error(f"Failed to upsert to BigQuery: {e}")
                 continue
 
             # f"{project_id}.{dataset_id}.{table_id}"project_id="your-gcp-project-id",

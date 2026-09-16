@@ -13,7 +13,7 @@ def upload_tender(record: dict, table_ref: str):
     # The client_id is the first part of the table ref
     client = bigquery.Client(project=table_ref.split('.')[0])
     
-    # Insert_rows_json expects a list of dictionaries
+    # Insert_rows_json expects a list of dicts (records), in our case a single item list
     errors = client.insert_rows_json(table_ref, [record])
 
     # If everything is good, errors will simply be an empty list [].
