@@ -205,69 +205,104 @@ def parse_documents(html: str, base_url: str = BASE_URL) -> list[dict]:
 # Downloading + extraction
 # ---------------------------------------------------------------------------
  
-def process_documents(client, documents: list[dict], output_dir: str) -> int:
+def process_documents(client, documents: list[dict], output_dir: str) -> tuple[int, list[dict]]:
     """
-    Download every document, extract its text, and save both into
-    output_dir. Returns SUCCESS if everything worked, TENDER_PARTIAL if
-    any single document failed to download or extract.
+    Download every document, extract its text where we can, and save both
+    into output_dir.
+
+    Returns (status_code, attachments). `attachments` describes every
+    original file actually written to disk. The storage step uploads
+    exactly these, and needs the list because extracted text is written
+    into the same folder -- a generated .txt can't be told apart from a
+    genuine .txt attachment by looking at the folder alone.
+
+    TENDER_PARTIAL means something that should have worked didn't: a
+    download failed, or extraction failed on a format we do support. A
+    file we simply have no extractor for (csv, images, video) is saved
+    and reported normally -- nothing failed, there is just no text in it.
     """
     any_failed = False
- 
+    attachments: list[dict] = []
+
+    extractors = {
+        ".pdf": common.extract_pdf,
+        ".docx": common.extract_docx,
+        ".xlsx": common.extract_xlsx,
+    }
+
     for document in documents:
         try:
-            response = client.get(document["url"], headers=HEADERS, timeout=60.0)
-            response.raise_for_status()
+            with client.stream(
+                "GET", document["url"], headers=HEADERS, timeout=60.0
+            ) as response:
+                response.raise_for_status()
+                content_type = response.headers.get("content-type")
+                raw_path = common.save_attachment_stream(
+                    output_dir, document["file_name"], response
+                )
         except Exception:
             any_failed = True
             continue
- 
-        raw_path = common.save_attachment(
-            output_dir, document["file_name"], response.content
-        )
- 
+
+        # save_attachment_stream may have de-duplicated the name, so use the
+        # name it actually wrote -- otherwise the extracted text ends up
+        # attached to the wrong file.
+        saved_name = os.path.basename(raw_path)
+        attachments.append({
+            "file_name": saved_name,
+            "content_type": content_type,
+            "size_bytes": os.path.getsize(raw_path),
+        })
+
+        extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
+        if extractor is None:
+            continue
+
         try:
-            extension = os.path.splitext(document["file_name"])[1].lower()
-            if extension == ".pdf":
-                text = common.extract_pdf(raw_path)
-            elif extension == ".docx":
-                text = common.extract_docx(raw_path)
-            elif extension == ".xlsx":
-                text = common.extract_xlsx(raw_path)
-            else:
-                any_failed = True
-                continue
-            common.save_extracted_text(output_dir, document["file_name"], text)
+            common.save_extracted_text(output_dir, saved_name, extractor(raw_path))
         except common.ExtractionError as e:
             print(f"EXTRACTION FAILED: {e}")
             any_failed = True
- 
-    return common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
- 
- 
+
+    code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
+    return code, attachments
+
+
 # ---------------------------------------------------------------------------
 # Per-opportunity and full-run orchestration
 # ---------------------------------------------------------------------------
  
-def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> int:
-    """Scrape one opportunity into its own folder. Returns its status code."""
+def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tuple[int, dict]:
+    """
+    Scrape one opportunity into its own folder.
+
+    Returns (status_code, tender). `tender` carries the folder name and
+    the list of attachments saved into it, or is empty if the page could
+    not be parsed.
+    """
     response = client.get(url, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
-        return code
- 
+        return code, {}
+
     go_id = fields.get("go_id") or "UNKNOWN"
     folder = common.tender_dir(go_id, output_dir)
     common.save_page_text(folder, go_id, format_detail_text(fields))
- 
+
     documents_url = url.replace("/Go/Show", "/Go/ViewDocuments")
     doc_response = client.get(documents_url, headers=HEADERS, timeout=30.0)
     doc_response.raise_for_status()
     documents = parse_documents(doc_response.text)
- 
-    return process_documents(client, documents, folder)
- 
- 
+
+    code, attachments = process_documents(client, documents, folder)
+    return code, {
+        "tender_id": go_id,
+        "folder": folder,
+        "attachments": attachments,
+    }
+
+
 def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     """
     Walk every page of the opportunity list, stopping when a page comes
@@ -288,25 +323,30 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     return urls
 
 
-def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> int:
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
     """
     Log in, then scrape every current opportunity across every page of
     the listing. `limit` of 0 means every opportunity found.
 
-    Returns the site-level code for the whole run. A failed login stops
-    the run immediately -- no opportunities are attempted.
+    Returns (site_code, tenders) -- the site-level code for the whole run,
+    and one entry per tender successfully scraped, each listing the
+    attachment files saved for it. A failed login stops the run
+    immediately -- no opportunities are attempted.
     """
+    tenders: list[dict] = []
     try:
         with httpx.Client(follow_redirects=True) as client:
             if not login(client):
-                return common.SITE_LOGIN_FAILED
+                return common.SITE_LOGIN_FAILED, tenders
 
             urls = collect_all_listing_urls(client, limit)
- 
+
             tender_codes = set()
             for url in urls:
                 try:
-                    code = scrape_opportunity(client, url, output_dir)
+                    code, tender = scrape_opportunity(client, url, output_dir)
+                    if tender:
+                        tenders.append(tender)
                     if code != common.SITE_SUCCESS:
                         tender_codes.add(code)
                 except Exception:
@@ -314,24 +354,24 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> int:
                     continue
 
         if not tender_codes:
-            return common.SITE_SUCCESS
+            return common.SITE_SUCCESS, tenders
         if common.SITE_STRUCTURE_CHANGE in tender_codes:
-            return common.SITE_STRUCTURE_CHANGE
-        return common.TENDER_PARTIAL
- 
+            return common.SITE_STRUCTURE_CHANGE, tenders
+        return common.TENDER_PARTIAL, tenders
+
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code == 429:
-            return common.SITE_RATE_LIMITED
-        return common.SITE_TOTAL_FAILURE
+            return common.SITE_RATE_LIMITED, tenders
+        return common.SITE_TOTAL_FAILURE, tenders
     except (httpx.ConnectError, ConnectionError):
-        return common.SITE_TOTAL_FAILURE
- 
- 
+        return common.SITE_TOTAL_FAILURE, tenders
+
+
 def main():
     import logging
     logging.basicConfig(level=logging.INFO)
-    code = run_scraper(limit=20)
-    print(f"GrantConnect run finished with code {code}")
+    code, tenders = run_scraper(limit=20)
+    print(f"GrantConnect run finished with code {code}, {len(tenders)} tenders scraped")
  
  
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ def test_site_login_failed_stops_the_run(monkeypatch):
         return FakeResponse()
 
     monkeypatch.setattr(common, "submit_login", fake_submit_login)
-    code = scraper.run_scraper()
+    code, _ = scraper.run_scraper()
     assert code == common.SITE_LOGIN_FAILED
 
 
@@ -89,7 +89,7 @@ def test_tender_partial_when_attachment_extraction_fails(monkeypatch):
     html = load_fixture("grantconnect_attachements.html")
     documents = scraper.parse_documents(html)
     with httpx.Client() as client:
-        code = scraper.process_documents(client, documents, output_dir="/tmp/does_not_matter")
+        code, _ = scraper.process_documents(client, documents, output_dir="/tmp/does_not_matter")
     assert code == common.TENDER_PARTIAL
  
  
@@ -104,5 +104,87 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
     monkeypatch.setattr("httpx.Client.get", broken_get)
     monkeypatch.setattr("httpx.Client.post", broken_get)
  
-    code = scraper.run_scraper()
+    code, _ = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
+
+
+#-----
+#These cover what process_documents returns, which the storage step depends on:
+#the list of files actually written to disk, and the fact that a file we have no
+#extractor for is not a failure.
+#-----
+
+class _FakeStream:
+    """Stands in for one httpx streaming response."""
+
+    def __init__(self, data: bytes, content_type: str):
+        self.headers = {"content-type": content_type}
+        self._data = data
+
+    def raise_for_status(self):
+        return None
+
+    def iter_bytes(self):
+        yield self._data
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+
+class _FakeClient:
+    """A client whose downloads always succeed, so no network is touched."""
+
+    def __init__(self, data: bytes = b"not really a file",
+                 content_type: str = "application/octet-stream"):
+        self._data = data
+        self._content_type = content_type
+
+    def stream(self, method, url, **kwargs):
+        return _FakeStream(self._data, self._content_type)
+
+
+def test_unsupported_file_type_is_saved_but_not_a_failure(tmp_path):
+    documents = [{"file_name": "budget.csv", "url": "https://example.test/budget.csv"}]
+
+    code, attachments = scraper.process_documents(
+        _FakeClient(), documents, output_dir=str(tmp_path)
+    )
+
+    assert code == common.SITE_SUCCESS
+    assert [a["file_name"] for a in attachments] == ["budget.csv"]
+    assert (tmp_path / "budget.csv").exists()
+    # nothing to extract from a csv, so no text file should appear
+    assert not (tmp_path / "budget.csv.txt").exists()
+
+
+def test_duplicate_attachment_names_do_not_overwrite(tmp_path):
+    documents = [
+        {"file_name": "Attachment 1.csv", "url": "https://example.test/a"},
+        {"file_name": "Attachment 1.csv", "url": "https://example.test/b"},
+    ]
+
+    code, attachments = scraper.process_documents(
+        _FakeClient(), documents, output_dir=str(tmp_path)
+    )
+
+    assert code == common.SITE_SUCCESS
+    assert [a["file_name"] for a in attachments] == [
+        "Attachment 1.csv",
+        "Attachment 1 (2).csv",
+    ]
+
+
+def test_attachments_report_size_and_content_type(tmp_path):
+    documents = [{"file_name": "notes.csv", "url": "https://example.test/notes.csv"}]
+
+    _, attachments = scraper.process_documents(
+        _FakeClient(data=b"abcdef", content_type="text/csv"),
+        documents,
+        output_dir=str(tmp_path),
+    )
+
+    assert attachments[0]["size_bytes"] == 6
+    assert attachments[0]["content_type"] == "text/csv"

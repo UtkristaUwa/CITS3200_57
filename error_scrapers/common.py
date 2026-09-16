@@ -56,16 +56,36 @@ def save_page_text(folder: str, tender_id: str, text: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 
+#This function makes sure we never silently overwrite a file. Portals often attach
+#several files with the same name, so the second one would otherwise replace the first.
+def unique_path(folder: str, filename: str) -> str:
+    base, extension = os.path.splitext(sanitise_filename(filename))
+    candidate = os.path.join(folder, f"{base}{extension}")
+    counter = 2
+    while os.path.exists(candidate):
+        candidate = os.path.join(folder, f"{base} ({counter}){extension}")
+        counter += 1
+    return candidate
+
 #This function focusses on the downloaded attachment from the tender page
 def save_attachment(folder: str, filename: str, content: bytes) -> str:
-    path = os.path.join(folder, sanitise_filename(filename))
+    path = unique_path(folder, filename)
     with open(path, "wb") as f:
         f.write(content)
     return path
 
+#Same as save_attachment, but writes an httpx streaming response straight to disk in
+#chunks. Tender packs can include video, and the pipeline runs on Cloud Run where the
+#filesystem is memory -- holding a whole file in RAM can take the run out.
+def save_attachment_stream(folder: str, filename: str, response) -> str:
+    path = unique_path(folder, filename)
+    with open(path, "wb") as f:
+        for chunk in response.iter_bytes():
+            f.write(chunk)
+    return path
+
 #This function is for extracted the attachment file's contents, we also make sure the file names match between the attachement and extracted information
 def save_extracted_text(folder: str, attachment_filename: str, text: str) -> str:
-    base, _ = os.path.splitext(sanitise_filename(attachment_filename))
     path = os.path.join(folder, f"{sanitise_filename(attachment_filename)}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
