@@ -51,6 +51,13 @@ def _folders_and_attachments(result):
     ]
 
 
+def _folders_in(directory):
+    return {
+        name for name in os.listdir(directory)
+        if os.path.isdir(os.path.join(directory, name))
+    }
+
+
 def run_scrapers(temp_dir):
     """
     Run every configured scraper into temp_dir.
@@ -59,17 +66,29 @@ def run_scrapers(temp_dir):
     failing no longer stops the run -- with several portals configured,
     losing all of them because one site changed its markup is worse than
     an incomplete day.
+
+    Scrapers that report what they saved are used directly. For the older
+    ones that return nothing, we note which folders appeared while they
+    were running and attribute those to them -- otherwise their tenders
+    end up filed in the bucket under "unknown", with no way to tell later
+    which portal they came from.
     """
     manifest = {}
 
     for source_id, scrape in SCRAPERS:
         logger.info(f"Executing scraper: {source_id}")
+        before = _folders_in(temp_dir)
+
         try:
             result = scrape(limit=SCRAPE_LIMIT, output_dir=temp_dir)
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
             continue
 
+        for folder_name in _folders_in(temp_dir) - before:
+            manifest[folder_name] = (source_id, None)
+
+        # A reported manifest is better than the guess above, so it wins.
         for folder_name, attachments in _folders_and_attachments(result):
             manifest[folder_name] = (source_id, attachments)
 
@@ -144,9 +163,17 @@ def main():
             # last five need adding to the table first -- see migration 002
             # for the pattern.
             # ==================================================================
-            print(tender)
+            # Deliberately not printing `tender` in full: its documents carry
+            # the entire extracted text of every attachment, which is
+            # megabytes of Cloud Logging per run. Set PIPELINE_DEBUG=on when
+            # you actually need to eyeball it.
+            if os.environ.get("PIPELINE_DEBUG", "off").lower() in {"on", "true", "1"}:
+                print(tender)
+
             logger.info(
-                f"{tender_folder_name}: {len(documents)} document(s) stored, "
+                f"{tender_folder_name} [{source_id}]: "
+                f"{len(documents)} document(s) stored, "
+                f"title={tender.get('title')!r}, "
                 f"awaiting database write"
             )
 
