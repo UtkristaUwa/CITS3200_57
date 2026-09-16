@@ -4,6 +4,7 @@ import os
 import re
 import fitz
 import docx
+import httpx
 
 #Error status codes for failures
 #Scraping was a total success
@@ -91,3 +92,15 @@ def extract_docx(file_path: str) -> str:
         return text
     except Exception as e:
         raise ExtractionError(f"DOCX extraction failed on {file_path}: {e}") from e
+
+#-----
+#This is our helper function to log in to sites
+#-----
+
+def submit_login(client: httpx.Client, url: str, payload: dict) -> httpx.Response:
+    return client.post(
+        url,
+        data=payload,
+        follow_redirects=True,
+        timeout=25.0,
+    )
