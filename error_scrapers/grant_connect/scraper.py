@@ -288,7 +288,7 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     return urls
 
 
-def run_scraper(limit: int = 0) -> int:
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> int:
     """
     Log in, then scrape every current opportunity across every page of
     the listing. `limit` of 0 means every opportunity found.
