@@ -4,8 +4,9 @@ from pathlib import Path
 import pytest
 from error_scrapers.grant_connect import scraper
 from error_scrapers import common
+import httpx
 
-FIXTURES = Path(__file__).parent / "fixtures"
+FIXTURES = Path(__file__).parent
 
 def load_fixture(name: str) -> str:
     return (FIXTURES / name).read_text(encoding="utf-8")
@@ -42,7 +43,7 @@ def test_success_parses_full_details_page():
     html = load_fixture("grantconnect_full_details.html")
     fields, code = scraper.parse_detail(html)
 
-    assert code == common.SUCCESS
+    assert code == common.SITE_SUCCESS
     assert fields["go_id"] == "GO8232"
     assert fields["agency"] == "National Health and Medical Research Council (NHMRC)"
     assert fields["title"]
@@ -87,7 +88,8 @@ def test_tender_partial_when_attachment_extraction_fails(monkeypatch):
  
     html = load_fixture("grantconnect_attachements.html")
     documents = scraper.parse_documents(html)
-    code = scraper.process_documents(documents, output_dir="/tmp/does_not_matter")
+    with httpx.Client() as client:
+        code = scraper.process_documents(client, documents, output_dir="/tmp/does_not_matter")
     assert code == common.TENDER_PARTIAL
  
  
