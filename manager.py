@@ -15,6 +15,12 @@ from data_ingestion.tender_processor import process_tender
 # temporary directory (and everything in it) is deleted.
 import attachment_store
 
+# Import the BigQuery upload function
+from ingestion.bigquery_client import get_client, upsert_tender
+
+# Initialize BigQuery client
+bq_client = get_client()
+
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
@@ -94,7 +100,6 @@ def run_scrapers(temp_dir):
 
     return manifest
 
-
 def main():
     logger.info("Starting Daily Tender Pipeline...")
 
@@ -148,33 +153,37 @@ def main():
             )
 
             # 4b. Run tender processing on current tender
+            logger.info("Processing tender...")
+            current_tender = None
             try:
-                tender = process_tender(tender_path)
+                current_tender = process_tender(tender_path)
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
 
-            # ==================================================================
-            # TODO: write `tender` and `documents` to BigQuery.
-            #
-            # `documents` is already shaped for the `documents` column: one
-            # entry per attachment with file_name, file_type, content_type,
-            # size_bytes, checksum_sha256, storage_uri and uploaded_at. The
-            # last five need adding to the table first -- see migration 002
-            # for the pattern.
-            # ==================================================================
-            # Deliberately not printing `tender` in full: its documents carry
-            # the entire extracted text of every attachment, which is
-            # megabytes of Cloud Logging per run. Set PIPELINE_DEBUG=on when
-            # you actually need to eyeball it.
+            # Try to upload to BigQuery
+            logger.info("Uploading processed tender to BigQuery...")
+            try:
+                result = upsert_tender(bq_client, current_tender)
+                logger.info(
+                    f"BigQuery upsert result for {tender_folder_name}: "
+                    f"{result['action']} (id={result['tender_id']})"
+                )
+            except Exception as e:
+                logger.error(f"Failed to upsert to BigQuery: {e}")
+                continue
+
+            # Deliberately not printing `current_tender` in full: its
+            # documents carry the entire extracted text of every attachment,
+            # which is megabytes of Cloud Logging per run. Set
+            # PIPELINE_DEBUG=on when you actually need to eyeball it.
             if os.environ.get("PIPELINE_DEBUG", "off").lower() in {"on", "true", "1"}:
-                print(tender)
+                print(current_tender)
 
             logger.info(
                 f"{tender_folder_name} [{source_id}]: "
                 f"{len(documents)} document(s) stored, "
-                f"title={tender.get('title')!r}, "
-                f"awaiting database write"
+                f"title={current_tender.get('title')!r}"
             )
 
     # Once the 'with' block ends, Python permanently deletes the temp_dir and all files inside it.

@@ -472,7 +472,7 @@ def process_tender(documents_dir: str) -> dict:
     raw_extra = json.dumps({"tags": fields.tags}) if fields.tags else None
 
     return {
-        "tender_id": None,
+        # "tender_id": None, Omit this as to not break the UID generation from BigQuery
         "source_reference_id": fields.source_reference_id,
         "source_id": fields.source_id,
         "title": fields.title,
