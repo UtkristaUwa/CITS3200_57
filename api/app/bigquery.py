@@ -1,3 +1,5 @@
+import json
+
 from functools import lru_cache
 
 from google.cloud import bigquery
@@ -122,6 +124,11 @@ def list_tenders(
         record = dict(row)
         if record.get("documents"):
             record["documents"] = [dict(d) for d in record["documents"]]
+        if isinstance(record.get("raw_extra"), str):
+            try:
+                record["raw_extra"] = json.loads(record["raw_extra"])
+            except (json.JSONDecodeError, TypeError):
+                record["raw_extra"] = None
         rows.append(record)
     return rows
 def get_locations(client: bigquery.Client) -> list[str]:

@@ -9,6 +9,38 @@ from typing import Any
 
 from google.cloud import bigquery
 
+_EXPECTED_TENDER_FIELDS = {
+    "source_reference_id": None,
+    "source_id": None,
+    "source_url": None,
+    "title": None,
+    "issuing_agency": None,
+    "category": None,
+    "status": None,
+    "publish_date": None,
+    "closing_date": None,
+    "value_amount": None,
+    "value_currency": None,
+    "value_notes": None,
+    "location": None,
+    "description": None,
+    "contact_name": None,
+    "contact_email": None,
+    "contact_phone": None,
+    "lodgment_address": None,
+    "documents": None,
+    "content_hash": None,
+    "tags": None,
+    "first_seen_at": None,
+    "last_scanned_at": None,
+    "updated_at": None,
+    "raw_extra": None,
+}
+
+
+def _with_defaults(record: dict) -> dict:
+    return {**_EXPECTED_TENDER_FIELDS, **record}
+
 PROJECT_ID = "tenderai-dev"
 DATASET = "TenderAI"
 TENDERS_TABLE = f"{PROJECT_ID}.{DATASET}.tenders"
@@ -252,6 +284,7 @@ def _log_snapshot(client: bigquery.Client, tender_id: str, content_hash: str,
 def upsert_tender(client: bigquery.Client, record: dict) -> dict:
 
     record = deepcopy(record)
+    record = _with_defaults(record)
     record["documents"] = _prepare_documents(record.get("documents"))
     record.setdefault("raw_extra", None)
     new_hash = compute_content_hash(record)
