@@ -7,6 +7,7 @@ import logging
 # (Adjust the import names to match your actual python files)
 from web_scrapers.webscraperinit import run_scraper as run_austender
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
+from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from document_scraper.main import process_tenders as run_doc_scraper
 
 # Improt tender processing code
@@ -32,6 +33,7 @@ SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
 SCRAPERS = [
     ("austender", run_austender),
     ("grantconnect", run_grantconnect),
+    ("buynsw", run_buynsw),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
