@@ -8,3 +8,4 @@ pydantic
 tenacity
 openpyxl
 python-dotenv
+google-cloud-storage
