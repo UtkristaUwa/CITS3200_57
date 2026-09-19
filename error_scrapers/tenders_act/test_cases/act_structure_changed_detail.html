@@ -1,0 +1,2460 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript>
+	<div class="noscriptmsg"><h3>JavaScript Disabled</h3><p>This site requires JavaScript Enabled to function properly. Please enable JavaScript or use a different browser that has JavaScript enabled.</p></div>
+</noscript>
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+
+
+
+
+
+
+
+
+
+<!-- Sets the title tag to the page's h1 text -->
+<script>
+function changeTitle(){
+	var title;
+	var pageTitle = $("span[name=page-title]");
+	//check to use the first page-title if it exists
+	if (pageTitle[0]) {  
+		title = pageTitle[0].textContent.trim();
+		if (title.indexOf("- General") > 0) {
+			title = title.replace("- General", "");
+		}
+	}
+	else {
+		title = pageTitle.text();
+	}
+	
+	if(title){
+		document.title = title + " ";
+	}
+}
+
+function loadHostedScript(filePath) {
+	let scriptEl = document.createElement("script");
+	scriptEl.setAttribute("src", "/resources/js/" + filePath);
+	$("head").append(scriptEl);
+}
+
+function loadHostedStylesheet(filePath) {
+	let linkEl = document.createElement("link");
+	linkEl.setAttribute("href", "/resources/css/" + filePath);
+	linkEl.setAttribute("rel", "stylesheet");
+	$("head").append(linkEl);
+}
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+//Setting the default values for the confirmation modal
+var bootBoxOptions = {
+	locale: 'taas',
+	size: 'medium',
+	message: "Do you really want to delete?",
+	buttons: {
+		cancel: {
+			label: '<i class="fas fa-times fa-lg"></i>&nbsp;No',
+			className: 'btn-default pull-right cancel-button'
+		},
+		confirm: {
+			label: '<i class="fas fa-trash fa-lg"></i>&nbsp;Delete',
+			className: 'btn-danger'
+		}
+	},
+	swapButtonOrder: true,
+	callback: function (result) {
+		console.log( 'This was logged in the callback: ' + result);
+	}
+};
+
+var bootboxLocale = {
+	OK: '<i class="fas fa-check fa-lg"></i>&nbsp;OK',
+	CANCEL: '<i class="fas fa-times fa-lg"></i>&nbsp;Cancel',
+	CONFIRM: '<i class="fas fa-check fa-lg"></i>&nbsp;Confirm'
+}
+</script>
+
+<title>Tenders ACT</title>
+
+<link rel="shortcut icon" href="/resources/images/act/favicon.ico" type="image/x-icon">
+
+<!--JavaScript libraries -->
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
+
+<!-- if jQuery CDN is blocked, download local-->
+<script type="text/javascript">
+	window.jQuery || loadHostedScript("jquery-3.7.1.min.js");
+</script>
+
+
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"
+		integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI="
+		crossorigin="anonymous"></script>
+<!-- if jQuery.ui CDN is blocked download local-->
+<!-- need to check object then tabs to avoid undefined property error-->
+<script>
+	window.jQuery.ui || loadHostedScript("jquery-ui.min.js");
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"
+		integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/additional-methods.min.js"
+		integrity="sha512-owaCKNpctt4R4oShUTTraMPFKQWG9UdWTtG6GRzBjFV4VypcFi6+M3yc4Jk85s3ioQmkYWJbUl1b2b2r41RTjA=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<!-- if jQuery.ui CDN is blocked, download local-->
+<script type="text/javascript">
+	if (typeof ($.fn.validate) === 'undefined') {
+		loadHostedScript("jquery.validate.min.js");
+		loadHostedScript("additional-methods.min.js");
+	}
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js" type="text/javascript"></script>
+	
+<!-- if moment CDN is blocked download local-->
+<script>window.moment || loadHostedScript("moment-with-locales.min.js");</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+
+
+
+
+
+<script>
+	if (typeof $.fn.tooltip.Constructor == 'undefined') {
+		loadHostedScript("bootstrap/bootstrap.min.js");
+	}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+<script>
+	if (typeof tempusDominus == 'undefined') {
+		loadHostedScript("tempus-dominus/tempus-dominus.min.js");
+	}
+</script>
+<script src="/resources/js/tempus-dominus/tempus-dominus-setup.js"></script>
+
+<script src="/resources/js/taas.js"></script>
+<script src="/resources/js/crud.js"></script>
+<script src="/resources/js/personEdit.js"></script> 
+
+<script>
+taasProps.context = "/"; // Set global var
+taasProps.context = taasProps.context.slice( 0, -1); //Remove last slash
+log( "Application Context Path=" + taasProps.context);
+
+$(function() {
+	decorateExternalLink("https://www.tenders.act.gov.au/");
+});
+
+</script>
+<script src="/resources/js/autocomplete/unspsc.js" type="text/javascript"></script>
+
+
+
+
+
+<link rel="stylesheet" href="/resources/js/tablesaw/tablesaw.stackonly.css" />
+<script src="/resources/js/tablesaw/tablesaw.stackonly.jquery.js"></script>
+<script src="/resources/js/tablesaw/tablesaw-init.js"></script>
+
+
+
+
+
+<script src="/resources/js/bootstrap/plugins/bootbox-v6.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+var resynchMod = 15 * 60; // will resynch every 15mins
+var serverTimeMs = null; // real server time in ms since 1970
+var serverTimeDiffMs; //in in ms: server = local + serverTimeDiffMs;
+var offset = null;
+var nowInMs = null;
+//Script with AJAX, getting xml response like: //message/getServerTime:
+//Server time passed in ms since 1970, good to create Date from.
+function getServerTimeViaAjax(){
+	$.ajax({
+	    type: "GET",
+		url: taasProps.context + "/serverTime",
+	    dataType: "json",
+		success: callback
+	})
+
+	function callback(data){
+		var serverTime = parseInt(data.time);
+		var serverTimeZoneOffset = parseInt(data.offset);
+		var serverLocale = data.locale;
+		var serverTimeZoneCode = data.timeZoneCode;
+		var serverTimeZoneOffsetString = data.offsetString;
+
+		if (serverLocale != null) {
+			moment.locale(serverLocale);
+		}
+		
+
+		var timeZone = new Date().getTimezoneOffset() * 60000; 
+		
+		offset = (timeZone + serverTimeZoneOffset);
+		
+
+		serverTimeMs = serverTime;
+		var now = new Date().getTime();
+		var lserverTimeDiffMs = serverTimeMs - now; //calc time diff in ms
+		
+
+		if (-timeZone < serverTimeZoneOffset){ // if time is ahead
+			lserverTimeDiffMs = now - serverTimeMs + offset;
+		} else {
+			lserverTimeDiffMs = serverTimeMs - now + offset;
+		}
+
+		serverTimeDiffMs = lserverTimeDiffMs; //fix it
+		
+
+		var tenantTzCode = document.getElementById('tenantTzCode');
+		if (tenantTzCode != null && serverTimeZoneCode != null) {
+			tenantTzCode.innerHTML = serverTimeZoneCode;
+		}
+		var tenantTzOffset = document.getElementById('tenantTzOffset');
+		if (tenantTzOffset != null && serverTimeZoneOffsetString != null) {
+			tenantTzOffset.innerHTML = serverTimeZoneOffsetString;
+		}
+	}
+}
+
+function initClocks() {
+	
+	getServerTimeViaAjax(); //adjust the clock even better
+	clock(); //init the timer
+}
+
+function clock() {
+	var dateEl = document.getElementById('tenantDate');
+	var timeEl = document.getElementById('tenantTime');
+	if (dateEl == null && timeEl == null) {// no element to put time in - do nothing
+		return;
+	}
+	if (typeof(serverTimeDiffMs) == "undefined") {
+	 	setTimeout("clock()", 100);
+	 	return;
+	}
+	//Display current time
+	var now = new Date(); //local time
+	nowInMs = now.getTime() + serverTimeDiffMs;
+	now.setTime(now.getTime() + serverTimeDiffMs); //now it is server time
+	dateEl.innerHTML = moment(now).format('ll');
+	timeEl.innerHTML = moment(now).format('LTS');
+
+
+
+	// resynch for next cycle
+	if (Math.round(now.getTime()/1000) % resynchMod == 0) {
+		getServerTimeViaAjax()
+	}
+ 	setTimeout("clock()", 1000); //1sec interval
+}
+
+function msToTime(duration) {
+	var seconds = parseInt((duration / 1000) % 60),
+	    minutes = parseInt((duration / (1000 * 60)) % 60),
+	    hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+	return hours + "h " + minutes + "m " + seconds + "s";
+}
+
+if (window.addEventListener) {
+	window.addEventListener('load', initClocks, false); //W3C
+} else {
+	window.attachEvent('onload', initClocks); //IE
+}
+</script>
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i" rel="stylesheet">
+<link href='//fonts.googleapis.com/css?family=Roboto:100,200,300,300italic,400,400italic,500,500italic' rel='stylesheet' type='text/css'>
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
+
+<link rel="stylesheet" href="/resources/css/ui/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/ui/bootstrap-5-override.css">
+<!-- Tempus Dominus Styles (datetimepicker) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://kit.fontawesome.com/84b5033a60.css" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/resources/css/shared/shared.css" />
+
+
+
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/theme-style.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-default.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/theme.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/header.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/menu.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/footer.css">
+	
+	
+		<link rel="stylesheet" type="text/css" href="/resources/css/act/theme.css">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+	$(function () {
+		document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + "px")
+	});
+
+	
+	
+	$(function() {
+		$("#ctFooterLink").on("click", function(event) {
+			event.preventDefault();
+			redirectToCt(null, "acceptedDisclaimer");
+		});
+	});
+	
+
+	function redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback) {
+		let acceptedDisclaimer = localStorage.getItem(cookieName);
+		if (url == null) {
+			url = 'https://www.consolidatedtenders.com/';
+		} else if (!url.includes("common/authorize/connect")) {
+			url = getAutoSignRedirectUrl(url, ctidData);
+		}
+
+		if (!acceptedDisclaimer && true) {
+			showRedirectDisclaimer(url, cookieName, target, redirectDisclaimerCallback);
+		} else {
+			if (typeof target === 'undefined' || target === "") {
+				target = "_self";
+			}
+			window.open(url, target);
+			if (typeof redirectDisclaimerCallback === "function") {
+				redirectDisclaimerCallback();
+			}
+		}
+	}
+
+	function getAutoSignRedirectUrl(url, ctidData) {
+		let data = {targetId: 1, url: url};
+		if (typeof ctidData !== 'undefined') {
+			data = $.extend(data, {ctidData: JSON.stringify(ctidData)});
+		}
+		
+			$.ajax({
+				url: "/getAutoSignRedirectUrl",
+				data: data,
+				type: "get",
+				dataType: "text",
+				headers: { "X-CSRF-Token": "test-csrf-token" },
+				success: function(data) {
+					if (data) {
+						url = data;
+					}
+				},
+				async: false
+			});
+		
+		return url;
+	}
+
+	function showRedirectDisclaimer(urlPath, cookieName, target, callback) {
+		var url = "/redirectDisclaimer";
+		$.ajax({
+			url: url,
+			data: {urlPath: urlPath, cookieName: cookieName, target: target},
+			dataType: "HTML",
+			success: function (result) {
+				var parsedResult = $.parseHTML(result, document, true);
+				var modalId = $(parsedResult).closest(".modal").attr("id");
+				var script = $(parsedResult).closest("script");
+				$("body").append(parsedResult);
+				$("#" + modalId).modal("show");
+				/*Clean up after modal has been closed*/
+				$("#" + modalId).on('hidden.bs.modal', function () {
+					$(this).remove();
+					$(script).remove();
+					if (typeof callback === "function") {
+						callback();
+					}
+				});
+			}
+		});
+	}
+
+	function redirectToCtWithParams(url, id, returnMessage, cookieName, target, redirectDisclaimerCallback) {
+		let tenantCode = 'act';
+		let ctidData = {returnMessage: returnMessage, tenantCode: tenantCode, entityId: id, returnUrl: window.location.href};
+		cookieName = typeof cookieName !== 'undefined' && cookieName != "" ? cookieName : "acceptedProfileDisclaimer";
+		redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback);
+	}
+
+	$(function() {
+		changeTitle();
+	})
+</script>
+
+
+
+ 
+
+        
+            
+			<link rel="stylesheet" href="/resources/css/ui/themes/theme-2/tender-details.css"/>
+		
+        
+        
+            
+		
+		
+        
+    </head>
+
+    <body>
+        
+        <input type="hidden" id="csrfToken" value="test-csrf-token"/>
+        <input type="hidden" id="csrfParameter" value="_csrf"/>
+        
+        
+
+
+
+	
+
+
+
+
+
+	<script>
+		var cookieDisabledMessage = "<h3>Cookies Disabled</h3><p>This site requires Cookies to be enabled to function properly. Please enable Cookies or use a different browser that has Cookies enabled.</p>";
+	</script>
+
+
+<div id="appContext" data-app-context=""></div>
+
+<script src="/resources/js/checkCookies.js" type="text/javascript"></script>
+
+<script src="/resources/js/outageNotification.js"></script>
+<div id="divNotification" class="sticky-top text-center"></div>
+
+
+
+	
+	<input type="hidden" id="loggedInPersonId" value="9999999">
+
+
+
+	
+		
+
+
+
+
+<header class="clearfix row align-items-center mx-0" role="banner">
+	<div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="row">
+	    <div id="logocontainer" class="col-md-8 ms-0 ps-0 d-flex align-items-center">
+			
+			
+				
+				<a id="siteLogo" href="/welcome" title="Link to Homepage">
+					
+					<img src="/resources/images/act/actgovlogo.png" alt="ACT Government" class="screenlogo">
+					<!-- screenlogo is the class for logos to appear on screen -->
+				</a>
+			
+			
+				<a class="skip-to-main" href="#content">Skip to main content</a>
+			
+			<a href="/welcome" title="Link to Homepage">
+				Tenders ACT
+				
+				
+			</a>
+	    </div>
+
+	    <div class="col-md-4 d-flex">
+			<div class="container-fluid mx-0 px-0 w-100 my-auto">
+				
+				
+					<div class="row">
+						<div id="siteInformationNav" class="col-md-12">
+							
+								<a href="https://www.procurement.act.gov.au/home">Procurement ACT</a><a href="https://www.procurement.act.gov.au" title="Link to About Us">About Us</a>
+							
+							<a href="/contact" title="Link to Contact Us">Contact us</a>
+						</div>
+					</div>
+					<div class="row" style="height: 0.2rem"></div>
+				
+
+				<!-- search -->
+				<div class="row">
+					<div class="col-md-12">
+						
+						<form id="siteSearch" action="/tender/quickSearch" method="get" class="mb-0">
+							<div class="input-group">
+								<input type="search" name="quickSearchKeywords" id="query-global-search" size="25" placeholder="Search" title="Search" class="text form-control">
+								<button class="input-group-text" type="submit" title="Search">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+  	</div>
+  	<div class="col-md-1"></div>
+</header>
+	
+	
+
+        
+
+
+
+
+	
+		
+
+
+
+
+
+
+<!--### NAVIGATION BAR -->
+<nav class="navbar navbar-expand-md navbar-inverse no-padding">
+	<div class="container-fluid no-padding">
+		<div class="navbar-header">
+			<button class="navbar-toggler w-100" type="button" data-bs-theme="dark" data-bs-toggle="collapse" data-bs-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false" aria-label="Toggle navigation">
+				Menu <span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse flex-column flex-xl-row" id="myNavbar">
+			<ul class="navbar-nav me-auto">
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/welcome">
+        
+            Home
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Tenders
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tender/search">
+        
+            Search
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/open">
+        
+            Open Tenders
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/forecast">
+        
+            Forecast
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/closed">
+        
+            Recently Closed
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/standardConditions">
+        
+            Standard Conditions of Contract and Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Contracts
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contract/search">
+        
+            Search Contract Register
+        
+    </a>
+    
+</li>
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/recentlyAwarded">
+        
+            Recently Awarded Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/interjurisdictional">
+        
+            Inter-Jurisdictional Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/supplying-to-act-government/find-opportunities-for-your-business/whole-of-government-contracts">
+        
+            Government Arrangements
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Help
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li class="dropdown-submenu dropend">
+    <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"   href="#">
+        
+            e-Learning Modules
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/getting-started-with-tenders-act/start">
+        
+            Getting started with Tenders ACT
+        
+    </a>
+    
+</li>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/finding-and-submitting-tenders-on-tenders-act/start">
+        
+            Finding and Submitting Tenders on Tenders ACT
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/faqs/browse">
+        
+            FAQ
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li >
+    <a class="dropdown-item "    href="/requestSupport">
+        
+            Request Support
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/library/browse">
+        
+            Document Library
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/electronicSubmission">
+        
+            How to Submit Your Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/news">
+        
+            News
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+        
+        
+        
+    
+
+			</ul>
+			<ul class="navbar-nav ms-auto me-1">
+				
+
+
+
+
+
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                
+                    <i class="fas fa-user-circle fa-lg" aria-hidden="true"></i>
+                
+                &nbsp;test user
+            </a>
+            <ul class="dropdown-menu">
+                
+                
+                <li>
+                    <a class="dropdown-item" href="/secure/person/edit?id=9999999&businessId=999999">
+                        Edit My Details
+                    </a>
+                </li>
+                
+                    <li>
+                        <a class="dropdown-item" href="/secure/profile/details">
+                            Edit My Business
+                        </a>
+                    </li>
+                
+                <li>
+                    <a class="dropdown-item" href="/secure/subscriptions">
+                        Edit My Subscriptions
+                    </a>
+                </li>
+
+                
+                
+
+                
+
+                <li><hr class="dropdown-divider"></li>
+
+                
+                
+                <li>
+                    <a class="dropdown-item" href="/logout">
+                        <i class="fas fa-sign-out-alt fa-lg" aria-hidden="true"></i>&nbsp;Log Out
+                    </a>
+                </li>
+            </ul>
+        </li>
+    
+    
+
+    
+    
+
+
+				
+					<div class="navbar-text">
+						<span id="tenantDate">&nbsp;</span>&nbsp;<span id="tenantTime">&nbsp;</span>
+					</div>
+				
+			</ul>
+		</div>
+	</div>
+</nav>
+<!--### NAVIGATION BAR END -->
+	
+	
+
+
+
+
+	
+	
+		
+	
+
+
+
+
+<script>
+	var delayMs = 333;
+	(function ($, window, delay) {
+	// http://jsfiddle.net/AndreasPizsa/NzvKC/
+		var theTimer = 0;
+		var theElement = null;
+		$('[data-bs-toggle]')
+		.closest('li')
+		.on('mouseenter', function (inEvent) {
+			if (theElement && !$(this).hasClass("dropdown-submenu")) {
+				theElement.removeClass('open');
+				theElement.find("a").eq(0).removeClass("show");
+				theElement.find("ul").eq(0).removeClass("show");
+			}
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+
+			theTimer = window.setTimeout(function () {
+			if (!theElement.hasClass('open') && !theElement.find("a").eq(0).hasClass("show")) {
+				theElement.addClass('open');
+				
+				theElement.find("a").eq(0).addClass("show");
+				theElement.find("ul").eq(0).addClass("show");
+			}
+			}, delay);
+		})
+		.on('mouseleave', function (inEvent) {
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+			theTimer = window.setTimeout(function () {
+				theElement.removeClass('open');
+				theElement.find("a").removeClass("show");
+				theElement.find("ul").removeClass("show");
+			}, delay);
+		})
+		.on('click', function (e) {
+			theElement.addClass('open');
+			theElement.find("a").eq(0).addClass("show");
+			theElement.find("ul").eq(0).addClass("show");
+		});
+	})(jQuery, window, delayMs);
+</script>
+
+        
+        <main class="main_content ">
+            <div class="container-fluid">
+                <div class="tenders" id="content">
+                    
+		<h1><span><span name="page-title">Display PIMA0014211</span><a href="/help?path=tenders.display" title="View RFx Details" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-html="true" data-bs-content="The RFx detail section is divided into sections as described below. For more detailed information on a particular section refer to the help specific to that section. General Information General in ..." target="_blank">&nbsp; <i class="fas fa-question-circle" aria-hidden="true"></i></a><br /><small><p>This page displays the details of an RFx.&nbsp;See the detailed help in each section for specific information.</p></small></span></h1>
+
+		<div id="opportunityDisplayWrapper">
+			
+			
+
+
+<div class="container-fluid">
+    
+    <div class="row" id="opportunityHeader">
+        <div class="col-10" style="margin-top: auto;">
+            <div id="tenderTitle">
+                
+                Public Housing Disability Modification and Domestic Violence Upgrade Services Multi Use List (MUL)
+                
+            </div>
+            <div class="weight-bold">
+                Directorate/Agency
+                ACT Government
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+			
+
+
+
+
+
+<section id="opportunityGeneral_CHANGED">
+	<div id="opportunityGeneralDetails" class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 weight-bold">
+				Type:
+			</div>
+			<div class="col-sm-9 col-md-10">
+				Other Arrangements 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3 col-md-2 weight-bold">
+				Status:
+			</div>
+			<div class="col-sm-9 col-md-10">
+				Open 				
+				
+				
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-3 col-md-2 weight-bold">
+				Number:
+			</div>
+			<div class="col-sm-9 col-md-10">
+				PIMA0014211
+			</div>
+		</div>
+		
+		
+		
+		
+		
+		
+		<div class="row">
+			<div class="col-sm-3 col-md-2 weight-bold">
+				UNSPSC:
+			</div>
+			<div class="col-sm-9 col-md-10" style="display: table-cell;">
+				
+				
+				
+					
+						
+						72000000 - Building and Facility Construction and Maintenance Services
+					
+					
+				
+			</div>
+		</div>
+		
+			<div class="row">
+				<div class="offset-sm-3 offset-md-2 col-sm-9 col-md-10 " style="display: table-cell;">
+					<span class="secureLocalJobsNote">
+						Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.
+					</span>
+				</div>
+			</div>
+		
+		
+			<div class="row">
+				<div class="col-sm-3 col-md-2 weight-bold">
+					
+						Region(s):
+					
+				</div>
+				<div class="col-sm-9 col-md-10">
+					Australian Capital Territory
+				</div>
+			</div>
+		
+		
+		
+		
+	</div>
+	
+	
+	
+</section>
+			
+				
+					
+					
+
+
+
+
+<section id="tenderDescription">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+	<div class="row sectionHeading">
+		
+		
+		<div class="sectionTitle col-sm-12">
+			
+				
+				
+					<h2   >Description</h2>
+				
+			
+		</div>
+	</div>
+</div>
+	
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+					
+						<p>The Territory invites suppliers to submit an Application for the Public Housing Disability Modifications and Domestic Violence Modification Services MUL.</p><p>The purpose of this procurement is&nbsp;to&nbsp;establish&nbsp;a fit for purpose&nbsp;MUL&nbsp;for sourcing disability modification and domestic and family violence&nbsp;modification&nbsp;services&nbsp;for&nbsp;public&nbsp;housing properties.</p><p>The&nbsp;MUL&nbsp;will&nbsp;establish&nbsp;a qualified pool of suppliers that meet the Territory’s technical, licensing, insurance, safety, WHS and&nbsp;public&nbsp;housing specific requirements.</p><p>The MUL will be&nbsp;established&nbsp;for&nbsp;an initial&nbsp;period of <strong> one (1) years </strong> , with an optional extension period of <strong> one (1) years. </strong> &nbsp;The MUL <strong> will remain open </strong> for receiving Applications from the date of publication until the MUL is formally closed by the Territory.</p><p> Suppliers may submit questions or seek clarification regarding the application process while the MUL remains open for Applications<br></p>
+					
+				</div>
+			</div>
+		</div>
+</section>
+
+					
+					
+
+
+
+
+
+	<section id="opportunityContacts">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+	<div class="row sectionHeading">
+		
+		
+		<div class="sectionTitle col-sm-12">
+			
+				
+					<h2   ><span>Enquiries&nbsp;<a href="/help?path=tender.display.enquiries" title="RFx Enquiries" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-content="RFx Enquiries" data-bs-html="true" target="_blank" ><i class="fas fa-question-circle" aria-hidden="true"></i></a></span></h2>
+				
+				
+			
+		</div>
+	</div>
+</div>
+		<div class="container-fluid">
+			
+				
+				<div class="row row-cols-md-3">
+					
+						<div class="contact">
+							<ul>
+								<li>
+									<i class="fas fa-user"></i>
+									Tenders ACT
+									Team
+									(Enquiries)
+									
+								</li>
+
+								
+								
+									
+										<li>
+											<i class="fas fa-phone"></i>
+											Phone: +61 (02) 62079000
+										</li>
+									
+								
+								
+								
+									
+										<li>
+											<i class="fas fa-envelope"></i>
+											<a href="/cdn-cgi/l/email-protection#780c1d161c1d0a0b191b0c38191b0c561f170e56190d">
+												<span class="__cf_email__" data-cfemail="07736269636275746664734766647329606871296672">[email&#160;protected]</span>
+											</a>
+										</li>
+									
+								
+							</ul>
+						</div>
+					
+				</div>
+			
+
+			
+
+			
+		</div>
+	</section>
+
+				
+				
+			
+
+			
+			
+
+			
+			
+				
+
+
+
+
+
+	<section id="tenderSpecs">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+	<div class="row sectionHeading">
+		
+		
+		<div class="sectionTitle col-sm-12">
+			
+				
+					<h2   ><span>Specification Documents&nbsp;<a href="/help?path=tender.display.documents" title="Get Specification Documents" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-content="RFx are associated with one or more documents.&amp;nbsp; These documents can include General RFx information including the lodgement process, Functional &amp;amp; Technical specifications, drawings, plans ..." data-bs-html="true" target="_blank" ><i class="fas fa-question-circle" aria-hidden="true"></i></a></span></h2>
+				
+				
+			
+		</div>
+	</div>
+</div>
+
+		
+			
+
+
+
+
+    
+    
+        
+        
+    
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            
+            
+            
+                
+                
+                
+                    
+                        
+                            <a href="/secure/tender/downloadSpecDocs?tenderId=330643" class="btn btn-primary">
+                                <i class="fas fa-download fa-md"></i>
+                                Download Now
+                            </a>
+                        
+
+                        
+
+                        
+
+                        
+                    
+                
+            
+        </div>
+    </div>
+</div>
+		
+
+		<div class="container-fluid">
+			
+				
+					<div class="row">
+						<div class="col-12">
+							<h3>
+								<span>
+									Original Documents
+								</span>
+							</h3>
+						</div>
+					</div>
+					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<div class="row">
+		<div class="col-12 col-md-">
+			
+				
+					
+						
+						
+							<ul id="specsList" class="pre-scrollable well" style="display: block">
+								
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-pdf"></i>
+											
+											MUL_Attachment A -Categories of Service.pdf
+											
+										</span>
+										<ul>
+											<li>Version 2
+												(18 Aug 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-pdf"></i>
+											
+											MUL_Attachment B -Supplier Code of Conduct.pdf
+											
+										</span>
+										<ul>
+											<li>Version 2
+												(18 Aug 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-word"></i>
+											
+											MUL_Attachment C - Application.docx
+											
+										</span>
+										<ul>
+											<li>Version 2
+												(18 Aug 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-pdf"></i>
+											
+											Multi-Use List (MUL) Conditions.pdf
+											
+										</span>
+										<ul>
+											<li>Version 2
+												(18 Aug 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+							</ul>
+						
+					
+				
+				
+			
+		</div>
+	</div>
+
+					
+						<div class="row">
+							<div class="col-12">
+								<h3>
+									<span>
+										Addenda/Additional Documents
+									</span>
+								</h3>
+							</div>
+						</div>
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<div class="row">
+		<div class="col-12 col-md-">
+			
+				
+					
+						
+						
+							<ul id="addendaList" class="pre-scrollable well" style="display: block">
+								
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-pdf"></i>
+											
+											PIMA0014211 - Addendum 1 Notice.pdf
+											
+										</span>
+										<ul>
+											<li>Version 1
+												(24 Aug 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+									<li class="specDoc">
+										<span class="specName">
+											
+												&nbsp;&nbsp;<i class="far fa-file-pdf"></i>
+											
+											PIMA0014211 - Addendum 2.pdf
+											
+										</span>
+										<ul>
+											<li>Version 1
+												(8 Sept 2026)
+											</li>
+											
+												
+													<li><i class="fas fa-fw fa-download"></i> Available by Download </li>
+												
+												
+												
+												
+											
+										</ul></li>
+								
+							</ul>
+						
+					
+				
+				
+			
+		</div>
+	</div>
+					
+				
+				
+			
+		</div>
+
+			
+	</section>
+
+			
+
+			
+			
+
+			
+			
+
+			
+			
+
+
+
+
+
+	
+	
+		
+	
+
+
+
+	<section id="tenderResponses">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+	<div class="row sectionHeading">
+		
+		
+		<div class="sectionTitle col-sm-12">
+			
+				
+					<h2   ><span>Responses&nbsp;<a href="/help?path=help.tender.display.respond" title="Tender Response" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-content="Electronic Tender Response Upload &amp;nbsp; &amp;nbsp; Please note the follow points in regard to electronic tender responses: &amp;nbsp; Documents and spreadsheets should be submitted in Microsoft Office re ..." data-bs-html="true" target="_blank" ><i class="fas fa-question-circle" aria-hidden="true"></i></a></span></h2>
+				
+				
+			
+		</div>
+	</div>
+</div>
+
+		
+			
+			
+				<div class="container-fluid">
+					
+
+					
+
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-12" style="padding-left: 0px;">
+								<div id="tenderClosingTime">
+									Tender closes at
+									
+										
+										
+											31 August 2028 02:00 pm
+										
+									
+								</div>
+
+								
+								
+									
+										
+										
+											<a id="electronicResponseLink" href="/secure/tender/submitResponse?tenderId=330643">
+												Click here to submit an electronic response
+												<i class="fas fa-paper-plane"></i>
+											</a>
+										
+									
+								
+
+								
+								
+
+								
+								
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			
+		
+	</section>
+
+
+			
+			
+
+
+
+
+
+<section id="tenderBriefings">
+	
+	
+</section>
+
+			
+			
+
+			
+			
+
+
+
+
+
+<section id="tenderResults">
+
+	
+</section>
+
+			
+			
+
+			
+			
+
+
+
+<section id="tenderSubscriptions">
+	
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    function changeSubscription(subscriptionId, newState) {
+        //if the user clicks to resubscribe dont through up warning
+		if (newState) {
+            toggleSubscription(subscriptionId, newState);
+		} else {
+            bootbox.dialog({
+                title: "<strong>Confirm Subscription Change</strong>",
+                message: "You will be unsubscribed from email notifications for this tender.<br><br>"
+                    + "<strong>Please note:</strong><br>"
+                    + "Unsubscribing from notifications to the tender means you will no longer "
+                    + "receive any further information regarding this tender, this also includes forum post emails.<br><br>"
+                    + "To reactivate these notifications, re-check the notification button or download the tender Specification Documents again.",
+                buttons: {
+					yes: {
+						label: '<i class="fas fa-check fa-lg"></i>&nbsp;Confirm',
+						className: 'btn-primary',
+						callback: function (result) {
+							toggleSubscription(subscriptionId, newState);
+						}
+					},
+                    no: {
+                        label: '<i class="fas fa-times fa-lg"></i>&nbsp;Cancel',
+                        className: 'btn-default'
+                    }
+                }
+            });
+		}
+    }
+
+    function toggleSubscription(subscriptionId, newState) {
+        var data = {id: subscriptionId, newState: newState, _csrf: "test-csrf-token"};
+        $.post("/secure/subscriptions/updateAjax", data, function(data) {
+            var text ="Something went wrong";
+            if (newState) {
+                text = "You are currently receiving email notifications regarding this tender. Unsubscribe using the button below.";
+            } else {
+                text = "You have been unsubscribed from the selected tender. If you wish to resubscribe in the future please download the specification documents for the tender.";
+            }
+
+            $("#subscriptionTextDiv").text(text);
+            $("#manageSubscriptionSection").html(data);
+        }, "html");
+    }
+</script>
+
+			
+			
+		</div>
+	
+                </div>
+            </div>
+        </main>
+        
+
+
+
+
+
+
+<footer id="footer" class="footer clearfix">
+	
+		
+			
+
+
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-5">
+            <nav>
+                <ul class="ps-0">
+                    <li>
+                        <div class="footerLogo"></div>
+                    </li>
+                    
+
+
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/accessibility">Accessibility</a>
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+                <a href="/terms">Terms and Conditions</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/feedback">Feedback</a>
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+                <a href="/siteMap">Site Map</a>
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                
+                <a href="https://www.jobs.act.gov.au/">Jobs ACT</a>
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+                <a href="/privacyStatement">Privacy Statement</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+                <a href="/disclaimer">Disclaimer</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+                <a href="/copyright">Copyright</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+                </ul>
+            </nav>
+        </div>
+        <div class="col-sm-7">
+            
+            
+                
+
+
+<div class="footer-logo">
+	<a href="https://www.canberra.com.au/" title="Canberra" class="logo-image">
+    	<img src="/resources/images/act/Logo_CBR.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.yoursay.act.gov.au/" title="Your Say" class="logo-image">
+         <img src="/resources/images/act/Logo_YourSay.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.accesscanberra.act.gov.au/" title="Access Canberra" class="logo-image">
+         <img src="/resources/images/act/Logo_AC_footer.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.act.gov.au/" title="ACT Government" class="logo-image">
+         <img src="/resources/images/act/Logo_ACTGov_white.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    
+    <a id="ctFooterLink" href="https://www.consolidatedtenders.com/" class="ctLogo" title="Consolidated Tenders">
+         <img src="/resources/images/commonLogo_white.png" alt="Consolidated Tenders Logo" width="140" height="29" style="margin: 18px">
+    </a>
+</div>
+            
+        </div>
+    </div>
+</div>
+		
+		
+	
+
+	
+</footer>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"d77ea68d041c45ce8cdfedca2063d45d","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
