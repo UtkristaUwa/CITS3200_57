@@ -8,6 +8,7 @@ import logging
 from web_scrapers.webscraperinit import run_scraper as run_austender
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
+from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
 from document_scraper.main import process_tenders as run_doc_scraper
 
 # Improt tender processing code
@@ -34,6 +35,7 @@ SCRAPERS = [
     ("austender", run_austender),
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
+    ("tenders_act", run_act),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a

@@ -1,0 +1,9241 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript>
+	<div class="noscriptmsg"><h3>JavaScript Disabled</h3><p>This site requires JavaScript Enabled to function properly. Please enable JavaScript or use a different browser that has JavaScript enabled.</p></div>
+</noscript>
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+
+
+
+
+
+
+
+
+
+<!-- Sets the title tag to the page's h1 text -->
+<script>
+function changeTitle(){
+	var title;
+	var pageTitle = $("span[name=page-title]");
+	//check to use the first page-title if it exists
+	if (pageTitle[0]) {  
+		title = pageTitle[0].textContent.trim();
+		if (title.indexOf("- General") > 0) {
+			title = title.replace("- General", "");
+		}
+	}
+	else {
+		title = pageTitle.text();
+	}
+	
+	if(title){
+		document.title = title + " ";
+	}
+}
+
+function loadHostedScript(filePath) {
+	let scriptEl = document.createElement("script");
+	scriptEl.setAttribute("src", "/resources/js/" + filePath);
+	$("head").append(scriptEl);
+}
+
+function loadHostedStylesheet(filePath) {
+	let linkEl = document.createElement("link");
+	linkEl.setAttribute("href", "/resources/css/" + filePath);
+	linkEl.setAttribute("rel", "stylesheet");
+	$("head").append(linkEl);
+}
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+//Setting the default values for the confirmation modal
+var bootBoxOptions = {
+	locale: 'taas',
+	size: 'medium',
+	message: "Do you really want to delete?",
+	buttons: {
+		cancel: {
+			label: '<i class="fas fa-times fa-lg"></i>&nbsp;No',
+			className: 'btn-default pull-right cancel-button'
+		},
+		confirm: {
+			label: '<i class="fas fa-trash fa-lg"></i>&nbsp;Delete',
+			className: 'btn-danger'
+		}
+	},
+	swapButtonOrder: true,
+	callback: function (result) {
+		console.log( 'This was logged in the callback: ' + result);
+	}
+};
+
+var bootboxLocale = {
+	OK: '<i class="fas fa-check fa-lg"></i>&nbsp;OK',
+	CANCEL: '<i class="fas fa-times fa-lg"></i>&nbsp;Cancel',
+	CONFIRM: '<i class="fas fa-check fa-lg"></i>&nbsp;Confirm'
+}
+</script>
+
+<title>Tenders ACT</title>
+
+<link rel="shortcut icon" href="/resources/images/act/favicon.ico" type="image/x-icon">
+
+<!--JavaScript libraries -->
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
+
+<!-- if jQuery CDN is blocked, download local-->
+<script type="text/javascript">
+	window.jQuery || loadHostedScript("jquery-3.7.1.min.js");
+</script>
+
+
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"
+		integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI="
+		crossorigin="anonymous"></script>
+<!-- if jQuery.ui CDN is blocked download local-->
+<!-- need to check object then tabs to avoid undefined property error-->
+<script>
+	window.jQuery.ui || loadHostedScript("jquery-ui.min.js");
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"
+		integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/additional-methods.min.js"
+		integrity="sha512-owaCKNpctt4R4oShUTTraMPFKQWG9UdWTtG6GRzBjFV4VypcFi6+M3yc4Jk85s3ioQmkYWJbUl1b2b2r41RTjA=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<!-- if jQuery.ui CDN is blocked, download local-->
+<script type="text/javascript">
+	if (typeof ($.fn.validate) === 'undefined') {
+		loadHostedScript("jquery.validate.min.js");
+		loadHostedScript("additional-methods.min.js");
+	}
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js" type="text/javascript"></script>
+	
+<!-- if moment CDN is blocked download local-->
+<script>window.moment || loadHostedScript("moment-with-locales.min.js");</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+
+
+
+
+
+<script>
+	if (typeof $.fn.tooltip.Constructor == 'undefined') {
+		loadHostedScript("bootstrap/bootstrap.min.js");
+	}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+<script>
+	if (typeof tempusDominus == 'undefined') {
+		loadHostedScript("tempus-dominus/tempus-dominus.min.js");
+	}
+</script>
+<script src="/resources/js/tempus-dominus/tempus-dominus-setup.js"></script>
+
+<script src="/resources/js/taas.js"></script>
+<script src="/resources/js/crud.js"></script>
+<script src="/resources/js/personEdit.js"></script> 
+
+<script>
+taasProps.context = "/"; // Set global var
+taasProps.context = taasProps.context.slice( 0, -1); //Remove last slash
+log( "Application Context Path=" + taasProps.context);
+
+$(function() {
+	decorateExternalLink("https://www.tenders.act.gov.au/");
+});
+
+</script>
+<script src="/resources/js/autocomplete/unspsc.js" type="text/javascript"></script>
+
+
+
+
+
+<link rel="stylesheet" href="/resources/js/tablesaw/tablesaw.stackonly.css" />
+<script src="/resources/js/tablesaw/tablesaw.stackonly.jquery.js"></script>
+<script src="/resources/js/tablesaw/tablesaw-init.js"></script>
+
+
+
+
+
+<script src="/resources/js/bootstrap/plugins/bootbox-v6.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+var resynchMod = 15 * 60; // will resynch every 15mins
+var serverTimeMs = null; // real server time in ms since 1970
+var serverTimeDiffMs; //in in ms: server = local + serverTimeDiffMs;
+var offset = null;
+var nowInMs = null;
+//Script with AJAX, getting xml response like: //message/getServerTime:
+//Server time passed in ms since 1970, good to create Date from.
+function getServerTimeViaAjax(){
+	$.ajax({
+	    type: "GET",
+		url: taasProps.context + "/serverTime",
+	    dataType: "json",
+		success: callback
+	})
+
+	function callback(data){
+		var serverTime = parseInt(data.time);
+		var serverTimeZoneOffset = parseInt(data.offset);
+		var serverLocale = data.locale;
+		var serverTimeZoneCode = data.timeZoneCode;
+		var serverTimeZoneOffsetString = data.offsetString;
+
+		if (serverLocale != null) {
+			moment.locale(serverLocale);
+		}
+		
+
+		var timeZone = new Date().getTimezoneOffset() * 60000; 
+		
+		offset = (timeZone + serverTimeZoneOffset);
+		
+
+		serverTimeMs = serverTime;
+		var now = new Date().getTime();
+		var lserverTimeDiffMs = serverTimeMs - now; //calc time diff in ms
+		
+
+		if (-timeZone < serverTimeZoneOffset){ // if time is ahead
+			lserverTimeDiffMs = now - serverTimeMs + offset;
+		} else {
+			lserverTimeDiffMs = serverTimeMs - now + offset;
+		}
+
+		serverTimeDiffMs = lserverTimeDiffMs; //fix it
+		
+
+		var tenantTzCode = document.getElementById('tenantTzCode');
+		if (tenantTzCode != null && serverTimeZoneCode != null) {
+			tenantTzCode.innerHTML = serverTimeZoneCode;
+		}
+		var tenantTzOffset = document.getElementById('tenantTzOffset');
+		if (tenantTzOffset != null && serverTimeZoneOffsetString != null) {
+			tenantTzOffset.innerHTML = serverTimeZoneOffsetString;
+		}
+	}
+}
+
+function initClocks() {
+	
+	getServerTimeViaAjax(); //adjust the clock even better
+	clock(); //init the timer
+}
+
+function clock() {
+	var dateEl = document.getElementById('tenantDate');
+	var timeEl = document.getElementById('tenantTime');
+	if (dateEl == null && timeEl == null) {// no element to put time in - do nothing
+		return;
+	}
+	if (typeof(serverTimeDiffMs) == "undefined") {
+	 	setTimeout("clock()", 100);
+	 	return;
+	}
+	//Display current time
+	var now = new Date(); //local time
+	nowInMs = now.getTime() + serverTimeDiffMs;
+	now.setTime(now.getTime() + serverTimeDiffMs); //now it is server time
+	dateEl.innerHTML = moment(now).format('ll');
+	timeEl.innerHTML = moment(now).format('LTS');
+
+
+
+	// resynch for next cycle
+	if (Math.round(now.getTime()/1000) % resynchMod == 0) {
+		getServerTimeViaAjax()
+	}
+ 	setTimeout("clock()", 1000); //1sec interval
+}
+
+function msToTime(duration) {
+	var seconds = parseInt((duration / 1000) % 60),
+	    minutes = parseInt((duration / (1000 * 60)) % 60),
+	    hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+	return hours + "h " + minutes + "m " + seconds + "s";
+}
+
+if (window.addEventListener) {
+	window.addEventListener('load', initClocks, false); //W3C
+} else {
+	window.attachEvent('onload', initClocks); //IE
+}
+</script>
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i" rel="stylesheet">
+<link href='//fonts.googleapis.com/css?family=Roboto:100,200,300,300italic,400,400italic,500,500italic' rel='stylesheet' type='text/css'>
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
+
+<link rel="stylesheet" href="/resources/css/ui/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/ui/bootstrap-5-override.css">
+<!-- Tempus Dominus Styles (datetimepicker) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://kit.fontawesome.com/84b5033a60.css" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/resources/css/shared/shared.css" />
+
+
+
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/theme-style.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-default.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/theme.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/header.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/menu.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/footer.css">
+	
+	
+		<link rel="stylesheet" type="text/css" href="/resources/css/act/theme.css">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+	$(function () {
+		document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + "px")
+	});
+
+	
+	
+	$(function() {
+		$("#ctFooterLink").on("click", function(event) {
+			event.preventDefault();
+			redirectToCt(null, "acceptedDisclaimer");
+		});
+	});
+	
+
+	function redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback) {
+		let acceptedDisclaimer = localStorage.getItem(cookieName);
+		if (url == null) {
+			url = 'https://www.consolidatedtenders.com/';
+		} else if (!url.includes("common/authorize/connect")) {
+			url = getAutoSignRedirectUrl(url, ctidData);
+		}
+
+		if (!acceptedDisclaimer && true) {
+			showRedirectDisclaimer(url, cookieName, target, redirectDisclaimerCallback);
+		} else {
+			if (typeof target === 'undefined' || target === "") {
+				target = "_self";
+			}
+			window.open(url, target);
+			if (typeof redirectDisclaimerCallback === "function") {
+				redirectDisclaimerCallback();
+			}
+		}
+	}
+
+	function getAutoSignRedirectUrl(url, ctidData) {
+		let data = {targetId: 1, url: url};
+		if (typeof ctidData !== 'undefined') {
+			data = $.extend(data, {ctidData: JSON.stringify(ctidData)});
+		}
+		
+			$.ajax({
+				url: "/getAutoSignRedirectUrl",
+				data: data,
+				type: "get",
+				dataType: "text",
+				headers: { "X-CSRF-Token": "test-csrf-token" },
+				success: function(data) {
+					if (data) {
+						url = data;
+					}
+				},
+				async: false
+			});
+		
+		return url;
+	}
+
+	function showRedirectDisclaimer(urlPath, cookieName, target, callback) {
+		var url = "/redirectDisclaimer";
+		$.ajax({
+			url: url,
+			data: {urlPath: urlPath, cookieName: cookieName, target: target},
+			dataType: "HTML",
+			success: function (result) {
+				var parsedResult = $.parseHTML(result, document, true);
+				var modalId = $(parsedResult).closest(".modal").attr("id");
+				var script = $(parsedResult).closest("script");
+				$("body").append(parsedResult);
+				$("#" + modalId).modal("show");
+				/*Clean up after modal has been closed*/
+				$("#" + modalId).on('hidden.bs.modal', function () {
+					$(this).remove();
+					$(script).remove();
+					if (typeof callback === "function") {
+						callback();
+					}
+				});
+			}
+		});
+	}
+
+	function redirectToCtWithParams(url, id, returnMessage, cookieName, target, redirectDisclaimerCallback) {
+		let tenantCode = 'act';
+		let ctidData = {returnMessage: returnMessage, tenantCode: tenantCode, entityId: id, returnUrl: window.location.href};
+		cookieName = typeof cookieName !== 'undefined' && cookieName != "" ? cookieName : "acceptedProfileDisclaimer";
+		redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback);
+	}
+
+	$(function() {
+		changeTitle();
+	})
+</script>
+
+
+
+ 
+
+        
+            <style>
+			#criteriaList table.table {
+				--bs-table-bg: transparent;
+			}
+			#criteriaList table.table tr {
+				border-color: transparent;
+			}
+			#criteriaList table.table td {
+				padding: 0;
+			}
+		</style>
+        
+        
+            <script>
+			$(function () {
+				$(".date").datetimepicker();
+
+				
+
+				var invalidInputErrors = $("#invalidInputErrMsg");
+				if (invalidInputErrors && invalidInputErrors.text().length > 0) {
+					invalidInputErrors.show();
+				}
+				else {
+					invalidInputErrors.hide()
+				}
+
+				
+
+
+				function displayError(errMsg) {
+					var divErrMsg = $("#invalidInputErrMsg").text(errMsg);
+					divErrMsg.attr("class", "error");
+					divErrMsg.show();
+				}
+
+				$("#searchForm #submitButton").on("click", function(e) {
+					var errMsg = "";
+					var sMsgStart = "HTML text is not allowed in ";
+					var sMsgSep = ", ";
+
+					$("#invalidInputErrMsg").hide();
+					var keyWords = $("#searchForm #keywords");
+					if (isXSS(keyWords.val())) {
+						errMsg += sMsgStart + keyWords.parent().parent().find("label").text().trim();
+					}
+
+					var tenderCode = $("#searchForm #tenderCode");
+					if (isXSS(tenderCode.val())) {
+						if (errMsg > " ") {
+							errMsg += sMsgSep;
+						}
+						else {
+							errMsg = sMsgStart;
+						}
+						errMsg += tenderCode.parent().parent().find("label").text().trim();
+					}
+
+					var tenderTitle = $("#searchForm #tenderTitle");
+					if (isXSS(tenderTitle.val())) {
+						if (errMsg > " ") {
+							errMsg += sMsgSep;
+						}
+						else {
+							errMsg = sMsgStart;
+						}
+						errMsg += tenderTitle.parent().parent().find("label").text();
+					}
+
+					if (errMsg > " ") {
+						displayError(errMsg);
+						return false;
+					}
+					else {
+						e.preventDefault();
+						$('#searchForm').find('[name$="_csrf"]').remove();
+						$('#searchForm').attr('method', 'get');
+						$('#searchForm').attr('target', '_self');
+						$('#searchForm').attr('action', "/tender/search").trigger("submit");
+					}
+				});
+
+				
+
+
+				
+					$("#supplierSearchModal").find("input[name='search\\.abbrev']").parent().parent().remove();
+
+					// by supplier div is hidden by default, hence this is required
+					if ($("#tenderState").val() == "AWARDED") {
+						$("#bySupplierDiv").show();
+					}
+
+					$("#tenderState").on("change", function() {
+						// show by supplier div when tender state is awarded
+						if ($(this).val() == "AWARDED") {
+							$("#bySupplierDiv").show();
+						}
+						// otherwise, hide the by supplier div
+						else {
+							$("#bySupplierDiv").hide();
+							$("#awardedSupplierId").val("");
+							$("#awardedSupplierName").val("");
+							// reset order by awarded date to default when tender state not awarded
+							if ($("#orderBy").val() == "AWARDED_DATE") {
+								$("#orderBy").val("");
+							}
+						}
+					})
+
+					// Change tender state to awarded when user wish to order results by awarded date
+					$("#orderBy").on("change", function() {
+						if ($(this).val() == "AWARDED_DATE") {
+							$("#tenderState").val("AWARDED");
+							$("#tenderState").trigger('change');
+						}
+					})
+				
+
+				
+
+				
+
+				
+			});
+
+			
+				var searchMode = '';
+
+				function setSearchType(type) {
+					searchMode = type;
+					$("#businessSearchForm input[name='businessType']").val(type.toUpperCase());
+					if (type == "Supplier") {
+						$("#formName").val('#supplierSearchModal #businessSearchForm');
+						popupModal('#supplierSearchModal');
+					}
+					else {
+						$("#formName").val('#buyerSearchModal #businessSearchForm');
+						popupModal('#buyerSearchModal');
+					}
+				}
+
+				function selectBusiness(businessID, businessName) {
+					if (businessID == null) {
+						businessName = '';
+					}
+
+					// Remove any HTML that was included with the business name
+					if($(businessName).length !== 0) {
+						businessName = $(businessName).text().trim();
+					}
+
+					if (searchMode == "Supplier") {
+						$('#awardedSupplierId').val(businessID);
+						$('#awardedSupplierName').val(businessName);
+						$('#supplierSearchModal').modal('hide');
+					} else {
+						$('#issuingBusinessId').val(businessID);
+						$('#issuingBusinessName').val(businessName);
+						$('#buyerSearchModal').modal('hide');
+					}
+					return;
+				}
+			
+
+			function selectRadio(id) {
+				$('#'+id).prop('checked', true);
+			}
+
+			function saveSearch() {
+				if (("" + $('input#searchTitleAlias').val()).trim().length > 0) {
+					$('<input>').attr('type','hidden')
+							.attr('name','_csrf')
+							.attr('value','test-csrf-token')
+							.appendTo('#searchForm');
+					$('input#searchTitle').val($('input#searchTitleAlias').val());
+					$('#searchForm').attr('method', 'post');
+					$('#searchForm').append()
+					$('#searchForm').attr('action', '/secure/tender/search/save').trigger("submit");
+				} else {
+					bootbox.alert('A search cannot be saved without a name.');
+				}
+			};
+
+			function confirm(callback, message, id) {
+				bootBoxOptions.callback = function(result) {
+					if (result) {
+						if (callback) {
+							callback(id);
+						}
+					}
+				}
+				bootBoxOptions.message = message;
+				bootbox.confirm(bootBoxOptions);
+			}
+
+
+			function toggleRegionSelector(element) {
+				if ($(element).is(':checked')) {
+					$("#regionDropDown").prop( "disabled", true );
+				} else {
+					$("#regionDropDown").prop( "disabled", false );
+				}
+			}
+
+			function doReset() {
+				window.history.pushState("", "", '/tender/search');
+
+				var extraCategories = $('#categoriesDiv1');//David look into if we can remove this
+				if (extraCategories != null && extraCategories.length > 0) {
+					for (var i = 0; i < extraCategories.length; i++) {
+						delUnspsc();
+					}
+				}
+
+				$(':input','#searchForm').not(':button, :submit, :radio')
+						.val('')
+						.prop('checked', false)
+						.prop('selected', false);
+
+
+				$("#searchForm [name='tenderState']").val('OPEN');
+				$('#groupBy').val($("#groupBy option:first").val());//default to first option in the list
+				var $radios = $('input:radio');
+				$radios.filter('[value=false]').prop('checked', true);
+			}
+
+			function toggleLeftPanel(){
+				// Collapse
+				if ($("#leftCriteriaPanel").hasClass('panelExpanded')) {
+					$("#leftCriteriaPanel").attr("style", "width: 50px;");
+					$("#LCP_Left_Column").attr("style", "visibility: hidden; display: block; width: 0px;");
+					$("#leftCriteriaPanel").removeClass('panelExpanded').addClass('panelCollapsed');
+					// Expand tender result table
+					$("#rightPanel").css("width", "90%");
+				}
+				// Expand
+				else {
+					$("#leftCriteriaPanel").css("width", "");
+					$("#rightPanel").css("width", ""); // Reset the tender result table size control to rely on Bootstrap Grid System
+					$("#leftCriteriaPanel").removeClass('panelCollapsed').addClass('panelExpanded');
+					$("#LCP_Left_Column").attr("style", "display: table-cell;");
+				}
+			}
+
+			function populateSelectedGroupTender(selectedType, data, name, showKeywordsHint, hideLeftPanel) {
+				// Perform a deep copy of the current search form
+				var form = $('#searchForm').clone();
+				$(form).attr('id', 'groupedSearchForm');
+
+				// Then update the cloned search form accordinly to the selected criteria
+				if (selectedType == 'Status') {
+					$(form).find("#tenderState").val(data);
+				}
+				else if (selectedType == 'Type') {
+					$(form).find("#tenderType").val(data);
+				}
+				else if (selectedType == 'Agency') {
+					$(form).find("#issuingBusinessId").val(data);
+				}
+				else if (selectedType == 'UNSPSC') {
+					// Search with only the selected UNSPSC
+					$(form).find("#tenderCategories").empty();
+					$("<input />").attr("type", "hidden")
+							.attr("name", "categories[0].id")
+							.attr("value", data)
+							.appendTo(form);
+				}
+
+
+				// Now send the finalised search form to the server to request the matching tenders
+				$.get("/tender/search/getGroupedTableAjax", $(form).serialize(), function(data, status) {
+					log( "getGroupedTable finished: " + status);
+					$("#resultDiv").empty();
+					$("#resultDiv").append(data);
+					$("#rightPanelTitle").text(name);
+					if (showKeywordsHint) {
+						$("#rightPanelSubtext").show();
+					} else {
+						$("#rightPanelSubtext").hide();
+					}
+				}, "html");
+
+				if (hideLeftPanel !== undefined && hideLeftPanel) {
+					toggleLeftPanel();
+				}
+
+				var divTag = $("#rightPanel");
+				$('html,body').animate({scrollTop: divTag.offset().top},'slow');
+			}
+
+			
+				function exportAsXlsx() {
+					var form = $('#searchForm');
+					$('<input />').attr('type', 'hidden').attr('name', "exportFormat").attr('value', "XLSX").appendTo(form);
+					$('<input />').attr('type', 'hidden').attr('name','_csrf').attr('value','test-csrf-token').appendTo(form);
+					var previousAction = form.attr('action');
+					form.attr('method', 'post');
+					form.attr('action', "/secure/tender/search/export").trigger("submit");
+					form.attr('action', previousAction);
+					form.attr('method', 'get');
+					form.find('[name$="_csrf"]').remove();
+					form.find('[name$="exportFormat"]').remove();
+				}
+			
+
+			
+			
+
+			
+
+			
+				function clearSupplierInputs() {
+					$('#awardedSupplierId').val('');
+					$('#awardedSupplierName').val('');
+				}
+			
+		</script>
+        
+    </head>
+
+    <body>
+        
+        <input type="hidden" id="csrfToken" value="test-csrf-token"/>
+        <input type="hidden" id="csrfParameter" value="_csrf"/>
+        
+        
+
+
+
+	
+
+
+
+
+
+	<script>
+		var cookieDisabledMessage = "<h3>Cookies Disabled</h3><p>This site requires Cookies to be enabled to function properly. Please enable Cookies or use a different browser that has Cookies enabled.</p>";
+	</script>
+
+
+<div id="appContext" data-app-context=""></div>
+
+<script src="/resources/js/checkCookies.js" type="text/javascript"></script>
+
+<script src="/resources/js/outageNotification.js"></script>
+<div id="divNotification" class="sticky-top text-center"></div>
+
+
+
+	
+	<input type="hidden" id="loggedInPersonId" value="9999999">
+
+
+
+	
+		
+
+
+
+
+<header class="clearfix row align-items-center mx-0" role="banner">
+	<div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="row">
+	    <div id="logocontainer" class="col-md-8 ms-0 ps-0 d-flex align-items-center">
+			
+			
+				
+				<a id="siteLogo" href="/welcome" title="Link to Homepage">
+					
+					<img src="/resources/images/act/actgovlogo.png" alt="ACT Government" class="screenlogo">
+					<!-- screenlogo is the class for logos to appear on screen -->
+				</a>
+			
+			
+				<a class="skip-to-main" href="#content">Skip to main content</a>
+			
+			<a href="/welcome" title="Link to Homepage">
+				Tenders ACT
+				
+				
+			</a>
+	    </div>
+
+	    <div class="col-md-4 d-flex">
+			<div class="container-fluid mx-0 px-0 w-100 my-auto">
+				
+				
+					<div class="row">
+						<div id="siteInformationNav" class="col-md-12">
+							
+								<a href="https://www.procurement.act.gov.au/home">Procurement ACT</a><a href="https://www.procurement.act.gov.au" title="Link to About Us">About Us</a>
+							
+							<a href="/contact" title="Link to Contact Us">Contact us</a>
+						</div>
+					</div>
+					<div class="row" style="height: 0.2rem"></div>
+				
+
+				<!-- search -->
+				<div class="row">
+					<div class="col-md-12">
+						
+						<form id="siteSearch" action="/tender/quickSearch" method="get" class="mb-0">
+							<div class="input-group">
+								<input type="search" name="quickSearchKeywords" id="query-global-search" size="25" placeholder="Search" title="Search" class="text form-control">
+								<button class="input-group-text" type="submit" title="Search">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+  	</div>
+  	<div class="col-md-1"></div>
+</header>
+	
+	
+
+        
+
+
+
+
+	
+		
+
+
+
+
+
+
+<!--### NAVIGATION BAR -->
+<nav class="navbar navbar-expand-md navbar-inverse no-padding">
+	<div class="container-fluid no-padding">
+		<div class="navbar-header">
+			<button class="navbar-toggler w-100" type="button" data-bs-theme="dark" data-bs-toggle="collapse" data-bs-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false" aria-label="Toggle navigation">
+				Menu <span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse flex-column flex-xl-row" id="myNavbar">
+			<ul class="navbar-nav me-auto">
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/welcome">
+        
+            Home
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Tenders
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tender/search">
+        
+            Search
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/open">
+        
+            Open Tenders
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/forecast">
+        
+            Forecast
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/closed">
+        
+            Recently Closed
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/standardConditions">
+        
+            Standard Conditions of Contract and Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Contracts
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contract/search">
+        
+            Search Contract Register
+        
+    </a>
+    
+</li>
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/recentlyAwarded">
+        
+            Recently Awarded Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/interjurisdictional">
+        
+            Inter-Jurisdictional Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/supplying-to-act-government/find-opportunities-for-your-business/whole-of-government-contracts">
+        
+            Government Arrangements
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Help
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li class="dropdown-submenu dropend">
+    <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"   href="#">
+        
+            e-Learning Modules
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/getting-started-with-tenders-act/start">
+        
+            Getting started with Tenders ACT
+        
+    </a>
+    
+</li>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/finding-and-submitting-tenders-on-tenders-act/start">
+        
+            Finding and Submitting Tenders on Tenders ACT
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/faqs/browse">
+        
+            FAQ
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li >
+    <a class="dropdown-item "    href="/requestSupport">
+        
+            Request Support
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/library/browse">
+        
+            Document Library
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/electronicSubmission">
+        
+            How to Submit Your Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/news">
+        
+            News
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+        
+        
+        
+    
+
+			</ul>
+			<ul class="navbar-nav ms-auto me-1">
+				
+
+
+
+
+
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                
+                    <i class="fas fa-user-circle fa-lg" aria-hidden="true"></i>
+                
+                &nbsp;test user
+            </a>
+            <ul class="dropdown-menu">
+                
+                
+                <li>
+                    <a class="dropdown-item" href="/secure/person/edit?id=9999999&businessId=999999">
+                        Edit My Details
+                    </a>
+                </li>
+                
+                    <li>
+                        <a class="dropdown-item" href="/secure/profile/details">
+                            Edit My Business
+                        </a>
+                    </li>
+                
+                <li>
+                    <a class="dropdown-item" href="/secure/subscriptions">
+                        Edit My Subscriptions
+                    </a>
+                </li>
+
+                
+                
+
+                
+
+                <li><hr class="dropdown-divider"></li>
+
+                
+                
+                <li>
+                    <a class="dropdown-item" href="/logout">
+                        <i class="fas fa-sign-out-alt fa-lg" aria-hidden="true"></i>&nbsp;Log Out
+                    </a>
+                </li>
+            </ul>
+        </li>
+    
+    
+
+    
+    
+
+
+				
+					<div class="navbar-text">
+						<span id="tenantDate">&nbsp;</span>&nbsp;<span id="tenantTime">&nbsp;</span>
+					</div>
+				
+			</ul>
+		</div>
+	</div>
+</nav>
+<!--### NAVIGATION BAR END -->
+	
+	
+
+
+
+
+	
+	
+		
+	
+
+
+
+
+<script>
+	var delayMs = 333;
+	(function ($, window, delay) {
+	// http://jsfiddle.net/AndreasPizsa/NzvKC/
+		var theTimer = 0;
+		var theElement = null;
+		$('[data-bs-toggle]')
+		.closest('li')
+		.on('mouseenter', function (inEvent) {
+			if (theElement && !$(this).hasClass("dropdown-submenu")) {
+				theElement.removeClass('open');
+				theElement.find("a").eq(0).removeClass("show");
+				theElement.find("ul").eq(0).removeClass("show");
+			}
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+
+			theTimer = window.setTimeout(function () {
+			if (!theElement.hasClass('open') && !theElement.find("a").eq(0).hasClass("show")) {
+				theElement.addClass('open');
+				
+				theElement.find("a").eq(0).addClass("show");
+				theElement.find("ul").eq(0).addClass("show");
+			}
+			}, delay);
+		})
+		.on('mouseleave', function (inEvent) {
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+			theTimer = window.setTimeout(function () {
+				theElement.removeClass('open');
+				theElement.find("a").removeClass("show");
+				theElement.find("ul").removeClass("show");
+			}, delay);
+		})
+		.on('click', function (e) {
+			theElement.addClass('open');
+			theElement.find("a").eq(0).addClass("show");
+			theElement.find("ul").eq(0).addClass("show");
+		});
+	})(jQuery, window, delayMs);
+</script>
+
+        
+        <main class="main_content ">
+            <div class="container-fluid">
+                <div class="tenders" id="content">
+                    
+		
+		
+		
+
+
+<div class="modal fade" id="unspscModal" role="dialog">
+	<div class="modal-dialog modal-custom">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Browse UNSPSC</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body">
+				
+				
+
+
+
+
+	<div id="level-1-div" class="form-group row">
+		<label class="col-3 col-md-2" for="level-1">
+			Level 1
+		</label>
+		<div class="col-9 col-md-10 form-inline ">
+			<select id="level-1" 
+			        class="form-control" 
+			        style="width: 80%" 
+			        data-level="1" 
+			        onchange="browseUnspscAjax(this)"
+			        disabled>
+			</select>&nbsp;&nbsp;
+			<button class="btn btn-default" id="button-level-1" data-level="1" onclick="chooseUnspsc(this);" disabled>
+				<i class="fas fa-plus fa-lg"></i>
+				Select
+			</button>
+		</div>
+	</div>
+
+	<div id="level-2-div" class="form-group row">
+		<label class="col-3 col-md-2" for="level-2">
+			Level 2
+		</label>
+		<div class="col-9 col-md-10 form-inline ">
+			<select id="level-2" 
+			        class="form-control" 
+			        style="width: 80%" 
+			        data-level="2" 
+			        onchange="browseUnspscAjax(this)"
+			        disabled>
+			</select>&nbsp;&nbsp;
+			<button class="btn btn-default" id="button-level-2" data-level="2" onclick="chooseUnspsc(this);" disabled>
+				<i class="fas fa-plus fa-lg"></i>
+				Select
+			</button>
+		</div>
+	</div>
+
+	<div id="level-3-div" class="form-group row">
+		<label class="col-3 col-md-2" for="level-3">
+			Level 3
+		</label>
+		<div class="col-9 col-md-10 form-inline ">
+			<select id="level-3" 
+			        class="form-control" 
+			        style="width: 80%" 
+			        data-level="3" 
+			        onchange="browseUnspscAjax(this)"
+			        disabled>
+			</select>&nbsp;&nbsp;
+			<button class="btn btn-default" id="button-level-3" data-level="3" onclick="chooseUnspsc(this);" disabled>
+				<i class="fas fa-plus fa-lg"></i>
+				Select
+			</button>
+		</div>
+	</div>
+
+	<div id="level-4-div" class="form-group row">
+		<label class="col-3 col-md-2" for="level-4">
+			Level 4
+		</label>
+		<div class="col-9 col-md-10 form-inline ">
+			<select id="level-4" 
+			        class="form-control" 
+			        style="width: 80%" 
+			        data-level="4" 
+			        onchange="browseUnspscAjax(this)"
+			        disabled>
+			</select>&nbsp;&nbsp;
+			<button class="btn btn-default" id="button-level-4" data-level="4" onclick="chooseUnspsc(this);" disabled>
+				<i class="fas fa-plus fa-lg"></i>
+				Select
+			</button>
+		</div>
+	</div>
+
+
+				
+
+
+
+
+
+<form id="unspscSearchForm" action="/tenders/open" method="post">
+	<input name="page" type="hidden" value="1" />
+
+	
+
+	<input id="unspscPopup" name="popup" type="hidden" value="true"/>
+
+	<div class="form-group row"><label class="col-3 col-md-2" for="title">Keywords </label><div class="col-9 col-md-10 form-inline" ><input id="unspscTitle" name="title" class="form-control" placeholder="Keywords" type="text" type="text" value="" size="50" maxlength="100" aria-label="title"/></div></div>
+	<input type="hidden" id="unspscId" value="0"/>
+	<input type="hidden" name="restrictedParentCodes" value="">
+
+	<button type="submit" class="btn btn-primary"onclick="searchAjaxPopup();return false;">
+		<i class="fas fa-lg fa-search"></i>
+		Search
+	</button>
+<div>
+<input type="hidden" name="_csrf" value="test-csrf-token" />
+</div></form>
+
+<div id="unspscSearchResults"></div>
+
+<script>
+	//Searches person with AJAX call, instead of normal submit. this is for a modal variant of person search form, used as a subform.
+	function searchAjaxPopup() {
+		//When posting pass all the criteria with serialize. Receive HTML
+		$.get("/unspsc/searchAjaxPopup", $('#unspscSearchForm').serialize(), function(data, status) {
+			$("#unspscSearchResults").remove();
+			$("#unspscSearchForm").after(data);
+			$('[data-bs-toggle="tooltip"]').tooltip();
+		}, "html");
+	}
+</script>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-bs-dismiss="modal">
+					<i class="fas fa-times fa-lg"></i>
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var restrictedParentCodes = "";
+	/**
+	 * Explore a UNSPSC by AJAXing and displaying all related UNSPSCs in the dropdowns.
+	 *
+	 * @param the id of a UNSPSC
+	 */
+	function exploreUnspscAjax(unspscId) {
+		$.ajax({
+			url: '/unspsc/explore',
+			data: {
+				selectedId: unspscId,
+				restrictedParentCodes: restrictedParentCodes
+				, hideCustomUnspscs: 'false' 
+			},
+			success: function (data) {
+				clearFromLevel(1);
+				$.each(data, function () {
+					$('#' + this.key).html(jsonToOptions(this.value));
+				});
+				enableDisableDropdowns();
+				$('#unspscModal').animate({ scrollTop : 0 }, 'slow');
+			},
+			dataType: 'json'
+		});
+	}
+
+
+	/**
+	 * Browse UNSPSCs by AJAXing and populating the next dropdown.
+	 *
+	 * @param the option that has been selected
+	 */
+	function browseUnspscAjax(selectedOption) {
+		var nextLevel;
+		var selectedId;
+		if (typeof selectedOption === 'undefined') {
+			nextLevel = 1;
+			selectedId = "";
+		} else if ($(selectedOption).val() === "") {
+			nextLevel = $(selectedOption).data('level') ;
+			selectedId = $("#level-" + (nextLevel - 1)).val();
+		} else {
+			nextLevel = $(selectedOption).data('level') + 1;
+			selectedId = $(selectedOption).val();
+		}
+		if (nextLevel > 4) {
+			enableDisableDropdowns()
+			return;
+		}
+
+		$.ajax({
+			url: '/unspsc/browse',
+			data: {
+				selectedId: selectedId,
+				restrictedParentCodes: restrictedParentCodes
+				, hideCustomUnspscs: 'false' 
+			},
+			success: function(data) {
+				clearFromLevel(nextLevel);
+				$('#' + data.key).html(jsonToOptions(data.value));
+				enableDisableDropdowns();
+			},
+			dataType: 'json'
+		});
+	}
+
+
+	/**
+	 * Converts a JSON array of UnspscDtos to '<option>' tags for populating a select dropdown menu.
+	 *
+	 * @param a list of UnspscDtos
+	 */
+	function jsonToOptions(unspscs) {
+		if (unspscs.length == 0) {
+			return '';
+		}
+		var allOptions = [];
+		var option = document.createElement('option')
+		option.innerHTML = '-- Select --';
+		option.value = '';
+		allOptions.push(option);
+		$.each(unspscs, function() {
+			option = document.createElement('option')
+			if (this.checked) {
+				option.setAttributeNode(document.createAttribute('selected'));
+			}
+			var value = document.createAttribute('value');
+			value.value = this.id;
+			option.setAttributeNode(value);
+			option.innerHTML = this.title;
+			allOptions.push(option);
+		});
+		return allOptions;
+	}
+
+
+	/**
+	 * Select a UNSPSC.
+	 *
+	 * @param the button that has been clicked.
+	 */
+	function chooseUnspsc(button) {
+		var level = $(button).data('level');
+		var unspscId = $('#level-' + level).val();
+		var unspscTitle = $('#level-' + level).find('[value="' + unspscId + '"]').first().html();
+		if (unspscId != "") {
+			selectUnspsc(unspscId, unspscTitle);
+		}
+	}
+
+
+	/**
+	 * Enables/Disables all dropdowns based on their content.
+	 */
+	function enableDisableDropdowns() {
+		for (var i = 1; i <= 4; i++) {
+			let select = $('#level-' + i);
+			let disabled = select.children().length === 0
+			let buttonDisabled = disabled;
+			if (restrictedParentCodes !== "") {
+				let codes = restrictedParentCodes.split(",");
+				buttonDisabled = true;
+				for (const code of codes) {
+					if (select.find("option:selected").text().startsWith(code)) {
+						buttonDisabled = false;
+						break;
+					}
+				}
+			}
+			select.prop('disabled', disabled);
+			$('#button-level-' + i).prop('disabled', buttonDisabled);
+		}
+	}
+
+
+	/**
+	 * Clears dropdowns starting from the drop down corresponding to the given level.
+	 *
+	 * @param fromLevel the level to clear from
+	 */
+	function clearFromLevel(fromLevel) {
+		if (fromLevel == 'undefined') {
+			fromLevel = 1; // Clear everything
+		}
+		for (var i = fromLevel; i <= 4; i++) {
+			$('#level-' + i).html("");
+		}
+	}
+</script>
+
+
+		
+			
+				
+					
+					
+						
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+				
+				<h1><span><span name="page-title">Current Tenders</span><a href="/help?path=tenders.view.current" title="Current Tender List" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-html="true" data-bs-content="This screen shows all open tenders, grouped by category. In order to view tenders in other states, either use the additional quick links (eg: Electronic Lodgement, Closed Tenders, etc) or use the  ..." target="_blank">&nbsp; <i class="fas fa-question-circle" aria-hidden="true"></i></a><br /><small>This page shows all open tenders.  The list includes all public tenders, as well as selective tenders to which your business can respond.  You must be signed in to see selective tenders.</small></span></h1>
+			
+			
+		
+
+		
+		
+
+		
+		
+			
+
+			
+				<h2   ><span>Search Results&nbsp;<a href="/help?path=help.tender.search.results" title="Open Tenders" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-content="If you require any assistance with Open Tenders please contact: Tenders ACT Team Telephone: +61 2 6207 7377 Email: tendersACT@act.gov.au The Tenders ACT Team is available between 9 am and 5pm ACT  ..." data-bs-html="true" target="_blank" ><i class="fas fa-question-circle" aria-hidden="true"></i></a></span></h2>
+
+				
+				
+					
+				
+
+				
+
+				
+					<div id="rss-container" class="mb-10">
+						
+							<button class="btn btn-default" type="button"
+onclick="javascript:exportAsXlsx()"
+>
+<i class="fas fa-file-excel fa-lg"></i>
+Export to XLSX file
+</button>
+						
+						
+					</div>
+					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+	
+
+
+
+
+<div class="tender-table">
+	<table id="tenderTable-224403" class="list tablesaw tablesaw-stack" data-tablesaw-mode="stack">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<thead>
+	<tr>
+		
+		
+		
+		
+		<th class="w-15">
+			RFx Number
+		</th>
+		<th>
+			Details
+		</th>
+		
+		
+		<th>
+			Date
+		</th>
+		
+		
+			<th>
+				&nbsp;
+			</th>
+		
+	</tr>
+</thead>
+
+
+		<tbody>
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow224403" data-tender-code="99999.8">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>99999.8</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Other Arrangements
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=224403" class="strong tenderRowTitle" >
+			
+			SUPPLIER Tenders ACT Practice ATM
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;Not applicable</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: ACT Government</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					22000000 -
+					Building and Construction Machinery and Accessories
+					
+					 - 60%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					 - 20%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 3:
+					
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					 - 20%
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 29 October 2019 2:30 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 29 October 2030 2:30 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=224403',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=224403">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow330643" data-tender-code="PIMA0014211">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PIMA0014211</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Other Arrangements
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=330643" class="strong tenderRowTitle" >
+			
+			Public Housing Disability Modification and Domestic Violence Upgrade Services Multi Use List (MUL)
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: ACT Government</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 18 August 2026 1:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 31 August 2028 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=330643',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=330643">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow248868" data-tender-code="2023.1007.110">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>2023.1007.110</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=248868" class="strong tenderRowTitle" >
+			
+			Residential Construction Building Contractors under a Panel Arrangement
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;Prequalified with the ACT to CB (unrestricted) and/or CB (restricted) and/or CR under the National </span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Community Services Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 02 March 2023 5:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 29 June 2028 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=248868',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=248868">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow255305" data-tender-code="CLR-N2300-PANEL">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>CLR-N2300-PANEL</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Other Arrangements
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=255305" class="strong tenderRowTitle" >
+			
+			Canberra Light Rail Specialist Advisors Panel
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;Various. Prequalification will be a requirement for particular subdisciplines, refer to the RFT Doc</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Infrastructure Canberra</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					 - 50%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					78000000 -
+					Transportation and Storage and Mail Services
+					
+					 - 40%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 3:
+					
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					 - 10%
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Wed, 02 August 2023 5:30 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 29 July 2027 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=255305',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=255305">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow231319" data-tender-code="2020-1044-110">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>2020-1044-110</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Other Arrangements
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=231319" class="strong tenderRowTitle" >
+			
+			Growing and Renewing Public Housing REOI
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Community Services Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					 - 40%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					 - 30%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 3:
+					
+					30000000 -
+					Structures and Building and Construction and Manufacturing Components and Supplies
+					
+					 - 30%
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 23 March 2021 1:30 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Wed, 30 June 2027 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=231319',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=231319">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow333995" data-tender-code="PICM0011611">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICM0011611</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=333995" class="strong tenderRowTitle" >
+			
+			ACT Aquatic Strategy Consultancy Services
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Chief Minister, Treasury and Economic Development Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					 - 60%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					81000000 -
+					Engineering and Research and Technology Based Services
+					
+					 - 20%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 3:
+					
+					84000000 -
+					Financial and Insurance Services
+					
+					 - 20%
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Fri, 18 September 2026 11:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 27 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=333995',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=333995">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow324980" data-tender-code="SL20260630">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>SL20260630</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=324980" class="strong tenderRowTitle" >
+			
+			Kingston Section 49 Block AAb - Request for Tender
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Suburban Land Agency</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 30 June 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 20 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=324980',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=324980">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow333004" data-tender-code="PICE0012299">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICE0012299</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=333004" class="strong tenderRowTitle" >
+			
+			Ecological Restoration Services Panel
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					77000000 -
+					Environmental Services
+					
+					 - 70%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					10000000 -
+					Live Plant and Animal Material and Accessories and Supplies
+					
+					 - 30%
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 10 September 2026 3:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 13 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=333004',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=333004">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow333743" data-tender-code="39150-RFT-001 ">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>39150-RFT-001 </b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=333743" class="strong tenderRowTitle" >
+			
+			Margaret Timpson Town Park New Playground and Toilet Upgrade - Construction 
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;CL, F2</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Fri, 18 September 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 13 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=333743',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=333743">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow332722" data-tender-code="58339.DOC.13948 ">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>58339.DOC.13948 </b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=332722" class="strong tenderRowTitle" >
+			
+			DETAILED DESIGN SERVICES FOR MUGGA LANE RESOURCE  MANAGEMENT CENTRE (CELLS 5 &amp; 6)
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;At least one of the following CE, CE/C-CA, CEC, CEC/C-CA, CEV or CEV/C-CA </span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Infrastructure Canberra</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					 - 70%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					77000000 -
+					Environmental Services
+					
+					 - 30%
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 08 September 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 08 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=332722',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=332722">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow329777" data-tender-code="PITC0007688">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PITC0007688</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=329777" class="strong tenderRowTitle" >
+			
+			Supply, Installation and Ongoing Support of an Intelligent Transport  System (ITS)
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					39000000 -
+					Electrical Systems and Lighting and Components and Accessories and Supplies
+					
+					 - 40%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					43000000 -
+					Information Technology Broadcasting and Telecommunications
+					
+					 - 40%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 3:
+					
+					81000000 -
+					Engineering and Research and Technology Based Services
+					
+					 - 20%
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 11 August 2026 5:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 01 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=329777',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=329777">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow332058" data-tender-code="PICM0014158 ">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICM0014158 </b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=332058" class="strong tenderRowTitle" >
+			
+			ACT Public Service Work Value Assessments 
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Chief Minister, Treasury and Economic Development Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Wed, 02 September 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 01 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=332058',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=332058">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow331824" data-tender-code="PICE0014439">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICE0014439</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=331824" class="strong tenderRowTitle" >
+			
+			ACT Land Use and Asset Evaluation Monitoring Program
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					77000000 -
+					Environmental Services
+					
+					 - 70%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					43000000 -
+					Information Technology Broadcasting and Telecommunications
+					
+					 - 30%
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 03 September 2026 9:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 01 October 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=331824',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=331824">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow331690" data-tender-code="52752-RFT-001">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>52752-RFT-001</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=331690" class="strong tenderRowTitle" >
+			
+			Southwell Crossing &amp; Georgios Sandwash Repair and Upgrade):  Design &amp; Superintendence 
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp; CEC/C-CA</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 01 September 2026 10:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 29 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=331690',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=331690">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow328550" data-tender-code="PICM0009838">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICM0009838</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=328550" class="strong tenderRowTitle" >
+			
+			Project Management and Contract Administration (PMCA) and Reference Design services for the New National Convention and Entertainment Centre
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;At least one of the following; CA, CE, CES, CEC, CEV, CLA, CS or CQS</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Chief Minister, Treasury and Economic Development Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					80000000 -
+					Management and Business Professionals and Administrative Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Fri, 31 July 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 29 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=328550',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=328550">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow330975" data-tender-code="PISL0010294 ">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PISL0010294 </b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=330975" class="strong tenderRowTitle" >
+			
+			Taylor Fire Trail, Floodway and Stormwater Construction 
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;The Tenderer must be prequalified with the ACT to F5, R2 as at the date of close of tenders.</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Suburban Land Agency</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 25 August 2026 10:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 29 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=330975',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=330975">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow331388" data-tender-code="PICH0009831 ">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICH0009831 </b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=331388" class="strong tenderRowTitle" >
+			
+			Procurement of High-Fidelity Mannequins 
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Canberra Health Services</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					42301502 -
+					Anatomical human mannequins for medical education or training
+					
+					
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 27 August 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 29 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=331388',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=331388">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow330314" data-tender-code="PICH0014056">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICH0014056</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=330314" class="strong tenderRowTitle" >
+			
+			Instant Boiling and Chilled Water Service and Maintenance
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Canberra Health Services</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					UNSPSC 1:
+					
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					 - 50%
+				</span>
+			
+				<span class="line-item-detail">
+					<br>
+					UNSPSC 2:
+					
+					48000000 -
+					Service Industry Machinery and Equipment and Supplies
+					
+					 - 50%
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 20 August 2026 10:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 24 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=330314',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=330314">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow330646" data-tender-code="PICE0013270">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICE0013270</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=330646" class="strong tenderRowTitle" >
+			
+			Provision of Temporary Traffic Management Services
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;ACT Government, Construction Contractors Category, TMI (Traffic Management, Intersections)</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: City and Environment Directorate</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					92000000 -
+					National Defense and Public Order and Security and Safety Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Mon, 24 August 2026 9:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 24 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=330646',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=330646">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow330983" data-tender-code="58237-DOCPIMA0012319">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>58237-DOCPIMA0012319</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=330983" class="strong tenderRowTitle" >
+			
+			Manuka Pool Remediation Works and Electrification Upgrade
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;CB (unrestricted) , Level F5 (minimum) </span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: ACT Government</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 25 August 2026 2:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Thu, 24 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=330983',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=330983">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow331150" data-tender-code="PISL0014426">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PISL0014426</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=331150" class="strong tenderRowTitle" >
+			
+			Taylor Fire Trail, Floodway and Stormwater Works Construction Services Engineering Consultancy – Principal’s Authorised Delegate (PAD) under GC21
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+    	<div>
+    		<span class="line-item-detail">Prequalification Category:&nbsp;The Tenderer must be prequalified with the ACT to CEC/C-CA, as at the date of close of tenders</span>
+    	</div>
+    
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Suburban Land Agency</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					72000000 -
+					Building and Facility Construction and Maintenance Services
+					
+					
+				</span>
+			
+		
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Tue, 25 August 2026 12:00 pm
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 22 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=331150',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=331150">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr id="tenderRow331395" data-tender-code="PICH0010009">
+	
+	
+	
+	
+	<td class="tender-code-state">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<b>PICH0010009</b>
+		<br>
+		
+		
+		<span class="tender-row-state">Open</span>
+		
+		
+			<br>
+			Request for Tender
+		
+	
+
+
+	</td>
+	<td>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+	<div>
+		<a href="/tender/view?id=331395" class="strong tenderRowTitle" >
+			
+			Window Cleaning Services for CHS
+		</a>
+		<i class="fas fa-paperclip" aria-hidden="true"></i>
+	</div>
+	
+	
+	
+
+	
+		<div>
+			<span class="line-item-detail">Issued by: Canberra Health Services</span>
+		</div>
+		<div>
+		
+			
+				<span class="line-item-detail">
+					
+					
+					UNSPSC: 
+					76111500 -
+					General building and office cleaning and maintenance services
+					
+					
+				</span>
+			
+		
+		
+			<div>
+				<span class="secureLocalJobsNote">Note: this approach to market is Territory Funded Work covered by Secure Local Jobs Code.</span>
+			</div>
+		
+		</div>
+	
+
+	
+</div>
+	</td>
+	
+	
+	<td class="tender-date">
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+			<span class="date_label_list">Released</span>
+			<br>
+			<span class="opening_date">
+				Thu, 27 August 2026 10:00 am
+			</span>
+			<br>
+		
+		
+			
+				
+				
+					<span class="date_label_list">Closing</span>
+				
+			
+			<br>
+			<span class="closing_date">
+					Tue, 22 September 2026 2:00 pm
+			</span>
+		
+	
+
+
+	</td>
+	
+	
+		<td>
+			 
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="show-links dropdown"  onmouseenter="loadActionMenu('/tender/menu?tenderId=331395',  this)"  >
+    <ul class="action-menu-column mb-0">
+        <li class="dropdown">
+            
+                
+                
+                    <span class="dropdown-toggle dropdown-undecorated" data-bs-toggle="dropdown"
+                             style="cursor: pointer" aria-label="Action Menu">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </span>
+                
+            
+            <ul class="action-menu-container dropdown-menu dropdown-menu-right dropdown-menu-end">
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+
+			
+			<div style="padding-top: 10px;">
+				
+					
+
+					<ul class="action-menu-column">
+						<li>
+							
+								
+								
+									<a href="/secure/tender/submitResponse?tenderId=331395">
+										<i class="fas fa-paper-plane action-icon" aria-hidden="true"></i>
+									</a>
+								
+							
+						</li>
+					</ul>
+				
+			</div>
+		</td>
+	
+</tr>
+
+
+			
+		</tbody>
+	</table>
+
+	
+		
+			<p class="paging">Records: 22 </p>
+		
+	
+	
+</div>
+
+
+
+
+
+				
+			
+		
+		<br/>
+
+		
+		
+
+		
+
+		
+		<br>
+			
+			
+			
+				
+			
+			<div style=&quot;display: none;&quot;>
+				<h2   ><span>Search Criteria&nbsp;<a href="/help?path=help.tender.search.criteria" title="Search Criteria" aria-label="Page help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-content="This search function allows you to locate RFx that match a specified set of criteria. When the search is initiated, it will return results that match all of the specified criteria. In other words, ..." data-bs-html="true" target="_blank" ><i class="fas fa-question-circle" aria-hidden="true"></i></a></span></h2>
+				<form id="searchForm" action="/tender/search" method="get">
+
+				
+					
+					
+					<div class="form-group row"><label class="col-3 col-md-2" for="keywords">Keywords <a href="/help?path=help.search.keywords" title="Using keywords" aria-label="Field help" data-bs-toggle="popover" data-bs-trigger="focus hover" data-bs-html="true" data-bs-content="Learn how to use keywords to refine your searches" target="_blank"><i class="fas fa-question-circle fa-lg" aria-hidden="true"></i></a></label><div class="col-9 col-md-10 form-inline" ><input id="keywords" name="keywords" class="form-control" placeholder="Keywords" type="text" type="text" value="" size="30" maxlength="100" aria-label="keywords"/></div></div>
+					
+						<div class="form-group row"><label class="col-3 col-md-2" for="tenderCode">Tender Code </label><div class="col-9 col-md-10 form-inline" ><input id="tenderCode" name="tenderCode" class="form-control" placeholder="Tender Code" type="text" type="text" value="" size="30" maxlength="30" aria-label="tenderCode"/></div></div>
+					
+					
+						<div class="form-group row"><label class="col-3 col-md-2" for="tenderTitle">Tender Title </label><div class="col-9 col-md-10 form-inline" ><input id="tenderTitle" name="tenderTitle" class="form-control" placeholder="Tender Title" type="text" type="text" value="" size="30" maxlength="255" aria-label="tenderTitle"/></div></div>
+					
+					
+
+					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="tenderStateDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="tenderState">
+			Tender State
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="tenderState" 
+				name="tenderState"
+				aria-label="tenderState"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+				
+					
+						<option value="">Any</option>
+					
+					
+				
+			
+			
+				<option value="CLOSED" 
+					 >
+					
+						 Closed
+					
+				</option>
+			
+				<option value="EOI_SHORTLISTED" 
+					 >
+					
+						 Shortlisted
+					
+				</option>
+			
+				<option value="NOT_AWARDED" 
+					 >
+					
+						 Not Awarded
+					
+				</option>
+			
+				<option value="OPEN" selected="selected"
+					 >
+					
+						 Open
+					
+				</option>
+			
+				<option value="WITHDRAWN" 
+					 >
+					
+						 Withdrawn
+					
+				</option>
+			
+				<option value="ADVANCE_NOTICE" 
+					 >
+					
+						 Advance Notice
+					
+				</option>
+			
+				<option value="EXPIRED" 
+					 >
+					
+						 Expired
+					
+				</option>
+			
+				<option value="AWARDED" 
+					 >
+					
+						 Awarded
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+					
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="tenderTypeDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="tenderType">
+			Tender Type
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="tenderType" 
+				name="tenderType"
+				aria-label="tenderType"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+				
+					
+						<option value="">Any</option>
+					
+					
+				
+			
+			
+				<option value="REQUEST_FOR_INFORMATION" 
+					 >
+					
+						 Request for Information
+					
+				</option>
+			
+				<option value="REQUEST_FOR_TENDER" 
+					 >
+					
+						 Request for Tender
+					
+				</option>
+			
+				<option value="ADVANCED_TENDER_NOTICE" 
+					 >
+					
+						 Advanced Tender Notice
+					
+				</option>
+			
+				<option value="EXPRESSION_OF_INTEREST" 
+					 >
+					
+						 Expression of Interest
+					
+				</option>
+			
+				<option value="UNADVERTISED_CLOSED_TENDER" 
+					 >
+					
+						 Unadvertised Closed Tender
+					
+				</option>
+			
+				<option value="REQUEST_FOR_QUOTATION" 
+					 >
+					
+						 Request for Quotation
+					
+				</option>
+			
+				<option value="REQUEST_FOR_PROPOSAL" 
+					 >
+					
+						 Request for Proposal
+					
+				</option>
+			
+				<option value="PRE_TENDER_CONSULTATION" 
+					 >
+					
+						 Pre-Tender Consultation
+					
+				</option>
+			
+				<option value="INVITATION" 
+					 >
+					
+						 By Invitation Only - Select Tender
+					
+				</option>
+			
+				<option value="OTHER_ARRANGEMENTS" 
+					 >
+					
+						 Other Arrangements
+					
+				</option>
+			
+				<option value="SALE_OF_LAND" 
+					 >
+					
+						 Sale of Land/Property
+					
+				</option>
+			
+				<option value="STANDING_OFFER_ARRANGEMENT" 
+					 >
+					
+						 Standing Offer Arrangement
+					
+				</option>
+			
+				<option value="PREFERRED_SUPPLIER_ARRANGEMENT" 
+					 >
+					
+						 Preferred Supplier Arrangement
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+					
+
+					
+						<div class="form-group row"><label class="col-3 col-md-2" for="prequalificationCategory">Prequalification Category </label><div class="col-9 col-md-10 form-inline" ><input id="prequalificationCategory" name="prequalificationCategory" class="form-control" placeholder="Prequalification Category" type="text" type="text" value="" size="30" maxlength="100" aria-label="prequalificationCategory"/></div></div>
+					
+
+					
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="procurementCategoryDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="procurementCategory">
+			Procurement Category
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="procurementCategory" 
+				name="procurementCategory"
+				aria-label="procurementCategory"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+			
+				<option value="" selected="selected"
+					 >
+					
+						 -- Select --
+					
+				</option>
+			
+				<option value="GOODS_AND_SERVICES" 
+					 >
+					
+						 Goods & Services
+					
+				</option>
+			
+				<option value="INFRASTRUCTURE" 
+					 >
+					
+						 Infrastructure
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+					
+
+					
+
+					
+					
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+<div class="form-group row searchRow">
+    
+	<label class=" col-3 col-md-2" for="unspscSearch" >
+		Category
+	</label>
+	 
+	
+	<div class="col-9 col-md-10 form-inline">
+		
+		<input id="unspscSearch" class="form-control unspscSearch unspscAC filter " data-index='0'
+			   data-suffix='' data-limit='' data-percentage ='false'data-path='categories' size="50"
+			   placeholder="Start typing for autocomplete" aria-label="Category Title"
+			    />
+		<input type="hidden"/> 
+		
+		<a aria-label="Browse UNSPSC" href="javascript:modalTriggerFunc(0, $('.unspsc0').first().val())" data-bs-toggle="tooltip" title="Browse UNSPSC" id="searchUnspsc" class="searchUnspsc"  >
+<span><i class="fas fa-search action-icon fa-lg" aria-hidden="true"></i></span></a>
+		<p class="declined unspscErrorMsg w-100 mb-1 align-middle"></p>
+	</div> 
+</div> 
+					<div class="form-group row">
+						<div class="offset-3 offset-md-2 col-9 col-md-10">
+							<ul id="tenderCategories" style="list-style-type:none; padding:0">
+								
+							</ul>
+						</div>
+					</div>
+
+					
+						
+							
+							
+								<div class="form-group row "><label class="col-3 col-md-2" for="myCategories">Search my categories </label><div class="col-9 col-md-10 form-inline" ><input id="myCategories1" name="myCategories" class="form-control" type="checkbox" value="true"/><input type="hidden" name="_myCategories" value="on"/></div></div>
+							
+						
+					
+
+					
+						
+
+						
+							
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="issuingBusinessIdDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="issuingBusinessId">
+			Issued By
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="issuingBusinessId" 
+				name="issuingBusinessId"
+				aria-label="issuingBusinessId"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+				
+					
+						<option value="">Any</option>
+					
+					
+				
+			
+			
+				<option value="452150" 
+					 >
+					
+						 ACT Audit Office
+					
+				</option>
+			
+				<option value="452151" 
+					 >
+					
+						 ACT Building & Construction Industry Training Fund Authority
+					
+				</option>
+			
+				<option value="452152" 
+					 >
+					
+						 ACT Electoral Commission
+					
+				</option>
+			
+				<option value="441519" 
+					 >
+					
+						 ACT Government
+					
+				</option>
+			
+				<option value="452142" 
+					 >
+					
+						 ACT Health Directorate
+					
+				</option>
+			
+				<option value="736457" 
+					 >
+					
+						 ACT Insurance Authority
+					
+				</option>
+			
+				<option value="706588" 
+					 >
+					
+						 ACT Integrity Commission
+					
+				</option>
+			
+				<option value="710538" 
+					 >
+					
+						 ACT Legislative Assembly
+					
+				</option>
+			
+				<option value="452153" 
+					 >
+					
+						 ACT Long Service Leave Authority
+					
+				</option>
+			
+				<option value="452154" 
+					 >
+					
+						 ACT Teacher Quality Institute
+					
+				</option>
+			
+				<option value="452149" 
+					 >
+					
+						 Aboriginal Justice Centre
+					
+				</option>
+			
+				<option value="452155" 
+					 >
+					
+						 ActewAGL
+					
+				</option>
+			
+				<option value="660416" 
+					 >
+					
+						 Canberra Health Services
+					
+				</option>
+			
+				<option value="484065" 
+					 >
+					
+						 Canberra Institute of Technology
+					
+				</option>
+			
+				<option value="452145" 
+					 >
+					
+						 Capital Metro Agency
+					
+				</option>
+			
+				<option value="452138" 
+					 >
+					
+						 Chief Minister, Treasury and Economic Development Directorate
+					
+				</option>
+			
+				<option value="618105" 
+					 >
+					
+						 City Renewal Authority
+					
+				</option>
+			
+				<option value="1368784" 
+					 >
+					
+						 City and Environment Directorate
+					
+				</option>
+			
+				<option value="452139" 
+					 >
+					
+						 Community Services Directorate
+					
+				</option>
+			
+				<option value="535753" 
+					 >
+					
+						 Contracts Register
+					
+				</option>
+			
+				<option value="452156" 
+					 >
+					
+						 Cultural Facilities Corporation
+					
+				</option>
+			
+				<option value="1368785" 
+					 >
+					
+						 Digital Canberra
+					
+				</option>
+			
+				<option value="452140" 
+					 >
+					
+						 Education Directorate
+					
+				</option>
+			
+				<option value="452141" 
+					 >
+					
+						 Environment, Planning and Sustainable Development Directorate
+					
+				</option>
+			
+				<option value="1368786" 
+					 >
+					
+						 Health and Community Services Directorate
+					
+				</option>
+			
+				<option value="734193" 
+					 >
+					
+						 IQon Pty Ltd (PMA)
+					
+				</option>
+			
+				<option value="452157" 
+					 >
+					
+						 Icon Water Limited
+					
+				</option>
+			
+				<option value="452158" 
+					 >
+					
+						 Independent Competition And Regulatory Commission
+					
+				</option>
+			
+				<option value="681943" 
+					 >
+					
+						 Infrastructure Canberra
+					
+				</option>
+			
+				<option value="452143" 
+					 >
+					
+						 Justice and Community Safety Directorate
+					
+				</option>
+			
+				<option value="452368" 
+					 >
+					
+						 Land Development Agency
+					
+				</option>
+			
+				<option value="682954" 
+					 >
+					
+						 Motor Accident Injuries Commission
+					
+				</option>
+			
+				<option value="452146" 
+					 >
+					
+						 Office of the Legislative Assembly
+					
+				</option>
+			
+				<option value="441516" 
+					 >
+					
+						 Platform Administration
+					
+				</option>
+			
+				<option value="452159" 
+					 >
+					
+						 Regional Development Australia
+					
+				</option>
+			
+				<option value="618106" 
+					 >
+					
+						 Suburban Land Agency
+					
+				</option>
+			
+				<option value="452144" 
+					 >
+					
+						 Territory and Municipal Services Directorate
+					
+				</option>
+			
+				<option value="535785" 
+					 >
+					
+						 Transport Canberra and City Services
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+						
+					
+
+					
+						<div id="bySupplierDiv" class="form-group row form-inline" style="display: none;">
+							<label for="awardedSupplier.id" class="col-3 col-md-2">
+								By Supplier
+							</label>
+
+							<div class="col-9 col-md-10 form-inline">
+								<input id="awardedSupplierId" name="awardedSupplier.id" type="hidden" value=""/>
+								<input id="awardedSupplierName" name="awardedSupplier.name" class="form-control" readonly="readonly" type="text" value="" size="30"/>
+								<a aria-label="Select" href="javascript:setSearchType('Supplier');" data-bs-toggle="tooltip" title="Select"  >
+<span><i class="fas fa-search action-icon fa-lg" aria-hidden="true"></i></span></a>
+								<a aria-label="Clear" href="javascript:clearSupplierInputs();" data-bs-toggle="tooltip" title="Clear"  >
+<span><i class="fas fa-trash action-icon fa-lg" aria-hidden="true"></i></span></a>
+							</div>
+						</div>
+					
+
+					
+
+
+					
+
+					<div class="form-group row form-inline">
+						
+						<label for="openingDateFrom" class="col-3 col-md-2">
+							Opening Date
+						</label>
+						<div class="col-9 col-md-10 form-inline">
+							<input id="openThisWeek1" name="openThisWeek" aria-labelledby="lblOTWFrom" type="radio" value="false" checked="checked"/>
+							&nbsp;
+							<div class="input-group date" style="width: 18em">
+								<label id="lblOTWFrom" for="openThisWeek1" class="input-group-text" onfocus="selectRadio('openThisWeek1')">From</label>
+								<input id="openingDateFrom" name="openingDateFrom" class="form-control" aria-label="Opening Date From" onchange="selectRadio(&#39;openThisWeek1&#39;)" type="text" value=""/>
+								<span class="input-group-text" onfocus="selectRadio('openThisWeek1')">
+									<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+								</span>
+							</div>
+							&nbsp;
+							<div class="input-group date" style="width: 18em">
+								<label id="lblOpeningDateTo" for="openingDateTo" class="input-group-text" onfocus="selectRadio('openThisWeek1')">To</label>
+								<input id="openingDateTo" name="openingDateTo" class="form-control" aria-label="Opening Date To" onchange="selectRadio(&#39;openThisWeek1&#39;)" type="text" value=""/>
+								<span class="input-group-text"  onfocus="selectRadio('openThisWeek1')">
+									<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row form-inline">
+						<div class="col-3 col-md-2"></div>
+						<div class="col-9 col-md-10 form-inline">
+							<input id="openThisWeek2" name="openThisWeek" aria-labelledby="radioLblOTW" type="radio" value="true"/>
+							<label id="radioLblOTW" for="openThisWeek2" class="radioLabel">This Week (Monday - Sunday)</label>
+						</div>
+					</div>
+
+
+					
+						<div class="form-group row form-inline">
+							<div class="col-3 col-md-2">
+								<label>
+									Showing less than
+								</label>
+							</div>
+							<div class="col-9 col-md-10 form-inline">
+								<input id="ageRestriction" name="ageRestriction" type="number" class="form-control" value=""/>
+								Days old (0 Days indicates No Restriction)
+							</div>
+						</div>
+					
+
+
+					
+
+					<div class="form-group row form-inline">
+						<label for="closingDateFrom" class="col-3 col-md-2">
+							Closing Date
+						</label>
+						<div class="col-9 col-md-10 form-inline">
+							<input id="closeThisWeek1" name="closeThisWeek" aria-labelledby="lblCTWFrom" type="radio" value="false" checked="checked"/>
+							&nbsp;
+							<div class="input-group date" style="width: 18em">
+								<label id="lblCTWFrom" for="closeThisWeek1" class="input-group-text" onfocus="selectRadio('closeThisWeek1')">From</label>
+								<input id="closingDateFrom" name="closingDateFrom" class="form-control" aria-label="Closing Date From" onchange="selectRadio(&#39;closeThisWeek1&#39;)" type="text" value=""/>
+								<span class="input-group-text" onfocus="selectRadio('closeThisWeek1')">
+										<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+								</span>
+							</div>
+							&nbsp;
+							<div class="input-group date" style="width: 18em">
+								<label id="lblClosingDateTo" for="closingDateTo" class="input-group-text" onfocus="selectRadio('closeThisWeek1')">To</label>
+								<input id="closingDateTo" name="closingDateTo" class="form-control" aria-label="Closing Date To" onchange="selectRadio(&#39;closeThisWeek1&#39;)" type="text" value=""/>
+								<span class="input-group-text" onfocus="selectRadio('closeThisWeek1')">
+									<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group row form-inline">
+						<div class="col-3 col-md-2"></div>
+						<div class="col-9 col-md-10 form-inline">
+							<input id="closeThisWeek2" name="closeThisWeek" aria-labelledby="radioLblCTW" type="radio" value="true"/>
+							<label id="radioLblCTW" for="closeThisWeek2" class="radioLabel">This Week (Monday - Sunday)</label>
+						</div>
+					</div>
+
+
+					
+
+					
+						<div class="form-group row form-inline">
+							<label for="awardedDateFrom" class="col-3 col-md-2">
+								Awarded Date
+							</label>
+							<div class="col-9 col-md-10 form-inline">
+								<input id="awardedThisWeek1" name="awardedThisWeek" aria-labelledby="spnADFrom" type="radio" value="false" checked="checked"/>
+								<div class="input-group date" style="width: 18em">
+									<span id="spnADFrom" class="input-group-text" onfocus="selectRadio('awardedThisWeek1')">From</span>
+									<input id="awardedDateFrom" name="awardedDateFrom" class="form-control" aria-label="Awarded Date From" onchange="selectRadio(&#39;awardedThisWeek1&#39;)" type="text" value=""/>
+									<span class="input-group-text" onfocus="selectRadio('awardedThisWeek1')">
+										<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+									</span>
+								</div>
+								&nbsp;
+								<div class="input-group date" style="width: 18em">
+									<span class="input-group-text" onfocus="selectRadio('awardedThisWeek1')">To</span>
+									<input id="awardedDateTo" name="awardedDateTo" class="form-control" aria-label="Awarded Date To" onchange="selectRadio(&#39;awardedThisWeek1&#39;)" type="text" value=""/>
+									<span class="input-group-text" onfocus="selectRadio('awardedThisWeek1')">
+										<span class="fas fa-calendar-alt" aria-label="Date Picker"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group row form-inline">
+							<div class="col-3 col-md-2"></div>
+							<div class="col-9 col-md-10 form-inline">
+								<input id="awardedThisWeek2" name="awardedThisWeek" aria-labelledby="radioLblATW" type="radio" value="true"/>
+								<label id="radioLblATW" for="awardedThisWeek" class="radioLabel">This Week (Monday - Sunday)</label>
+							</div>
+						</div>
+					
+
+					
+
+					
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="orderByDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="orderBy">
+			Order By
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="orderBy" 
+				name="orderBy"
+				aria-label="orderBy"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+				
+					
+						<option value="">Any</option>
+					
+					
+				
+			
+			
+				<option value="AGENCY" 
+					 >
+					
+						 Agency
+					
+				</option>
+			
+				<option value="AWARDED_DATE" 
+					 >
+					
+						 Awarded Date
+					
+				</option>
+			
+				<option value="CLOSING_DATE" 
+					 >
+					
+						 Closing Date
+					
+				</option>
+			
+				<option value="OPENING_DATE" 
+					 >
+					
+						 Opening Date
+					
+				</option>
+			
+				<option value="SELECTIVE_TYPE" 
+					 >
+					
+						 Published Method
+					
+				</option>
+			
+				<option value="TENDER_CODE" 
+					 >
+					
+						 Tender Code
+					
+				</option>
+			
+				<option value="TENDER_STATE" 
+					 >
+					
+						 Tender State
+					
+				</option>
+			
+				<option value="TENDER_TITLE" 
+					 >
+					
+						 Tender Title
+					
+				</option>
+			
+				<option value="TENDER_TYPE" 
+					 >
+					
+						 Tender Type
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+					
+
+					
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+	
+	
+
+ 
+
+
+
+
+<div id="groupByDiv" class="form-group row  " >
+	
+		<label class="col-3 col-md-2" for="groupBy">
+			Grouping
+			
+		</label>
+	
+	<div class="col-9 col-md-10 form-inline ">
+		<select 
+				id="groupBy" 
+				name="groupBy"
+				aria-label="groupBy"
+				class="form-control form-select  " style="width:40ch" 
+				
+				
+				 
+				 
+		>
+			
+			
+				<option value="NONE" 
+					 >
+					
+						 None
+					
+				</option>
+			
+				<option value="TENDER_BUYER" 
+					 >
+					
+						 Buyer
+					
+				</option>
+			
+				<option value="TENDER_CATEGORIES" 
+					 >
+					
+						 Categories
+					
+				</option>
+			
+				<option value="TENDER_STATE" 
+					 >
+					
+						 Status
+					
+				</option>
+			
+				<option value="TENDER_TYPE" 
+					 >
+					
+						 Type
+					
+				</option>
+			
+		</select>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+					
+
+					
+					<div class="row">
+						<div class="col-9 col-9 col-md-10 offset-md-2 ">
+							<button class="btn btn-primary" type="submit" title="Search" data-bs-toggle="tooltip" id="submitButton">
+								<i class="fas fa-search fa-lg"></i>
+								Search
+							</button>
+							<i class="fas fa-fw"></i>
+							<button class="btn btn-default" type="button"
+onclick="javascript:doReset();"
+>
+<i class="fas fa-redo fa-lg"></i>
+Reset
+</button>
+						</div>
+					</div>
+
+					<input type="hidden" name="page" value="" />
+					<input id="searchTitle" type="hidden" name="searchTitle" value="" />
+				</form>
+			</div>
+		
+
+		
+
+		
+			<!-- Modal Business Search. Has to be outside major form element -->
+			<div class="modal fade" id="supplierSearchModal" role="dialog">
+				<div class="modal-dialog modal-custom">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title">Select a Supplier</h2>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						</div>
+						<div class="modal-body">
+							
+
+
+
+
+
+
+
+
+<script src="/resources/js/businessSearchFormValidator.js" type="text/javascript"></script>
+<script>	
+	// Searches business with AJAX call, instead of normal submit. this is for a modal variant of business search form, used as a subform. 
+	function businessSearchFormAjax(trigger) {
+		let searchForm;
+		if (trigger.tagName === "BUTTON") {
+			searchForm = $(trigger).closest("form.businessSearchForm");
+		} else {
+			searchForm = $("#businessSearchResults").parent().find("form.businessSearchForm");
+		}
+
+		if (businessSearchFormValidate(searchForm)) {
+			$("#searchSpinner").removeClass("hidden");
+			$(trigger).attr("disabled", "true");
+			$.post( "/business/searchAjax", $(searchForm).serialize(), function(data, status) {
+				$(trigger).prop("disabled", false);
+				$("#businessSearchResults").remove(); //Remove results div
+				$(searchForm).after(data); // insert search results after the form element
+				$("#searchSpinner").addClass("hidden");
+			}, "html");
+		}
+	}
+
+	function buyerSearchFormAjax(trigger) {
+		// We require both method names for pages with multiple business search form modals
+		businessSearchFormAjax(trigger);
+	}
+
+	function showPreview(businessId) {
+		var previewModalId = "#supplierPreviewModal-" + businessId;
+
+		if ($(previewModalId).length == 0) {
+			$.blockUI({ message: '<h2 class="blockUiHeading"><i class="fas fa-spinner fast-spin"></i> Please wait...</h2>' });
+			$.get("/secure/business/preview", {businessId: businessId}, function(data) {
+				$("#profilePreviewModalContainer").append(data);
+				$.unblockUI();
+				$('[data-bs-toggle="tooltip"]').tooltip({'placement': 'top'});
+				$(previewModalId).modal("toggle");
+			});
+		} else {
+			$(previewModalId).modal("toggle");
+		}
+	}
+
+	$(function() {
+		if ($("#socialCriteriaList input:checkbox:not(:checked)").length === 0) {
+			$("#checkBoxToggle2").attr("data-checked", "true");
+			$("#checkBoxToggle2 .checkboxIcon").html("Uncheck All");
+		}
+	})
+
+	$("#checkBoxToggle2").on('click',function(){
+		if($(this).attr("data-checked") == "true") {
+			$("#socialCriteriaList input:checkbox").prop("checked", false);
+			$(this).attr("data-checked", "false");
+			$("#checkBoxToggle2 .checkboxIcon").html("Check All");
+		} else {
+			$("#socialCriteriaList input:checkbox").prop("checked", true);
+			$(this).attr("data-checked", "true");
+			$("#checkBoxToggle2 .checkboxIcon").html("Uncheck All");
+		}
+	});
+</script>
+
+<style>
+	#profileCriteriaContainer div.profileSection {
+		display: flex;
+		align-items: center;
+		margin-right: 10px;
+	}
+
+	#profileCriteriaContainer div.profileSection label {
+		margin-bottom: 0px;
+	}
+</style>
+
+
+
+<form id="businessSearchForm" class="businessSearchForm" action="/tenders/open" method="post">
+	
+	<input name="page" type="hidden" value="1" />
+
+	
+	
+	<input id="popup" name="popup" type="hidden" value="true"/> 
+
+	
+		
+			<input id="businessType" name="businessType" type="hidden" value="SUPPLIER"/>
+		
+		
+	
+
+	
+
+	<div class="form-group row"><label class="col-3 col-md-2" for="businessName">Business Name </label><div class="col-9 col-md-10 form-inline" ><input id="businessName" name="businessName" class="form-control" placeholder="Business Name" type="text" type="text" value="" size="30" maxlength="255" aria-label="businessName"/></div></div>
+	<div class="form-group row"><label class="col-3 col-md-2" for="businessIdentifier">ABN </label><div class="col-9 col-md-10 form-inline" ><input id="businessIdentifier" name="businessIdentifier" class="form-control" placeholder="ABN" type="text" type="text" value="" size="30" maxlength="25" aria-label="businessIdentifier"/></div></div>
+	<div class="form-group row"><label class="col-3 col-md-2" for="legalName">Business Legal Name </label><div class="col-9 col-md-10 form-inline" ><input id="legalName" name="legalName" class="form-control" placeholder="Business Legal Name" type="text" type="text" value="" size="30" maxlength="100" aria-label="legalName"/></div></div>
+	
+	
+	<input id="formName" type="hidden" />
+
+	
+
+
+	
+	<button type="submit" class="btn btn-primary"
+		
+			onclick="businessSearchFormAjax(this);return false;"
+		
+		>
+		<i class="fas fa-lg fa-search"></i>
+		Search
+	</button>
+	<i id="searchSpinner" class="fas fa-spinner fast-spin hidden"></i>
+<div>
+<input type="hidden" name="_csrf" value="test-csrf-token" />
+</div></form>
+
+
+
+
+
+
+
+
+
+
+<div id="businessSearchResults">
+	
+	
+</div>
+
+<div id="profilePreviewModalContainer"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-bs-dismiss="modal">
+								<i class="fas fa-times fa-lg"></i>
+								Close
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+	
+                </div>
+            </div>
+        </main>
+        
+
+
+
+
+
+
+<footer id="footer" class="footer clearfix">
+	
+		
+			
+
+
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-5">
+            <nav>
+                <ul class="ps-0">
+                    <li>
+                        <div class="footerLogo"></div>
+                    </li>
+                    
+
+
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/accessibility">Accessibility</a>
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+                <a href="/terms">Terms and Conditions</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/feedback">Feedback</a>
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+                <a href="/siteMap">Site Map</a>
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                
+                <a href="https://www.jobs.act.gov.au/">Jobs ACT</a>
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+                <a href="/privacyStatement">Privacy Statement</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+                <a href="/disclaimer">Disclaimer</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+                <a href="/copyright">Copyright</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+                </ul>
+            </nav>
+        </div>
+        <div class="col-sm-7">
+            
+            
+                
+
+
+<div class="footer-logo">
+	<a href="https://www.canberra.com.au/" title="Canberra" class="logo-image">
+    	<img src="/resources/images/act/Logo_CBR.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.yoursay.act.gov.au/" title="Your Say" class="logo-image">
+         <img src="/resources/images/act/Logo_YourSay.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.accesscanberra.act.gov.au/" title="Access Canberra" class="logo-image">
+         <img src="/resources/images/act/Logo_AC_footer.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.act.gov.au/" title="ACT Government" class="logo-image">
+         <img src="/resources/images/act/Logo_ACTGov_white.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    
+    <a id="ctFooterLink" href="https://www.consolidatedtenders.com/" class="ctLogo" title="Consolidated Tenders">
+         <img src="/resources/images/commonLogo_white.png" alt="Consolidated Tenders Logo" width="140" height="29" style="margin: 18px">
+    </a>
+</div>
+            
+        </div>
+    </div>
+</div>
+		
+		
+	
+
+	
+</footer>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"d77ea68d041c45ce8cdfedca2063d45d","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

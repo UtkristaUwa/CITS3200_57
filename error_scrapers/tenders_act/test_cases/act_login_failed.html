@@ -1,0 +1,2014 @@
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript>
+	<div class="noscriptmsg"><h3>JavaScript Disabled</h3><p>This site requires JavaScript Enabled to function properly. Please enable JavaScript or use a different browser that has JavaScript enabled.</p></div>
+</noscript>
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+
+
+
+
+
+
+
+
+
+<!-- Sets the title tag to the page's h1 text -->
+<script>
+function changeTitle(){
+	var title;
+	var pageTitle = $("span[name=page-title]");
+	//check to use the first page-title if it exists
+	if (pageTitle[0]) {  
+		title = pageTitle[0].textContent.trim();
+		if (title.indexOf("- General") > 0) {
+			title = title.replace("- General", "");
+		}
+	}
+	else {
+		title = pageTitle.text();
+	}
+	
+	if(title){
+		document.title = title + " ";
+	}
+}
+
+function loadHostedScript(filePath) {
+	let scriptEl = document.createElement("script");
+	scriptEl.setAttribute("src", "/resources/js/" + filePath);
+	$("head").append(scriptEl);
+}
+
+function loadHostedStylesheet(filePath) {
+	let linkEl = document.createElement("link");
+	linkEl.setAttribute("href", "/resources/css/" + filePath);
+	linkEl.setAttribute("rel", "stylesheet");
+	$("head").append(linkEl);
+}
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+//Setting the default values for the confirmation modal
+var bootBoxOptions = {
+	locale: 'taas',
+	size: 'medium',
+	message: "Do you really want to delete?",
+	buttons: {
+		cancel: {
+			label: '<i class="fas fa-times fa-lg"></i>&nbsp;No',
+			className: 'btn-default pull-right cancel-button'
+		},
+		confirm: {
+			label: '<i class="fas fa-trash fa-lg"></i>&nbsp;Delete',
+			className: 'btn-danger'
+		}
+	},
+	swapButtonOrder: true,
+	callback: function (result) {
+		console.log( 'This was logged in the callback: ' + result);
+	}
+};
+
+var bootboxLocale = {
+	OK: '<i class="fas fa-check fa-lg"></i>&nbsp;OK',
+	CANCEL: '<i class="fas fa-times fa-lg"></i>&nbsp;Cancel',
+	CONFIRM: '<i class="fas fa-check fa-lg"></i>&nbsp;Confirm'
+}
+</script>
+
+<title>Tenders ACT</title>
+
+<link rel="shortcut icon" href="/resources/images/act/favicon.ico" type="image/x-icon">
+
+<!--JavaScript libraries -->
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
+
+<!-- if jQuery CDN is blocked, download local-->
+<script type="text/javascript">
+	window.jQuery || loadHostedScript("jquery-3.7.1.min.js");
+</script>
+
+
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"
+		integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI="
+		crossorigin="anonymous"></script>
+<!-- if jQuery.ui CDN is blocked download local-->
+<!-- need to check object then tabs to avoid undefined property error-->
+<script>
+	window.jQuery.ui || loadHostedScript("jquery-ui.min.js");
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"
+		integrity="sha512-KFHXdr2oObHKI9w4Hv1XPKc898mE4kgYx58oqsc/JqqdLMDI4YjOLzom+EMlW8HFUd0QfjfAvxSL6sEq/a42fQ=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/additional-methods.min.js"
+		integrity="sha512-owaCKNpctt4R4oShUTTraMPFKQWG9UdWTtG6GRzBjFV4VypcFi6+M3yc4Jk85s3ioQmkYWJbUl1b2b2r41RTjA=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"></script>
+<!-- if jQuery.ui CDN is blocked, download local-->
+<script type="text/javascript">
+	if (typeof ($.fn.validate) === 'undefined') {
+		loadHostedScript("jquery.validate.min.js");
+		loadHostedScript("additional-methods.min.js");
+	}
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js" type="text/javascript"></script>
+	
+<!-- if moment CDN is blocked download local-->
+<script>window.moment || loadHostedScript("moment-with-locales.min.js");</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+
+
+
+
+
+<script>
+	if (typeof $.fn.tooltip.Constructor == 'undefined') {
+		loadHostedScript("bootstrap/bootstrap.min.js");
+	}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+<script>
+	if (typeof tempusDominus == 'undefined') {
+		loadHostedScript("tempus-dominus/tempus-dominus.min.js");
+	}
+</script>
+<script src="/resources/js/tempus-dominus/tempus-dominus-setup.js"></script>
+
+<script src="/resources/js/taas.js"></script>
+<script src="/resources/js/crud.js"></script>
+<script src="/resources/js/personEdit.js"></script> 
+
+<script>
+taasProps.context = "/"; // Set global var
+taasProps.context = taasProps.context.slice( 0, -1); //Remove last slash
+log( "Application Context Path=" + taasProps.context);
+
+$(function() {
+	decorateExternalLink("https://www.tenders.act.gov.au/");
+});
+
+</script>
+<script src="/resources/js/autocomplete/unspsc.js" type="text/javascript"></script>
+
+
+
+
+
+<link rel="stylesheet" href="/resources/js/tablesaw/tablesaw.stackonly.css" />
+<script src="/resources/js/tablesaw/tablesaw.stackonly.jquery.js"></script>
+<script src="/resources/js/tablesaw/tablesaw-init.js"></script>
+
+
+
+
+
+<script src="/resources/js/bootstrap/plugins/bootbox-v6.min.js"></script>
+
+
+	
+	
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	
+
+
+
+
+
+
+
+ 
+	<script src="https://malsup.github.io/jquery.blockUI.js"></script>
+	
+	<script>
+		window.jQuery.blockUI || loadHostedScript("jquery.blockUI.js");
+	</script>
+
+
+
+
+<script type="text/javascript">
+var resynchMod = 15 * 60; // will resynch every 15mins
+var serverTimeMs = null; // real server time in ms since 1970
+var serverTimeDiffMs; //in in ms: server = local + serverTimeDiffMs;
+var offset = null;
+var nowInMs = null;
+//Script with AJAX, getting xml response like: //message/getServerTime:
+//Server time passed in ms since 1970, good to create Date from.
+function getServerTimeViaAjax(){
+	$.ajax({
+	    type: "GET",
+		url: taasProps.context + "/serverTime",
+	    dataType: "json",
+		success: callback
+	})
+
+	function callback(data){
+		var serverTime = parseInt(data.time);
+		var serverTimeZoneOffset = parseInt(data.offset);
+		var serverLocale = data.locale;
+		var serverTimeZoneCode = data.timeZoneCode;
+		var serverTimeZoneOffsetString = data.offsetString;
+
+		if (serverLocale != null) {
+			moment.locale(serverLocale);
+		}
+		
+
+		var timeZone = new Date().getTimezoneOffset() * 60000; 
+		
+		offset = (timeZone + serverTimeZoneOffset);
+		
+
+		serverTimeMs = serverTime;
+		var now = new Date().getTime();
+		var lserverTimeDiffMs = serverTimeMs - now; //calc time diff in ms
+		
+
+		if (-timeZone < serverTimeZoneOffset){ // if time is ahead
+			lserverTimeDiffMs = now - serverTimeMs + offset;
+		} else {
+			lserverTimeDiffMs = serverTimeMs - now + offset;
+		}
+
+		serverTimeDiffMs = lserverTimeDiffMs; //fix it
+		
+
+		var tenantTzCode = document.getElementById('tenantTzCode');
+		if (tenantTzCode != null && serverTimeZoneCode != null) {
+			tenantTzCode.innerHTML = serverTimeZoneCode;
+		}
+		var tenantTzOffset = document.getElementById('tenantTzOffset');
+		if (tenantTzOffset != null && serverTimeZoneOffsetString != null) {
+			tenantTzOffset.innerHTML = serverTimeZoneOffsetString;
+		}
+	}
+}
+
+function initClocks() {
+	
+	getServerTimeViaAjax(); //adjust the clock even better
+	clock(); //init the timer
+}
+
+function clock() {
+	var dateEl = document.getElementById('tenantDate');
+	var timeEl = document.getElementById('tenantTime');
+	if (dateEl == null && timeEl == null) {// no element to put time in - do nothing
+		return;
+	}
+	if (typeof(serverTimeDiffMs) == "undefined") {
+	 	setTimeout("clock()", 100);
+	 	return;
+	}
+	//Display current time
+	var now = new Date(); //local time
+	nowInMs = now.getTime() + serverTimeDiffMs;
+	now.setTime(now.getTime() + serverTimeDiffMs); //now it is server time
+	dateEl.innerHTML = moment(now).format('ll');
+	timeEl.innerHTML = moment(now).format('LTS');
+
+
+
+	// resynch for next cycle
+	if (Math.round(now.getTime()/1000) % resynchMod == 0) {
+		getServerTimeViaAjax()
+	}
+ 	setTimeout("clock()", 1000); //1sec interval
+}
+
+function msToTime(duration) {
+	var seconds = parseInt((duration / 1000) % 60),
+	    minutes = parseInt((duration / (1000 * 60)) % 60),
+	    hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+	return hours + "h " + minutes + "m " + seconds + "s";
+}
+
+if (window.addEventListener) {
+	window.addEventListener('load', initClocks, false); //W3C
+} else {
+	window.attachEvent('onload', initClocks); //IE
+}
+</script>
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i" rel="stylesheet">
+<link href='//fonts.googleapis.com/css?family=Roboto:100,200,300,300italic,400,400italic,500,500italic' rel='stylesheet' type='text/css'>
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
+
+<link rel="stylesheet" href="/resources/css/ui/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/ui/bootstrap-5-override.css">
+<!-- Tempus Dominus Styles (datetimepicker) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.7.11/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://kit.fontawesome.com/84b5033a60.css" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/resources/css/shared/shared.css" />
+
+
+
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/theme-style.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-default.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/theme.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/header.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/menu.css">
+	<link rel="stylesheet" type="text/css" href="/resources/css/ui/themes/theme-2/footer.css">
+	
+	
+		<link rel="stylesheet" type="text/css" href="/resources/css/act/theme.css">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+	$(function () {
+		document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + "px")
+	});
+
+	
+	
+	$(function() {
+		$("#ctFooterLink").on("click", function(event) {
+			event.preventDefault();
+			redirectToCt(null, "acceptedDisclaimer");
+		});
+	});
+	
+
+	function redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback) {
+		let acceptedDisclaimer = localStorage.getItem(cookieName);
+		if (url == null) {
+			url = 'https://www.consolidatedtenders.com/';
+		} else if (!url.includes("common/authorize/connect")) {
+			url = getAutoSignRedirectUrl(url, ctidData);
+		}
+
+		if (!acceptedDisclaimer && true) {
+			showRedirectDisclaimer(url, cookieName, target, redirectDisclaimerCallback);
+		} else {
+			if (typeof target === 'undefined' || target === "") {
+				target = "_self";
+			}
+			window.open(url, target);
+			if (typeof redirectDisclaimerCallback === "function") {
+				redirectDisclaimerCallback();
+			}
+		}
+	}
+
+	function getAutoSignRedirectUrl(url, ctidData) {
+		let data = {targetId: 1, url: url};
+		if (typeof ctidData !== 'undefined') {
+			data = $.extend(data, {ctidData: JSON.stringify(ctidData)});
+		}
+		
+		return url;
+	}
+
+	function showRedirectDisclaimer(urlPath, cookieName, target, callback) {
+		var url = "/redirectDisclaimer";
+		$.ajax({
+			url: url,
+			data: {urlPath: urlPath, cookieName: cookieName, target: target},
+			dataType: "HTML",
+			success: function (result) {
+				var parsedResult = $.parseHTML(result, document, true);
+				var modalId = $(parsedResult).closest(".modal").attr("id");
+				var script = $(parsedResult).closest("script");
+				$("body").append(parsedResult);
+				$("#" + modalId).modal("show");
+				/*Clean up after modal has been closed*/
+				$("#" + modalId).on('hidden.bs.modal', function () {
+					$(this).remove();
+					$(script).remove();
+					if (typeof callback === "function") {
+						callback();
+					}
+				});
+			}
+		});
+	}
+
+	function redirectToCtWithParams(url, id, returnMessage, cookieName, target, redirectDisclaimerCallback) {
+		let tenantCode = 'act';
+		let ctidData = {returnMessage: returnMessage, tenantCode: tenantCode, entityId: id, returnUrl: window.location.href};
+		cookieName = typeof cookieName !== 'undefined' && cookieName != "" ? cookieName : "acceptedProfileDisclaimer";
+		redirectToCt(url, cookieName, ctidData, target, redirectDisclaimerCallback);
+	}
+
+	$(function() {
+		changeTitle();
+	})
+</script>
+
+
+
+ 
+
+        
+            <link rel="stylesheet" href="/resources/css/shared/login.css">
+		
+		
+        
+        
+            <script src="/resources/js/customValidate.js"></script>
+		<script>
+			function toggleShowPwd(passwordInput, toggleButton) {
+				if (passwordInput.attr("type") == "password") {
+					passwordInput.attr("type", "text");
+					$(toggleButton).removeClass("fa-eye");
+					$(toggleButton).addClass("fa-eye-slash");
+				} else {
+					passwordInput.attr("type", "password");
+					$(toggleButton).removeClass("fa-eye-slash");
+					$(toggleButton).addClass("fa-eye");
+				}
+			}
+
+			$(function() {
+				let supplierTokenAuthentication = false;
+				let buyerTokenAuthentication = false;
+
+				$("form[name='loginForm']").each(function() {
+					$(this).validate();
+				});
+
+				const preselectBusinessType = "";
+				
+					//set the current form to the form that was last used by the user to login
+					var businessType = (preselectBusinessType) ? preselectBusinessType : localStorage.getItem("lastLoggedInAs");
+					if (businessType) {
+						$("#" + businessType.toLowerCase() + "-tab").trigger("click");
+						if (typeof bootstrap != 'undefined') {
+							new bootstrap.Tab("#" + businessType.toLowerCase() + "-tab").show();
+						}
+					} else {
+						//show supplier tab as default
+						$("#supplier-tab").trigger("click");
+						if (typeof bootstrap != 'undefined') {
+							new bootstrap.Tab("#supplier-tab").show();
+						}
+					}
+					$("#myTab a.nav-link").on("click", function() {
+						let businessType = $(this).data("business-type");
+						if (typeof businessType !== 'undefined') {
+							localStorage.setItem("lastLoggedInAs", businessType);
+						}
+					});
+				
+
+				
+					//toggles show and hide password
+					$('#showPwdSupplier').on("click", function(){
+						var passwordInput = $("#supplierPassword");
+						toggleShowPwd(passwordInput, this);
+					});
+				
+				
+					$('#showPwdBuyer').on("click", function(){
+						var passwordInput = $("#buyerPassword");
+						toggleShowPwd(passwordInput, this);
+					});
+				
+				
+
+				//Remember the form that was used for logging in (buyer or supplier) for next login
+				$("form[name='loginForm']").on("submit", function() {
+					
+						$("#loginPanel div.error").remove();
+						var validator = $(this).validate();
+						validator.form();
+						if (validator.numberOfInvalids() == 0) {
+							$(this).find("button[type='submit']").prop("disabled", true);
+							$.blockUI({ message : '', overlayCSS : { backgroundColor : '#FFFFFF', opacity : 0.0, cursor : 'wait' } });
+
+							//For token authentication
+							let businessType = $(this).find("input[name='businessType']").val();
+							if (businessType === "SUPPLIER" && supplierTokenAuthentication
+									|| businessType === "BUYER" && buyerTokenAuthentication) {
+								loginAjax(this);
+								return false;
+							}
+						}
+					
+				});
+			});
+
+			
+
+			
+		</script>
+        
+    </head>
+
+    <body>
+        
+        <input type="hidden" id="csrfToken" value="test-csrf-token"/>
+        <input type="hidden" id="csrfParameter" value="_csrf"/>
+        
+        
+
+
+
+	
+
+
+
+
+
+	<script>
+		var cookieDisabledMessage = "<h3>Cookies Disabled</h3><p>This site requires Cookies to be enabled to function properly. Please enable Cookies or use a different browser that has Cookies enabled.</p>";
+	</script>
+
+
+<div id="appContext" data-app-context=""></div>
+
+<script src="/resources/js/checkCookies.js" type="text/javascript"></script>
+
+<script src="/resources/js/outageNotification.js"></script>
+<div id="divNotification" class="sticky-top text-center"></div>
+
+
+
+
+
+	
+		
+
+
+
+
+<header class="clearfix row align-items-center mx-0" role="banner">
+	<div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="row">
+	    <div id="logocontainer" class="col-md-8 ms-0 ps-0 d-flex align-items-center">
+			
+			
+				
+				<a id="siteLogo" href="/welcome" title="Link to Homepage">
+					
+					<img src="/resources/images/act/actgovlogo.png" alt="ACT Government" class="screenlogo">
+					<!-- screenlogo is the class for logos to appear on screen -->
+				</a>
+			
+			
+			<a href="/welcome" title="Link to Homepage">
+				Tenders ACT
+				
+				
+			</a>
+	    </div>
+
+	    <div class="col-md-4 d-flex">
+			<div class="container-fluid mx-0 px-0 w-100 my-auto">
+				
+				
+					<div class="row">
+						<div id="siteInformationNav" class="col-md-12">
+							
+								<a href="https://www.procurement.act.gov.au/home">Procurement ACT</a><a href="https://www.procurement.act.gov.au" title="Link to About Us">About Us</a>
+							
+							<a href="/contact" title="Link to Contact Us">Contact us</a>
+						</div>
+					</div>
+					<div class="row" style="height: 0.2rem"></div>
+				
+
+				<!-- search -->
+				<div class="row">
+					<div class="col-md-12">
+						
+						<form id="siteSearch" action="/tender/quickSearch" method="get" class="mb-0">
+							<div class="input-group">
+								<input type="search" name="quickSearchKeywords" id="query-global-search" size="25" placeholder="Search" title="Search" class="text form-control">
+								<button class="input-group-text" type="submit" title="Search">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+  	  </div>
+  	</div>
+  	<div class="col-md-1"></div>
+</header>
+	
+	
+
+        
+
+
+
+
+	
+		
+
+
+
+
+
+
+<!--### NAVIGATION BAR -->
+<nav class="navbar navbar-expand-md navbar-inverse no-padding">
+	<div class="container-fluid no-padding">
+		<div class="navbar-header">
+			<button class="navbar-toggler w-100" type="button" data-bs-theme="dark" data-bs-toggle="collapse" data-bs-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false" aria-label="Toggle navigation">
+				Menu <span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse flex-column flex-xl-row" id="myNavbar">
+			<ul class="navbar-nav me-auto">
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/welcome">
+        
+            Home
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Tenders
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tender/search">
+        
+            Search
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/open">
+        
+            Open Tenders
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/forecast">
+        
+            Forecast
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/tenders/closed">
+        
+            Recently Closed
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/standardConditions">
+        
+            Standard Conditions of Contract and Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Contracts
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contract/search">
+        
+            Search Contract Register
+        
+    </a>
+    
+</li>
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/recentlyAwarded">
+        
+            Recently Awarded Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/contracts/interjurisdictional">
+        
+            Inter-Jurisdictional Contracts
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/supplying-to-act-government/find-opportunities-for-your-business/whole-of-government-contracts">
+        
+            Government Arrangements
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown dropdown-toggle " data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">
+        
+            Help
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li class="dropdown-submenu dropend">
+    <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"   href="#">
+        
+            e-Learning Modules
+        
+    </a>
+    
+        <ul class="dropdown-menu">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/getting-started-with-tenders-act/start">
+        
+            Getting started with Tenders ACT
+        
+    </a>
+    
+</li>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "  target="_blank" rel="nofollow" href="https://www.procurement.act.gov.au/elearn/supplier-training/finding-and-submitting-tenders-on-tenders-act/start">
+        
+            Finding and Submitting Tenders on Tenders ACT
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/faqs/browse">
+        
+            FAQ
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li >
+    <a class="dropdown-item "    href="/requestSupport">
+        
+            Request Support
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/library/browse">
+        
+            Document Library
+        
+    </a>
+    
+</li>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<li >
+    <a class="dropdown-item "    href="/electronicSubmission">
+        
+            How to Submit Your Tender
+        
+    </a>
+    
+</li>
+        </ul>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+<li class="nav-item ">
+    <a class="nav-link "  href="/news">
+        
+            News
+        
+    </a>
+    
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			</ul>
+			<ul class="navbar-nav ms-auto me-1">
+				
+
+
+
+
+
+
+    
+    
+        
+        
+        
+
+
+
+
+
+<li class="nav-item">
+    <a class="nav-link" href="/login/" >
+        <i class="fas fa-sign-in-alt fa-lg" aria-hidden="true"></i>&nbsp;<b>Log In</b>
+    </a>
+</li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="/terms?needAck=y" >
+            <i class="fas fa-pen fa-lg" aria-hidden="true"></i>&nbsp;<b>Sign Up</b>
+        </a>
+    </li>
+
+
+
+    
+
+
+				
+					<div class="navbar-text">
+						<span id="tenantDate">&nbsp;</span>&nbsp;<span id="tenantTime">&nbsp;</span>
+					</div>
+				
+			</ul>
+		</div>
+	</div>
+</nav>
+<!--### NAVIGATION BAR END -->
+	
+	
+
+
+
+
+	
+	
+		
+	
+
+
+
+
+<script>
+	var delayMs = 333;
+	(function ($, window, delay) {
+	// http://jsfiddle.net/AndreasPizsa/NzvKC/
+		var theTimer = 0;
+		var theElement = null;
+		$('[data-bs-toggle]')
+		.closest('li')
+		.on('mouseenter', function (inEvent) {
+			if (theElement && !$(this).hasClass("dropdown-submenu")) {
+				theElement.removeClass('open');
+				theElement.find("a").eq(0).removeClass("show");
+				theElement.find("ul").eq(0).removeClass("show");
+			}
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+
+			theTimer = window.setTimeout(function () {
+			if (!theElement.hasClass('open') && !theElement.find("a").eq(0).hasClass("show")) {
+				theElement.addClass('open');
+				
+				theElement.find("a").eq(0).addClass("show");
+				theElement.find("ul").eq(0).addClass("show");
+			}
+			}, delay);
+		})
+		.on('mouseleave', function (inEvent) {
+			window.clearTimeout(theTimer);
+			theElement = $(this);
+			theTimer = window.setTimeout(function () {
+				theElement.removeClass('open');
+				theElement.find("a").removeClass("show");
+				theElement.find("ul").removeClass("show");
+			}, delay);
+		})
+		.on('click', function (e) {
+			theElement.addClass('open');
+			theElement.find("a").eq(0).addClass("show");
+			theElement.find("ul").eq(0).addClass("show");
+		});
+	})(jQuery, window, delayMs);
+</script>
+
+        
+        <main class="main_content ">
+            <div class="container-fluid">
+                <div class="tenders" id="content">
+                    
+		
+
+		<div id="loginPanel">
+			<div class="card">
+				<div class="card-header">
+					
+						<ul class="nav nav-justified nav-tabs card-header-tabs nav-justified flex-column flex-sm-row" id="myTab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link" id="supplier-tab" data-bs-toggle="tab" data-bs-target="#supplier" data-business-type="SUPPLIER"
+								   href="#supplier" role="tab" aria-controls="supplier" aria-selected="true">
+									Supplier Login
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="buyer-tab" data-bs-toggle="tab" data-bs-target="#buyer" data-business-type="BUYER"
+								   href="#buyer" role="tab" aria-controls="buyer" aria-selected="false">
+									Buyer Login
+								</a>
+							</li>
+						</ul>
+					
+					<div id="logo-container">
+						
+						<img id="tenant-logo" src="/resources/images/act/actgovlogo.png" alt="Site Logo"> 
+					</div>
+				</div>
+				<div class="card-body">
+					
+
+
+
+	<div class="error">
+		
+		
+			Invalid username/password combination.
+		
+	</div>
+
+					
+						
+							<div class="tab-content" id="loginTabContent">
+								<div class="tab-pane fade" id="supplier" role="tabpanel" aria-labelledby="supplier-tab">
+									
+
+
+
+
+
+
+<form id="supplierLoginForm" name="loginForm" action="/login" method="post" autocomplete="off">
+
+	
+	
+
+
+	
+	
+
+	
+	
+		
+		
+		<input type="hidden" name="businessType" value="SUPPLIER" />
+
+		
+		<input type="hidden" name="tenantCode" value="act" />
+
+		
+		
+		
+			
+				
+					
+					<input type="hidden" name="tenantCode" value="act" />
+				
+				
+			
+		
+		<div class="row">
+			<i class="loginMarkers col-2 col-sm-1 fas fa-user fa-lg"></i>
+			<div class="col-10 col-sm-11">
+				<label for="supplierUsername" class="d-none hidden">UserName</label>
+				<input id="supplierUsername" name="username" class="form-control" placeholder="Username" required="true" aria-label="User Name" type="text" value=""/>
+			</div>
+		</div>
+		<div class="row">
+			<i class="loginMarkers col-2 col-sm-1 fas fa-lock fa-lg"></i>
+			<div class="col-10 col-sm-11 position-relative ">
+				<label for="supplierPassword" class="d-none hidden">Password</label>
+				<input id="supplierPassword" name="password" class="form-control" placeholder="Password" required="true" aria-label="Password" type="password" value="" autocomplete="off"/>
+				<i id="showPwdSupplier" class="loginMarkers fas fa-eye fa-lg"></i>
+			</div>
+		</div>
+		<div class="row sign-up-container">
+			<div class="col-6 col sign-up">
+				 
+				<a href="/terms?needAck=y">Sign Up</a>
+				
+			</div>
+			<div class="col-6 col forgot-password">
+				<a href="/person/resetPassword">Forgot your password?</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary">
+					<span aria-label="Sign in">Sign in</span></button>
+			</div>
+		</div>
+
+		
+			<div id="signInMethodDividerDiv" class="row">
+				<div class="col-sm-12 position-relative">
+					<hr>
+					<span id="or">OR</span>
+				</div>
+			</div>
+		
+		
+	
+
+	
+		
+			
+                
+				
+					
+                        
+						
+
+
+
+<div class="row ssoProvider">
+    <div class="col-12">
+        
+        <button type="button" class="btn btn-default oauthButton" onclick="
+                
+                    selectConsolidated();
+                    
+                ">
+            
+                
+                    
+                        <img class="oauthProviderLogo" src="/resources/images/sso/ct_icon.png" alt="Logo">
+                        
+                    
+                    
+                
+            
+            <span style="vertical-align: text-top;">
+                
+                    
+                    Sign in with <strong>Consolidated Tenders</strong>
+                
+            </span>
+        </button>
+    </div>
+</div>
+
+					
+				
+			
+			
+		
+	
+
+	
+
+	
+<div>
+<input type="hidden" name="_csrf" value="test-csrf-token" />
+</div></form>
+
+<script>
+    $(function() {
+        var authSite = localStorage.getItem("authenticationSite");
+        if (authSite) {
+            $("select[name='supplierTenantId']").val(authSite);
+        }
+
+		
+    });
+
+
+    $("form[id='supplierLoginForm']").on("submit", function() {
+        var authSite = $(this).find("select[name='supplierTenantId']").val();
+        localStorage.setItem("authenticationSite", authSite);
+    });
+
+	
+		
+			
+				
+				function selectConsolidated() {
+					redirectToCt("/common/authorize/connect", 'acceptedDisclaimer');
+				}
+			
+			
+		
+
+		function displayCommonModal() {
+			$.get('/supplier/consolidatedDetails', {}, function(result) {
+				var parsedResult = $.parseHTML(result, document, true);
+				$("body").append(parsedResult);
+				$("#commonModal").modal("show");
+
+				/*Clean up after modal has been closed*/
+				$("#commonModal").on('hidden.bs.modal', function () {
+					$(this).remove();
+				});
+			});
+		}
+
+		function setCommon() {
+			$("#commonModal").modal("hide");
+			$("#supplierTenantId").val("1");
+			$('#supplierTenantId').animate({ "background-color": "#5eccf5" });
+			$('#supplierTenantId').animate({ "background-color": "#fff" }, 1000 );
+		}
+	
+
+	
+</script>
+
+								</div>
+								<div class="tab-pane fade" id="buyer" role="tabpanel" aria-labelledby="buyer-tab">
+									
+
+
+
+
+<form id="buyerLoginForm" name="loginForm" action="/login" method="post" autocomplete="off">
+
+    
+    
+    
+
+    
+
+    
+
+    
+    
+        
+        
+
+        
+        <input type="hidden" name="businessType" value="BUYER" />
+
+        
+        <input type="hidden" name="tenantCode" value="act" />
+
+        
+        
+        
+        <div class="row">
+            <i class="loginMarkers col-2 col-sm-1 fas fa-user fa-lg"></i>
+            <div class="col-10 col-sm-11">
+                <label for="buyerUsername" class="d-none hidden">UserName</label>
+                <input id="buyerUsername" name="username" class="form-control" placeholder="Username" required="true" aria-label="User Name" type="text" value=""/>
+            </div>
+        </div>
+        <div class="row">
+            <i class="loginMarkers col-2 col-sm-1 fas fa-lock fa-lg"></i>
+            <div class="col-10 col-sm-11 position-relative">
+                <label for="buyerPassword" class="d-none hidden">Password</label>
+                <input id="buyerPassword" name="password" class="form-control" placeholder="Password" required="true" aria-label="Password" type="password" value="" autocomplete="off"/>
+                <i id="showPwdBuyer" class="loginMarkers fas fa-eye fa-lg"></i>
+            </div>
+        </div>
+        <div class="row sign-up-container">
+            
+            
+            <div class="col-12 col forgot-password">
+                <a href="/person/resetPassword">Forgot your password?</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary pink">
+                    <span aria-label="Sign In">Sign in</span>
+                </button>
+            </div>
+        </div>
+        
+            
+        
+        
+        
+    
+
+    
+        
+    
+<div>
+<input type="hidden" name="_csrf" value="test-csrf-token" />
+</div></form>
+
+
+
+
+
+								</div>
+							</div>
+						
+						
+						
+					
+				</div>
+			</div>
+		</div>
+	
+                </div>
+            </div>
+        </main>
+        
+
+
+
+
+
+
+<footer id="footer" class="footer clearfix">
+	
+		
+			
+
+
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-5">
+            <nav>
+                <ul class="ps-0">
+                    <li>
+                        <div class="footerLogo"></div>
+                    </li>
+                    
+
+
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/accessibility">Accessibility</a>
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+                <a href="/terms">Terms and Conditions</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+                <a href="/feedback">Feedback</a>
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+                <a href="/siteMap">Site Map</a>
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                
+                <a href="https://www.jobs.act.gov.au/">Jobs ACT</a>
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+                <a href="/privacyStatement">Privacy Statement</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+                <a href="/disclaimer">Disclaimer</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+    <li>
+        
+            
+            
+            
+            
+                <a href="/copyright">Copyright</a>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        
+    </li>
+
+                </ul>
+            </nav>
+        </div>
+        <div class="col-sm-7">
+            
+            
+                
+
+
+<div class="footer-logo">
+	<a href="https://www.canberra.com.au/" title="Canberra" class="logo-image">
+    	<img src="/resources/images/act/Logo_CBR.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.yoursay.act.gov.au/" title="Your Say" class="logo-image">
+         <img src="/resources/images/act/Logo_YourSay.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.accesscanberra.act.gov.au/" title="Access Canberra" class="logo-image">
+         <img src="/resources/images/act/Logo_AC_footer.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    <a href="https://www.act.gov.au/" title="ACT Government" class="logo-image">
+         <img src="/resources/images/act/Logo_ACTGov_white.png" alt="Footer logo" class="logo-image">
+    </a>
+
+    
+    <a id="ctFooterLink" href="https://www.consolidatedtenders.com/" class="ctLogo" title="Consolidated Tenders">
+         <img src="/resources/images/commonLogo_white.png" alt="Consolidated Tenders Logo" width="140" height="29" style="margin: 18px">
+    </a>
+</div>
+            
+        </div>
+    </div>
+</div>
+		
+		
+	
+
+	
+</footer>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"d77ea68d041c45ce8cdfedca2063d45d","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
