@@ -131,8 +131,9 @@ def _matches_mock(
              return False
              
     if year:
-        target_date = str(row.get("closing_date") or row.get("publish_date") or "")
-        if not target_date.startswith(year):
+        closing_date = str(row.get("closing_date") or "")
+        publish_date = str(row.get("publish_date") or "")
+        if not (closing_date.startswith(year) or publish_date.startswith(year)):
             return False
 
     if q:
@@ -155,7 +156,11 @@ def get_tenders(
     max_value: float | None = Query(default=None, description="Maximum tender value"),
     closing_before: date | None = Query(default=None, description="Closing on or before this date"),
     closing_after: date | None = Query(default=None, description="Closing on or after this date"),
-    year: str | None = Query(default=None, description="Year of closing or publish date"),
+    year: str | None = Query(
+        default=None,
+        pattern=r"^[0-9]{4}$",
+        description="Year of closing or publish date",
+    ),
     q: str | None = Query(default=None, min_length=1, max_length=200, description="Keyword search"),
 ) -> list[TenderOut]:
     if settings.use_mock_data:
