@@ -58,7 +58,7 @@ export default function TendersPage() {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
         

@@ -12,10 +12,10 @@ export default function AdminLayout() {
   const location = useLocation();
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#fcfcfc' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <TopNav />
       <Box sx={{ display: 'flex' }}>
-        <Box sx={{ width: 240, borderRight: '1px solid #e0e0e0', minHeight: 'calc(100vh - 64px)' }}>
+        <Box sx={{ width: 240, borderRight: '1px solid', borderColor: 'divider', minHeight: 'calc(100vh - 64px)' }}>
           <List>
             {NAV_ITEMS.map((item) => (
               <ListItemButton

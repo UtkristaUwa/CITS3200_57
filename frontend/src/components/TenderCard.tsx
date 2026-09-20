@@ -56,7 +56,7 @@ import {
     onOpenDetails: (tender: Tender) => void;
   }) {
     return (
-      <Card sx={{ mb: 2, border: '1px solid #e0e0e0', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+      <Card sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
         <CardContent sx={{ pb: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
             <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
@@ -74,7 +74,16 @@ import {
             </Box>
           </Box>
   
-          <Box sx={{ p: 1.5, mb: 2, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2', textAlign: 'left' }}>
+          <Box
+            sx={{
+              p: 1.5,
+              mb: 2,
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.16)' : '#f4f7fb'),
+              borderRadius: 1.5,
+              borderLeft: '4px solid #1976d2',
+              textAlign: 'left',
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
               <AutoAwesomeIcon sx={{ fontSize: 16, color: '#1976d2' }} />
               <Typography variant="caption" sx={{ fontWeight: 700, color: '#1976d2', textTransform: 'uppercase' }}>
@@ -84,7 +93,7 @@ import {
             <Typography
               variant="body2"
               sx={{
-                color: '#333',
+                color: 'text.primary',
                 fontSize: '0.875rem',
                 lineHeight: 1.4,
                 display: '-webkit-box',
@@ -155,14 +164,22 @@ import {
         </DialogTitle>
         <Divider />
         <DialogContent dividers sx={{ p: 3, textAlign: 'left' }}>
-          <Box sx={{ p: 2, mb: 3, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2' }}>
+          <Box
+            sx={{
+              p: 2,
+              mb: 3,
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.16)' : '#f4f7fb'),
+              borderRadius: 1.5,
+              borderLeft: '4px solid #1976d2',
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
               <AutoAwesomeIcon sx={{ fontSize: 18, color: '#1976d2' }} />
               <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1976d2' }}>
                 AI Summary & Insights
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ color: '#444', lineHeight: 1.6 }}>
+            <Typography variant="body2" sx={{ color: 'text.primary', lineHeight: 1.6 }}>
               {tender.description ? tender.description.slice(0, 300) + '…' : 'Summary placeholder: Full key requirements, timeline, and scope summary will appear here once the AI enrichment pipeline is run.'}
             </Typography>
           </Box>
@@ -181,7 +198,7 @@ import {
           <Divider sx={{ my: 2 }} />
   
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
-          <Box sx={{ p: 2, bgcolor: '#fafafa', border: '1px solid #e0e0e0', borderRadius: 1, maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap', fontSize: '0.875rem', lineHeight: 1.6 }}>
+          <Box sx={{ p: 2, bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', borderRadius: 1, maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap', fontSize: '0.875rem', lineHeight: 1.6 }}>
             {tender.description ?? 'No description extracted for this tender.'}
           </Box>
   
