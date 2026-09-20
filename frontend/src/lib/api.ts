@@ -1,7 +1,58 @@
-import axios from 'axios';
+import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { auth } from './firebase';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 const TENDERS_ENDPOINT_URL = import.meta.env.VITE_TENDERS_ENDPOINT_URL ?? `${API_BASE_URL}/tenders`;
+
+// Every endpoint except /health sits behind app/auth.py's current_user
+// dependency, which wants the caller's Firebase ID token. Attaching it here
+// rather than at each call site means a new endpoint is authenticated by
+// default instead of by remembering to. The token is a short-lived JWT, not a
+// password: getIdToken() serves it from cache and refreshes it when it is
+// close to expiring.
+const http = axios.create();
+
+http.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  const user = auth.currentUser;
+  if (user) {
+    config.headers.set('Authorization', `Bearer ${await user.getIdToken()}`);
+  }
+  return config;
+});
+
+// A 401 here almost always means the cached token expired mid-session (for
+// example the laptop was asleep). Force a refresh and replay the request once;
+// a second 401 is a real authentication failure and is surfaced to the caller.
+http.interceptors.response.use(undefined, async (error: AxiosError) => {
+  const config = error.config as (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined;
+  const user = auth.currentUser;
+
+  if (error.response?.status === 401 && config && !config._retried && user) {
+    config._retried = true;
+    config.headers.set('Authorization', `Bearer ${await user.getIdToken(true)}`);
+    return http.request(config);
+  }
+  return Promise.reject(error);
+});
+
+/** The caller's profile as the API sees it — see api/app/routers/auth.py. */
+export interface Me {
+  uid: string;
+  email: string | null;
+  provider: 'microsoft.com' | 'password';
+  isAdmin: boolean;
+  status: string;
+}
+
+/**
+ * GET /auth/me. Called once after sign-in. For a tenant member arriving
+ * through Entra SSO for the first time this is also what provisions their
+ * Firestore profile, so it runs before anything reads users/{uid}.
+ */
+export async function getMe(): Promise<Me> {
+  const { data } = await http.get<Me>(`${API_BASE_URL}/auth/me`);
+  return data;
+}
 
 export interface TenderDocument {
   document_id: string | null;
@@ -56,7 +107,7 @@ export interface GetTendersParams {
 export async function getTenders(params: GetTendersParams = {}): Promise<Tender[]> {
   const url = TENDERS_ENDPOINT_URL;
   try {
-    const { data } = await axios.get<Tender[]>(url, {
+    const { data } = await http.get<Tender[]>(url, {
       params: {
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
@@ -73,6 +124,14 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
     });
     return data;
   } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      if (err.response.status === 401) {
+        throw new Error('Your session has expired. Please sign in again.');
+      }
+      if (err.response.status === 403) {
+        throw new Error("This account isn't authorised to use TenderAI. Ask an admin to grant access.");
+      }
+    }
     const detail = axios.isAxiosError(err) ? err.message : 'unknown error';
     throw new Error(`Couldn't load tenders from ${url} (${detail}). Is the API running?`);
   }
