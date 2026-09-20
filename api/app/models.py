@@ -47,6 +47,11 @@ class TenderOut(BaseModel):
 
     raw_extra: dict | None = None
 
+    @field_validator("title", mode="before")
+    @classmethod
+    def default_title(cls, v):
+        return v or "(Untitled tender)"
+
     @field_validator("raw_extra", mode="before")
     @classmethod
     def parse_raw_extra(cls, v):
