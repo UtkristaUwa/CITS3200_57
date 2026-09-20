@@ -8,7 +8,6 @@ import {
     Link,
     Button,
     IconButton,
-    Tooltip,
     Divider,
     Dialog,
     DialogTitle,
@@ -39,22 +38,6 @@ import {
     return 'Not disclosed';
   }
 
-  function StarIcon({ size = 20 }: { size?: number }) {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 256 256"
-        fill="currentColor"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z" />
-      </svg>
-    );
-  }
-
   function isRecentlySeen(tender: Tender): boolean {
     if (!tender.first_seen_at) return false;
     const ageDays = (Date.now() - new Date(tender.first_seen_at).getTime()) / 86_400_000;
@@ -79,25 +62,15 @@ import {
             <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
               {tender.title || 'Untitled Tender'}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, ml: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, ml: 1 }}>
               {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
-              <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
-                <IconButton
-                  size="small"
-                  aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
-                  aria-pressed={isFavorite}
-                  onClick={() => onToggleFavorite(tender.tender_id)}
-                  sx={{
-                    width: 44,
-                    height: 44,
-                    color: isFavorite ? 'warning.main' : 'grey.400',
-                    transition: 'color 150ms ease',
-                    '&:hover': { color: isFavorite ? 'warning.dark' : 'warning.light', bgcolor: 'transparent' },
-                  }}
-                >
-                  <StarIcon />
-                </IconButton>
-              </Tooltip>
+              <Chip
+                label="FAVORITE"
+                color={isFavorite ? 'warning' : 'default'}
+                size="small"
+                onClick={() => onToggleFavorite(tender.tender_id)}
+                sx={{ cursor: 'pointer' }}
+              />
             </Box>
           </Box>
   
