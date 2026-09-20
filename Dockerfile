@@ -39,10 +39,12 @@ ENV HOME=/tmp
 # --- end Chrome layer ---
 
 # Install all Python dependencies.
+COPY requirements.txt ./requirements.txt
 COPY ingestion/requirements.txt ./ingestion/requirements.txt
 COPY web_scrapers/requirements.txt ./web_scrapers/requirements.txt
 COPY document_scraper/requirements.txt ./document_scraper/requirements.txt
 RUN pip install --no-cache-dir \
+        -r requirements.txt \
         -r ingestion/requirements.txt \
         -r web_scrapers/requirements.txt \
         -r document_scraper/requirements.txt
