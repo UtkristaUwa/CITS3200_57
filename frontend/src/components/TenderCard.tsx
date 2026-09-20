@@ -81,7 +81,7 @@ import {
             <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
               {tender.title || 'Untitled Tender'}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, ml: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, ml: 1 }}>
               {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
@@ -90,7 +90,8 @@ import {
                   aria-pressed={isFavorite}
                   onClick={() => onToggleFavorite(tender.tender_id)}
                   sx={{
-                    p: 0.5,
+                    width: 44,
+                    height: 44,
                     color: isFavorite ? 'warning.main' : 'grey.400',
                     transition: 'color 150ms ease',
                     '&:hover': { color: isFavorite ? 'warning.dark' : 'warning.light', bgcolor: 'transparent' },
@@ -115,21 +116,13 @@ import {
                 color: '#333',
                 fontSize: '0.875rem',
                 lineHeight: 1.4,
-                ...(expanded
-                  ? {}
-                  : {
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }),
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
               }}
             >
-              {tender.description
-                ? expanded
-                  ? tender.description
-                  : tender.description.slice(0, 180) + '…'
-                : 'No AI summary generated for this tender yet.'}
+              {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
             </Typography>
           </Box>
 
@@ -142,7 +135,7 @@ import {
           <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
             <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Source:</strong>{' '}
             {tender.source_url ? (
               <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
@@ -166,21 +159,23 @@ import {
             </Box>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
-            <Box
+            <Typography
+              variant="body2"
+              component="div"
               sx={{
                 p: 2,
                 bgcolor: '#fafafa',
                 border: '1px solid #e0e0e0',
                 borderRadius: 1,
-                maxHeight: 300,
-                overflowY: 'auto',
+                maxHeight: { xs: 'none', sm: 300 },
+                overflowY: { xs: 'visible', sm: 'auto' },
                 whiteSpace: 'pre-wrap',
-                fontSize: '0.875rem',
+                overflowWrap: 'anywhere',
                 lineHeight: 1.6,
               }}
             >
               {tender.description ?? 'No description extracted for this tender.'}
-            </Box>
+            </Typography>
           </Box>
         </Collapse>
 
@@ -189,6 +184,7 @@ import {
             size="small"
             variant="text"
             onClick={() => onToggleExpand(tender.tender_id)}
+            sx={{ minHeight: 44, px: 2 }}
             aria-expanded={expanded}
             aria-controls={detailsId}
             endIcon={
