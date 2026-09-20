@@ -7,24 +7,25 @@ import {
     Chip,
     Link,
     Button,
+    IconButton,
+    Tooltip,
+    Divider,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    IconButton,
-    Divider,
   } from '@mui/material';
-  import CloseIcon from '@mui/icons-material/Close';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+  import CloseIcon from '@mui/icons-material/Close';
   import type { Tender } from '../lib/api';
-  
+
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return value;
     return parsed.toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' });
   }
-  
+
   export function formatMoney(tender: Tender): string {
     if (tender.value_amount != null) {
       const currency = tender.value_currency ?? 'AUD';
@@ -37,13 +38,29 @@ import {
     if (tender.value_notes) return tender.value_notes;
     return 'Not disclosed';
   }
-  
+
+  function StarIcon({ size = 20 }: { size?: number }) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 256 256"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z" />
+      </svg>
+    );
+  }
+
   function isRecentlySeen(tender: Tender): boolean {
     if (!tender.first_seen_at) return false;
     const ageDays = (Date.now() - new Date(tender.first_seen_at).getTime()) / 86_400_000;
     return ageDays <= 7;
   }
-  
+
   export function TenderCard({
     tender,
     isFavorite,
@@ -62,15 +79,25 @@ import {
             <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
               {tender.title || 'Untitled Tender'}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, ml: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, ml: 1 }}>
               {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
-              <Chip
-                label="FAVORITE"
-                color={isFavorite ? 'warning' : 'default'}
-                size="small"
-                onClick={() => onToggleFavorite(tender.tender_id)}
-                sx={{ cursor: 'pointer' }}
-              />
+              <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
+                <IconButton
+                  size="small"
+                  aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
+                  aria-pressed={isFavorite}
+                  onClick={() => onToggleFavorite(tender.tender_id)}
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    color: isFavorite ? 'warning.main' : 'grey.400',
+                    transition: 'color 150ms ease',
+                    '&:hover': { color: isFavorite ? 'warning.dark' : 'warning.light', bgcolor: 'transparent' },
+                  }}
+                >
+                  <StarIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Box>
   
@@ -105,7 +132,7 @@ import {
               {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
             </Typography>
           </Box>
-  
+
           <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
             <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
           </Typography>
@@ -115,7 +142,7 @@ import {
           <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
             <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Source:</strong>{' '}
             {tender.source_url ? (
               <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
@@ -126,9 +153,9 @@ import {
             )}
           </Typography>
         </CardContent>
-  
+
         <CardActions sx={{ justifyContent: 'center', pt: 0, pb: 1.5 }}>
-          <Button size="small" variant="text" onClick={() => onOpenDetails(tender)}>
+          <Button size="small" variant="text" onClick={() => onOpenDetails(tender)} sx={{ minHeight: 44, px: 2 }}>
             View More
           </Button>
         </CardActions>
