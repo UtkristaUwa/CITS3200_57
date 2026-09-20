@@ -8,7 +8,7 @@ This wraps the two manual steps you'd otherwise run by hand:
     (cd ingestion && for each out/*/tender.json: python validate_and_submit.py <file>)
 
 into one command. It deliberately does NOT touch the AI enrichment stage
-(data_ingestion/tender_processor.py, manager.py) — that's still being worked on
+(processing/tender_processor.py, manager.py) — that's still being worked on
 separately. This script only does: scrape -> validate -> submit to BigQuery,
 plus an optional attachment publish to Cloud Storage.
 

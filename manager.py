@@ -12,7 +12,7 @@ from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_ac
 from document_scraper.main import process_tenders as run_doc_scraper
 
 # Improt tender processing code
-from data_ingestion.tender_processor import process_tender
+from processing.tender_processor import process_tender
 
 # Copies each tender's original attachments into Cloud Storage before the
 # temporary directory (and everything in it) is deleted.
