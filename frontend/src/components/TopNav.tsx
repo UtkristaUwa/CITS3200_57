@@ -50,7 +50,7 @@ function ModeToggle() {
         onChange={toggleColorMode}
         icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
         checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
-        inputProps={{ 'aria-label': 'Toggle dark mode' }}
+        slotProps={{ input: { 'aria-label': 'Toggle dark mode' } }}
       />
     </Box>
   );

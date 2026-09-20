@@ -12,9 +12,14 @@ import {
     Tooltip,
     Collapse,
     Divider,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
   } from '@mui/material';
   import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+  import CloseIcon from '@mui/icons-material/Close';
   import type { Tender } from '../lib/api';
 
   export function formatDate(value: string | null): string {
