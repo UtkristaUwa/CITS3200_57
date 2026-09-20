@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
-import { TenderCard, TenderDetailModal } from '../components/TenderCard';
+import { TenderCard } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
@@ -12,11 +12,12 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
   const filterProps = useTenderFilters();
+  const toggleExpand = (tenderId: string) =>
+    setExpandedId((prev) => (prev === tenderId ? null : tenderId));
 
   useEffect(() => {
     let cancelled = false;
@@ -86,11 +87,11 @@ export default function FavoritesPage() {
             tender={tender}
             isFavorite={true}
             onToggleFavorite={toggleFavorite}
-            onOpenDetails={(t) => { setSelectedTender(t); setModalOpen(true); }}
+            expanded={expandedId === tender.tender_id}
+            onToggleExpand={toggleExpand}
           />
         ))}
 
-        <TenderDetailModal tender={selectedTender} open={modalOpen} onClose={() => setModalOpen(false)} />
       </Container>
     </Box>
   );
