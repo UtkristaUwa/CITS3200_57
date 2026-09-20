@@ -8,16 +8,16 @@ import { useAuth } from '../lib/AuthContext';
 import { useColorMode } from '../lib/ThemeContext';
 
 const ModeSwitch = styled(Switch)(({ theme }) => ({
-  width: 58,
-  height: 32,
-  padding: 6,
+  width: 74,
+  height: 42,
+  padding: 8,
   '& .MuiSwitch-switchBase': {
-    margin: 1,
+    margin: 2,
     padding: 0,
     transitionDuration: '200ms',
     transform: 'translateX(4px)',
     '&.Mui-checked': {
-      transform: 'translateX(26px)',
+      transform: 'translateX(32px)',
       color: '#fff',
       '& + .MuiSwitch-track': {
         backgroundColor: '#1f1f1f',
@@ -27,15 +27,15 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
   },
   '& .MuiSwitch-thumb': {
     boxShadow: 'none',
-    width: 26,
-    height: 26,
+    width: 34,
+    height: 34,
     backgroundColor: theme.palette.mode === 'dark' ? '#1f1f1f' : '#fdd835',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   '& .MuiSwitch-track': {
-    borderRadius: 16,
+    borderRadius: 21,
     backgroundColor: '#aab4be',
     opacity: 1,
   },
@@ -48,8 +48,8 @@ function ModeToggle() {
       <ModeSwitch
         checked={mode === 'dark'}
         onChange={toggleColorMode}
-        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '2px', boxSizing: 'border-box', transform: 'translateY(4px)' }} />}
-        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '2px', boxSizing: 'border-box', transform: 'translateY(4px)' }} />}
+        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
+        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
         inputProps={{ 'aria-label': 'Toggle dark mode' }}
       />
     </Box>
@@ -72,18 +72,18 @@ export default function TopNav() {
           TenderAI
         </Typography>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <ModeToggle />
           <Button
             color={location.pathname === '/' ? 'primary' : 'inherit'}
-            sx={{ fontWeight: location.pathname === '/' ? 700 : 500 }}
+            sx={{ fontWeight: location.pathname === '/' ? 700 : 400 }}
             component={RouterLink}
             to="/"
           >
             Home
           </Button>
-          <ModeToggle />
           <Button
             color={location.pathname === '/favorites' ? 'primary' : 'inherit'}
-            sx={{ fontWeight: location.pathname === '/favorites' ? 700 : 500 }}
+            sx={{ fontWeight: location.pathname === '/favorites' ? 700 : 400 }}
             component={RouterLink} 
             to="/favorites"
           >
@@ -92,7 +92,7 @@ export default function TopNav() {
           {isAdmin && (
             <Button 
               color={location.pathname.startsWith('/admin') ? 'primary' : 'inherit'}
-              sx={{ fontWeight: location.pathname.startsWith('/admin') ? 700 : 500 }}
+              sx={{ fontWeight: location.pathname.startsWith('/admin') ? 700 : 400 }}
               component={RouterLink} 
               to="/admin"
             >
