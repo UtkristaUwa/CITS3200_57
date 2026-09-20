@@ -1,6 +1,7 @@
+import json
 from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class DocumentOut(BaseModel):
@@ -45,6 +46,15 @@ class TenderOut(BaseModel):
     updated_at: datetime
 
     raw_extra: dict | None = None
+
+    @field_validator("raw_extra", mode="before")
+    @classmethod
+    def parse_raw_extra(cls, v):
+        # BigQuery's JSON-typed columns come back as raw JSON strings (not
+        # parsed dicts) from job.result()'s REST row iterator.
+        if isinstance(v, str):
+            return json.loads(v)
+        return v
 
 
 class HealthOut(BaseModel):
