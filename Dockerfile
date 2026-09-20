@@ -1,30 +1,24 @@
-# Container for run_pipeline.py: scrape -> validate -> submit to BigQuery,
-# on a schedule (Cloud Scheduler -> Cloud Run Job). This does NOT build
-# manager.py or anything AI-related (processing/tender_processor.py) --
-# that is a separate, still-in-progress pipeline. This image only automates
-# the scrape/validate/submit path that already works end to end.
+# Container for manager.py: full daily pipeline -- scrape → document extract
+# → attachment upload → Gemini AI processing → BigQuery upsert.
+# Triggered on a schedule (Cloud Scheduler → Cloud Run Job tender-batch-job)
+# at 5 am AWST (UTC+8) every day (cron: 0 5 * * *, tz: Australia/Perth).
 #
 # Build (no local Docker needed -- builds in the cloud):
-#   gcloud builds submit --tag=<region>-docker.pkg.dev/tenderai-dev/tenderai/run-pipeline .
+#   gcloud builds submit --config cloudbuild.yaml .
 #
-# Includes Chrome so vic/qld (which need a real browser) run too, not just
-# the plain-HTTP sources (austender/wa/nt). Adds ~1-1.5GB to the image and
-# needs ~4Gi memory at runtime for the browser sources -- see
-# web_scrapers/INTEGRATION.md's "pipeline image needs Chrome" section. Cost
-# impact is small since Cloud Run Jobs only bill for actual run time, not
-# while idle between scheduled runs.
+# Includes Chrome so tenders_act (which needs a real browser) runs too.
+# Needs ~4 Gi memory at runtime for the browser source.
 
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1
-# Tells the scrapers to apply container-specific Chrome flags (--no-sandbox,
+# Tells scrapers to apply container-specific Chrome flags (--no-sandbox,
 # /dev/shm off) and lets run_scrapers.py start/stop its own virtual display.
 ENV RUNNING_IN_CONTAINER=1
 
 WORKDIR /app
 
-# --- Chrome layer, copied from web_scrapers/Dockerfile (see its comments for
-# why Chrome specifically, not Chromium, and why headed via Xvfb not headless)
+# --- Chrome layer (required by error_scrapers/tenders_act) ---
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl gnupg xvfb xauth \
@@ -44,22 +38,27 @@ http://dl.google.com/linux/chrome/deb/ stable main" \
 ENV HOME=/tmp
 # --- end Chrome layer ---
 
-# Both requirement files, into the one environment this image runs with.
+# Install all Python dependencies.
 COPY ingestion/requirements.txt ./ingestion/requirements.txt
 COPY web_scrapers/requirements.txt ./web_scrapers/requirements.txt
+COPY document_scraper/requirements.txt ./document_scraper/requirements.txt
 RUN pip install --no-cache-dir \
         -r ingestion/requirements.txt \
-        -r web_scrapers/requirements.txt
+        -r web_scrapers/requirements.txt \
+        -r document_scraper/requirements.txt
 
+# Copy all source modules that manager.py imports.
 COPY ingestion/ ./ingestion/
 COPY web_scrapers/ ./web_scrapers/
-COPY run_pipeline.py ./run_pipeline.py
+COPY error_scrapers/ ./error_scrapers/
+COPY document_scraper/ ./document_scraper/
+COPY processing/ ./processing/
+COPY attachment_store.py ./attachment_store.py
+COPY manager.py ./manager.py
 
-# Sensible defaults; every one is overridable per-job without rebuilding the
-# image (see run_pipeline.py's parse_args -- each flag reads its env var
-# first). LIMIT=0 means no cap: a scheduled daily run should not silently
+# SCRAPE_LIMIT=0 means no cap -- the scheduled daily run should not silently
 # drop tenders past an arbitrary count picked for local testing.
-ENV SOURCES=austender,wa,nt,vic,qld \
-    LIMIT=0
+# Override per-job via --update-env-vars without rebuilding the image.
+ENV SCRAPE_LIMIT=0
 
-ENTRYPOINT ["python", "run_pipeline.py"]
+ENTRYPOINT ["python", "manager.py"]
