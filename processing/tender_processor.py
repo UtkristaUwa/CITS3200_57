@@ -486,6 +486,7 @@ def process_tender(documents_dir: str) -> dict:
         "value_notes": fields.value_notes,
         "location": fields.location,
         "description": summary.description,
+        "summary_headline": summary.headline,
         "contact_name": fields.contact_name,
         "contact_email": fields.contact_email,
         "contact_phone": fields.contact_phone,
