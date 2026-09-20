@@ -1,0 +1,46 @@
+# Keep the pipeline image small and reproducible. Without this, `COPY . .`
+# bakes in a 300MB macOS virtualenv, the frontend's node_modules, and every
+# tender ever scraped locally -- none of which the job can use.
+
+# Version control
+.git
+.github
+.gitignore
+
+# Editors
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Python environments and caches
+.venv
+venv
+env
+__pycache__/
+*.py[cod]
+.pytest_cache
+.mypy_cache
+
+# Frontend -- not part of the pipeline image
+frontend
+functions
+node_modules
+
+# Local scrape output; the job writes to a temp directory instead
+tenders_data
+downloaded_files
+latest_logs
+
+# Tests and docs
+tests
+*.md
+
+# Secrets must never reach an image
+.env
+.env.*
+*.pem
+serviceAccountKey.json
+
+# This file itself
+.gcloudignore

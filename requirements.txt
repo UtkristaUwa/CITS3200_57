@@ -1,0 +1,11 @@
+beautifulsoup4
+httpx
+pymupdf
+python-docx
+google-cloud-bigquery
+google-genai
+pydantic
+tenacity
+openpyxl
+python-dotenv
+google-cloud-storage

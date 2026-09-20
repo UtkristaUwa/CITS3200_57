@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import TendersPage from './pages/TendersPage';
+import FavoritesPage from './pages/FavoritesPage'; // <-- Newly added import
 import LoginPage from './pages/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
@@ -20,6 +21,18 @@ export default function App() {
           </RequireAuth>
         }
       />
+      
+      {/* Newly added Favorites route configuration */}
+      <Route
+        path="/favorites"
+        element={
+          <RequireAuth>
+            <FavoritesPage />
+          </RequireAuth>
+        }
+      />
+
+      {/* Keep the routes below completely unchanged */}
       <Route
         path="/login"
         element={

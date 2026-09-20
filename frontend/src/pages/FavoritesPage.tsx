@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Container, CircularProgress, Alert } from '@mui/material';
+import { Box, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard, TenderDetailModal } from '../components/TenderCard';
@@ -7,7 +7,7 @@ import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
 
-export default function TendersPage() {
+export default function FavoritesPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,16 +15,13 @@ export default function TendersPage() {
   const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { favorites, toggleFavorite } = useFavorites();
-  
+  const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
   const filterProps = useTenderFilters();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setError(null);
-    
-    getTenders({ 
+    getTenders({
       limit: 50,
       q: filterProps.searchQuery || undefined,
       status: filterProps.status || undefined,
@@ -45,7 +42,6 @@ export default function TendersPage() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
-      
     return () => { cancelled = true; };
   }, [
     filterProps.searchQuery, filterProps.status, filterProps.category, 
@@ -53,32 +49,42 @@ export default function TendersPage() {
     filterProps.maxValue, filterProps.minDate, filterProps.maxDate
   ]);
 
-  const sortedTenders = [...tenders].sort(
-    (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
-  );
+  const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));
+  const isDataLoading = loading || loadingFavorites;
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
+
+      <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
+            My Favorites
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Manage and track your bookmarked tender opportunities.
+          </Typography>
+        </Box>
         
         <TenderFilterBar {...filterProps} />
 
-        {loading && (
+        {isDataLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
         )}
 
-        {!loading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {!isDataLoading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {!loading && !error && sortedTenders.length === 0 && (
-          <Alert severity="info">No tenders match your current filters.</Alert>
+        {!isDataLoading && !error && bookmarkedTenders.length === 0 && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            You haven't added any tenders to your favorites yet, or none match your current filters.
+          </Alert>
         )}
 
-        {!loading && !error && sortedTenders.map((tender) => (
+        {!isDataLoading && !error && bookmarkedTenders.map((tender) => (
           <TenderCard
             key={tender.tender_id}
             tender={tender}
-            isFavorite={favorites.has(tender.tender_id)}
+            isFavorite={true}
             onToggleFavorite={toggleFavorite}
             onOpenDetails={(t) => { setSelectedTender(t); setModalOpen(true); }}
           />
