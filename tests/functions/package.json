@@ -1,0 +1,11 @@
+{
+  "name": "functions-tests",
+  "private": true,
+  "scripts": {
+    "pretest": "npm --prefix ../../functions run build",
+    "test": "firebase emulators:exec --only firestore --project demo-tenderai \"node set_user_admin.test.cjs\""
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.35.1"
+  }
+}
