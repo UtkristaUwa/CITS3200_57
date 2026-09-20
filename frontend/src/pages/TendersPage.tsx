@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Container, CircularProgress, Alert } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
-import { TenderCard, TenderDetailModal } from '../components/TenderCard';
+import { TenderCard } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
@@ -12,10 +12,11 @@ export default function TendersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const { favorites, toggleFavorite } = useFavorites();
+  const toggleExpand = (tenderId: string) =>
+    setExpandedId((prev) => (prev === tenderId ? null : tenderId));
   
   const filterProps = useTenderFilters();
 
@@ -58,7 +59,7 @@ export default function TendersPage() {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
         
@@ -80,11 +81,11 @@ export default function TendersPage() {
             tender={tender}
             isFavorite={favorites.has(tender.tender_id)}
             onToggleFavorite={toggleFavorite}
-            onOpenDetails={(t) => { setSelectedTender(t); setModalOpen(true); }}
+            expanded={expandedId === tender.tender_id}
+            onToggleExpand={toggleExpand}
           />
         ))}
 
-        <TenderDetailModal tender={selectedTender} open={modalOpen} onClose={() => setModalOpen(false)} />
       </Container>
     </Box>
   );

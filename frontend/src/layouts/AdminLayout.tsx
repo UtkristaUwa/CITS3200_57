@@ -14,7 +14,7 @@ export default function AdminLayout() {
   const selectedPath = location.pathname === '/admin' ? '/admin/users' : location.pathname;
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#fcfcfc' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <TopNav />
       <Box sx={{ display: 'flex' }}>
         <Box
@@ -22,7 +22,8 @@ export default function AdminLayout() {
             display: { xs: 'none', md: 'block' },
             width: 240,
             flexShrink: 0,
-            borderRight: '1px solid #e0e0e0',
+            borderRight: '1px solid',
+            borderColor: 'divider',
             minHeight: 'calc(100vh - 64px)',
           }}
         >

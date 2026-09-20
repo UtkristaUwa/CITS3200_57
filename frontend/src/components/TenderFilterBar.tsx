@@ -46,7 +46,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   }, []);
 
   return (
-    <Box sx={{ mb: 4, p: { xs: 1.5, sm: 2 }, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+    <Box sx={{ mb: 4, p: { xs: 1.5, sm: 2 }, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
       <Box
         sx={{
           display: 'flex',
@@ -91,7 +91,8 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             gap: 2,
             mt: 2,
             pt: 2,
-            borderTop: '1px dashed #ccc',
+            borderTop: '1px dashed',
+            borderColor: 'divider',
             '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
           }}
         >
