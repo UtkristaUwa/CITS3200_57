@@ -49,8 +49,12 @@ class TenderOut(BaseModel):
 
     @field_validator("title", mode="before")
     @classmethod
+    def default_title(cls, v):
+        return v or "(Untitled tender)"
+
+    @field_validator("raw_extra", mode="before")
+    @classmethod
     def parse_raw_extra(cls, v):
-            return v or "(Untitled tender)"
         # BigQuery's JSON-typed columns come back as raw JSON strings (not
         # parsed dicts) from job.result()'s REST row iterator.
         if isinstance(v, str):
