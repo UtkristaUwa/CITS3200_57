@@ -61,6 +61,6 @@ COPY manager.py ./manager.py
 # SCRAPE_LIMIT=0 means no cap -- the scheduled daily run should not silently
 # drop tenders past an arbitrary count picked for local testing.
 # Override per-job via --update-env-vars without rebuilding the image.
-ENV SCRAPE_LIMIT=0
+ENV SCRAPE_LIMIT=10
 
 ENTRYPOINT ["python", "manager.py"]
