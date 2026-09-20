@@ -1,6 +1,6 @@
 # Container for run_pipeline.py: scrape -> validate -> submit to BigQuery,
 # on a schedule (Cloud Scheduler -> Cloud Run Job). This does NOT build
-# manager.py or anything AI-related (data_ingestion/tender_processor.py) --
+# manager.py or anything AI-related (processing/tender_processor.py) --
 # that is a separate, still-in-progress pipeline. This image only automates
 # the scrape/validate/submit path that already works end to end.
 #
