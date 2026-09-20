@@ -11,7 +11,9 @@ export default function FavoritesPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
   const filterProps = useTenderFilters();
@@ -84,16 +86,12 @@ export default function FavoritesPage() {
             tender={tender}
             isFavorite={true}
             onToggleFavorite={toggleFavorite}
-            onOpenDetails={setSelectedTender}
+            onOpenDetails={(t) => { setSelectedTender(t); setModalOpen(true); }}
           />
         ))}
 
+        <TenderDetailModal tender={selectedTender} open={modalOpen} onClose={() => setModalOpen(false)} />
       </Container>
-      <TenderDetailModal
-        tender={selectedTender}
-        open={selectedTender !== null}
-        onClose={() => setSelectedTender(null)}
-      />
     </Box>
   );
 }
