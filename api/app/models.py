@@ -11,7 +11,6 @@ class DocumentOut(BaseModel):
     extracted_text: str | None = None
     parsed_at: datetime | None = None
 
-
 class TenderOut(BaseModel):
     tender_id: str
     source_reference_id: str | None = None
@@ -46,6 +45,9 @@ class TenderOut(BaseModel):
     updated_at: datetime
 
     raw_extra: dict | None = None
+
+    # Vector search score (cosine distance computed by BigQuery VECTOR_SEARCH)
+    distance: float | None = None
 
     @field_validator("title", mode="before")
     @classmethod
