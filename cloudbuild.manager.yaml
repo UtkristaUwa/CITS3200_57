@@ -1,0 +1,11 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.manager'
+      - '-t'
+      - 'australia-southeast1-docker.pkg.dev/tenderai-dev/tender-jobs/pipeline:latest'
+      - '.'
+images:
+  - 'australia-southeast1-docker.pkg.dev/tenderai-dev/tender-jobs/pipeline:latest'
