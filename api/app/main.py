@@ -15,7 +15,7 @@ app.add_middleware(
         "https://tenderai-dev-f0283.firebaseapp.com",
         "http://localhost:5173",
         *settings.allowed_origins_list,
-    ],
+    ],  
     allow_methods=["GET"],
     allow_headers=["*"],
 )

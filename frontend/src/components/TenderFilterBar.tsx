@@ -46,7 +46,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   }, []);
 
   return (
-    <Box sx={{ mb: 4, p: 2, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+    <Box sx={{ mb: 4, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
         <TextField
           fullWidth
@@ -76,7 +76,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
       </Box>
 
       <Collapse in={props.showFilters}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, pt: 2, borderTop: '1px dashed', borderColor: 'divider' }}>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <FormControl size="small" fullWidth>
               <InputLabel>Jurisdiction</InputLabel>

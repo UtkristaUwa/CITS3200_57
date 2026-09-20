@@ -55,12 +55,12 @@ export default function FavoritesPage() {
   const isDataLoading = loading || loadingFavorites;
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: '#fcfcfc', minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
       <TopNav />
       <Container maxWidth="md">
 
       <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a1a1a' }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>
             My Favorites
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
