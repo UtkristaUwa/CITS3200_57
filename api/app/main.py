@@ -11,6 +11,11 @@ app.add_middleware(
     allow_origins=settings.allowed_origins_list,
     allow_methods=["GET"],
     allow_headers=["*"],
+    allow_origins=[
+    "https://tenderai-dev-f0283.web.app",
+    "https://tenderai-dev-f0283.firebaseapp.com",
+    "http://localhost:5173",  # local dev, if you use Vite
+    ],
 )
 
 app.include_router(health.router)
