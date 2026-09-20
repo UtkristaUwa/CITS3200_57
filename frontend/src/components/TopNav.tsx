@@ -15,9 +15,9 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
     margin: 2,
     padding: 0,
     transitionDuration: '200ms',
-    transform: 'translateX(4px)',
+    transform: 'translateX(10px)',
     '&.Mui-checked': {
-      transform: 'translateX(32px)',
+      transform: 'translateX(35px)',
       color: '#fff',
       '& + .MuiSwitch-track': {
         backgroundColor: '#1f1f1f',
@@ -48,8 +48,8 @@ function ModeToggle() {
       <ModeSwitch
         checked={mode === 'dark'}
         onChange={toggleColorMode}
-        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
-        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '6px', boxSizing: 'border-box', position: 'relative', top: '5px' }} />}
+        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
+        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
         slotProps={{ input: { 'aria-label': 'Toggle dark mode' } }}
       />
     </Box>
