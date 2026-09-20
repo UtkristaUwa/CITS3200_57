@@ -13,7 +13,9 @@ import {
     DialogActions,
     IconButton,
     Divider,
+    useMediaQuery,
   } from '@mui/material';
+  import { useTheme } from '@mui/material/styles';
   import CloseIcon from '@mui/icons-material/Close';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
   import type { Tender } from '../lib/api';
@@ -56,20 +58,34 @@ import {
     onOpenDetails: (tender: Tender) => void;
   }) {
     return (
-      <Card sx={{ mb: 2, border: '1px solid #e0e0e0', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+      <Card sx={{ mb: 2, minWidth: 0, border: '1px solid #e0e0e0', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
         <CardContent sx={{ pb: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-            <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: { xs: 1, sm: 0 },
+              minWidth: 0,
+              mb: 1.5,
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ minWidth: 0, textAlign: 'left', fontWeight: 600, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+            >
               {tender.title || 'Untitled Tender'}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, ml: 1 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
               {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
               <Chip
                 label="FAVORITE"
                 color={isFavorite ? 'warning' : 'default'}
                 size="small"
                 onClick={() => onToggleFavorite(tender.tender_id)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: 'pointer', height: { xs: 44, sm: 24 } }}
               />
             </Box>
           </Box>
@@ -91,22 +107,23 @@ import {
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
+                overflowWrap: 'anywhere',
               }}
             >
               {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
             </Typography>
           </Box>
   
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Source:</strong>{' '}
             {tender.source_url ? (
               <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
@@ -119,7 +136,7 @@ import {
         </CardContent>
   
         <CardActions sx={{ justifyContent: 'center', pt: 0, pb: 1.5 }}>
-          <Button size="small" variant="text" onClick={() => onOpenDetails(tender)}>
+          <Button size="small" variant="text" onClick={() => onOpenDetails(tender)} sx={{ minHeight: { xs: 44, sm: 30 } }}>
             View More
           </Button>
         </CardActions>
@@ -136,6 +153,9 @@ import {
     open: boolean;
     onClose: () => void;
   }) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     if (!tender) return null;
   
     return (
@@ -144,18 +164,23 @@ import {
         onClose={onClose}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
         scroll="paper"
         slotProps={{ backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.55)' } } }}
       >
-        <DialogTitle sx={{ m: 0, p: 2.5, pr: 6, fontWeight: 600 }}>
+        <DialogTitle sx={{ m: 0, p: { xs: 2, sm: 2.5 }, pr: 7, fontWeight: 600, overflowWrap: 'anywhere' }}>
           {tender.title || 'Tender Details'}
-          <IconButton aria-label="close" onClick={onClose} sx={{ position: 'absolute', right: 12, top: 12, color: (theme) => theme.palette.grey[500] }}>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{ position: 'absolute', right: 8, top: 8, minWidth: 48, minHeight: 48, color: (theme) => theme.palette.grey[500] }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <Divider />
-        <DialogContent dividers sx={{ p: 3, textAlign: 'left' }}>
-          <Box sx={{ p: 2, mb: 3, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2' }}>
+        <DialogContent dividers sx={{ p: { xs: 2, sm: 3 }, textAlign: 'left', overflowWrap: 'anywhere' }}>
+          <Box sx={{ p: { xs: 1.5, sm: 2 }, mb: 3, bgcolor: '#f4f7fb', borderRadius: 1.5, borderLeft: '4px solid #1976d2' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
               <AutoAwesomeIcon sx={{ fontSize: 18, color: '#1976d2' }} />
               <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1976d2' }}>
@@ -181,7 +206,7 @@ import {
           <Divider sx={{ my: 2 }} />
   
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
-          <Box sx={{ p: 2, bgcolor: '#fafafa', border: '1px solid #e0e0e0', borderRadius: 1, maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap', fontSize: '0.875rem', lineHeight: 1.6 }}>
+          <Box sx={{ p: { xs: 1.5, sm: 2 }, bgcolor: '#fafafa', border: '1px solid #e0e0e0', borderRadius: 1, maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', fontSize: '0.875rem', lineHeight: 1.6 }}>
             {tender.description ?? 'No description extracted for this tender.'}
           </Box>
   
@@ -194,7 +219,7 @@ import {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose} variant="contained" color="primary">Close</Button>
+          <Button onClick={onClose} variant="contained" color="primary" sx={{ minHeight: { xs: 44, sm: 36 } }}>Close</Button>
         </DialogActions>
       </Dialog>
     );

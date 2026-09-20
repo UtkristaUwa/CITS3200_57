@@ -47,17 +47,20 @@ export default function LoginPage() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
+        '@supports (height: 100dvh)': { minHeight: '100dvh' },
         bgcolor: '#fcfcfc',
+        boxSizing: 'border-box',
+        p: { xs: 2, sm: 3 },
       }}
     >
-      <Card sx={{ width: 380, p: 1 }}>
+      <Card sx={{ width: '100%', maxWidth: 380, p: { xs: 0, sm: 1 }, boxSizing: 'border-box' }}>
         <CardContent>
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, textAlign: 'center' }}>
             TenderAI
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && <Alert severity="error" sx={{ overflowWrap: 'anywhere' }}>{error}</Alert>}
 
             <TextField
               label="Email"

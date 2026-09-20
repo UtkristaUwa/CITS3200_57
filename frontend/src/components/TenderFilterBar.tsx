@@ -46,8 +46,16 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   }, []);
 
   return (
-    <Box sx={{ mb: 4, p: 2, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+    <Box sx={{ mb: 4, p: { xs: 1.5, sm: 2 }, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #e0e0e0' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          alignItems: 'stretch',
+          '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
+        }}
+      >
         <TextField
           fullWidth
           variant="outlined"
@@ -69,16 +77,32 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           variant={props.showFilters ? 'contained' : 'outlined'}
           startIcon={<FilterListIcon />}
           onClick={() => props.setShowFilters(!props.showFilters)}
-          sx={{ flexShrink: 0 }}
+          sx={{ flexShrink: 0, width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
         >
           Filters
         </Button>
       </Box>
 
       <Collapse in={props.showFilters}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, pt: 2, borderTop: '1px dashed #ccc' }}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <FormControl size="small" fullWidth>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            mt: 2,
+            pt: 2,
+            borderTop: '1px dashed #ccc',
+            '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
+          }}
+        >
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
+              gap: 2,
+            }}
+          >
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Jurisdiction</InputLabel>
               <Select value={props.jurisdiction} label="Jurisdiction" onChange={(e) => props.setJurisdiction(e.target.value)}>
                 <MenuItem value=""><em>All</em></MenuItem>
@@ -88,7 +112,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               </Select>
             </FormControl>
 
-            <FormControl size="small" fullWidth>
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Year</InputLabel>
               <Select value={props.year} label="Year" onChange={(e) => props.setYear(e.target.value)}>
                 <MenuItem value=""><em>All Time</em></MenuItem>
@@ -98,7 +122,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               </Select>
             </FormControl>
 
-            <FormControl size="small" fullWidth>
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Category</InputLabel>
               <Select value={props.category} label="Category" onChange={(e) => props.setCategory(e.target.value)}>
                 <MenuItem value=""><em>All</em></MenuItem>
@@ -109,7 +133,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               </Select>
             </FormControl>
 
-            <FormControl size="small" fullWidth>
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Status</InputLabel>
               <Select value={props.status} label="Status" onChange={(e) => props.setStatus(e.target.value)}>
                 <MenuItem value=""><em>All</em></MenuItem>
@@ -121,7 +145,13 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             </FormControl>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
+              gap: 2,
+            }}
+          >
             <TextField
               size="small"
               fullWidth
@@ -130,6 +160,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               slotProps={{ inputLabel: { shrink: true } }}
               value={props.minDate}
               onChange={(e) => props.setMinDate(e.target.value)}
+              sx={{ minWidth: 0 }}
             />
             <TextField
               size="small"
@@ -139,6 +170,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               slotProps={{ inputLabel: { shrink: true } }}
               value={props.maxDate}
               onChange={(e) => props.setMaxDate(e.target.value)}
+              sx={{ minWidth: 0 }}
             />
             <TextField
               size="small"
@@ -147,6 +179,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               label="Min Value ($)"
               value={props.minValue}
               onChange={(e) => props.setMinValue(e.target.value)}
+              sx={{ minWidth: 0 }}
             />
             <TextField
               size="small"
@@ -155,11 +188,12 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               label="Max Value ($)"
               value={props.maxValue}
               onChange={(e) => props.setMaxValue(e.target.value)}
+              sx={{ minWidth: 0 }}
             />
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-            <Button size="small" color="inherit" onClick={props.handleResetFilters}>
+            <Button size="small" color="inherit" onClick={props.handleResetFilters} sx={{ minHeight: { xs: 44, sm: 30 } }}>
               Clear All Filters
             </Button>
           </Box>
