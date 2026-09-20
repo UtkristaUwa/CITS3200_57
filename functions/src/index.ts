@@ -79,3 +79,80 @@ export const inviteUser = onCall<InviteUserData>(async (request) => {
 
   return {uid: newUser.uid, setupLink};
 });
+
+interface SetUserAdminData {
+  uid: string;
+  isAdmin: boolean;
+}
+
+export const setUserAdmin = onCall<SetUserAdminData>(async (request) => {
+  // 1. Must be logged in.
+  if (!request.auth) {
+    throw new HttpsError(
+      "unauthenticated",
+      "You must be logged in to change a user's role."
+    );
+  }
+
+  // 2. Must be an admin — same check inviteUser does.
+  const callerUid = request.auth.uid;
+  const callerDoc = await admin.firestore()
+    .collection("users")
+    .doc(callerUid)
+    .get();
+
+  if (!callerDoc.exists || callerDoc.data()?.isAdmin !== true) {
+    throw new HttpsError(
+      "permission-denied",
+      "Only admins can change roles."
+    );
+  }
+
+  const {uid, isAdmin} = request.data;
+
+  if (!uid || typeof uid !== "string") {
+    throw new HttpsError("invalid-argument", "A user id is required.");
+  }
+
+  if (typeof isAdmin !== "boolean") {
+    throw new HttpsError(
+      "invalid-argument",
+      "isAdmin must be true or false."
+    );
+  }
+
+  // 3. Refusing self-demotion is what guarantees the system always keeps at
+  // least one admin. Whoever makes the change is an admin and stays one, so
+  // no demotion can ever empty the set — which means we do not need to count
+  // admins or run this in a transaction to protect that invariant.
+  if (uid === callerUid && isAdmin === false) {
+    throw new HttpsError(
+      "failed-precondition",
+      "You can't remove your own admin access. Ask another admin."
+    );
+  }
+
+  // 4. The profile must already exist. An Entra user has no document until
+  // their first sign-in creates one (see api/app/auth.py), so there is
+  // nothing to promote before then.
+  const targetRef = admin.firestore().collection("users").doc(uid);
+  const target = await targetRef.get();
+
+  if (!target.exists) {
+    throw new HttpsError(
+      "not-found",
+      "That user has not signed in yet, so there is no profile to change."
+    );
+  }
+
+  // This runs on the Admin SDK, which bypasses firestore.rules — the rules
+  // deliberately make isAdmin unwritable from the browser, so this function
+  // is the only path that can change it.
+  await targetRef.update({
+    isAdmin,
+    adminChangedBy: callerUid,
+    adminChangedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  return {uid, isAdmin};
+});

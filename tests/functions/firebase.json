@@ -1,0 +1,7 @@
+{
+  "firestore": {},
+  "emulators": {
+    "firestore": { "port": 8090 },
+    "ui": { "enabled": false }
+  }
+}

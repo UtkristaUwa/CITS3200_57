@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.auth import current_user
+
 from app.config import settings
-from app.routers import health, tenders
+from app.routers import auth as auth_router, health, tenders
 
 app = FastAPI(title="TenderAI API")
 
@@ -19,4 +21,5 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
-app.include_router(tenders.router)
+app.include_router(auth_router.router)
+app.include_router(tenders.router, dependencies=[Depends(current_user)])
