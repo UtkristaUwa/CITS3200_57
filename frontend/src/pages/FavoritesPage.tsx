@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
-import { TenderCard } from '../components/TenderCard';
+import { TenderCard, TenderDetailModal } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
@@ -11,10 +11,7 @@ export default function FavoritesPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const toggleExpanded = (tenderId: string) =>
-    setExpandedId((prev) => (prev === tenderId ? null : tenderId));
+  const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
 
   const { favorites, toggleFavorite, loadingFavorites } = useFavorites();
   const filterProps = useTenderFilters();
@@ -22,7 +19,6 @@ export default function FavoritesPage() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setExpandedId(null);
     getTenders({
       limit: 50,
       q: filterProps.searchQuery || undefined,
@@ -88,12 +84,16 @@ export default function FavoritesPage() {
             tender={tender}
             isFavorite={true}
             onToggleFavorite={toggleFavorite}
-            expanded={expandedId === tender.tender_id}
-            onToggleExpand={toggleExpanded}
+            onOpenDetails={setSelectedTender}
           />
         ))}
 
       </Container>
+      <TenderDetailModal
+        tender={selectedTender}
+        open={selectedTender !== null}
+        onClose={() => setSelectedTender(null)}
+      />
     </Box>
   );
 }
