@@ -1,0 +1,39 @@
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1
+ENV RUNNING_IN_CONTAINER=1
+
+WORKDIR /app
+
+# --- Chrome layer, copied from web_scrapers/Dockerfile ---
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates curl gnupg xvfb xauth \
+        fonts-liberation fonts-dejavu-core \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+        | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
+http://dl.google.com/linux/chrome/deb/ stable main" \
+        > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends google-chrome-stable \
+    && apt-get purge -y --auto-remove curl gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV HOME=/tmp
+# --- end Chrome layer ---
+
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY manager.py ./manager.py
+COPY attachment_store.py ./attachment_store.py
+COPY error_scrapers/ ./error_scrapers/
+COPY web_scrapers/ ./web_scrapers/
+COPY ingestion/ ./ingestion/
+COPY data_ingestion/ ./data_ingestion/
+COPY document_scraper/ ./document_scraper/
+
+ENV SCRAPE_LIMIT=10
+
+ENTRYPOINT ["python", "manager.py"]

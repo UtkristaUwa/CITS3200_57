@@ -15,10 +15,13 @@ import {
   TableCell,
   TableBody,
   Chip,
+  Switch,
+  Tooltip,
 } from '@mui/material';
 import { httpsCallable } from 'firebase/functions';
 import { functions, db } from '../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { useAuth } from '../lib/AuthContext';
 
 interface UserRow {
   id: string;
@@ -29,6 +32,7 @@ interface UserRow {
 }
 
 export default function UserManagementPage() {
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [makeAdmin, setMakeAdmin] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -38,6 +42,12 @@ export default function UserManagementPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
+
+  // Role changes go through the setUserAdmin callable — firestore.rules makes
+  // isAdmin unwritable from the browser on purpose, so this cannot be a
+  // direct Firestore write.
+  const [savingUid, setSavingUid] = useState<string | null>(null);
+  const [roleError, setRoleError] = useState<string | null>(null);
 
   const loadUsers = async () => {
     setLoadingUsers(true);
@@ -95,6 +105,27 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleToggleAdmin = async (target: UserRow, nextIsAdmin: boolean) => {
+    setRoleError(null);
+    setSavingUid(target.id);
+
+    try {
+      const setUserAdmin = httpsCallable(functions, 'setUserAdmin');
+      await setUserAdmin({ uid: target.id, isAdmin: nextIsAdmin });
+      // Patch the row rather than refetching the whole collection — the
+      // server is the only writer, so there is nothing else to pick up.
+      setUsers((prev) =>
+        prev.map((u) => (u.id === target.id ? { ...u, isAdmin: nextIsAdmin } : u))
+      );
+    } catch (err: unknown) {
+      // The callable's HttpsError message is written for the user
+      // ("You can't remove your own admin access"), so show it as-is.
+      setRoleError(err instanceof Error ? err.message : 'Failed to change role.');
+    } finally {
+      setSavingUid(null);
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
@@ -134,6 +165,8 @@ export default function UserManagementPage() {
           Current users
         </Typography>
 
+        {roleError && <Alert severity="error" sx={{ mb: 2 }}>{roleError}</Alert>}
+
         {loadingUsers && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
             <CircularProgress />
@@ -157,7 +190,35 @@ export default function UserManagementPage() {
                 <TableRow key={u.id}>
                   <TableCell>{u.email}</TableCell>
                   <TableCell>
-                    {u.isAdmin ? <Chip label="Admin" color="primary" size="small" /> : 'User'}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Tooltip
+                        title={
+                          u.id === user?.uid
+                            ? "You can't change your own role"
+                            : u.isAdmin
+                              ? 'Revoke admin access'
+                              : 'Grant admin access'
+                        }
+                      >
+                        {/* span so the tooltip still shows on a disabled switch */}
+                        <span>
+                          <Switch
+                            size="small"
+                            checked={u.isAdmin}
+                            disabled={savingUid === u.id || u.id === user?.uid}
+                            onChange={(e) => handleToggleAdmin(u, e.target.checked)}
+                          />
+                        </span>
+                      </Tooltip>
+                      {u.isAdmin ? (
+                        <Chip label="Admin" color="primary" size="small" />
+                      ) : (
+                        'User'
+                      )}
+                      {u.id === user?.uid && (
+                        <Chip label="You" size="small" variant="outlined" />
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>
                     {u.status === 'active' ? (

@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// TenderAI Firestore rules.
+//
+// Authentication is a gate, not a permission system: every signed-in user is
+// entitled to see the same tenders. The only per-user state is which tenders
+// someone has favourited, which lives on their own users/{uid} document.
+//
+// That document also carries `isAdmin`, and the browser has to be able to write
+// to it for favourites to work — so these rules exist to say which fields a
+// client may touch. Without them, any user could grant themselves admin, which
+// unlocks the user-management page and the inviteUser function (that function
+// authorises by reading this same field), and from there the sign-in gate can be
+// opened from the inside.
+//
+// Deploy with: firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Which fields this write is trying to change.
+    function touched() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // AuthContext flips status pending -> active on first successful login, to
+    // prove an invited user set their password. That is the only status change a
+    // client may make, and only in that direction.
+    function statusChangeIsFirstLogin() {
+      return !touched().hasAny(['status'])
+             || (resource.data.get('status', '') == 'pending'
+                 && request.resource.data.status == 'active');
+    }
+
+    match /users/{uid} {
+      // Shared internal tool: everyone signed in can read the profile list, and
+      // the admin Users page depends on it. Nothing secret lives here.
+      allow read: if signedIn();
+
+      // Own document only, and only the two fields the UI legitimately writes.
+      // Note what this excludes: isAdmin, email, active, createdAt, invitedBy.
+      allow update: if isSelf(uid)
+                    && touched().hasOnly(['favoriteTenderIds', 'status'])
+                    && statusChangeIsFirstLogin();
+
+      // Profile documents are created and removed server side only — by
+      // api/app/auth.py on first Entra sign-in, or by the inviteUser function.
+      // Both use the Admin SDK, which bypasses these rules entirely.
+      //
+      // This is deliberately strict: a client that could create its own profile
+      // could recreate one for a revoked account, and a document carrying
+      // neither `active` nor `status` reads as active to the API.
+      allow create, delete: if false;
+    }
+
+    // Email-keyed invites, read and deleted by the API's Admin SDK. No client
+    // has any business here.
+    match /pending_users/{email} {
+      allow read, write: if false;
+    }
+
+    // Anything not named above is closed. New collections must opt in here.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
