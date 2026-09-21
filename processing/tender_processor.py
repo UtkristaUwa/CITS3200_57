@@ -19,7 +19,7 @@ Environment:
     export GEMINI_API_KEY="your_api_key_here"
     export TENDER_PROCESSOR_CONFIG="/path/to/custom_config.cfg"  # optional
 """
-
+import re
 import os
 import json
 import time
