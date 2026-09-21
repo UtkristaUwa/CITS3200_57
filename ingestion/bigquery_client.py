@@ -70,7 +70,7 @@ CONTENT_FIELDS = [
     "lodgment_address",
     "documents",
     "raw_extra",
-    "embedding"
+    "embedding",
 ]
 
 # Columns returned/selected for a tenders row, in one place so the SELECT
@@ -102,6 +102,7 @@ ALL_COLUMNS = [
     "last_scanned_at",
     "updated_at",
     "raw_extra",
+    "embedding",
 ]
 
 
