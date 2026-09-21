@@ -21,6 +21,10 @@ import attachment_store
 # Import the BigQuery upload function
 from ingestion.bigquery_client import get_client, upsert_tender
 
+#for ved embedding in tables
+from google import genai
+from google.cloud import bigquery
+
 # Initialize BigQuery client
 bq_client = get_client()
 
@@ -42,6 +46,28 @@ SCRAPERS = [
 # stray folder should not end up filed under the wrong portal.
 UNKNOWN_SOURCE_ID = "unknown"
 
+# Initialize the Vertex AI Gemini client using existing ADC credentials
+ai_client = genai.Client(
+    vertexai=True,
+    project="tenderai-dev",
+    location="australia-southeast1",
+)
+def generate_embedding(text: str) -> list[float]:
+    """
+    Converts the ai summary into a 768-dimensional float vector
+    Safely truncated to 2000 characters to respect token limits.
+    """
+    if not text or not text.strip():
+        return []
+    try:
+        response = ai_client.models.embed_content(
+            model="text-embedding-001",#todo change to be in config file
+            contents=text[:2000]
+        )
+        return response.embeddings[0].values
+    except Exception as err:
+        logger.error(f"Failed to generate embedding: {err}")
+        return []
 
 def _folders_and_attachments(result):
     """
@@ -168,6 +194,17 @@ def main():
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
+            # todo generate embeddings
+            logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")
+
+            # combine fields that we vectorise
+            title = current_tender.get("title") or ""
+            summary = current_tender.get("description") or ""
+
+            embed = f"Title: {title}. Summary: {summary}".strip()
+
+            # assign embedded information to current tender
+            current_tender["embedding"] = generate_embedding(embed)
 
             # Try to upload to BigQuery
             logger.info("Uploading processed tender to BigQuery...")
