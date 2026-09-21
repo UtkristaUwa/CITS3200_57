@@ -46,6 +46,8 @@ class TenderOut(BaseModel):
     updated_at: datetime
 
     raw_extra: dict | None = None
+    # Vector search score (cosine distance computed by BigQuery VECTOR_SEARCH)
+    distance: float | None = None
 
     @field_validator("title", mode="before")
     @classmethod
