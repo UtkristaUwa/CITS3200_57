@@ -58,11 +58,19 @@ def generate_embedding(text: str) -> list[float]:
     Safely truncated to 2000 characters to respect token limits.
     """
     if not text or not text.strip():
+        logger.warning("Empty text passed to generate_embedding; returning empty vector.")
         return []
     try:
         response = ai_client.models.embed_content(
-            model="text-embedding-001",#todo change to be in config file
+            model="text-embedding-004",#todo change to be in config file
             contents=text[:2000]
+        )
+        # Log vector diagnostics
+        values = response.embeddings[0].values
+        logger.info(
+            f"Generated embedding: {len(values)} dimensions. "
+            f"Preview (first 5): {[round(x, 4) for x in values[:5]]} | "
+            f"Range: [{round(min(values), 4)}, {round(max(values), 4)}]"
         )
         return response.embeddings[0].values
     except Exception as err:
