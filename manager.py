@@ -34,8 +34,8 @@ SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
 SCRAPERS = [
     ("austender", run_austender),
     ("grantconnect", run_grantconnect),
-    ("buynsw", run_buynsw)
-    #("tenders_act", run_act),
+    ("buynsw", run_buynsw),
+    ("tenders_act", run_act)
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
