@@ -384,7 +384,7 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, 
 def main():
     import logging
     logging.basicConfig(level=logging.INFO)
-    code, tenders = run_scraper(limit=2)
+    code, tenders = run_scraper()#limit=2)
     print(f"buy.nsw run finished with code {code}, {len(tenders)} tenders scraped")
 
 

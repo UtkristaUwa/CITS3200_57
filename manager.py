@@ -31,7 +31,7 @@ bq_client = get_client()
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
-SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
+SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "30"))
 
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
