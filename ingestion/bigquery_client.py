@@ -70,6 +70,7 @@ CONTENT_FIELDS = [
     "lodgment_address",
     "documents",
     "raw_extra",
+    "embedding"
 ]
 
 # Columns returned/selected for a tenders row, in one place so the SELECT
