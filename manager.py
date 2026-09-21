@@ -35,7 +35,7 @@ SCRAPERS = [
     ("austender", run_austender),
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
-    ("tenders_act", run_act),
+    ("tenders_act", run_act)
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a

@@ -67,6 +67,7 @@ class TenderSummary(BaseModel):
 class TenderFields(BaseModel):
     source_id: Optional[str] = Field(default=None)
     source_reference_id: Optional[str] = Field(default=None)
+    source_url: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     issuing_agency: Optional[str] = Field(default=None)
     category: Optional[str] = Field(default=None)
@@ -475,6 +476,7 @@ def process_tender(documents_dir: str) -> dict:
         # "tender_id": None, Omit this as to not break the UID generation from BigQuery
         "source_reference_id": fields.source_reference_id,
         "source_id": fields.source_id,
+        "source_url": fields.source_url,
         "title": fields.title,
         "issuing_agency": fields.issuing_agency,
         "category": fields.category,
