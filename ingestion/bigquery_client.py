@@ -297,15 +297,18 @@ def upsert_tender(client: bigquery.Client, record: dict) -> dict:
     existing = _find_existing(client, record)
     now = _now_iso()
 
+    #
     if existing is None:
         row = {col: record.get(col) for col in ALL_COLUMNS if col in CONTENT_FIELDS
-               or col in ("source_reference_id", "source_id", "source_url")}
+               or col in ("source_reference_id", "source_id", "source_url", "embedding")}
         row["tender_id"] = str(uuid.uuid4())
         row["content_hash"] = new_hash
         row["first_seen_at"] = now
         row["last_scanned_at"] = now
         row["updated_at"] = now
         row["raw_extra"] = record.get("raw_extra")
+        row["source_url"] = record.get("source_url")  # Explicit safeguard
+        row["embedding"] = record.get("embedding")  # <--- CRITICAL FIX: Add this line!
         _load_row(client, row)
         return {"action": "inserted", "tender_id": row["tender_id"]}
 

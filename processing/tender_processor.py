@@ -460,9 +460,36 @@ def process_tender(documents_dir: str) -> dict:
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
 
+
     # 1. AI Summarisation & Extraction
     summary = summarise_tender(raw_context)
     fields = extract_tender_fields(raw_context)
+
+    #------------------------------------------------
+    #attempt fix for missing source url
+    # ------------------------------------------------
+    source_url = getattr(fields, "source_url", None) or getattr(fields, "detail_url", None)
+
+    # Fallback: parse "Detail URL: <url>" from raw_context if LLM didn't extract it
+    if not source_url and raw_context:
+        url_match = re.search(r"Detail URL:\s*(https?://[^\s\n\r]+)", raw_context)
+        if url_match:
+            source_url = url_match.group(1).strip()
+            # Fallback 2 (Bug 3 Fix): Inspect disk directly if raw_context missed the master text file
+            if not source_url and os.path.exists(documents_dir):
+                for fname in os.listdir(documents_dir):
+                    if fname.lower().endswith(".txt"):
+                        fpath = os.path.join(documents_dir, fname)
+                        try:
+                            with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                                disk_match = re.search(r"Detail URL:\s*(https?://[^\s\n\r]+)", f.read())
+                                if disk_match:
+                                    source_url = disk_match.group(1).strip()
+                                    break
+                        except Exception:
+                            pass
+            # -------------------------------------------------------------
+    # ------------------------------------------------
 
     # 2. Clean dates for BigQuery DATE format (YYYY-MM-DD)
     publish_date_bq = fields.publish_date.split("T")[0] if fields.publish_date else None
@@ -476,6 +503,7 @@ def process_tender(documents_dir: str) -> dict:
         "source_reference_id": fields.source_reference_id,
         "source_id": fields.source_id,
         "title": fields.title,
+        "source_url": source_url,  # <--- ADDED HERE
         "issuing_agency": fields.issuing_agency,
         "category": fields.category,
         "status": fields.status,
