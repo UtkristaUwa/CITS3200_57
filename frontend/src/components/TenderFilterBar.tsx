@@ -52,7 +52,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           fullWidth
           variant="outlined"
           size="small"
-          placeholder="Search tenders by keyword..."
+          placeholder="Search tenders..."
           value={props.searchQuery}
           onChange={(e) => props.setSearchQuery(e.target.value)}
           slotProps={{
