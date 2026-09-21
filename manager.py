@@ -10,6 +10,15 @@ from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
 from document_scraper.main import process_tenders as run_doc_scraper
+from error_scrapers import common
+
+FAILURE_CODES = {
+    common.SITE_TOTAL_FAILURE,
+    common.SITE_LOGIN_FAILED,
+    common.SITE_BOT_BLOCKED,
+    common.SITE_STRUCTURE_CHANGE,
+    common.SITE_RATE_LIMITED,
+}
 
 # Improt tender processing code
 from processing.tender_processor import process_tender
@@ -42,6 +51,13 @@ SCRAPERS = [
 # stray folder should not end up filed under the wrong portal.
 UNKNOWN_SOURCE_ID = "unknown"
 
+def _site_code(result):
+    """Status code from a (code, tenders) result, or None for scrapers
+    that return nothing."""
+    if isinstance(result, tuple) and len(result) == 2 and isinstance(result[0], int):
+        return result[0]
+    return None
+
 
 def _folders_and_attachments(result):
     """
@@ -53,11 +69,11 @@ def _folders_and_attachments(result):
     """
     if not isinstance(result, tuple) or len(result) != 2:
         return []
-
     _, tenders = result
     return [
         (os.path.basename(str(tender.get("folder", "")).rstrip("/")),
-         tender.get("attachments"))
+         tender.get("attachments"),
+         tender.get("source_url"))
         for tender in (tenders or [])
         if tender.get("folder")
     ]
@@ -74,18 +90,17 @@ def run_scrapers(temp_dir):
     """
     Run every configured scraper into temp_dir.
 
-    Returns {folder_name: (source_id, attachments_or_None)}. One scraper
-    failing no longer stops the run -- with several portals configured,
-    losing all of them because one site changed its markup is worse than
-    an incomplete day.
-
     Scrapers that report what they saved are used directly. For the older
     ones that return nothing, we note which folders appeared while they
     were running and attribute those to them -- otherwise their tenders
     end up filed in the bucket under "unknown", with no way to tell later
     which portal they came from.
-    """
+
+    Returns (manifest, failures). manifest is
+    {folder_name: (source_id, attachments_or_None, source_url_or_None)};
+    failures is a list of (source_id, reason)."""
     manifest = {}
+    failures = []
 
     for source_id, scrape in SCRAPERS:
         logger.info(f"Executing scraper: {source_id}")
@@ -95,16 +110,23 @@ def run_scrapers(temp_dir):
             result = scrape(limit=SCRAPE_LIMIT, output_dir=temp_dir)
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
+            failures.append((source_id, f"exception: {e}"))
             continue
 
+        code = _site_code(result)
+        if code in FAILURE_CODES:
+            logger.error(f"Scraper '{source_id}' reported failure code {code}")
+            failures.append((source_id, f"code {code}"))
+        elif code == common.TENDER_PARTIAL:
+            logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
+
         for folder_name in _folders_in(temp_dir) - before:
-            manifest[folder_name] = (source_id, None)
+            manifest[folder_name] = (source_id, None, None)
 
-        # A reported manifest is better than the guess above, so it wins.
-        for folder_name, attachments in _folders_and_attachments(result):
-            manifest[folder_name] = (source_id, attachments)
+        for folder_name, attachments, source_url in _folders_and_attachments(result):
+            manifest[folder_name] = (source_id, attachments, source_url)
 
-    return manifest
+    return manifest, failures
 
 def main():
     logger.info("Starting Daily Tender Pipeline...")
@@ -116,7 +138,7 @@ def main():
         # 2. Run the Web Scrapers
         # We pass the temp_dir so they download HTML metadata and PDFs directly
         # into RAM
-        scraped = run_scrapers(temp_dir)
+        scraped, failures = run_scrapers(temp_dir)
 
         tender_folders = sorted(
             name for name in os.listdir(temp_dir)
@@ -141,8 +163,8 @@ def main():
 
         for tender_folder_name in tender_folders:
             tender_path = os.path.join(temp_dir, tender_folder_name)
-            source_id, attachments = scraped.get(
-                tender_folder_name, (UNKNOWN_SOURCE_ID, None)
+            source_id, attachments, source_url = scraped.get(
+                tender_folder_name, (UNKNOWN_SOURCE_ID, None, None)
             )
 
             # 4a. Copy the originals into Cloud Storage and drop the local
@@ -165,6 +187,8 @@ def main():
                 current_tender = process_tender(tender_path)
                 if current_tender is not None:
                     current_tender["source_id"] = source_id
+                    if source_url:
+                        current_tender["source_url"] = source_url
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
@@ -196,6 +220,10 @@ def main():
 
     # Once the 'with' block ends, Python permanently deletes the temp_dir and all files inside it.
     logger.info("Pipeline finished. Temporary files wiped from memory.")
+    if failures:
+        summary = ", ".join(f"{s} ({why})" for s, why in failures)
+        logger.error(f"Pipeline finished with scraper failures: {summary}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

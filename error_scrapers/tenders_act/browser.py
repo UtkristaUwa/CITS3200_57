@@ -42,6 +42,12 @@ LIST_URL = f"{BASE_URL}/tenders/open"
 USERNAME = os.environ.get("ACT_USERNAME")
 PASSWORD = os.environ.get("ACT_PASSWORD")
 
+LOGIN_ERROR_TEXT = "Invalid username/password combination"
+
+# How many times get() tries a page, and how long it waits for a selector.
+GET_ATTEMPTS = 3
+WAIT_TIMEOUT = 30
+
 
 class BrowserSession:
     """
@@ -74,28 +80,83 @@ class BrowserSession:
         )
         self.sb = self._sb_cm.__enter__()
         self._sb_downloads_dir = os.path.join(os.getcwd(), "downloaded_files")
+
+        # Log the browser version once, so a Chrome/driver mismatch shows up
+        # in the logs if it ever matters.
+        try:
+            caps = self.sb.driver.capabilities
+            print(f"[ACT] chrome {caps.get('browserVersion')}", flush=True)
+        except Exception:
+            pass
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._sb_cm is not None:
             self._sb_cm.__exit__(exc_type, exc_val, exc_tb)
 
-    def get(self, url: str, wait_selector: str | None = None) -> str:
-        """Navigate to url and return the rendered page's HTML."""
-        self.sb.uc_open_with_reconnect(url, reconnect_time=4)
-        if wait_selector:
-            self.sb.wait_for_element(wait_selector, timeout=15)
-        return self.sb.get_page_source()
+    def _debug_dump(self, label: str) -> None:
+        """
+        Print what the browser is currently looking at. The HTML is flattened
+        onto one line so Cloud Logging keeps it in a single entry.
+        """
+        try:
+            print(f"[ACT DEBUG] {label} title: {self.sb.get_title()}", flush=True)
+            print(f"[ACT DEBUG] {label} url: {self.sb.get_current_url()}", flush=True)
+            html = self.sb.get_page_source()[:1500].replace("\n", " ").replace("\r", " ")
+            print(f"[ACT DEBUG] {label} html: {html}", flush=True)
+        except Exception as e:
+            print(f"[ACT DEBUG] {label} could not read page: {e}", flush=True)
+
+    def get(self, url: str, wait_selector: str | None = None,
+            attempts: int = GET_ATTEMPTS) -> str:
+        """
+        Navigate to url and return the rendered page's HTML. Retries, giving
+        each attempt a longer reconnect, and dumps what the page looked like
+        whenever an attempt fails.
+        """
+        last_err = None
+        for attempt in range(1, attempts + 1):
+            try:
+                self.sb.uc_open_with_reconnect(url, reconnect_time=4 + 4 * attempt)
+                if wait_selector:
+                    self.sb.wait_for_element(wait_selector, timeout=WAIT_TIMEOUT)
+                return self.sb.get_page_source()
+            except Exception as e:
+                last_err = e
+                print(
+                    f"[ACT DEBUG] get attempt {attempt}/{attempts} failed "
+                    f"({type(e).__name__}) for {url}",
+                    flush=True,
+                )
+                self._debug_dump(f"attempt {attempt}")
+        raise last_err
 
     def login(self) -> bool:
         """Fill and submit the supplier login form. Returns True on success."""
+        if not USERNAME or not PASSWORD:
+            print("[ACT] ACT_USERNAME / ACT_PASSWORD are not set", flush=True)
+            return False
+
         self.get(LOGIN_URL, wait_selector="#supplierUsername")
         self.sb.type("#supplierUsername", USERNAME)
         self.sb.type("#supplierPassword", PASSWORD)
         self.sb.click("#supplierLoginForm button[type='submit']")
-        time.sleep(2)  # let the redirect/re-render settle
-        html = self.sb.get_page_source()
-        return "Invalid username/password combination" not in html
+
+        # Wait up to ~10s for a definite outcome instead of a blind sleep:
+        # an error message means failure, the login form disappearing means
+        # we got in.
+        for _ in range(10):
+            time.sleep(1)
+            if LOGIN_ERROR_TEXT in self.sb.get_page_source():
+                return False
+            if not self.sb.is_element_visible("#supplierLoginForm"):
+                return True
+
+        # No clear signal. If we've left the /login URL, treat it as success.
+        if "/login" not in self.sb.get_current_url():
+            return True
+        self._debug_dump("login not confirmed")
+        return False
 
     def download_via_form(self, download_docs_url: str, doc_ids: list[str]) -> str:
         """
