@@ -223,7 +223,8 @@ def main():
     if failures:
         summary = ", ".join(f"{s} ({why})" for s, why in failures)
         logger.error(f"Pipeline finished with scraper failures: {summary}")
-        sys.exit(1)
+        os._exit(1)
+    os._exit(0)
 
 
 if __name__ == "__main__":
