@@ -36,7 +36,7 @@ SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "30"))
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
-    ("austender", run_austender),
+    #("austender", run_austender),
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
     ("tenders_act", run_act),
