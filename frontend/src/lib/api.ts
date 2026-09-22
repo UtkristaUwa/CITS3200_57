@@ -140,7 +140,7 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
 export async function getLocations(): Promise<string[]> {
   const url = `${API_BASE_URL}/locations`;
   try {
-    const { data } = await axios.get<string[]>(url);
+    const { data } = await http.get<string[]>(url);
     return data;
   } catch (err) {
     console.error(`Failed to load locations from ${url}`, err);

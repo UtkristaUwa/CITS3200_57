@@ -1,4 +1,6 @@
-import { AppBar, Toolbar, Typography, Button, Box, Switch, styled } from '@mui/material';
+import { useState, type MouseEvent } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Switch, styled } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
@@ -59,6 +61,20 @@ function ModeToggle() {
 export default function TopNav() {
   const { isAdmin } = useAuth();
   const location = useLocation();
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    void signOut(auth);
+  };
 
   return (
     <AppBar position="static" color="default" sx={{ mb: 3 }}>
@@ -71,8 +87,8 @@ export default function TopNav() {
         >
           TenderAI
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <ModeToggle />
+        <ModeToggle />
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1, alignItems: 'center' }}>
           <Button
             color={location.pathname === '/' ? 'primary' : 'inherit'}
             sx={{ fontWeight: location.pathname === '/' ? 700 : 400 }}
@@ -99,10 +115,60 @@ export default function TopNav() {
               Admin
             </Button>
           )}
-          <Button color="inherit" onClick={() => signOut(auth)}>
+          <Button color="inherit" onClick={() => void signOut(auth)}>
             Logout
           </Button>
         </Box>
+
+        <IconButton
+          color="inherit"
+          aria-label="Open navigation menu"
+          aria-controls={menuAnchor ? 'mobile-navigation-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={menuAnchor ? 'true' : undefined}
+          onClick={handleMenuOpen}
+          sx={{ display: { xs: 'inline-flex', sm: 'none' }, minWidth: 48, minHeight: 48 }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Menu
+          id="mobile-navigation-menu"
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={handleMenuClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{ paper: { sx: { minWidth: 180 } } }}
+        >
+          <MenuItem
+            component={RouterLink}
+            to="/"
+            selected={location.pathname === '/'}
+            onClick={handleMenuClose}
+          >
+            Home
+          </MenuItem>
+          <MenuItem
+            component={RouterLink}
+            to="/favorites"
+            selected={location.pathname === '/favorites'}
+            onClick={handleMenuClose}
+          >
+            Favorites
+          </MenuItem>
+          {isAdmin && (
+            <MenuItem
+              component={RouterLink}
+              to="/admin"
+              selected={location.pathname.startsWith('/admin')}
+              onClick={handleMenuClose}
+            >
+              Admin
+            </MenuItem>
+          )}
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );

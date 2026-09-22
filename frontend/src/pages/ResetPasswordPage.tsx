@@ -75,10 +75,13 @@ export default function ResetPasswordPage() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
+        '@supports (height: 100dvh)': { minHeight: '100dvh' },
         bgcolor: '#fcfcfc',
+        boxSizing: 'border-box',
+        p: { xs: 2, sm: 3 },
       }}
     >
-      <Card sx={{ width: 380, p: 1 }}>
+      <Card sx={{ width: '100%', maxWidth: 380, p: { xs: 0, sm: 1 }, boxSizing: 'border-box' }}>
         <CardContent>
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, textAlign: 'center' }}>
             Reset password
@@ -92,7 +95,7 @@ export default function ResetPasswordPage() {
 
           {status === 'invalid' && (
             <>
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 2, overflowWrap: 'anywhere' }}>
                 This link is invalid or has expired.
               </Alert>
               <Box sx={{ textAlign: 'center' }}>
@@ -105,7 +108,7 @@ export default function ResetPasswordPage() {
 
           {status === 'success' && (
             <>
-              <Alert severity="success" sx={{ mb: 2 }}>
+              <Alert severity="success" sx={{ mb: 2, overflowWrap: 'anywhere' }}>
                 Your password has been updated.
               </Alert>
               <Box sx={{ textAlign: 'center' }}>
@@ -118,10 +121,10 @@ export default function ResetPasswordPage() {
 
           {(status === 'ready' || status === 'submitting') && (
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {error && <Alert severity="error">{error}</Alert>}
+              {error && <Alert severity="error" sx={{ overflowWrap: 'anywhere' }}>{error}</Alert>}
 
               {email && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: 'anywhere' }}>
                   Setting a new password for <strong>{email}</strong>
                 </Typography>
               )}

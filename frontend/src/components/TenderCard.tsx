@@ -75,13 +75,27 @@ import {
     const detailsId = useId();
 
     return (
-      <Card sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+      <Card sx={{ mb: 2, minWidth: 0, border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
         <CardContent sx={{ pb: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-            <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: { xs: 1, sm: 0 },
+              minWidth: 0,
+              mb: 1.5,
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ minWidth: 0, textAlign: 'left', fontWeight: 600, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+            >
               {tender.title || 'Untitled Tender'}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, ml: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
               {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
@@ -102,7 +116,7 @@ import {
               </Tooltip>
             </Box>
           </Box>
-  
+
           <Box
             sx={{
               p: 1.5,
@@ -129,19 +143,20 @@ import {
                 WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
+                overflowWrap: 'anywhere',
               }}
             >
               {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
             </Typography>
           </Box>
 
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
             <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
           </Typography>
           <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
@@ -158,7 +173,7 @@ import {
 
         <Collapse in={expanded} timeout={300} id={detailsId}>
           <Divider sx={{ mx: 2 }} />
-          <Box sx={{ px: 2, pt: 2, textAlign: 'left' }}>
+          <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
               <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
               <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
@@ -172,7 +187,7 @@ import {
               variant="body2"
               component="div"
               sx={{
-                p: 2,
+                p: { xs: 1.5, sm: 2 },
                 bgcolor: 'background.default',
                 border: '1px solid',
                 borderColor: 'divider',
