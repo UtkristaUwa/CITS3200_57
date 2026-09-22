@@ -300,6 +300,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         "tender_id": go_id,
         "folder": folder,
         "attachments": attachments,
+        "source_url": url,
     }
 
 
