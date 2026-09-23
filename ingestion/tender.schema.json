@@ -71,6 +71,10 @@
           "parsed_at": {
             "type": ["string", "null"],
             "description": "ISO timestamp. Leave null to default to submit time."
+          },
+          "storage_uri": {
+            "type": ["string", "null"],
+            "description": "GCS URI set by attachment_store.upload_tender_attachments(). Never set by hand — the pipeline fills this in."
           }
         }
       }

@@ -1,7 +1,7 @@
 import json
 from datetime import date, datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 
 class DocumentOut(BaseModel):
@@ -10,6 +10,20 @@ class DocumentOut(BaseModel):
     file_type: str | None = None
     extracted_text: str | None = None
     parsed_at: datetime | None = None
+    storage_url: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_storage_url(cls, data: object) -> object:
+        if not isinstance(data, dict):
+            return data
+        if data.get("storage_url"):
+            return data
+        uri = data.get("storage_uri")
+        if uri and isinstance(uri, str) and uri.startswith("gs://"):
+            data = dict(data)
+            data["storage_url"] = "https://storage.googleapis.com/" + uri[len("gs://"):]
+        return data
 
 
 class TenderOut(BaseModel):
