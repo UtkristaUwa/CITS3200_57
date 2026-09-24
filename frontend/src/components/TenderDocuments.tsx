@@ -20,8 +20,21 @@ function fileExtension(fileName: string): string {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
 }
 
+function deriveDisplayName(doc: TenderDocument): string {
+  if (!doc.storage_url) return doc.file_name;
+  try {
+    const pathPart = new URL(doc.storage_url).pathname.split('/').pop() ?? '';
+    if (!pathPart) return doc.file_name;
+    const decoded = decodeURIComponent(pathPart);
+    // Strip the 16-char hex hash prefix: "f239d7a8b595541c-filename.pdf" → "filename.pdf"
+    return decoded.replace(/^[0-9a-f]{16}-/i, '');
+  } catch {
+    return doc.file_name;
+  }
+}
+
 function FileTypeIcon({ doc }: { doc: TenderDocument }) {
-  const ext = fileExtension(doc.file_name);
+  const ext = fileExtension(deriveDisplayName(doc));
   if (doc.file_type === 'pdf' || ext === 'pdf') {
     return <PictureAsPdfIcon sx={{ fontSize: 18, color: '#c62828', flexShrink: 0 }} aria-hidden />;
   }
@@ -38,7 +51,7 @@ function FileTypeIcon({ doc }: { doc: TenderDocument }) {
 }
 
 function canViewInline(doc: TenderDocument): boolean {
-  const ext = fileExtension(doc.file_name);
+  const ext = fileExtension(deriveDisplayName(doc));
   return doc.file_type === 'pdf' || ext === 'pdf';
 }
 
@@ -62,12 +75,13 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
   const [downloading, setDownloading] = useState(false);
   const hasUrl = Boolean(doc.storage_url);
   const viewable = canViewInline(doc);
+  const displayName = deriveDisplayName(doc);
 
   async function handleDownload() {
     if (!doc.storage_url) return;
     setDownloading(true);
     try {
-      await triggerDownload(doc.storage_url, doc.file_name);
+      await triggerDownload(doc.storage_url, displayName);
     } finally {
       setDownloading(false);
     }
@@ -89,7 +103,7 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
     >
       <FileTypeIcon doc={doc} />
 
-      <Tooltip title={doc.file_name} placement="top" enterDelay={600}>
+      <Tooltip title={displayName} placement="top" enterDelay={600}>
         <Typography
           variant="body2"
           sx={{
@@ -101,18 +115,18 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
             color: 'text.primary',
           }}
         >
-          {doc.file_name}
+          {displayName}
         </Typography>
       </Tooltip>
 
       <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
-        <Tooltip title={hasUrl ? `Download ${doc.file_name}` : 'File not yet available'}>
+        <Tooltip title={hasUrl ? `Download ${displayName}` : 'File not yet available'}>
           <span>
             <IconButton
               size="small"
               onClick={handleDownload}
               disabled={!hasUrl || downloading}
-              aria-label={`Download ${doc.file_name}`}
+              aria-label={`Download ${displayName}`}
               sx={{ minWidth: 36, minHeight: 36 }}
             >
               {downloading ? (
@@ -125,13 +139,13 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
         </Tooltip>
 
         {viewable && (
-          <Tooltip title={hasUrl ? `View ${doc.file_name}` : 'File not yet available'}>
+          <Tooltip title={hasUrl ? `View ${displayName}` : 'File not yet available'}>
             <span>
               <IconButton
                 size="small"
-                onClick={() => doc.storage_url && openInline(doc.storage_url, doc.file_name)}
+                onClick={() => doc.storage_url && openInline(doc.storage_url, displayName)}
                 disabled={!hasUrl}
-                aria-label={`View ${doc.file_name} in browser`}
+                aria-label={`View ${displayName} in browser`}
                 sx={{ minWidth: 36, minHeight: 36 }}
               >
                 <OpenInNewIcon sx={{ fontSize: 18 }} />
@@ -146,7 +160,8 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
 
 export function TenderDocuments({ documents }: { documents: TenderDocument[] }) {
   const visible = documents.filter(d =>
-    !d.file_name.startsWith('__tender__') && !d.file_name.endsWith('.txt')
+    !d.file_name.startsWith('__tender__') &&
+    !(d.file_name.endsWith('.txt') && !d.storage_url && !/\s/.test(d.file_name))
   );
 
   return (

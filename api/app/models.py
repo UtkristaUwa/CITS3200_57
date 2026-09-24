@@ -1,7 +1,12 @@
 import json
+import re
 from datetime import date, datetime
 
 from pydantic import BaseModel, field_validator, model_validator
+
+# Old-style pipeline metadata files were stored as "<tender_id>.txt" with no
+# storage_uri. New-style use the __tender__ prefix. Both should be hidden.
+_PIPELINE_ID_RE = re.compile(r'^[A-Za-z0-9._-]+\.txt$')
 
 
 class DocumentOut(BaseModel):
@@ -87,7 +92,7 @@ class TenderOut(BaseModel):
             d for d in docs
             if not (isinstance(d, dict) and (
                 d.get("file_name", "").startswith("__tender__") or
-                d.get("file_name", "").endswith(".txt")
+                (not d.get("storage_uri") and _PIPELINE_ID_RE.match(d.get("file_name", "")))
             ))
         ]
 
