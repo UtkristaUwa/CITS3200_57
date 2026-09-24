@@ -85,7 +85,10 @@ class TenderOut(BaseModel):
             return docs
         return [
             d for d in docs
-            if not (isinstance(d, dict) and d.get("file_name", "").startswith("__tender__"))
+            if not (isinstance(d, dict) and (
+                d.get("file_name", "").startswith("__tender__") or
+                d.get("file_name", "").endswith(".txt")
+            ))
         ]
 
 

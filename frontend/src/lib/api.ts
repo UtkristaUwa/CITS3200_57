@@ -138,6 +138,14 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
   }
 }
 
+export async function getDocumentBlob(storageUrl: string, filename: string): Promise<Blob> {
+  const { data } = await http.get<Blob>(`${API_BASE_URL}/documents/download`, {
+    params: { storage_url: storageUrl, filename },
+    responseType: 'blob',
+  });
+  return data;
+}
+
 export async function getLocations(): Promise<string[]> {
   const url = `${API_BASE_URL}/locations`;
   try {

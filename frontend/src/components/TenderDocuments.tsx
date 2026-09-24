@@ -14,6 +14,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import type { TenderDocument } from '../lib/api';
+import { getDocumentBlob } from '../lib/api';
 
 function fileExtension(fileName: string): string {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
@@ -42,33 +43,19 @@ function canViewInline(doc: TenderDocument): boolean {
 }
 
 async function triggerDownload(url: string, fileName: string): Promise<void> {
-  try {
-    const response = await fetch(url, { mode: 'cors' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = objectUrl;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(objectUrl);
-  } catch {
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.click();
-  }
+  const blob = await getDocumentBlob(url, fileName);
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(objectUrl);
 }
 
-function openInline(url: string): void {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.set('response-content-disposition', 'inline');
-    window.open(parsed.toString(), '_blank', 'noopener,noreferrer');
-  } catch {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
+async function openInline(url: string, fileName: string): Promise<void> {
+  const blob = await getDocumentBlob(url, fileName);
+  const objectUrl = URL.createObjectURL(blob);
+  window.open(objectUrl, '_blank', 'noopener,noreferrer');
 }
 
 function DocumentRow({ doc }: { doc: TenderDocument }) {
@@ -142,7 +129,7 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
             <span>
               <IconButton
                 size="small"
-                onClick={() => doc.storage_url && openInline(doc.storage_url)}
+                onClick={() => doc.storage_url && openInline(doc.storage_url, doc.file_name)}
                 disabled={!hasUrl}
                 aria-label={`View ${doc.file_name} in browser`}
                 sx={{ minWidth: 36, minHeight: 36 }}
@@ -158,7 +145,9 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
 }
 
 export function TenderDocuments({ documents }: { documents: TenderDocument[] }) {
-  const visible = documents.filter(d => !d.file_name.startsWith('__tender__'));
+  const visible = documents.filter(d =>
+    !d.file_name.startsWith('__tender__') && !d.file_name.endsWith('.txt')
+  );
 
   return (
     <Box sx={{ mt: 2 }}>

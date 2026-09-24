@@ -1,11 +1,14 @@
 from typing import Literal
 from datetime import date
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 
-from app.bigquery import get_client, list_tenders, get_locations
+from app.bigquery import get_client, get_storage_client, list_tenders, get_locations
 from app.config import settings
 from app.models import TenderOut
+
+_ALLOWED_BUCKET_PREFIX = "tenderai-"
 
 router = APIRouter()
 
@@ -182,6 +185,38 @@ def get_tenders(
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
     )
     return [TenderOut(**row) for row in rows]
+@router.get("/documents/download")
+def download_document(
+    storage_url: str = Query(..., description="HTTPS GCS URL from a TenderDocument"),
+    filename: str = Query(..., max_length=500, description="Filename for Content-Disposition"),
+) -> StreamingResponse:
+    prefix = "https://storage.googleapis.com/"
+    if not storage_url.startswith(prefix):
+        raise HTTPException(status_code=400, detail="Invalid storage URL")
+    path = storage_url[len(prefix):]
+    parts = path.split("/", 1)
+    if len(parts) != 2 or not parts[0].startswith(_ALLOWED_BUCKET_PREFIX):
+        raise HTTPException(status_code=400, detail="Invalid storage URL")
+    bucket_name, blob_path = parts
+
+    client = get_storage_client()
+    blob = client.bucket(bucket_name).blob(blob_path)
+
+    try:
+        data = blob.download_as_bytes()
+    except Exception:
+        raise HTTPException(status_code=404, detail="File not found or inaccessible")
+
+    safe_name = filename.replace('"', "_")
+    blob.reload()
+    content_type = blob.content_type or "application/octet-stream"
+    return StreamingResponse(
+        iter([data]),
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{safe_name}"'},
+    )
+
+
 @router.get("/locations", response_model=list[str])
 def list_locations() -> list[str]:
     if settings.use_mock_data:
