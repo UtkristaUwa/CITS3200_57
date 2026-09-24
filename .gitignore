@@ -50,3 +50,5 @@ env/
 downloaded_files/
 latest_logs/
 *.lock
+*.tmp
+*.tmp.*
