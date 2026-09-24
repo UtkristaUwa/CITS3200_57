@@ -60,6 +60,7 @@ export interface TenderDocument {
   file_type: string | null;
   extracted_text: string | null;
   parsed_at: string | null;
+  storage_url: string | null;
 }
 
 export interface Tender {

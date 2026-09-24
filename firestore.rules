@@ -3,8 +3,8 @@ rules_version = '2';
 // TenderAI Firestore rules.
 //
 // Authentication is a gate, not a permission system: every signed-in user is
-// entitled to see the same tenders. The only per-user state is which tenders
-// someone has favourited, which lives on their own users/{uid} document.
+// entitled to see the same tenders. Per-user favourites and the last tender
+// visit timestamp live on the user's own users/{uid} document.
 //
 // That document also carries `isAdmin`, and the browser has to be able to write
 // to it for favourites to work — so these rules exist to say which fields a
@@ -40,16 +40,23 @@ service cloud.firestore {
                  && request.resource.data.status == 'active');
     }
 
+    function lastTenderVisitChangeIsValid() {
+      return !touched().hasAny(['lastTenderVisitAt'])
+             || (request.resource.data.lastTenderVisitAt is timestamp
+                 && request.resource.data.lastTenderVisitAt == request.time);
+    }
+
     match /users/{uid} {
       // Shared internal tool: everyone signed in can read the profile list, and
       // the admin Users page depends on it. Nothing secret lives here.
       allow read: if signedIn();
 
-      // Own document only, and only the two fields the UI legitimately writes.
+      // Own document only, and only the three fields the UI legitimately writes.
       // Note what this excludes: isAdmin, email, active, createdAt, invitedBy.
       allow update: if isSelf(uid)
-                    && touched().hasOnly(['favoriteTenderIds', 'status'])
-                    && statusChangeIsFirstLogin();
+                    && touched().hasOnly(['favoriteTenderIds', 'status', 'lastTenderVisitAt'])
+                    && statusChangeIsFirstLogin()
+                    && lastTenderVisitChangeIsValid();
 
       // Profile documents are created and removed server side only — by
       // api/app/auth.py on first Entra sign-in, or by the inviteUser function.
