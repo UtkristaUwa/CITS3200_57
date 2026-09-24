@@ -70,6 +70,39 @@ def explain_code(code: int | None) -> tuple[str, str, str]:
   label, chip_color = STATUS_DISPLAY.get(code, ("Unknown", "default"))
   return desc, label, chip_color
 
+def publish_health_status_to_gcs(
+    health_records: list[dict], bucket_name: str = "tenderai-dev-documents"
+):
+  """Uploads the scraper health summary JSON directly into your Google Cloud Storage bucket.
+
+  The React frontend fetches this JSON directly to render the System Health
+  table.
+  """
+  try:
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob("scraper_health.json")
+
+    # Upload formatted JSON
+    blob.upload_from_string(
+        data=json.dumps(health_records, indent=2),
+        content_type="application/json",
+    )
+
+    # Allow React frontend to read the file over standard HTTPS
+    try:
+      blob.make_public()
+    except Exception as perm_err:
+      # If uniform bucket-level access is on, public access is managed at bucket level
+      logger.debug(f"make_public skipped: {perm_err}")
+
+    logger.info(
+        f"✅ Published scraper health status ({len(health_records)} records) to"
+        f" gs://{bucket_name}/scraper_health.json"
+    )
+  except Exception as e:
+    logger.error(f"❌ Failed to publish health status JSON to Cloud Storage: {e}")
+
 # Improt tender processing code
 from processing.tender_processor import process_tender
 
