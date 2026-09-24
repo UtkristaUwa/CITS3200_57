@@ -259,7 +259,7 @@ load_config()
 def iter_tender_documents(directory: str):
     """Yield paths to every .txt document in a tender's directory."""
     for name in sorted(os.listdir(directory)):
-        if name.lower().endswith(".txt"):
+        if name.lower().endswith(".txt") and not name.startswith("__tender__"):
             yield os.path.join(directory, name)
 
 

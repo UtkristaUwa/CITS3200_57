@@ -143,7 +143,7 @@ import {
                 overflowWrap: 'anywhere',
               }}
             >
-              {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
+              {tender.summary_headline ?? (tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.')}
             </Typography>
           </Box>
 
@@ -199,7 +199,6 @@ import {
             >
               {tender.description ?? 'No description extracted for this tender.'}
             </Typography>
-
             <TenderDocuments documents={tender.documents} />
           </Box>
         </Collapse>

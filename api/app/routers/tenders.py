@@ -32,9 +32,14 @@ _MOCK_TENDERS = [
         "value_currency": "AUD",
         "value_notes": None,
         "location": "Victoria",
+        "summary_headline": "DFFH seeks an independent evaluator for a state-wide early childhood program.",
         "description": (
             "The Department is seeking an experienced provider to conduct an "
-            "independent evaluation of a state-wide early childhood program."
+            "independent evaluation of a state-wide early childhood program. "
+            "The evaluation will assess program outcomes, identify areas for improvement, "
+            "and provide recommendations to inform future policy and investment decisions. "
+            "Providers must demonstrate experience in evaluation methodology, stakeholder "
+            "engagement, and working with government agencies."
         ),
         "contact_name": "Jane Smith",
         "contact_email": "jane.smith@example.vic.gov.au",
@@ -68,6 +73,7 @@ _MOCK_TENDERS = [
         "value_currency": None,
         "value_notes": "$1M-$5M range",
         "location": "Regional Victoria",
+        "summary_headline": "DoTP seeks a contractor for ongoing maintenance of regional arterial roads.",
         "description": "Ongoing maintenance works across regional arterial roads.",
         "contact_name": None,
         "contact_email": "procurement@transport.vic.gov.au",

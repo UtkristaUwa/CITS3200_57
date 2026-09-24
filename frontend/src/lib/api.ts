@@ -79,6 +79,7 @@ export interface Tender {
   value_notes: string | null;
   location: string | null;
   description: string | null;
+  summary_headline: string | null;
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;

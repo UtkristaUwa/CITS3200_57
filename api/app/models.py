@@ -46,6 +46,7 @@ class TenderOut(BaseModel):
 
     location: str | None = None
     description: str | None = None
+    summary_headline: str | None = None
 
     contact_name: str | None = None
     contact_email: str | None = None
@@ -74,6 +75,18 @@ class TenderOut(BaseModel):
         if isinstance(v, str):
             return json.loads(v)
         return v
+
+    @field_validator("documents", mode="before")
+    @classmethod
+    def strip_pipeline_files(cls, docs):
+        # Safety net: drop __tender__*.txt rows that the pipeline writes for
+        # its own use and that should never surface as downloadable attachments.
+        if not isinstance(docs, list):
+            return docs
+        return [
+            d for d in docs
+            if not (isinstance(d, dict) and d.get("file_name", "").startswith("__tender__"))
+        ]
 
 
 class HealthOut(BaseModel):
