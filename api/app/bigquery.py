@@ -2,7 +2,7 @@ import json
 
 from functools import lru_cache
 
-from google.cloud import bigquery
+from google.cloud import bigquery, storage as gcs
 
 from app.config import settings
 
@@ -43,6 +43,10 @@ ALL_COLUMNS = [
 @lru_cache
 def get_client() -> bigquery.Client:
     return bigquery.Client(project=settings.google_cloud_project)
+
+@lru_cache
+def get_storage_client() -> gcs.Client:
+    return gcs.Client(project=settings.google_cloud_project)
 
 
 def list_tenders(
