@@ -159,10 +159,7 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
 }
 
 export function TenderDocuments({ documents }: { documents: TenderDocument[] }) {
-  const visible = documents.filter(d =>
-    !d.file_name.startsWith('__tender__') &&
-    !(d.file_name.endsWith('.txt') && !d.storage_url && !/\s/.test(d.file_name))
-  );
+  const visible = documents.filter(d => Boolean(d.storage_url));
 
   return (
     <Box sx={{ mt: 2 }}>

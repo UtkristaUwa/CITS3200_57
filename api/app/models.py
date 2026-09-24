@@ -1,12 +1,7 @@
 import json
-import re
 from datetime import date, datetime
 
 from pydantic import BaseModel, field_validator, model_validator
-
-# Old-style pipeline metadata files were stored as "<tender_id>.txt" with no
-# storage_uri. New-style use the __tender__ prefix. Both should be hidden.
-_PIPELINE_ID_RE = re.compile(r'^[A-Za-z0-9._-]+\.txt$')
 
 
 class DocumentOut(BaseModel):
@@ -83,18 +78,13 @@ class TenderOut(BaseModel):
 
     @field_validator("documents", mode="before")
     @classmethod
-    def strip_pipeline_files(cls, docs):
-        # Safety net: drop __tender__*.txt rows that the pipeline writes for
-        # its own use and that should never surface as downloadable attachments.
+    def keep_only_uploaded_files(cls, docs):
+        # Only surface documents that have been uploaded to GCS. Everything
+        # without a storage_uri is either a pipeline metadata file or an
+        # unprocessed text extraction — neither is a user-facing attachment.
         if not isinstance(docs, list):
             return docs
-        return [
-            d for d in docs
-            if not (isinstance(d, dict) and (
-                d.get("file_name", "").startswith("__tender__") or
-                (not d.get("storage_uri") and _PIPELINE_ID_RE.match(d.get("file_name", "")))
-            ))
-        ]
+        return [d for d in docs if isinstance(d, dict) and d.get("storage_uri")]
 
 
 class HealthOut(BaseModel):
