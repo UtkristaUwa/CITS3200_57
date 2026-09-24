@@ -210,6 +210,9 @@ def run_scrapers(temp_dir):
     manifest = {}
     failures = []
 
+    health_records = []
+    now_iso = datetime.now(timezone.utc).isoformat()
+
     for source_id, scrape in SCRAPERS:
         logger.info(f"Executing scraper: {source_id}")
         before = _folders_in(temp_dir)
@@ -219,20 +222,50 @@ def run_scrapers(temp_dir):
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
             failures.append((source_id, f"exception: {e}"))
+
+            health_records.append({
+                "website": source_id.upper(),
+                "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+                "last_run": now_iso,
+                "status": "Error",
+                "status_color": "error",
+                "message": f"Unhandled exception: {e}",
+            })
+
             continue
 
+
         code = _site_code(result)
+
+        # 1. human-readable message, 2. table status text, 3. MUI chip color
+        explanation, label, chip_color = explain_code(code)
+
         if code in FAILURE_CODES:
-            logger.error(f"Scraper '{source_id}' reported failure code {code}")
-            failures.append((source_id, f"code {code}"))
+            logger.error(f"Scraper '{source_id}' reported failure: {explanation}")
+            failures.append((source_id, explanation))
         elif code == common.TENDER_PARTIAL:
             logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
+
+        health_records.append({
+            "website": source_id.upper(),
+            "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+            "last_run": now_iso,
+            "status": label,
+            "status_color": chip_color,
+            "message": explanation,
+        })
 
         for folder_name in _folders_in(temp_dir) - before:
             manifest[folder_name] = (source_id, None, None)
 
         for folder_name, attachments, source_url in _folders_and_attachments(result):
             manifest[folder_name] = (source_id, attachments, source_url)
+
+        #Once all scrapers have executed, upload the health_records list to Cloud Storage
+        # This creates/overwrites gs://tenderai-dev-documents/scraper_health.json
+    publish_health_status_to_gcs(
+        health_records, bucket_name="tenderai-dev-documents"
+    )
 
     return manifest, failures
 
