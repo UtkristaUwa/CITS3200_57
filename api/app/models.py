@@ -82,9 +82,17 @@ class TenderOut(BaseModel):
         # Only surface documents that have been uploaded to GCS. Everything
         # without a storage_uri is either a pipeline metadata file or an
         # unprocessed text extraction — neither is a user-facing attachment.
+        # .txt is excluded outright even if it somehow has a storage_uri: it's
+        # always a pipeline artifact (page text / extracted text), never a
+        # real tender attachment.
         if not isinstance(docs, list):
             return docs
-        return [d for d in docs if isinstance(d, dict) and d.get("storage_uri")]
+        return [
+            d for d in docs
+            if isinstance(d, dict)
+            and d.get("storage_uri")
+            and not d.get("file_name", "").lower().endswith(".txt")
+        ]
 
 
 class HealthOut(BaseModel):
