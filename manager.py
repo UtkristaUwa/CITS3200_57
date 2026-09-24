@@ -53,7 +53,6 @@ STATUS_DISPLAY = {
 }
 # Target portal URLs for the table link
 PORTAL_URL_MAP = {
-    "austender": "https://www.tenders.gov.au",
     "grantconnect": "https://www.grants.gov.au",
     "buynsw": "https://buy.nsw.gov.au",
     "tenders_act": "https://www.tenders.act.gov.au",
@@ -368,8 +367,8 @@ def main():
         summary = ", ".join(f"{s} ({why})" for s, why in failures)
         logger.error(f"Pipeline finished with scraper failures: {summary}")
 
-        #send alert email
-        send_alert_email(failures)
+        #send alert email with gcs alerts that detect the previous error and email admins
+
 
         os._exit(1)
     os._exit(0)
