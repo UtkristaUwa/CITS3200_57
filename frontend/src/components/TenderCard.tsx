@@ -54,20 +54,16 @@ import {
     );
   }
 
-  function isRecentlySeen(tender: Tender): boolean {
-    if (!tender.first_seen_at) return false;
-    const ageDays = (Date.now() - new Date(tender.first_seen_at).getTime()) / 86_400_000;
-    return ageDays <= 7;
-  }
-
   export function TenderCard({
     tender,
+    isNew = false,
     isFavorite,
     onToggleFavorite,
     expanded,
     onToggleExpand,
   }: {
     tender: Tender;
+    isNew?: boolean;
     isFavorite: boolean;
     onToggleFavorite: (tenderId: string) => void;
     expanded: boolean;
@@ -97,7 +93,7 @@ import {
               {tender.title || 'Untitled Tender'}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
-              {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
+              {isNew && <Chip label="NEW" color="primary" size="small" />}
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
                   size="small"
