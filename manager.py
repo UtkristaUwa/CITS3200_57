@@ -79,6 +79,32 @@ def _folders_and_attachments(result):
     ]
 
 
+def _merge_document_records(attachment_records, txt_documents):
+    """
+    Combine attachment_store's storage records (file_name, storage_uri,
+    file_type, checksum, ...) with the extracted text tender_processor read
+    from each attachment's sibling <base>.txt into one row per real
+    attachment -- the shape the `documents` column needs to be both
+    findable (storage_uri) and searchable (extracted_text).
+
+    txt_documents entries with no matching attachment -- the tender's own
+    <REF>.txt page text, or an extraction whose attachment failed to
+    upload -- are dropped here rather than carried into `documents`:
+    neither is a real, downloadable attachment.
+    """
+    extracted_text_by_txt_name = {
+        doc["file_name"]: doc.get("extracted_text") for doc in txt_documents
+    }
+
+    merged = []
+    for record in attachment_records:
+        record = dict(record)
+        base, _ext = os.path.splitext(record["file_name"])
+        record["extracted_text"] = extracted_text_by_txt_name.get(f"{base}.txt")
+        merged.append(record)
+    return merged
+
+
 def _folders_in(directory):
     return {
         name for name in os.listdir(directory)
@@ -189,6 +215,9 @@ def main():
                     current_tender["source_id"] = source_id
                     if source_url:
                         current_tender["source_url"] = source_url
+                    current_tender["documents"] = _merge_document_records(
+                        documents, current_tender.get("documents") or []
+                    )
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
