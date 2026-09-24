@@ -26,6 +26,7 @@ ALL_COLUMNS = [
     "value_notes",
     "location",
     "description",
+    "summary_headline",
     "contact_name",
     "contact_email",
     "contact_phone",

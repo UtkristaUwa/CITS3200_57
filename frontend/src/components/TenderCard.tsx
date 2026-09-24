@@ -16,6 +16,7 @@ import {
   import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
   import type { Tender } from '../lib/api';
+  import { TenderDocuments } from './TenderDocuments';
 
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
@@ -146,7 +147,7 @@ import {
                 overflowWrap: 'anywhere',
               }}
             >
-              {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
+              {tender.summary_headline ?? (tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.')}
             </Typography>
           </Box>
 
@@ -202,6 +203,7 @@ import {
             >
               {tender.description ?? 'No description extracted for this tender.'}
             </Typography>
+            <TenderDocuments documents={tender.documents} />
           </Box>
         </Collapse>
 
