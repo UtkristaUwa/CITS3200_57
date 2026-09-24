@@ -6,6 +6,21 @@ import { TenderCard } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
+import { useAuth } from '../lib/AuthContext';
+
+function isTenderNew(
+  tender: Tender,
+  previousTenderVisit: number | null,
+  firstTenderVisit: boolean,
+  tenderVisitReady: boolean,
+): boolean {
+  if (!tenderVisitReady || firstTenderVisit || previousTenderVisit === null || !tender.first_seen_at) {
+    return false;
+  }
+
+  const firstSeenAt = new Date(tender.first_seen_at).getTime();
+  return Number.isFinite(firstSeenAt) && firstSeenAt > previousTenderVisit;
+}
 
 export default function TendersPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
@@ -15,6 +30,7 @@ export default function TendersPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const { favorites, toggleFavorite } = useFavorites();
+  const { previousTenderVisit, firstTenderVisit, tenderVisitReady } = useAuth();
   const toggleExpand = (tenderId: string) =>
     setExpandedId((prev) => (prev === tenderId ? null : tenderId));
   
@@ -57,6 +73,7 @@ export default function TendersPage() {
   const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
+  const isDataLoading = loading || !tenderVisitReady;
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
@@ -65,20 +82,21 @@ export default function TendersPage() {
         
         <TenderFilterBar {...filterProps} />
 
-        {loading && (
+        {isDataLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
         )}
 
-        {!loading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {!isDataLoading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {!loading && !error && sortedTenders.length === 0 && (
+        {!isDataLoading && !error && sortedTenders.length === 0 && (
           <Alert severity="info">No tenders match your current filters.</Alert>
         )}
 
-        {!loading && !error && sortedTenders.map((tender) => (
+        {!isDataLoading && !error && sortedTenders.map((tender) => (
           <TenderCard
             key={tender.tender_id}
             tender={tender}
+            isNew={isTenderNew(tender, previousTenderVisit, firstTenderVisit, tenderVisitReady)}
             isFavorite={favorites.has(tender.tender_id)}
             onToggleFavorite={toggleFavorite}
             expanded={expandedId === tender.tender_id}

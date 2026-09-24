@@ -1,5 +1,5 @@
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, collection, getDocs, serverTimestamp } from 'firebase/firestore';
 import fs from 'node:fs';
 
 const env = await initializeTestEnvironment({
@@ -31,6 +31,12 @@ await check('signed-in can list users (admin page)', assertSucceeds(getDocs(coll
 // --- favourites: the one per-user thing, must work ---
 await check('can add a favourite to own doc', assertSucceeds(updateDoc(doc(alice, 'users/alice'), { favoriteTenderIds: arrayUnion('t1') })));
 await check('can flip own status pending -> active', assertSucceeds(updateDoc(doc(alice, 'users/alice'), { status: 'active' })));
+
+// --- new tender visit state: self-only, server-timestamp-only ---
+await check('can update own last tender visit', assertSucceeds(updateDoc(doc(alice, 'users/alice'), { lastTenderVisitAt: serverTimestamp() })));
+await check("cannot update another user's last tender visit", assertFails(updateDoc(doc(alice, 'users/bob'), { lastTenderVisitAt: serverTimestamp() })));
+await check('cannot smuggle isAdmin alongside last tender visit', assertFails(updateDoc(doc(alice, 'users/alice'), { lastTenderVisitAt: serverTimestamp(), isAdmin: true })));
+await check('cannot set last tender visit to a non-timestamp', assertFails(updateDoc(doc(alice, 'users/alice'), { lastTenderVisitAt: 'now' })));
 
 // --- privilege escalation: the reason these rules exist ---
 await check('cannot self-grant isAdmin', assertFails(updateDoc(doc(alice, 'users/alice'), { isAdmin: true })));
