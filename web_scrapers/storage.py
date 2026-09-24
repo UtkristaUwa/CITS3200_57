@@ -76,6 +76,11 @@ def upload_tender_folder(bucket, folder, prefix=DEFAULT_PREFIX):
     for path in sorted(folder.rglob("*")):
         if not path.is_file():
             continue
+        if path.suffix.lower() == ".txt":
+            # Pipeline-internal artifacts (<REF>.txt page text, per-document
+            # extracted text) -- never real attachments, must not reach the
+            # shared bucket the front end lists documents from.
+            continue
         blob = target.blob(f"{base}/{path.relative_to(folder)}")
         content_type, _ = mimetypes.guess_type(path.name)
         blob.upload_from_filename(str(path), content_type=content_type)
