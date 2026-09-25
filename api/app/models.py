@@ -47,6 +47,7 @@ class TenderOut(BaseModel):
     location: str | None = None
     description: str | None = None
     summary_headline: str | None = None
+    relevance_score: int | None = None
 
     contact_name: str | None = None
     contact_email: str | None = None

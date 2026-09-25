@@ -33,6 +33,8 @@ from google.genai import errors as genai_errors
 from pydantic import BaseModel, Field
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
+from processing.relevance_determination import calculate_tender_relevance
+
 # Initialize Gemini Client
 client = genai.Client(
     vertexai=True,
@@ -472,6 +474,19 @@ def process_tender(documents_dir: str) -> dict:
     # 3. Pack tags or extra metadata into raw_extra
     raw_extra = json.dumps({"tags": fields.tags}) if fields.tags else None
 
+    # 4. Relevance determination (SVA relevance score: 1-100)
+    try:
+        relevance_score = calculate_tender_relevance(
+            title=fields.title,
+            description=summary.description,
+            category=fields.category,
+            publish_date=fields.publish_date or publish_date_bq,
+            client=client,
+        )
+    except Exception as e:
+        print(f"  [relevance scoring failed for {fields.title}: {e}]")
+        relevance_score = 35
+
     return {
         # "tender_id": None, Omit this as to not break the UID generation from BigQuery
         "source_reference_id": fields.source_reference_id,
@@ -489,6 +504,7 @@ def process_tender(documents_dir: str) -> dict:
         "location": fields.location,
         "description": summary.description,
         "summary_headline": summary.headline,
+        "relevance_score": relevance_score,
         "contact_name": fields.contact_name,
         "contact_email": fields.contact_email,
         "contact_phone": fields.contact_phone,

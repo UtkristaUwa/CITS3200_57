@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `tenderai-dev.TenderAI.tenders` (
   location              STRING,                -- jurisdiction / region the work applies to
   description           STRING,                -- raw extracted description text
   summary_headline      STRING,                -- AI-generated one-line headline for the tender
+  relevance_score       INT64,                 -- AI-generated relevance score (1-100) to Social Ventures Australia
 
   contact_name          STRING,
   contact_email         STRING,

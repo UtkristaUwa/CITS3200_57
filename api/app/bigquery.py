@@ -27,6 +27,7 @@ ALL_COLUMNS = [
     "location",
     "description",
     "summary_headline",
+    "relevance_score",
     "contact_name",
     "contact_email",
     "contact_phone",

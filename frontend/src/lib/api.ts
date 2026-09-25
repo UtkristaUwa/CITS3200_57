@@ -80,6 +80,7 @@ export interface Tender {
   location: string | null;
   description: string | null;
   summary_headline: string | null;
+  relevance_score?: number | null;
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
