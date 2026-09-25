@@ -46,7 +46,16 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   }, []);
 
   return (
-    <Box sx={{ mb: 4, p: { xs: 1.5, sm: 2 }, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+    <Box
+      sx={{
+        mb: 4,
+        p: { xs: 1.5, sm: 2 },
+        bgcolor: 'background.paper',
+        borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'secondary.main',
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -67,7 +76,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="action" />
+                  <SearchIcon color="primary" />
                 </InputAdornment>
               ),
             },
@@ -91,8 +100,8 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             gap: 2,
             mt: 2,
             pt: 2,
-            borderTop: '1px dashed',
-            borderColor: 'divider',
+            borderTop: '1px solid',
+            borderColor: 'secondary.main',
             '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
           }}
         >
@@ -194,7 +203,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-            <Button size="small" color="inherit" onClick={props.handleResetFilters} sx={{ minHeight: { xs: 44, sm: 30 } }}>
+            <Button size="small" color="primary" onClick={props.handleResetFilters} sx={{ minHeight: { xs: 44, sm: 30 } }}>
               Clear All Filters
             </Button>
           </Box>

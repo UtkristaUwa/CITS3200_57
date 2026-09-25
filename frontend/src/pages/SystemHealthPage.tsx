@@ -50,7 +50,7 @@ export default function SystemHealthPage() {
   return (
     <Box sx={{ minWidth: 0 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, overflowWrap: 'anywhere' }}>
-        Scraper Monitoring / System Health
+        Scraper monitoring / system health
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Monitor configured website sources and scraper run outcomes when the required backend APIs become available.
@@ -58,7 +58,7 @@ export default function SystemHealthPage() {
 
       <Paper component="section" sx={{ p: { xs: 2, sm: 3 }, minWidth: 0 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-          Website Sources / Scraper Status
+          Website sources / scraper status
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Latest scraper run status and error output for each configured website source.

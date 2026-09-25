@@ -59,8 +59,14 @@ export default function FavoritesPage() {
       <Container maxWidth="md">
 
       <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>
-            My Favorites
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 800,
+              color: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'secondary.main',
+            }}
+          >
+            My favorites
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             Manage and track your bookmarked tender opportunities.
