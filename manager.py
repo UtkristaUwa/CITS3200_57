@@ -7,6 +7,7 @@ import logging
 # (Adjust the import names to match your actual python files)
 from error_scrapers.austender.scraper import run_scraper as run_austender
 from error_scrapers.nt_qtol.scraper import run_scraper as run_nt_qtol
+from error_scrapers.qld_qtenders.scraper import run_scraper as run_qld_qtenders
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
@@ -47,6 +48,7 @@ SCRAPERS = [
     ("buynsw", run_buynsw),
     ("tenders_act", run_act),
     ("nt-qtol", run_nt_qtol),
+    ("qld-qtenders", run_qld_qtenders),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
