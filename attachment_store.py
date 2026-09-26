@@ -44,6 +44,37 @@ KEEP_LOCAL_COPIES = os.environ.get("KEEP_LOCAL_COPIES", "off").lower() in {
 # The file_type values the BigQuery schema allows.
 _FILE_TYPES = {".pdf": "pdf", ".docx": "docx", ".rtf": "rtf"}
 
+# This job runs on python:3.12-slim, which ships no /etc/mime.types. Python's
+# mimetypes module leans on that file for anything past the handful of
+# ancient formats (.pdf, .doc, .zip, ...) it hardcodes, so on this image it
+# guesses None for every Office Open XML type -- silently downgrading every
+# .docx/.xlsx/.pptx attachment to application/octet-stream, which browsers
+# never render inline, only ever offer to download. Filled in explicitly
+# rather than depending on what happens to be installed in the container.
+_MIME_TYPE_FALLBACKS = {
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".rtf": "application/rtf",
+}
+
+# Generic types that carry no useful rendering information. Some portals
+# serve every download with one of these regardless of the real file type
+# (grant_connect forwards the portal's own Content-Type header as-is) --
+# a specific guess from the file's own extension is always more useful than
+# blindly trusting that.
+_GENERIC_CONTENT_TYPES = {"application/octet-stream", "application/x-download", "binary/octet-stream"}
+
+
+def guess_content_type(file_name):
+    """Best-effort MIME type for a file name, filling the gap this image's
+    mimetypes module leaves for Office Open XML formats (see
+    _MIME_TYPE_FALLBACKS above)."""
+    guessed, _ = mimetypes.guess_type(file_name)
+    if guessed:
+        return guessed
+    return _MIME_TYPE_FALLBACKS.get(os.path.splitext(file_name)[1].lower())
+
 
 def get_bucket():
     """
@@ -108,8 +139,8 @@ def upload_attachment(local_path, source_id, tender_ref, bucket=None, content_ty
         )
         return None
 
-    if content_type is None:
-        content_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+    if content_type is None or content_type.lower() in _GENERIC_CONTENT_TYPES:
+        content_type = guess_content_type(file_name) or content_type or "application/octet-stream"
 
     try:
         digest = sha256_of(local_path)
