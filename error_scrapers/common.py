@@ -242,6 +242,127 @@ def extract_xlsx(file_path: str) -> str:
     except Exception as e:
         raise ExtractionError(f"XLSX extraction failed on {file_path}: {e}") from e
 
+#The file types we can pull text out of. Anything else (csv, images, video) is still
+#saved as an attachment, it just has no extracted .txt next to it.
+EXTRACTORS = {
+    ".pdf": extract_pdf,
+    ".docx": extract_docx,
+    ".xlsx": extract_xlsx,
+}
+
+def extract_attachment_text(folder: str, file_name: str) -> bool:
+    """
+    Write <file_name>.txt next to a saved attachment, when we have an extractor
+    for its type. Returns False only when extraction of a supported type
+    failed -- an unsupported type is not a failure, there's just no text in it.
+    """
+    extractor = EXTRACTORS.get(os.path.splitext(file_name)[1].lower())
+    if extractor is None:
+        return True
+    try:
+        save_extracted_text(folder, file_name, extractor(os.path.join(folder, file_name)))
+        return True
+    except ExtractionError as e:
+        print(f"EXTRACTION FAILED: {e}")
+        return False
+
+#Raised when a portal answers a document request with an HTML page (almost
+#always its login form) instead of the file.
+class DocumentGatedError(Exception):
+    """Raised when a document download comes back as a web page, not a file."""
+
+def download_attachment(client, url: str, folder: str, file_name: str,
+                        headers: dict | None = None, timeout: float = 60.0) -> tuple[dict, bool]:
+    """
+    Stream one attachment into the tender folder and extract its text.
+
+    Returns (attachment, extracted). `attachment` is the manifest entry the
+    pipeline needs ({file_name, content_type, size_bytes}), using the name
+    actually written -- save_attachment_stream may have de-duplicated it.
+    `extracted` is False when text extraction failed on a supported type, so
+    the caller can report the tender as partial.
+
+    Raises on a failed download (HTTP error, network error, or a login page
+    served in place of the file), so the caller decides what that means.
+    """
+    with client.stream("GET", url, headers=headers or {}, timeout=timeout) as response:
+        response.raise_for_status()
+        content_type = response.headers.get("content-type")
+        wants_html = file_name.lower().endswith((".htm", ".html"))
+        if content_type and "text/html" in content_type.lower() and not wants_html:
+            raise DocumentGatedError(f"{url} returned a web page, not a file")
+        raw_path = save_attachment_stream(folder, file_name, response)
+
+    saved_name = os.path.basename(raw_path)
+    if os.path.getsize(raw_path) == 0:
+        os.remove(raw_path)
+        raise ExtractionError(f"{url} returned an empty file")
+
+    attachment = {
+        "file_name": saved_name,
+        "content_type": content_type,
+        "size_bytes": os.path.getsize(raw_path),
+    }
+    return attachment, extract_attachment_text(folder, saved_name)
+
+MAX_ZIP_DEPTH = 5
+
+def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]:
+    """
+    Unpack a downloaded document bundle into the tender folder, extracting
+    text from each file. `zip_file` is a path or a file-like object.
+
+    Nested zips (agencies bundle response templates this way) are recursed
+    into rather than saved as an unreadable blob. Member names are reduced to
+    a bare filename, so an archive holding ../../evil.txt lands inside the
+    tender folder or not at all.
+
+    Returns (attachments, any_failed).
+    """
+    import io
+    import zipfile
+
+    attachments, any_failed = [], False
+    if depth > MAX_ZIP_DEPTH:
+        return attachments, True
+
+    with zipfile.ZipFile(zip_file) as zf:
+        for member in zf.infolist():
+            file_name = os.path.basename(member.filename.replace("\\", "/"))
+            if member.is_dir() or not file_name:
+                continue
+            if file_name.lower().endswith(".zip"):
+                nested, nested_failed = unpack_zip(io.BytesIO(zf.read(member)), folder, depth + 1)
+                attachments += nested
+                any_failed = any_failed or nested_failed
+                continue
+            with zf.open(member) as source:
+                path = unique_path(folder, file_name)
+                with open(path, "wb") as target:
+                    while chunk := source.read(1024 * 1024):
+                        target.write(chunk)
+            saved_name = os.path.basename(path)
+            attachments.append({
+                "file_name": saved_name,
+                "content_type": None,
+                "size_bytes": os.path.getsize(path),
+            })
+            any_failed = any_failed or not extract_attachment_text(folder, saved_name)
+
+    return attachments, any_failed
+
+#The site-level code for a run, from the per-tender codes it collected. Same
+#precedence every scraper uses: a structure change outranks a partial tender,
+#since it means the scraper itself needs fixing.
+def site_code_from(tender_codes) -> int:
+    codes = set(tender_codes) - {SITE_SUCCESS}
+    if not codes:
+        return SITE_SUCCESS
+    for code in (SITE_BOT_BLOCKED, SITE_STRUCTURE_CHANGE, SITE_LOGIN_FAILED, SITE_RATE_LIMITED):
+        if code in codes:
+            return code
+    return TENDER_PARTIAL
+
 #-----
 #This is our helper function to log in to sites
 #-----
