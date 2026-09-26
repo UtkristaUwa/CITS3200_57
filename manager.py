@@ -2,6 +2,8 @@ import os
 import sys
 import tempfile
 import logging
+import smtplib
+import json
 
 # Import your web scraper and document scraper functions
 # (Adjust the import names to match your actual python files)
@@ -11,7 +13,11 @@ from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
 from document_scraper.main import process_tenders as run_doc_scraper
 from error_scrapers import common
+from email.message import EmailMessage
+from datetime import datetime, timezone
+from google.cloud import storage
 
+#MIGHT NOT NEED THIS ONE, BUT SOMETHING BROKE WHEN I REMOVED IT SO ITS HERE
 FAILURE_CODES = {
     common.SITE_TOTAL_FAILURE,
     common.SITE_LOGIN_FAILED,
@@ -19,6 +25,82 @@ FAILURE_CODES = {
     common.SITE_STRUCTURE_CHANGE,
     common.SITE_RATE_LIMITED,
 }
+# Map status codes to human-readable explanations
+ERROR_DESCRIPTIONS = {
+    common.SITE_SUCCESS: "Scraping was a total success.",
+    common.SITE_TOTAL_FAILURE: "The URL provided could not be reached.",
+    common.SITE_LOGIN_FAILED: "The site login / portal authentication failed.",
+    common.SITE_BOT_BLOCKED: (
+        "Anti-bot detections (Cloudflare/reCAPTCHA) have blocked access."
+    ),
+    common.SITE_STRUCTURE_CHANGE: (
+        "The HTML structure of the website changed; scraper selectors failed."
+    ),
+    common.SITE_RATE_LIMITED: "Site rate limited or temporarily blocked access.",
+    common.TENDER_PARTIAL: (
+        "Partial tender information gathered; requires manual verification."
+    ),
+}
+# Map status codes to Frontend Table attributes (Status chip text and MUI color)
+STATUS_DISPLAY = {
+    common.SITE_SUCCESS: ("Success", "success"),
+    common.TENDER_PARTIAL: ("Failed to download", "warning"),
+    common.SITE_TOTAL_FAILURE: ("Error", "error"),
+    common.SITE_LOGIN_FAILED: ("Error", "error"),
+    common.SITE_BOT_BLOCKED: ("Error", "error"),
+    common.SITE_STRUCTURE_CHANGE: ("Error", "error"),
+    common.SITE_RATE_LIMITED: ("Error", "error"),
+}
+# Target portal URLs for the table link
+PORTAL_URL_MAP = {
+    "grantconnect": "https://www.grants.gov.au",
+    "buynsw": "https://buy.nsw.gov.au",
+    "tenders_act": "https://www.tenders.act.gov.au",
+}
+def explain_code(code: int | None) -> tuple[str, str, str]:
+  """Translates an error status code into:
+
+  (text_explanation, frontend_label, chip_color).
+  """
+  if code is None:
+    return ("No status code reported by scraper.", "Unknown", "default")
+
+  desc = ERROR_DESCRIPTIONS.get(code, f"Unrecognized status code: {code}")
+  label, chip_color = STATUS_DISPLAY.get(code, ("Unknown", "default"))
+  return desc, label, chip_color
+
+def publish_health_status_to_gcs(
+    health_records: list[dict], bucket_name: str = "tenderai-dev-documents"
+):
+  """Uploads the scraper health summary JSON directly into your Google Cloud Storage bucket.
+
+  The React frontend fetches this JSON directly to render the System Health
+  table.
+  """
+  try:
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob("scraper_health.json")
+
+    # Upload formatted JSON
+    blob.upload_from_string(
+        data=json.dumps(health_records, indent=2),
+        content_type="application/json",
+    )
+
+    # Allow React frontend to read the file over standard HTTPS
+    try:
+      blob.make_public()
+    except Exception as perm_err:
+      # If uniform bucket-level access is on, public access is managed at bucket level
+      logger.debug(f"make_public skipped: {perm_err}")
+
+    logger.info(
+        f"✅ Published scraper health status ({len(health_records)} records) to"
+        f" gs://{bucket_name}/scraper_health.json"
+    )
+  except Exception as e:
+    logger.error(f"❌ Failed to publish health status JSON to Cloud Storage: {e}")
 
 # Improt tender processing code
 from processing.tender_processor import process_tender
@@ -41,8 +123,7 @@ SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
-    ("austender", run_austender),
-    ("grantconnect", run_grantconnect),
+    ("grant connect", run_grantconnect),
     ("buynsw", run_buynsw),
     ("tenders_act", run_act)
 ]
@@ -128,6 +209,9 @@ def run_scrapers(temp_dir):
     manifest = {}
     failures = []
 
+    health_records = []
+    now_iso = datetime.now(timezone.utc).isoformat()
+
     for source_id, scrape in SCRAPERS:
         logger.info(f"Executing scraper: {source_id}")
         before = _folders_in(temp_dir)
@@ -137,20 +221,50 @@ def run_scrapers(temp_dir):
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
             failures.append((source_id, f"exception: {e}"))
+
+            health_records.append({
+                "website": source_id.upper(),
+                "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+                "last_run": now_iso,
+                "status": "Error",
+                "status_color": "error",
+                "message": f"Unhandled exception: {e}",
+            })
+
             continue
 
+
         code = _site_code(result)
+
+        # 1. human-readable message, 2. table status text, 3. MUI chip color
+        explanation, label, chip_color = explain_code(code)
+
         if code in FAILURE_CODES:
-            logger.error(f"Scraper '{source_id}' reported failure code {code}")
-            failures.append((source_id, f"code {code}"))
+            logger.error(f"Scraper '{source_id}' reported failure: {explanation}")
+            failures.append((source_id, explanation))
         elif code == common.TENDER_PARTIAL:
             logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
+
+        health_records.append({
+            "website": source_id.upper(),
+            "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+            "last_run": now_iso,
+            "status": label,
+            "status_color": chip_color,
+            "message": explanation,
+        })
 
         for folder_name in _folders_in(temp_dir) - before:
             manifest[folder_name] = (source_id, None, None)
 
         for folder_name, attachments, source_url in _folders_and_attachments(result):
             manifest[folder_name] = (source_id, attachments, source_url)
+
+        #Once all scrapers have executed, upload the health_records list to Cloud Storage
+        # This creates/overwrites gs://tenderai-dev-documents/scraper_health.json
+    publish_health_status_to_gcs(
+        health_records, bucket_name="tenderai-dev-documents"
+    )
 
     return manifest, failures
 
@@ -252,6 +366,10 @@ def main():
     if failures:
         summary = ", ".join(f"{s} ({why})" for s, why in failures)
         logger.error(f"Pipeline finished with scraper failures: {summary}")
+
+        #send alert email with gcs alerts that detect the previous error and email admins
+
+
         os._exit(1)
     os._exit(0)
 
