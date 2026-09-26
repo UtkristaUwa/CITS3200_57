@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     allowed_origins: str
     use_mock_data: bool = False
 
+    # Shared runtime tender processor configuration. These are intentionally
+    # empty by default: deployments must opt in explicitly and no production
+    # bucket or object name belongs in application code.
+    runtime_config_bucket: str = ""
+    runtime_config_object: str = ""
+
     # Entra ID SSO. Auto-provisioning trusts the tenant boundary enforced by
     # the single-tenant Entra app registration; the domain list is optional
     # defence in depth (comma-separated, e.g. "sva.com.au,uwa.edu.au").

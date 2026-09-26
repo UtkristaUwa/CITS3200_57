@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import axios from 'axios';
 import {
   Alert,
   Box,
@@ -9,6 +10,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import {
+  getModelConfig,
+  updateModelConfig,
+  type ModelConfigResponse,
+  type ModelConfigUpdate,
+} from '../lib/api';
 
 interface ConfigurationSectionProps {
   title: string;
@@ -18,6 +25,20 @@ interface ConfigurationSectionProps {
   isLoading?: boolean;
   errorMessage?: string | null;
 }
+
+const reloadAlertSx = {
+  mb: 2,
+  flexWrap: { xs: 'wrap', sm: 'nowrap' },
+  '& .MuiAlert-message': { minWidth: 0 },
+  '& .MuiAlert-action': {
+    flexBasis: { xs: '100%', sm: 'auto' },
+    justifyContent: { xs: 'flex-end', sm: 'initial' },
+    ml: { xs: 0, sm: 'auto' },
+    pl: { xs: 0, sm: 2 },
+    pt: { xs: 1, sm: 0.5 },
+  },
+  '& .MuiAlert-action .MuiButton-root': { whiteSpace: 'nowrap' },
+};
 
 function ConfigurationSection({
   title,
@@ -70,14 +91,125 @@ function ConfigurationSection({
 }
 
 export default function ConfigPage() {
+  const [triageModel, setTriageModel] = useState('');
+  const [extractionModel, setExtractionModel] = useState('');
+  const [generation, setGeneration] = useState<string | null>(null);
+  const [originalValues, setOriginalValues] = useState<ModelConfigResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [hasConflict, setHasConflict] = useState(false);
+
+  const loadModelConfig = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    setSaveError(null);
+    setSaveSuccess(null);
+    setHasConflict(false);
+
+    try {
+      const config = await getModelConfig();
+      setTriageModel(config.triage_model);
+      setExtractionModel(config.extraction_model);
+      setGeneration(config.generation);
+      setOriginalValues(config);
+    } catch (error) {
+      setTriageModel('');
+      setExtractionModel('');
+      setGeneration(null);
+      setOriginalValues(null);
+
+      if (axios.isAxiosError(error) && error.response?.status === 503) {
+        setLoadError('Runtime model configuration is currently unavailable or not configured.');
+      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setLoadError('Your session has expired. Please sign in again.');
+      } else if (axios.isAxiosError(error) && error.response?.status === 403) {
+        setLoadError('You do not have permission to view model configuration.');
+      } else {
+        setLoadError('Unable to load the model configuration. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadModelConfig();
+  }, [loadModelConfig]);
+
+  const trimmedTriageModel = triageModel.trim();
+  const trimmedExtractionModel = extractionModel.trim();
+  const triageChanged = originalValues !== null && trimmedTriageModel !== originalValues.triage_model;
+  const extractionChanged =
+    originalValues !== null && trimmedExtractionModel !== originalValues.extraction_model;
+  const hasChanges = triageChanged || extractionChanged;
+  const hasBlankModel = !trimmedTriageModel || !trimmedExtractionModel;
+  const saveDisabled =
+    loading || saving || !generation || !hasChanges || hasBlankModel || hasConflict;
+
+  const handleSave = async () => {
+    if (saveDisabled || !generation) {
+      return;
+    }
+
+    const update: ModelConfigUpdate = { generation };
+    if (triageChanged) {
+      update.triage_model = trimmedTriageModel;
+    }
+    if (extractionChanged) {
+      update.extraction_model = trimmedExtractionModel;
+    }
+
+    setSaving(true);
+    setSaveError(null);
+    setSaveSuccess(null);
+
+    try {
+      const config = await updateModelConfig(update);
+      setTriageModel(config.triage_model);
+      setExtractionModel(config.extraction_model);
+      setGeneration(config.generation);
+      setOriginalValues(config);
+      setHasConflict(false);
+      setSaveSuccess('Model configuration saved successfully.');
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if (status === 409) {
+        setHasConflict(true);
+        setSaveError('The model configuration was changed by another update. Reload the latest values and try again.');
+      } else if (status === 422) {
+        setSaveError('One or more model identifiers are invalid. Check the values and try again.');
+      } else if (status === 503) {
+        setSaveError('Runtime model configuration is currently unavailable. Your changes have not been discarded.');
+      } else if (status === 401) {
+        setSaveError('Your session has expired. Please sign in again.');
+      } else if (status === 403) {
+        setSaveError('You do not have permission to update model configuration.');
+      } else {
+        setSaveError('Unable to save the model configuration. Please try again.');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleModelChange = (setter: (value: string) => void, value: string) => {
+    setter(value);
+    setSaveSuccess(null);
+    if (!hasConflict) {
+      setSaveError(null);
+    }
+  };
+
   return (
     <Box sx={{ width: '100%', maxWidth: 1000, minWidth: 0 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
         AI Configuration
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Review the AI settings used by the tender processing pipeline. Editing will be enabled when
-        the backend configuration API is available.
+        Review the AI settings used by the tender processing pipeline.
       </Typography>
 
       <ConfigurationSection
@@ -105,23 +237,77 @@ export default function ConfigPage() {
       </ConfigurationSection>
 
       <ConfigurationSection
-        title="LLM Model"
-        description="Model identifier used by the tender extraction workflow."
+        title="LLM Models"
+        description="Model identifiers used by the tender triage, extraction and summarisation workflows."
       >
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Backend configuration API not available. This is the current known configuration and cannot be updated
-          here yet.
-        </Alert>
+        {loading && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" color="text.secondary">
+              Loading model configuration...
+            </Typography>
+          </Box>
+        )}
+        {loadError && (
+          <Alert
+            severity="error"
+            action={
+              <Button color="inherit" size="small" onClick={() => void loadModelConfig()} disabled={loading}>
+                Reload
+              </Button>
+            }
+            sx={reloadAlertSx}
+          >
+            {loadError}
+          </Alert>
+        )}
+        {saveError && (
+          <Alert
+            severity={hasConflict ? 'warning' : 'error'}
+            action={
+              hasConflict ? (
+                <Button color="inherit" size="small" onClick={() => void loadModelConfig()} disabled={loading}>
+                  Reload
+                </Button>
+              ) : undefined
+            }
+            sx={reloadAlertSx}
+          >
+            {saveError}
+          </Alert>
+        )}
+        {saveSuccess && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {saveSuccess}
+          </Alert>
+        )}
         <TextField
-          label="Current configured model (display only)"
-          value="gemini-2.5-flash"
+          label="Document Triage Model"
+          value={triageModel}
+          onChange={(event) => handleModelChange(setTriageModel, event.target.value)}
           fullWidth
-          slotProps={{ input: { readOnly: true } }}
-          helperText="Available models may vary by deployment region."
+          disabled={loading || saving || !generation}
+          error={!loading && !!generation && !trimmedTriageModel}
+          helperText="Used to decide which tender documents should continue to AI processing."
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          label="Extraction / Summarisation Model"
+          value={extractionModel}
+          onChange={(event) => handleModelChange(setExtractionModel, event.target.value)}
+          fullWidth
+          disabled={loading || saving || !generation}
+          error={!loading && !!generation && !trimmedExtractionModel}
+          helperText="Used for tender summarisation and structured field extraction."
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button variant="contained" disabled sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}>
-            Save model
+          <Button
+            variant="contained"
+            disabled={saveDisabled}
+            onClick={() => void handleSave()}
+            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+          >
+            {saving ? <CircularProgress size={20} color="inherit" /> : 'Save models'}
           </Button>
         </Box>
       </ConfigurationSection>

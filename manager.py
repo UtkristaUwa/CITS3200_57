@@ -11,6 +11,7 @@ from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
 from document_scraper.main import process_tenders as run_doc_scraper
 from error_scrapers import common
+from processing.runtime_config import prepare_runtime_config
 
 FAILURE_CODES = {
     common.SITE_TOTAL_FAILURE,
@@ -19,9 +20,6 @@ FAILURE_CODES = {
     common.SITE_STRUCTURE_CHANGE,
     common.SITE_RATE_LIMITED,
 }
-
-# Improt tender processing code
-from processing.tender_processor import process_tender
 
 # Copies each tender's original attachments into Cloud Storage before the
 # temporary directory (and everything in it) is deleted.
@@ -50,6 +48,25 @@ SCRAPERS = [
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
 # stray folder should not end up filed under the wrong portal.
 UNKNOWN_SOURCE_ID = "unknown"
+
+
+def _load_process_tender(runtime_directory):
+    """Prepare the startup CFG before importing the module that consumes it."""
+    runtime = prepare_runtime_config(runtime_directory)
+    if runtime.active:
+        logger.info(f"Runtime tender processor configuration active: {runtime.path}")
+    else:
+        logger.warning(
+            "Using repository tender processor configuration fallback: "
+            f"{runtime.reason}"
+        )
+
+    # tender_processor calls load_config() during import. This import must stay
+    # after prepare_runtime_config so the selected local file is loaded first.
+    # GCS is checked once per job; changes made mid-run apply to the next run.
+    from processing.tender_processor import process_tender
+
+    return process_tender
 
 def _site_code(result):
     """Status code from a (code, tenders) result, or None for scrapers
@@ -160,6 +177,11 @@ def main():
     # 1. Spin up a temporary ephemeral directory in container memory
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Created temporary working directory: {temp_dir}")
+
+        # Keep the downloaded runtime CFG inside this job-wide directory. It
+        # remains available for tender_processor's local mtime checks until all
+        # tender processing has finished.
+        process_tender = _load_process_tender(temp_dir)
 
         # 2. Run the Web Scrapers
         # We pass the temp_dir so they download HTML metadata and PDFs directly
