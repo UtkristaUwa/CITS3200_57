@@ -47,14 +47,32 @@ export default function ForgotPasswordPage() {
         alignItems: 'center',
         minHeight: '100vh',
         '@supports (height: 100dvh)': { minHeight: '100dvh' },
-        bgcolor: '#fcfcfc',
+        bgcolor: 'background.default',
         boxSizing: 'border-box',
         p: { xs: 2, sm: 3 },
       }}
     >
-      <Card sx={{ width: '100%', maxWidth: 380, p: { xs: 0, sm: 1 }, boxSizing: 'border-box' }}>
+      <Card
+        sx={{
+          width: '100%',
+          maxWidth: 380,
+          p: { xs: 0, sm: 1 },
+          boxSizing: 'border-box',
+          border: '1px solid',
+          borderColor: 'secondary.main',
+          boxShadow: (theme) => theme.palette.mode === 'light' ? '0 8px 24px rgba(36,45,50,0.10)' : 'none',
+        }}
+      >
         <CardContent>
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, textAlign: 'center' }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              mb: 3,
+              textAlign: 'center',
+              color: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'secondary.main',
+            }}
+          >
             Reset password
           </Typography>
 

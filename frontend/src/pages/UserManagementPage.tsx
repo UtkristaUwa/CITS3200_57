@@ -130,7 +130,7 @@ export default function UserManagementPage() {
   return (
     <Box sx={{ minWidth: 0 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
-        User Management
+        User management
       </Typography>
 
       <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, minWidth: 0 }}>

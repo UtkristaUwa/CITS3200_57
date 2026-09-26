@@ -3,9 +3,9 @@ import { Outlet, Link as RouterLink, useLocation, useNavigate } from 'react-rout
 import TopNav from '../components/TopNav';
 
 const NAV_ITEMS = [
-  { label: 'User Management', path: '/admin/users' },
-  { label: 'System / Ingestion Health', path: '/admin/health' },
-  { label: 'Reference / Config', path: '/admin/config' },
+  { label: 'User management', path: '/admin/users' },
+  { label: 'System / ingestion health', path: '/admin/health' },
+  { label: 'Reference / config', path: '/admin/config' },
 ];
 
 export default function AdminLayout() {
@@ -23,7 +23,8 @@ export default function AdminLayout() {
             width: 240,
             flexShrink: 0,
             borderRight: '1px solid',
-            borderColor: 'divider',
+            borderColor: 'secondary.main',
+            bgcolor: 'background.paper',
             minHeight: 'calc(100vh - 64px)',
           }}
         >
