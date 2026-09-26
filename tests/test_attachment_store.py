@@ -133,6 +133,72 @@ def test_extracted_text_is_not_uploaded_as_an_attachment(tmp_path, bucket):
     assert [r["file_name"] for r in records] == ["Requirements.pdf"]
 
 
+def test_guess_content_type_fills_the_gap_mimetypes_leaves_on_this_image(monkeypatch):
+    # Simulate python:3.12-slim's mimetypes -- which has no /etc/mime.types
+    # and so returns None for every Office Open XML extension -- regardless
+    # of what the machine actually running this test has installed.
+    monkeypatch.setattr(attachment_store.mimetypes, "guess_type", lambda name: (None, None))
+
+    assert attachment_store.guess_content_type("Report.docx") == (
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    assert attachment_store.guess_content_type("Sheet.xlsx") == (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    assert attachment_store.guess_content_type("unknown.xyz") is None
+
+
+def test_docx_gets_its_real_content_type_not_a_stdlib_guessing_gap(tmp_path, bucket):
+    # On this job's actual runtime (python:3.12-slim, no /etc/mime.types),
+    # mimetypes.guess_type("Report.docx") returns None -- see
+    # attachment_store.guess_content_type's docstring. A browser served
+    # application/octet-stream never renders the file inline, only offers
+    # to download it.
+    write(tmp_path, "Report.docx")
+
+    records = attachment_store.upload_tender_attachments(
+        str(tmp_path), source_id="grantconnect", tender_ref="GO8232", bucket=bucket
+    )
+
+    assert records[0]["content_type"] == (
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+
+
+def test_a_generic_reported_content_type_is_overridden_by_the_real_guess(tmp_path, bucket):
+    # grant_connect forwards whatever Content-Type the portal's own download
+    # response sent -- and some portals serve every file as
+    # application/octet-stream regardless of what it actually is. A guess
+    # from the file's own extension is always more useful than that.
+    write(tmp_path, "Statement of Requirements.pdf")
+
+    records = attachment_store.upload_tender_attachments(
+        str(tmp_path),
+        source_id="grantconnect",
+        tender_ref="GO8232",
+        attachments=[{"file_name": "Statement of Requirements.pdf", "content_type": "application/octet-stream"}],
+        bucket=bucket,
+    )
+
+    assert records[0]["content_type"] == "application/pdf"
+
+
+def test_a_specific_reported_content_type_is_still_respected(tmp_path, bucket):
+    # The manifest is still believed when it says something specific --
+    # only a generic/unhelpful type gets overridden.
+    write(tmp_path, "Addendum 1.txt")
+
+    records = attachment_store.upload_tender_attachments(
+        str(tmp_path),
+        source_id="grantconnect",
+        tender_ref="GO8232",
+        attachments=[{"file_name": "Addendum 1.txt", "content_type": "text/plain"}],
+        bucket=bucket,
+    )
+
+    assert records[0]["content_type"] == "text/plain"
+
+
 def test_manifest_is_believed_over_guessing_from_the_folder(tmp_path, bucket):
     # A genuine .txt attachment from the portal. The directory-scan fallback
     # would miss it; the scraper's manifest says it is real.

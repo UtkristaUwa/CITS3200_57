@@ -66,9 +66,34 @@ async function triggerDownload(url: string, fileName: string): Promise<void> {
 }
 
 async function openInline(url: string, fileName: string): Promise<void> {
-  const blob = await getDocumentBlob(url, fileName);
-  const objectUrl = URL.createObjectURL(blob);
-  window.open(objectUrl, '_blank', 'noopener,noreferrer');
+  // window.open must run synchronously inside the click handler, before any
+  // await: Firefox and Safari only honour it as long as it's still inside
+  // the user gesture that triggered the click, and a fetch in between (as
+  // getDocumentBlob below does) ends that window. Chrome/Edge are lenient
+  // enough that this bug hid there, which is why "view" only ever worked in
+  // Chrome. Opening the tab first and filling it in once the blob is ready
+  // works the same way in every browser.
+  //
+  // Deliberately no 'noopener': we need the handle back to navigate the tab
+  // once the blob resolves. That's safe here because we only ever navigate
+  // it to a blob: URL we just created ourselves, never to a remote page.
+  const newTab = window.open('', '_blank');
+
+  try {
+    const blob = await getDocumentBlob(url, fileName);
+    const objectUrl = URL.createObjectURL(blob);
+
+    if (newTab && !newTab.closed) {
+      newTab.location.href = objectUrl;
+    } else {
+      // Popup blocked outright (or the user closed the tab while we were
+      // fetching) -- fall back to a download rather than doing nothing.
+      await triggerDownload(url, fileName);
+    }
+  } catch (err) {
+    newTab?.close();
+    throw err;
+  }
 }
 
 function DocumentRow({ doc }: { doc: TenderDocument }) {
