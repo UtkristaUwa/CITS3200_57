@@ -1,7 +1,52 @@
 import json
+import unicodedata
 from datetime import date, datetime
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+
+MAX_MODEL_ID_LENGTH = 200
+
+
+def _validate_model_id(value: object) -> object:
+    if value is None:
+        return value
+    if not isinstance(value, str):
+        return value
+    unsafe_categories = {"Cc", "Cf", "Cs", "Zl", "Zp"}
+    if any(unicodedata.category(character) in unsafe_categories for character in value):
+        raise ValueError("model identifiers must not contain control or line-separator characters")
+    value = value.strip()
+    if not value:
+        raise ValueError("model identifiers must not be empty")
+    return value
+
+
+class ModelConfigResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    triage_model: str
+    extraction_model: str
+    generation: str
+
+
+class ModelConfigUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    triage_model: str | None = Field(default=None, max_length=MAX_MODEL_ID_LENGTH)
+    extraction_model: str | None = Field(default=None, max_length=MAX_MODEL_ID_LENGTH)
+    generation: str = Field(min_length=1, pattern=r"^[0-9]+$")
+
+    @field_validator("triage_model", "extraction_model", mode="before")
+    @classmethod
+    def validate_model_id(cls, value: object) -> object:
+        return _validate_model_id(value)
+
+    @model_validator(mode="after")
+    def require_model_update(self):
+        if self.triage_model is None and self.extraction_model is None:
+            raise ValueError("at least one model field must be supplied")
+        return self
 
 
 class DocumentOut(BaseModel):
