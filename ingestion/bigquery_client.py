@@ -153,11 +153,22 @@ def compute_content_hash(record: dict) -> str:
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
+_ALLOWED_DOCUMENT_FIELDS = {
+    "document_id",
+    "file_name",
+    "file_type",
+    "extracted_text",
+    "parsed_at",
+    "storage_uri",
+}
+
+
 def _prepare_documents(documents: list | None) -> list:
-    """Fill in document_id/parsed_at for any document that's missing them."""
+    """Fill in document_id/parsed_at for any document missing them, and drop
+    any field not in tender.schema.json's documents contract."""
     prepared = []
     for doc in documents or []:
-        doc = dict(doc)
+        doc = {k: v for k, v in doc.items() if k in _ALLOWED_DOCUMENT_FIELDS}
         doc.setdefault("document_id", str(uuid.uuid4()))
         doc.setdefault("parsed_at", _now_iso())
         doc.setdefault("file_type", None)
