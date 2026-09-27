@@ -54,7 +54,7 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
 function ModeToggle() {
   const { mode, toggleColorMode } = useColorMode();
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box component="label" sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
       <ModeSwitch
         checked={mode === 'dark'}
         onChange={toggleColorMode}
