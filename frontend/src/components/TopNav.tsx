@@ -9,6 +9,14 @@ import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { useColorMode } from '../lib/ThemeContext';
 
+const BRAND_COLORS = {
+  blue: '#2D3AF1',
+  lilac: '#CF9EFF',
+  orange: '#FF7C00',
+  charcoal: '#242D32',
+  white: '#FFFFFF',
+} as const;
+
 const ModeSwitch = styled(Switch)(({ theme }) => ({
   width: 74,
   height: 42,
@@ -20,9 +28,9 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
     transform: 'translateX(10px)',
     '&.Mui-checked': {
       transform: 'translateX(35px)',
-      color: '#fff',
+      color: BRAND_COLORS.white,
       '& + .MuiSwitch-track': {
-        backgroundColor: '#1f1f1f',
+        backgroundColor: BRAND_COLORS.blue,
         opacity: 1,
       },
     },
@@ -31,14 +39,14 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
     boxShadow: 'none',
     width: 34,
     height: 34,
-    backgroundColor: theme.palette.mode === 'dark' ? '#1f1f1f' : '#fdd835',
+    backgroundColor: theme.palette.mode === 'dark' ? BRAND_COLORS.charcoal : BRAND_COLORS.orange,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   '& .MuiSwitch-track': {
     borderRadius: 21,
-    backgroundColor: '#aab4be',
+    backgroundColor: BRAND_COLORS.lilac,
     opacity: 1,
   },
 }));
@@ -50,8 +58,8 @@ function ModeToggle() {
       <ModeSwitch
         checked={mode === 'dark'}
         onChange={toggleColorMode}
-        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: '#5f4b00', p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
-        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: '#fff', p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
+        icon={<LightModeRoundedIcon sx={{ fontSize: 22, color: BRAND_COLORS.charcoal, p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
+        checkedIcon={<DarkModeRoundedIcon sx={{ fontSize: 22, color: BRAND_COLORS.white, p: '1px', boxSizing: 'border-box', position: 'relative', top: '7.5px' }} />}
         slotProps={{ input: { 'aria-label': 'Toggle dark mode' } }}
       />
     </Box>
@@ -83,7 +91,13 @@ export default function TopNav() {
           variant="h6"
           component={RouterLink}
           to="/"
-          sx={{ flexGrow: 1, textAlign: 'left', fontWeight: 700, textDecoration: 'none', color: 'inherit' }}
+          sx={{
+            flexGrow: 1,
+            textAlign: 'left',
+            fontWeight: 800,
+            textDecoration: 'none',
+            color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.white,
+          }}
         >
           TenderAI
         </Typography>
@@ -91,7 +105,14 @@ export default function TopNav() {
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1, alignItems: 'center' }}>
           <Button
             color={location.pathname === '/' ? 'primary' : 'inherit'}
-            sx={{ fontWeight: location.pathname === '/' ? 700 : 400 }}
+            sx={{
+              fontWeight: location.pathname === '/' ? 700 : 500,
+              color: (theme) => location.pathname === '/'
+                ? (theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac)
+                : 'text.primary',
+              borderBottom: location.pathname === '/' ? `3px solid ${BRAND_COLORS.blue}` : '3px solid transparent',
+              borderRadius: 0,
+            }}
             component={RouterLink}
             to="/"
           >
@@ -99,7 +120,14 @@ export default function TopNav() {
           </Button>
           <Button
             color={location.pathname === '/favorites' ? 'primary' : 'inherit'}
-            sx={{ fontWeight: location.pathname === '/favorites' ? 700 : 400 }}
+            sx={{
+              fontWeight: location.pathname === '/favorites' ? 700 : 500,
+              color: (theme) => location.pathname === '/favorites'
+                ? (theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac)
+                : 'text.primary',
+              borderBottom: location.pathname === '/favorites' ? `3px solid ${BRAND_COLORS.blue}` : '3px solid transparent',
+              borderRadius: 0,
+            }}
             component={RouterLink} 
             to="/favorites"
           >
@@ -108,7 +136,14 @@ export default function TopNav() {
           {isAdmin && (
             <Button 
               color={location.pathname.startsWith('/admin') ? 'primary' : 'inherit'}
-              sx={{ fontWeight: location.pathname.startsWith('/admin') ? 700 : 400 }}
+              sx={{
+                fontWeight: location.pathname.startsWith('/admin') ? 700 : 500,
+                color: (theme) => location.pathname.startsWith('/admin')
+                  ? (theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac)
+                  : 'text.primary',
+                borderBottom: location.pathname.startsWith('/admin') ? `3px solid ${BRAND_COLORS.blue}` : '3px solid transparent',
+                borderRadius: 0,
+              }}
               component={RouterLink} 
               to="/admin"
             >

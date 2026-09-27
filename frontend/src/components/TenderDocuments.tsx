@@ -16,6 +16,8 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import type { TenderDocument } from '../lib/api';
 import { getDocumentBlob } from '../lib/api';
 
+const BRAND_ORANGE = '#FF7C00';
+
 function fileExtension(fileName: string): string {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
 }
@@ -45,7 +47,7 @@ function FileTypeIcon({ doc }: { doc: TenderDocument }) {
     return <TableChartIcon sx={{ fontSize: 18, color: '#2e7d32', flexShrink: 0 }} aria-hidden />;
   }
   if (ext === 'zip' || ext === 'gz' || ext === '7z') {
-    return <FolderZipIcon sx={{ fontSize: 18, color: '#e65100', flexShrink: 0 }} aria-hidden />;
+    return <FolderZipIcon sx={{ fontSize: 18, color: BRAND_ORANGE, flexShrink: 0 }} aria-hidden />;
   }
   return <InsertDriveFileIcon sx={{ fontSize: 18, color: 'text.disabled', flexShrink: 0 }} aria-hidden />;
 }
@@ -121,7 +123,7 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
         gap: 1,
         py: 0.75,
         borderBottom: '1px solid',
-        borderColor: 'divider',
+        borderColor: 'secondary.main',
         '&:last-child': { borderBottom: 'none' },
         minWidth: 0,
       }}
@@ -204,7 +206,7 @@ export function TenderDocuments({ documents }: { documents: TenderDocument[] }) 
             m: 0,
             p: 0,
             border: '1px solid',
-            borderColor: 'divider',
+            borderColor: 'secondary.main',
             borderRadius: 1,
             px: 1.5,
           }}
