@@ -18,6 +18,12 @@ import {
   import type { Tender } from '../lib/api';
   import { TenderDocuments } from './TenderDocuments';
 
+  const BRAND_COLORS = {
+    blue: '#2D3AF1',
+    lilac: '#CF9EFF',
+    orange: '#FF7C00',
+  } as const;
+
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
     const parsed = new Date(value);
@@ -72,7 +78,18 @@ import {
     const detailsId = useId();
 
     return (
-      <Card sx={{ mb: 2, minWidth: 0, border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+      <Card
+        sx={{
+          mb: 2,
+          minWidth: 0,
+          border: '1px solid',
+          borderColor: 'secondary.main',
+          borderRadius: 2,
+          boxShadow: (theme) => theme.palette.mode === 'light'
+            ? '0 4px 14px rgba(36,45,50,0.08)'
+            : 'none',
+        }}
+      >
         <CardContent sx={{ pb: 1 }}>
           <Box
             sx={{
@@ -88,12 +105,12 @@ import {
             <Typography
               variant="h6"
               component="div"
-              sx={{ minWidth: 0, textAlign: 'left', fontWeight: 600, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+              sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
             >
-              {tender.title || 'Untitled Tender'}
+              {tender.title || 'Untitled tender'}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
-              {isNew && <Chip label="NEW" color="primary" size="small" />}
+              {isNew && <Chip label="New" color="primary" size="small" />}
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
                   size="small"
@@ -103,9 +120,12 @@ import {
                   sx={{
                     width: 44,
                     height: 44,
-                    color: isFavorite ? 'warning.main' : 'grey.400',
+                    color: isFavorite ? BRAND_COLORS.orange : BRAND_COLORS.blue,
                     transition: 'color 150ms ease',
-                    '&:hover': { color: isFavorite ? 'warning.dark' : 'warning.light', bgcolor: 'transparent' },
+                    '&:hover': {
+                      color: isFavorite ? BRAND_COLORS.orange : BRAND_COLORS.blue,
+                      bgcolor: (theme) => theme.palette.mode === 'light' ? 'rgba(207,158,255,0.28)' : 'rgba(207,158,255,0.16)',
+                    },
                   }}
                 >
                   <StarIcon />
@@ -118,16 +138,16 @@ import {
             sx={{
               p: 1.5,
               mb: 2,
-              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.16)' : '#f4f7fb'),
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(207,158,255,0.12)' : 'rgba(207,158,255,0.24)'),
               borderRadius: 1.5,
-              borderLeft: '4px solid #1976d2',
+              borderLeft: `4px solid ${BRAND_COLORS.blue}`,
               textAlign: 'left',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-              <AutoAwesomeIcon sx={{ fontSize: 16, color: '#1976d2' }} />
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#1976d2', textTransform: 'uppercase' }}>
-                AI Summary
+              <AutoAwesomeIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }} />
+              <Typography variant="caption" sx={{ fontWeight: 700, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }}>
+                AI summary
               </Typography>
             </Box>
             <Typography
@@ -179,7 +199,7 @@ import {
               <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
             </Box>
 
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>Full tender description</Typography>
             <Typography
               variant="body2"
               component="div"
