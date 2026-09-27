@@ -147,7 +147,7 @@ import {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
               <AutoAwesomeIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }} />
               <Typography variant="caption" sx={{ fontWeight: 700, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }}>
-                AI summary
+                At a Glance
               </Typography>
             </Box>
             <Typography
@@ -199,7 +199,7 @@ import {
               <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
             </Box>
 
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>Full tender description</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>AI Summary</Typography>
             <Typography
               variant="body2"
               component="div"
