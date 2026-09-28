@@ -14,6 +14,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  TableContainer,
   Chip,
   Switch,
   Tooltip,
@@ -127,20 +128,30 @@ export default function UserManagementPage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ minWidth: 0 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
         User Management
       </Typography>
 
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, minWidth: 0 }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
           Invite a new user
         </Typography>
 
-        {inviteError && <Alert severity="error" sx={{ mb: 2 }}>{inviteError}</Alert>}
-        {inviteSuccess && <Alert severity="success" sx={{ mb: 2 }}>{inviteSuccess}</Alert>}
+        {inviteError && <Alert severity="error" sx={{ mb: 2, overflowWrap: 'anywhere' }}>{inviteError}</Alert>}
+        {inviteSuccess && <Alert severity="success" sx={{ mb: 2, overflowWrap: 'anywhere' }}>{inviteSuccess}</Alert>}
 
-        <Box component="form" onSubmit={handleInvite} sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+        <Box
+          component="form"
+          onSubmit={handleInvite}
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+            alignItems: { xs: 'stretch', sm: 'center' },
+            flexWrap: 'wrap',
+          }}
+        >
           <TextField
             label="Email"
             type="email"
@@ -148,24 +159,34 @@ export default function UserManagementPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             size="small"
-            sx={{ minWidth: 260 }}
+            sx={{
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { xs: 0, sm: 260 },
+              '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
+            }}
           />
           <FormControlLabel
             control={<Checkbox checked={makeAdmin} onChange={(e) => setMakeAdmin(e.target.checked)} />}
             label="Make admin"
+            sx={{ ml: { xs: 0, sm: '-11px' }, mr: { xs: 0, sm: 2 } }}
           />
-          <Button type="submit" variant="contained" disabled={inviting}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={inviting}
+            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+          >
             {inviting ? <CircularProgress size={20} color="inherit" /> : 'Invite'}
           </Button>
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 }, minWidth: 0 }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
           Current users
         </Typography>
 
-        {roleError && <Alert severity="error" sx={{ mb: 2 }}>{roleError}</Alert>}
+        {roleError && <Alert severity="error" sx={{ mb: 2, overflowWrap: 'anywhere' }}>{roleError}</Alert>}
 
         {loadingUsers && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
@@ -173,65 +194,70 @@ export default function UserManagementPage() {
           </Box>
         )}
 
-        {!loadingUsers && listError && <Alert severity="error">{listError}</Alert>}
+        {!loadingUsers && listError && <Alert severity="error" sx={{ overflowWrap: 'anywhere' }}>{listError}</Alert>}
 
         {!loadingUsers && !listError && (
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Email</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Invited</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((u) => (
-                <TableRow key={u.id}>
-                  <TableCell>{u.email}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Tooltip
-                        title={
-                          u.id === user?.uid
-                            ? "You can't change your own role"
-                            : u.isAdmin
-                              ? 'Revoke admin access'
-                              : 'Grant admin access'
-                        }
-                      >
-                        {/* span so the tooltip still shows on a disabled switch */}
-                        <span>
-                          <Switch
-                            size="small"
-                            checked={u.isAdmin}
-                            disabled={savingUid === u.id || u.id === user?.uid}
-                            onChange={(e) => handleToggleAdmin(u, e.target.checked)}
-                          />
-                        </span>
-                      </Tooltip>
-                      {u.isAdmin ? (
-                        <Chip label="Admin" color="primary" size="small" />
-                      ) : (
-                        'User'
-                      )}
-                      {u.id === user?.uid && (
-                        <Chip label="You" size="small" variant="outlined" />
-                      )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    {u.status === 'active' ? (
-                      <Chip label="Active" color="success" size="small" />
-                    ) : (
-                      <Chip label="Pending" color="warning" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell>{u.createdAt}</TableCell>
+          <TableContainer
+            tabIndex={0}
+            sx={{ maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
+          >
+            <Table size="small" aria-label="Current users" sx={{ minWidth: 560 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Invited</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {users.map((u) => (
+                  <TableRow key={u.id}>
+                    <TableCell sx={{ overflowWrap: 'anywhere' }}>{u.email}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Tooltip
+                          title={
+                            u.id === user?.uid
+                              ? "You can't change your own role"
+                              : u.isAdmin
+                                ? 'Revoke admin access'
+                                : 'Grant admin access'
+                          }
+                        >
+                          {/* span so the tooltip still shows on a disabled switch */}
+                          <span>
+                            <Switch
+                              size="small"
+                              checked={u.isAdmin}
+                              disabled={savingUid === u.id || u.id === user?.uid}
+                              onChange={(e) => handleToggleAdmin(u, e.target.checked)}
+                            />
+                          </span>
+                        </Tooltip>
+                        {u.isAdmin ? (
+                          <Chip label="Admin" color="primary" size="small" />
+                        ) : (
+                          'User'
+                        )}
+                        {u.id === user?.uid && (
+                          <Chip label="You" size="small" variant="outlined" />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {u.status === 'active' ? (
+                        <Chip label="Active" color="success" size="small" />
+                      ) : (
+                        <Chip label="Pending" color="warning" size="small" />
+                      )}
+                    </TableCell>
+                    <TableCell>{u.createdAt}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Paper>
     </Box>

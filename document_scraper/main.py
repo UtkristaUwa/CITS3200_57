@@ -91,7 +91,7 @@ def process_tenders(filepath):
 
             print("directory: ", tender_path)
             #print(os.listdir(tender_path))
-            scraped_txt_file = os.path.join(tender_path, f"{item}.txt")#txt file containing scraped info from web
+            scraped_txt_file = os.path.join(tender_path, f"__tender__{item}.txt")  # pipeline-generated, not an attachment
 
             for doc in os.listdir(tender_path):
                 doc_path = os.path.join(tender_path, doc)
@@ -112,8 +112,8 @@ def process_tenders(filepath):
                     save_to_individual_txt(output_txt_path, result, doc)
 
                 elif file_extension == '.txt':
-                    if doc == f"{item}.txt":
-                        pass  # Skip web-scraped metadata file
+                    if doc.startswith("__tender__"):
+                        pass  # Skip pipeline-generated metadata file
                     else:
                         print(f"  -> [TXT] Existing text file: {doc}")
 

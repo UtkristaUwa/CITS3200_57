@@ -283,11 +283,12 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             attachments = result["attachments"]
             if result["any_failed"]:
                 tender = {"title": fields.get("title"), "folder": folder,
-                          "attachments": attachments, **fields}
+                          "attachments": attachments, "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
         except Exception:
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
+                "source_url": url, **fields,
             }
     else:
         # No package at all is a legitimate state (a genuine "No files
@@ -296,7 +297,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         common.save_page_text(folder, opportunity_id, format_detail_text(fields))
 
     tender = {"title": fields.get("title"), "folder": folder,
-              "attachments": attachments, **fields}
+              "attachments": attachments, "source_url": url, **fields}
     return common.SITE_SUCCESS, tender
 
 

@@ -232,8 +232,8 @@ def process_tender_details(client: httpx.Client, detail_url: str, output_dir: st
         tender_folder = os.path.join(output_dir, folder_name)
         os.makedirs(tender_folder, exist_ok=True)
 
-        # 4. Save metadata TXT
-        txt_filename = os.path.join(tender_folder, f"{folder_name}.txt")
+        # 4. Save metadata TXT (prefixed so AI processor skips it as an attachment)
+        txt_filename = os.path.join(tender_folder, f"__tender__{folder_name}.txt")
         with open(txt_filename, "w", encoding="utf-8") as f:
             f.write("=" * 80 + "\n")
             f.write(f"AUSTENDER DETAILS: {title}\n")

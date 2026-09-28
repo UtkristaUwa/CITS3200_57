@@ -28,12 +28,21 @@ function ConfigurationSection({
   errorMessage = null,
 }: ConfigurationSectionProps) {
   return (
-    <Paper component="section" sx={{ p: 3, mb: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 1 }}>
+    <Paper component="section" sx={{ p: { xs: 2, sm: 3 }, mb: 3, minWidth: 0, overflowWrap: 'anywhere' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 1,
+          mb: 1,
+        }}
+      >
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
           {title}
         </Typography>
-        {statusLabel && <Chip label={statusLabel} size="small" color="warning" variant="outlined" />}
+        {statusLabel && <Chip label={statusLabel} size="small" color="warning" variant="outlined" sx={{ flexShrink: 0 }} />}
       </Box>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -62,7 +71,7 @@ function ConfigurationSection({
 
 export default function ConfigPage() {
   return (
-    <Box sx={{ maxWidth: 1000 }}>
+    <Box sx={{ width: '100%', maxWidth: 1000, minWidth: 0 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
         AI Configuration
       </Typography>
@@ -89,7 +98,7 @@ export default function ConfigPage() {
           helperText="Display only. This page does not read or modify tender_processor.cfg directly."
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button variant="contained" disabled>
+          <Button variant="contained" disabled sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}>
             Save prompt
           </Button>
         </Box>
@@ -111,7 +120,7 @@ export default function ConfigPage() {
           helperText="Available models may vary by deployment region."
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button variant="contained" disabled>
+          <Button variant="contained" disabled sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}>
             Save model
           </Button>
         </Box>

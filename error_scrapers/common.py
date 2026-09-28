@@ -52,7 +52,9 @@ def sanitise_filename(name: str) -> str:
 
 #This function writes the scraped page content html content
 def save_page_text(folder: str, tender_id: str, text: str) -> None:
-    path = os.path.join(folder, f"{sanitise_filename(tender_id)}.txt")
+    # Prefixed with __tender__ so the AI processor and attachment store can
+    # distinguish this pipeline-generated file from real downloaded attachments.
+    path = os.path.join(folder, f"__tender__{sanitise_filename(tender_id)}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 

@@ -1,7 +1,7 @@
 import json
 from datetime import date, datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 
 class DocumentOut(BaseModel):
@@ -10,6 +10,20 @@ class DocumentOut(BaseModel):
     file_type: str | None = None
     extracted_text: str | None = None
     parsed_at: datetime | None = None
+    storage_url: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_storage_url(cls, data: object) -> object:
+        if not isinstance(data, dict):
+            return data
+        if data.get("storage_url"):
+            return data
+        uri = data.get("storage_uri")
+        if uri and isinstance(uri, str) and uri.startswith("gs://"):
+            data = dict(data)
+            data["storage_url"] = "https://storage.googleapis.com/" + uri[len("gs://"):]
+        return data
 
 
 class TenderOut(BaseModel):
@@ -32,6 +46,7 @@ class TenderOut(BaseModel):
 
     location: str | None = None
     description: str | None = None
+    summary_headline: str | None = None
 
     contact_name: str | None = None
     contact_email: str | None = None
@@ -62,6 +77,21 @@ class TenderOut(BaseModel):
         if isinstance(v, str):
             return json.loads(v)
         return v
+
+    @field_validator("documents", mode="before")
+    @classmethod
+    def keep_only_uploaded_files(cls, docs):
+        # Only surface documents that have been uploaded to GCS. Everything
+        # without a storage_uri is either a pipeline metadata file (the
+        # tender's own scraped page text) or an unprocessed text extraction
+        # — neither is a user-facing attachment. A real attachment that
+        # happens to be .txt (a portal-provided text file the scraper's
+        # manifest reported) still gets a storage_uri from attachment_store
+        # and is meant to surface — see
+        # tests/test_attachment_store.py::test_manifest_is_believed_over_guessing_from_the_folder.
+        if not isinstance(docs, list):
+            return docs
+        return [d for d in docs if isinstance(d, dict) and d.get("storage_uri")]
 
 
 class HealthOut(BaseModel):

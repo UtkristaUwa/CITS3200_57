@@ -4,7 +4,7 @@ from datetime import date
 from functools import lru_cache
 
 from google import genai
-from google.cloud import bigquery
+from google.cloud import bigquery, storage as gcs
 
 from app.config import settings
 
@@ -28,6 +28,7 @@ ALL_COLUMNS = [
     "value_notes",
     "location",
     "description",
+    "summary_headline",
     "contact_name",
     "contact_email",
     "contact_phone",
@@ -82,6 +83,10 @@ def generate_query_embedding(query_text: str) -> list[float]:
     except Exception as exc:
         logger.error("🔍 Vertex AI embedding generation failed: %s", exc)
         raise
+
+@lru_cache
+def get_storage_client() -> gcs.Client:
+    return gcs.Client(project=settings.google_cloud_project)
 
 
 def list_tenders(

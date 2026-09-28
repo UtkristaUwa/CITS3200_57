@@ -306,6 +306,56 @@ class TestBlobPrefix:
         assert storage.blob_prefix(folder, "scrapes") == "scrapes/qld-qtenders/ABC-1"
 
 
+class TestUploadTenderFolder:
+    """
+    .txt is always a pipeline artifact (page text / extracted text), never a
+    real attachment -- it must never reach the shared bucket the front end
+    lists documents from.
+    """
+
+    def _fake_storage_client(self, monkeypatch, uploaded):
+        class FakeBlob:
+            def __init__(self, name):
+                self.name = name
+
+            def upload_from_filename(self, path, content_type=None):
+                uploaded.append(self.name)
+
+        class FakeBucket:
+            def blob(self, name):
+                return FakeBlob(name)
+
+        class FakeClient:
+            def bucket(self, name):
+                return FakeBucket()
+
+        import google.cloud.storage as gcs_storage
+
+        monkeypatch.setattr(gcs_storage, "Client", FakeClient)
+
+    def test_skips_txt_files_but_uploads_real_attachments(
+        self, output_dir, monkeypatch
+    ):
+        folder = output_dir / "ABC-1"
+        folder.mkdir()
+        (folder / "tender.json").write_text('{"source_id": "fake"}')
+        (folder / "ABC-1.txt").write_text("scraped page text")
+        (folder / "document.PDF.txt").write_text("extracted text")
+        (folder / "document.pdf").write_text("%PDF-1.4")
+        (folder / "spreadsheet.xlsx").write_text("data")
+
+        uploaded = []
+        self._fake_storage_client(monkeypatch, uploaded)
+
+        written = storage.upload_tender_folder("test-bucket", folder)
+
+        assert written == 3
+        assert not any(name.endswith(".txt") for name in uploaded)
+        assert any(name.endswith("document.pdf") for name in uploaded)
+        assert any(name.endswith("spreadsheet.xlsx") for name in uploaded)
+        assert any(name.endswith("tender.json") for name in uploaded)
+
+
 class TestPublishing:
     def test_is_skipped_when_no_bucket_is_configured(self, output_dir, monkeypatch):
         monkeypatch.delenv("OUTPUT_BUCKET", raising=False)

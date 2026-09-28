@@ -60,6 +60,7 @@ export interface TenderDocument {
   file_type: string | null;
   extracted_text: string | null;
   parsed_at: string | null;
+  storage_url: string | null;
 }
 
 export interface Tender {
@@ -78,6 +79,7 @@ export interface Tender {
   value_notes: string | null;
   location: string | null;
   description: string | null;
+  summary_headline: string | null;
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
@@ -138,10 +140,18 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
   }
 }
 
+export async function getDocumentBlob(storageUrl: string, filename: string): Promise<Blob> {
+  const { data } = await http.get<Blob>(`${API_BASE_URL}/documents/download`, {
+    params: { storage_url: storageUrl, filename },
+    responseType: 'blob',
+  });
+  return data;
+}
+
 export async function getLocations(): Promise<string[]> {
   const url = `${API_BASE_URL}/locations`;
   try {
-    const { data } = await axios.get<string[]>(url);
+    const { data } = await http.get<string[]>(url);
     return data;
   } catch (err) {
     console.error(`Failed to load locations from ${url}`, err);

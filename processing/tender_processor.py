@@ -67,6 +67,7 @@ class TenderSummary(BaseModel):
 class TenderFields(BaseModel):
     source_id: Optional[str] = Field(default=None)
     source_reference_id: Optional[str] = Field(default=None)
+    source_url: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     issuing_agency: Optional[str] = Field(default=None)
     category: Optional[str] = Field(default=None)
@@ -258,7 +259,7 @@ load_config()
 def iter_tender_documents(directory: str):
     """Yield paths to every .txt document in a tender's directory."""
     for name in sorted(os.listdir(directory)):
-        if name.lower().endswith(".txt"):
+        if name.lower().endswith(".txt") and not name.startswith("__tender__"):
             yield os.path.join(directory, name)
 
 
@@ -502,6 +503,7 @@ def process_tender(documents_dir: str) -> dict:
         # "tender_id": None, Omit this as to not break the UID generation from BigQuery
         "source_reference_id": fields.source_reference_id,
         "source_id": fields.source_id,
+        "source_url": fields.source_url,
         "title": fields.title,
         "source_url": source_url,  # <--- ADDED HERE
         "issuing_agency": fields.issuing_agency,

@@ -37,9 +37,9 @@ function TableStateRow({
             </Typography>
           </Box>
         ) : errorMessage ? (
-          <Alert severity="error">{errorMessage}</Alert>
+          <Alert severity="error" sx={{ overflowWrap: 'anywhere' }}>{errorMessage}</Alert>
         ) : (
-          <Alert severity="info">{unavailableMessage}</Alert>
+          <Alert severity="info" sx={{ overflowWrap: 'anywhere' }}>{unavailableMessage}</Alert>
         )}
       </TableCell>
     </TableRow>
@@ -48,15 +48,15 @@ function TableStateRow({
 
 export default function SystemHealthPage() {
   return (
-    <Box>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+    <Box sx={{ minWidth: 0 }}>
+      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, overflowWrap: 'anywhere' }}>
         Scraper Monitoring / System Health
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Monitor configured website sources and scraper run outcomes when the required backend APIs become available.
       </Typography>
 
-      <Paper component="section" sx={{ p: 3 }}>
+      <Paper component="section" sx={{ p: { xs: 2, sm: 3 }, minWidth: 0 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
           Website Sources / Scraper Status
         </Typography>
@@ -74,8 +74,11 @@ export default function SystemHealthPage() {
           <Chip label="Unknown" size="small" variant="outlined" />
         </Box>
 
-        <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-          <Table size="small" aria-label="Website sources and scraper run status">
+        <TableContainer
+          tabIndex={0}
+          sx={{ maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: '1px solid', borderColor: 'divider', borderRadius: 1 }}
+        >
+          <Table size="small" aria-label="Website sources and scraper run status" sx={{ minWidth: 760 }}>
             <TableHead>
               <TableRow>
                 <TableCell>Website</TableCell>

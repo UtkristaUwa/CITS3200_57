@@ -17,6 +17,7 @@ import io
 import os
 import re
 import zipfile
+import time
 
 import httpx
 from bs4 import BeautifulSoup
@@ -250,11 +251,9 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             form = parse_download_form(docs_response.text)
             if form["code"] != common.SITE_SUCCESS or not form["ids"]:
                 tender = {"title": fields.get("title"), "folder": folder,
-                          "attachments": [], **fields}
+                          "attachments": [], "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
 
-            post_data = {"opportunityId": form.get("opportunityId", ""),
-                         "_csrf": form.get("_csrf", "")}
             post_url = (form["action"] if form["action"].startswith("http")
                         else f"{BASE_URL}{form['action']}")
             post_data = [
@@ -290,15 +289,16 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
 
             if any_failed:
                 tender = {"title": fields.get("title"), "folder": folder,
-                          "attachments": attachments, **fields}
+                          "attachments": attachments, "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
         except Exception:
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
+                "source_url": url, **fields,
             }
 
     tender = {"title": fields.get("title"), "folder": folder,
-              "attachments": attachments, **fields}
+              "attachments": attachments, "source_url": url, **fields}
     return common.SITE_SUCCESS, tender
 
 
@@ -342,11 +342,9 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     except (httpx.ConnectError, ConnectionError):
         return common.SITE_TOTAL_FAILURE, tenders
 
-def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
+def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
     """
-    Same as run_scraper(), but drives everything through a real
-    browser -- required because tenders.act.gov.au blocks plain httpx
-    requests with a 403 even on the bare login page, confirmed live.
+    One full browser attempt (your existing run_scraper_via_browser body).
     """
     from error_scrapers.tenders_act.browser import BrowserSession
 
@@ -385,7 +383,8 @@ def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data") ->
                             os.remove(zip_path)
 
                     tenders.append({"title": fields.get("title"), "folder": folder,
-                                     "attachments": attachments, **fields})
+                                     "attachments": attachments,
+                                     "source_url": url, **fields})
                 except Exception:
                     tender_codes.add(common.TENDER_PARTIAL)
                     continue
@@ -400,6 +399,23 @@ def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data") ->
         import traceback
         traceback.print_exc()
         return common.SITE_TOTAL_FAILURE, tenders
+
+
+def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data",
+                            attempts: int = 3) -> tuple[int, list[dict]]:
+    """
+    Retry wrapper: each attempt opens a brand-new browser, since a flagged
+    session can stay flagged. Only retries when nothing was scraped and the
+    failure was a login/total failure.
+    """
+    code, tenders = common.SITE_TOTAL_FAILURE, []
+    for attempt in range(1, attempts + 1):
+        code, tenders = _run_once(limit, output_dir)
+        if tenders or code not in (common.SITE_TOTAL_FAILURE, common.SITE_LOGIN_FAILED):
+            return code, tenders
+        print(f"[ACT] attempt {attempt}/{attempts} got code {code} with 0 tenders, retrying", flush=True)
+        time.sleep(15 * attempt)
+    return code, tenders
 
 
 def _extract_zip_into_folder(zip_path: str, folder: str) -> list[dict]:
