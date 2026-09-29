@@ -123,7 +123,7 @@ SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
-    ("grant connect", run_grantconnect),
+    ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
     ("tenders_act", run_act)
 ]
@@ -329,6 +329,8 @@ def main():
                     current_tender["source_id"] = source_id
                     if source_url:
                         current_tender["source_url"] = source_url
+                    if not current_tender.get("source_reference_id"):
+                        current_tender["source_reference_id"] = tender_folder_name
                     current_tender["documents"] = _merge_document_records(
                         documents, current_tender.get("documents") or []
                     )

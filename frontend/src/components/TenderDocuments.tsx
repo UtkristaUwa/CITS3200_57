@@ -16,6 +16,8 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import type { TenderDocument } from '../lib/api';
 import { getDocumentBlob } from '../lib/api';
 
+const BRAND_ORANGE = '#FF7C00';
+
 function fileExtension(fileName: string): string {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
 }
@@ -45,7 +47,7 @@ function FileTypeIcon({ doc }: { doc: TenderDocument }) {
     return <TableChartIcon sx={{ fontSize: 18, color: '#2e7d32', flexShrink: 0 }} aria-hidden />;
   }
   if (ext === 'zip' || ext === 'gz' || ext === '7z') {
-    return <FolderZipIcon sx={{ fontSize: 18, color: '#e65100', flexShrink: 0 }} aria-hidden />;
+    return <FolderZipIcon sx={{ fontSize: 18, color: BRAND_ORANGE, flexShrink: 0 }} aria-hidden />;
   }
   return <InsertDriveFileIcon sx={{ fontSize: 18, color: 'text.disabled', flexShrink: 0 }} aria-hidden />;
 }
@@ -66,9 +68,34 @@ async function triggerDownload(url: string, fileName: string): Promise<void> {
 }
 
 async function openInline(url: string, fileName: string): Promise<void> {
-  const blob = await getDocumentBlob(url, fileName);
-  const objectUrl = URL.createObjectURL(blob);
-  window.open(objectUrl, '_blank', 'noopener,noreferrer');
+  // window.open must run synchronously inside the click handler, before any
+  // await: Firefox and Safari only honour it as long as it's still inside
+  // the user gesture that triggered the click, and a fetch in between (as
+  // getDocumentBlob below does) ends that window. Chrome/Edge are lenient
+  // enough that this bug hid there, which is why "view" only ever worked in
+  // Chrome. Opening the tab first and filling it in once the blob is ready
+  // works the same way in every browser.
+  //
+  // Deliberately no 'noopener': we need the handle back to navigate the tab
+  // once the blob resolves. That's safe here because we only ever navigate
+  // it to a blob: URL we just created ourselves, never to a remote page.
+  const newTab = window.open('', '_blank');
+
+  try {
+    const blob = await getDocumentBlob(url, fileName);
+    const objectUrl = URL.createObjectURL(blob);
+
+    if (newTab && !newTab.closed) {
+      newTab.location.href = objectUrl;
+    } else {
+      // Popup blocked outright (or the user closed the tab while we were
+      // fetching) -- fall back to a download rather than doing nothing.
+      await triggerDownload(url, fileName);
+    }
+  } catch (err) {
+    newTab?.close();
+    throw err;
+  }
 }
 
 function DocumentRow({ doc }: { doc: TenderDocument }) {
@@ -96,7 +123,7 @@ function DocumentRow({ doc }: { doc: TenderDocument }) {
         gap: 1,
         py: 0.75,
         borderBottom: '1px solid',
-        borderColor: 'divider',
+        borderColor: 'secondary.main',
         '&:last-child': { borderBottom: 'none' },
         minWidth: 0,
       }}
@@ -179,7 +206,7 @@ export function TenderDocuments({ documents }: { documents: TenderDocument[] }) 
             m: 0,
             p: 0,
             border: '1px solid',
-            borderColor: 'divider',
+            borderColor: 'secondary.main',
             borderRadius: 1,
             px: 1.5,
           }}
