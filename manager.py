@@ -271,7 +271,10 @@ def main():
                 continue
 
             # 4c. Score the tender against the focus area / work type taxonomies.
-            # Enrichment only: a tender still belongs in the database unscored.
+            # The enriched record (processed fields + focus_areas/work_types/fit/
+            # fit_reason) is what gets upserted below. Unlike a processing
+            # failure, a scoring failure doesn't drop the tender: it still goes
+            # to BigQuery, just with the relevance fields left null.
             logger.info(f"🎯 Determining relevance for {tender_folder_name}...")
             try:
                 current_tender = determine_relevance(current_tender)
