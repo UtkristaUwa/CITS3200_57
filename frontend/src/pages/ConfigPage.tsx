@@ -28,7 +28,23 @@ function ConfigurationSection({
   errorMessage = null,
 }: ConfigurationSectionProps) {
   return (
-    <Paper component="section" sx={{ p: { xs: 2, sm: 3 }, mb: 3, minWidth: 0, overflowWrap: 'anywhere' }}>
+    <Paper
+      component="section"
+      sx={{
+        p: { xs: 2, sm: 3 },
+        mb: 3,
+        minWidth: 0,
+        overflowWrap: 'anywhere',
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'secondary.main',
+        borderLeft: '4px solid',
+        borderLeftColor: 'primary.main',
+        boxShadow: (theme) => theme.palette.mode === 'light'
+          ? '0 4px 14px rgba(36,45,50,0.06)'
+          : 'none',
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -39,7 +55,13 @@ function ConfigurationSection({
           mb: 1,
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            color: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'secondary.main',
+          }}
+        >
           {title}
         </Typography>
         {statusLabel && <Chip label={statusLabel} size="small" color="warning" variant="outlined" sx={{ flexShrink: 0 }} />}
@@ -72,8 +94,15 @@ function ConfigurationSection({
 export default function ConfigPage() {
   return (
     <Box sx={{ width: '100%', maxWidth: 1000, minWidth: 0 }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-        AI Configuration
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 700,
+          mb: 1,
+          color: (theme) => theme.palette.mode === 'light' ? 'primary.main' : 'secondary.main',
+        }}
+      >
+        AI configuration
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Review the AI settings used by the tender processing pipeline. Editing will be enabled when
@@ -81,7 +110,7 @@ export default function ConfigPage() {
       </Typography>
 
       <ConfigurationSection
-        title="Tender Extraction Prompt"
+        title="Tender extraction prompt"
         description="System instructions used to extract structured database fields from scraped tender content."
       >
         <Alert severity="info" sx={{ mb: 2 }}>
@@ -105,7 +134,7 @@ export default function ConfigPage() {
       </ConfigurationSection>
 
       <ConfigurationSection
-        title="LLM Model"
+        title="LLM model"
         description="Model identifier used by the tender extraction workflow."
       >
         <Alert severity="info" sx={{ mb: 2 }}>
@@ -127,7 +156,7 @@ export default function ConfigPage() {
       </ConfigurationSection>
 
       <ConfigurationSection
-        title="Tender Relevance Prompt"
+        title="Tender relevance prompt"
         description="Instructions for deciding whether a tender is relevant to the organisation."
         statusLabel="Not available yet"
       >

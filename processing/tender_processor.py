@@ -315,17 +315,36 @@ def is_document_relevant(path: str) -> bool:
     decision: DocumentRelevance = response.parsed
     return decision.relevant
 
+def _find_tender_page_text(directory: str) -> str | None:
+    """Return the path to this tender's own scraped page-text file (__tender__*.txt), if present."""
+    for name in sorted(os.listdir(directory)):
+        if name.lower().endswith(".txt") and name.startswith("__tender__"):
+            return os.path.join(directory, name)
+    return None
 
 def gather_relevant_documents(documents_dir: str) -> list[dict]:
     """
     1. Triages every .txt in documents_dir to drop useless files (blank templates,
        pure CAD tables, boilerplate clauses).
     2. Keeps the raw text of all relevant documents without lossy compression.
+
+    If the tender has no real attachment .txt files, falls back to the tender's
+    own scraped page-text file (__tender__*.txt) as the AI's input, since that
+    file is excluded from iter_tender_documents()/the UI list but is still the
+    only content available to extract from.
     """
     _check_auto_reload()
     doc_paths = list(iter_tender_documents(documents_dir))
+
     if not doc_paths:
-        return []
+        fallback_path = _find_tender_page_text(documents_dir)
+        if fallback_path is None:
+            return []
+        with open(fallback_path, "r", encoding="utf-8", errors="replace") as f:
+            text = f.read()
+        if not text.strip():
+            return []
+        return [{"file_name": os.path.basename(fallback_path), "raw_text": text}]
 
     # If there is only one document (e.g. the scraped tender landing page), it is inherently relevant
     if len(doc_paths) == 1:
