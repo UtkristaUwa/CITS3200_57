@@ -218,7 +218,7 @@ def main():
 
         # 3. Run the Document Scraper
         # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
-        logger.info("Executing Document Scraper...")
+        logger.info("📄 Executing Document Scraper...")
         try:
             run_doc_scraper(temp_dir)
         except Exception as e:
@@ -227,7 +227,7 @@ def main():
             logger.error(f"Document scraper failed: {e}")
 
         # 4. Store attachments, then hand each tender to AI processing
-        logger.info("Preparing data for AI Processing...")
+        logger.info("🤖 Preparing data for AI Processing...")
 
         for tender_folder_name in tender_folders:
             tender_path = os.path.join(temp_dir, tender_folder_name)
@@ -249,7 +249,7 @@ def main():
             )
 
             # 4b. Run tender processing on current tender
-            logger.info("Processing tender...")
+            logger.info(f"⚡ Processing tender: {tender_folder_name}...")
             current_tender = None
             try:
                 current_tender = process_tender(tender_path)
