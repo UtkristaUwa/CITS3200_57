@@ -90,6 +90,7 @@ export interface Tender {
   last_scanned_at: string;
   updated_at: string;
   raw_extra: Record<string, unknown> | null;
+  distance?: number | null;
 }
 
 export interface GetTendersParams {

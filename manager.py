@@ -30,20 +30,24 @@ import attachment_store
 # Import the BigQuery upload function
 from ingestion.bigquery_client import get_client, upsert_tender
 
+#for ved embedding in tables
+from google import genai
+from google.cloud import bigquery
+
 # Initialize BigQuery client
 bq_client = get_client()
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
-SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
+SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "30"))
 
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
-    ("tenders_act", run_act)
+    ("tenders_act", run_act),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
@@ -57,6 +61,39 @@ def _site_code(result):
         return result[0]
     return None
 
+
+# Initialize the Vertex AI Gemini client using existing ADC credentials
+ai_client = genai.Client(
+    vertexai=True,
+    project="tenderai-dev",
+    location="australia-southeast1",
+)
+
+
+def generate_embedding(text: str) -> list[float]:
+    """
+    Converts the ai summary into a 768-dimensional float vector
+    Safely truncated to 2000 characters to respect token limits.
+    """
+    if not text or not text.strip():
+        logger.warning("Empty text passed to generate_embedding; returning empty vector.")
+        return []
+    try:
+        response = ai_client.models.embed_content(
+            model="text-embedding-004",  # todo change to be in config file
+            contents=text[:2000]
+        )
+        # Log vector diagnostics
+        values = response.embeddings[0].values
+        logger.info(
+            f"Generated embedding: {len(values)} dimensions. "
+            f"Preview (first 5): {[round(x, 4) for x in values[:5]]} | "
+            f"Range: [{round(min(values), 4)}, {round(max(values), 4)}]"
+        )
+        return response.embeddings[0].values
+    except Exception as err:
+        logger.error(f"Failed to generate embedding: {err}")
+        return []
 
 def _folders_and_attachments(result):
     """
@@ -99,8 +136,13 @@ def _merge_document_records(attachment_records, txt_documents):
     for record in attachment_records:
         record = dict(record)
         base, _ext = os.path.splitext(record["file_name"])
-        record["extracted_text"] = extracted_text_by_txt_name.get(f"{base}.txt")
-        merged.append(record)
+        doc_entry = {
+            "file_name": record.get("file_name"),
+            "file_type": record.get("file_type"),
+            "storage_uri": record.get("storage_uri"),
+            "extracted_text": extracted_text_by_txt_name.get(f"{base}.txt"),
+        }
+        merged.append(doc_entry)
     return merged
 
 
@@ -175,7 +217,7 @@ def main():
 
         # 3. Run the Document Scraper
         # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
-        logger.info("Executing Document Scraper...")
+        logger.info("📄 Executing Document Scraper...")
         try:
             run_doc_scraper(temp_dir)
         except Exception as e:
@@ -184,7 +226,7 @@ def main():
             logger.error(f"Document scraper failed: {e}")
 
         # 4. Store attachments, then hand each tender to AI processing
-        logger.info("Preparing data for AI Processing...")
+        logger.info("🤖 Preparing data for AI Processing...")
 
         for tender_folder_name in tender_folders:
             tender_path = os.path.join(temp_dir, tender_folder_name)
@@ -206,7 +248,7 @@ def main():
             )
 
             # 4b. Run tender processing on current tender
-            logger.info("Processing tender...")
+            logger.info(f"⚡ Processing tender: {tender_folder_name}...")
             current_tender = None
             try:
                 current_tender = process_tender(tender_path)
@@ -222,6 +264,22 @@ def main():
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
+
+            if current_tender is None:
+                logger.warning(f"Tender processing returned None for {tender_folder_name}, skipping.")
+                continue
+
+            # todo generate embeddings
+            logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")
+
+            # combine fields that we vectorise
+            title = current_tender.get("title") or ""
+            summary = current_tender.get("description") or ""
+
+            embed = f"Title: {title}. Summary: {summary}".strip()
+
+            # assign embedded information to current tender
+            current_tender["embedding"] = generate_embedding(embed)
 
             # Try to upload to BigQuery
             logger.info("Uploading processed tender to BigQuery...")

@@ -52,3 +52,4 @@ latest_logs/
 *.lock
 *.tmp
 *.tmp.*
+log_history/
