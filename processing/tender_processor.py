@@ -19,7 +19,7 @@ Environment:
     export GEMINI_API_KEY="your_api_key_here"
     export TENDER_PROCESSOR_CONFIG="/path/to/custom_config.cfg"  # optional
 """
-
+import re
 import os
 import json
 import time
@@ -315,17 +315,36 @@ def is_document_relevant(path: str) -> bool:
     decision: DocumentRelevance = response.parsed
     return decision.relevant
 
+def _find_tender_page_text(directory: str) -> str | None:
+    """Return the path to this tender's own scraped page-text file (__tender__*.txt), if present."""
+    for name in sorted(os.listdir(directory)):
+        if name.lower().endswith(".txt") and name.startswith("__tender__"):
+            return os.path.join(directory, name)
+    return None
 
 def gather_relevant_documents(documents_dir: str) -> list[dict]:
     """
     1. Triages every .txt in documents_dir to drop useless files (blank templates,
        pure CAD tables, boilerplate clauses).
     2. Keeps the raw text of all relevant documents without lossy compression.
+
+    If the tender has no real attachment .txt files, falls back to the tender's
+    own scraped page-text file (__tender__*.txt) as the AI's input, since that
+    file is excluded from iter_tender_documents()/the UI list but is still the
+    only content available to extract from.
     """
     _check_auto_reload()
     doc_paths = list(iter_tender_documents(documents_dir))
+
     if not doc_paths:
-        return []
+        fallback_path = _find_tender_page_text(documents_dir)
+        if fallback_path is None:
+            return []
+        with open(fallback_path, "r", encoding="utf-8", errors="replace") as f:
+            text = f.read()
+        if not text.strip():
+            return []
+        return [{"file_name": os.path.basename(fallback_path), "raw_text": text}]
 
     # If there is only one document (e.g. the scraped tender landing page), it is inherently relevant
     if len(doc_paths) == 1:
@@ -461,9 +480,42 @@ def process_tender(documents_dir: str) -> dict:
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
 
+    # Temporary safety cap to stay comfortably under Gemini's 1,048,576 token limit (prevents 400 INVALID_ARGUMENT)
+    MAX_CONTEXT_CHARS = 3_000_000  # ~750,000 tokens
+    if raw_context and len(raw_context) > MAX_CONTEXT_CHARS:
+        print("context too large, trimmed ✂️ (temp fix)")
+        raw_context = raw_context[:MAX_CONTEXT_CHARS]
+
+
     # 1. AI Summarisation & Extraction
     summary = summarise_tender(raw_context)
     fields = extract_tender_fields(raw_context)
+
+    #------------------------------------------------
+    #attempt fix for missing source url
+    # ------------------------------------------------
+    source_url = getattr(fields, "source_url", None) or getattr(fields, "detail_url", None)
+
+    # Fallback: parse "Detail URL: <url>" from raw_context if LLM didn't extract it
+    if not source_url and raw_context:
+        url_match = re.search(r"Detail URL:\s*(https?://[^\s\n\r]+)", raw_context)
+        if url_match:
+            source_url = url_match.group(1).strip()
+            # Fallback 2 (Bug 3 Fix): Inspect disk directly if raw_context missed the master text file
+            if not source_url and os.path.exists(documents_dir):
+                for fname in os.listdir(documents_dir):
+                    if fname.lower().endswith(".txt"):
+                        fpath = os.path.join(documents_dir, fname)
+                        try:
+                            with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                                disk_match = re.search(r"Detail URL:\s*(https?://[^\s\n\r]+)", f.read())
+                                if disk_match:
+                                    source_url = disk_match.group(1).strip()
+                                    break
+                        except Exception:
+                            pass
+            # -------------------------------------------------------------
+    # ------------------------------------------------
 
     # 2. Clean dates for BigQuery DATE format (YYYY-MM-DD)
     publish_date_bq = fields.publish_date.split("T")[0] if fields.publish_date else None
@@ -478,6 +530,7 @@ def process_tender(documents_dir: str) -> dict:
         "source_id": fields.source_id,
         "source_url": fields.source_url,
         "title": fields.title,
+        "source_url": source_url,  # <--- ADDED HERE
         "issuing_agency": fields.issuing_agency,
         "category": fields.category,
         "status": fields.status,

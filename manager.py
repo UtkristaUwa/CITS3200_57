@@ -2,6 +2,8 @@ import os
 import sys
 import tempfile
 import logging
+import smtplib
+import json
 
 # Import your web scraper and document scraper functions
 # (Adjust the import names to match your actual python files)
@@ -12,7 +14,11 @@ from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_ac
 from document_scraper.main import process_tenders as run_doc_scraper
 from error_scrapers import common
 from processing.runtime_config import prepare_runtime_config
+from email.message import EmailMessage
+from datetime import datetime, timezone
+from google.cloud import storage
 
+#MIGHT NOT NEED THIS ONE, BUT SOMETHING BROKE WHEN I REMOVED IT SO ITS HERE
 FAILURE_CODES = {
     common.SITE_TOTAL_FAILURE,
     common.SITE_LOGIN_FAILED,
@@ -20,6 +26,84 @@ FAILURE_CODES = {
     common.SITE_STRUCTURE_CHANGE,
     common.SITE_RATE_LIMITED,
 }
+# Map status codes to human-readable explanations
+ERROR_DESCRIPTIONS = {
+    common.SITE_SUCCESS: "Scraping was a total success.",
+    common.SITE_TOTAL_FAILURE: "The URL provided could not be reached.",
+    common.SITE_LOGIN_FAILED: "The site login / portal authentication failed.",
+    common.SITE_BOT_BLOCKED: (
+        "Anti-bot detections (Cloudflare/reCAPTCHA) have blocked access."
+    ),
+    common.SITE_STRUCTURE_CHANGE: (
+        "The HTML structure of the website changed; scraper selectors failed."
+    ),
+    common.SITE_RATE_LIMITED: "Site rate limited or temporarily blocked access.",
+    common.TENDER_PARTIAL: (
+        "Partial tender information gathered; requires manual verification."
+    ),
+}
+# Map status codes to Frontend Table attributes (Status chip text and MUI color)
+STATUS_DISPLAY = {
+    common.SITE_SUCCESS: ("Success", "success"),
+    common.TENDER_PARTIAL: ("Failed to download", "warning"),
+    common.SITE_TOTAL_FAILURE: ("Error", "error"),
+    common.SITE_LOGIN_FAILED: ("Error", "error"),
+    common.SITE_BOT_BLOCKED: ("Error", "error"),
+    common.SITE_STRUCTURE_CHANGE: ("Error", "error"),
+    common.SITE_RATE_LIMITED: ("Error", "error"),
+}
+# Target portal URLs for the table link
+PORTAL_URL_MAP = {
+    "grantconnect": "https://www.grants.gov.au",
+    "buynsw": "https://buy.nsw.gov.au",
+    "tenders_act": "https://www.tenders.act.gov.au",
+}
+def explain_code(code: int | None) -> tuple[str, str, str]:
+  """Translates an error status code into:
+
+  (text_explanation, frontend_label, chip_color).
+  """
+  if code is None:
+    return ("No status code reported by scraper.", "Unknown", "default")
+
+  desc = ERROR_DESCRIPTIONS.get(code, f"Unrecognized status code: {code}")
+  label, chip_color = STATUS_DISPLAY.get(code, ("Unknown", "default"))
+  return desc, label, chip_color
+
+def publish_health_status_to_gcs(
+    health_records: list[dict], bucket_name: str = "tenderai-dev-documents"
+):
+  """Uploads the scraper health summary JSON directly into your Google Cloud Storage bucket.
+
+  The React frontend fetches this JSON directly to render the System Health
+  table.
+  """
+  try:
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob("scraper_health.json")
+
+    # Upload formatted JSON
+    blob.upload_from_string(
+        data=json.dumps(health_records, indent=2),
+        content_type="application/json",
+    )
+
+    # Allow React frontend to read the file over standard HTTPS
+    try:
+      blob.make_public()
+    except Exception as perm_err:
+      # If uniform bucket-level access is on, public access is managed at bucket level
+      logger.debug(f"make_public skipped: {perm_err}")
+
+    logger.info(
+        f"✅ Published scraper health status ({len(health_records)} records) to"
+        f" gs://{bucket_name}/scraper_health.json"
+    )
+  except Exception as e:
+    logger.error(f"❌ Failed to publish health status JSON to Cloud Storage: {e}")
+
+
 
 # Copies each tender's original attachments into Cloud Storage before the
 # temporary directory (and everything in it) is deleted.
@@ -28,21 +112,24 @@ import attachment_store
 # Import the BigQuery upload function
 from ingestion.bigquery_client import get_client, upsert_tender
 
+#for ved embedding in tables
+from google import genai
+from google.cloud import bigquery
+
 # Initialize BigQuery client
 bq_client = get_client()
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("Manager")
 
-SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "10"))
+SCRAPE_LIMIT = int(os.environ.get("SCRAPE_LIMIT", "30"))
 
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
-    ("austender", run_austender),
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
-    ("tenders_act", run_act)
+    ("tenders_act", run_act),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
@@ -75,6 +162,39 @@ def _site_code(result):
         return result[0]
     return None
 
+
+# Initialize the Vertex AI Gemini client using existing ADC credentials
+ai_client = genai.Client(
+    vertexai=True,
+    project="tenderai-dev",
+    location="australia-southeast1",
+)
+
+
+def generate_embedding(text: str) -> list[float]:
+    """
+    Converts the ai summary into a 768-dimensional float vector
+    Safely truncated to 2000 characters to respect token limits.
+    """
+    if not text or not text.strip():
+        logger.warning("Empty text passed to generate_embedding; returning empty vector.")
+        return []
+    try:
+        response = ai_client.models.embed_content(
+            model="text-embedding-004",  # todo change to be in config file
+            contents=text[:2000]
+        )
+        # Log vector diagnostics
+        values = response.embeddings[0].values
+        logger.info(
+            f"Generated embedding: {len(values)} dimensions. "
+            f"Preview (first 5): {[round(x, 4) for x in values[:5]]} | "
+            f"Range: [{round(min(values), 4)}, {round(max(values), 4)}]"
+        )
+        return response.embeddings[0].values
+    except Exception as err:
+        logger.error(f"Failed to generate embedding: {err}")
+        return []
 
 def _folders_and_attachments(result):
     """
@@ -117,8 +237,13 @@ def _merge_document_records(attachment_records, txt_documents):
     for record in attachment_records:
         record = dict(record)
         base, _ext = os.path.splitext(record["file_name"])
-        record["extracted_text"] = extracted_text_by_txt_name.get(f"{base}.txt")
-        merged.append(record)
+        doc_entry = {
+            "file_name": record.get("file_name"),
+            "file_type": record.get("file_type"),
+            "storage_uri": record.get("storage_uri"),
+            "extracted_text": extracted_text_by_txt_name.get(f"{base}.txt"),
+        }
+        merged.append(doc_entry)
     return merged
 
 
@@ -145,6 +270,9 @@ def run_scrapers(temp_dir):
     manifest = {}
     failures = []
 
+    health_records = []
+    now_iso = datetime.now(timezone.utc).isoformat()
+
     for source_id, scrape in SCRAPERS:
         logger.info(f"Executing scraper: {source_id}")
         before = _folders_in(temp_dir)
@@ -154,20 +282,50 @@ def run_scrapers(temp_dir):
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
             failures.append((source_id, f"exception: {e}"))
+
+            health_records.append({
+                "website": source_id.upper(),
+                "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+                "last_run": now_iso,
+                "status": "Error",
+                "status_color": "error",
+                "message": f"Unhandled exception: {e}",
+            })
+
             continue
 
+
         code = _site_code(result)
+
+        # 1. human-readable message, 2. table status text, 3. MUI chip color
+        explanation, label, chip_color = explain_code(code)
+
         if code in FAILURE_CODES:
-            logger.error(f"Scraper '{source_id}' reported failure code {code}")
-            failures.append((source_id, f"code {code}"))
+            logger.error(f"Scraper '{source_id}' reported failure: {explanation}")
+            failures.append((source_id, explanation))
         elif code == common.TENDER_PARTIAL:
             logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
+
+        health_records.append({
+            "website": source_id.upper(),
+            "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+            "last_run": now_iso,
+            "status": label,
+            "status_color": chip_color,
+            "message": explanation,
+        })
 
         for folder_name in _folders_in(temp_dir) - before:
             manifest[folder_name] = (source_id, None, None)
 
         for folder_name, attachments, source_url in _folders_and_attachments(result):
             manifest[folder_name] = (source_id, attachments, source_url)
+
+        #Once all scrapers have executed, upload the health_records list to Cloud Storage
+        # This creates/overwrites gs://tenderai-dev-documents/scraper_health.json
+    publish_health_status_to_gcs(
+        health_records, bucket_name="tenderai-dev-documents"
+    )
 
     return manifest, failures
 
@@ -198,7 +356,7 @@ def main():
 
         # 3. Run the Document Scraper
         # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
-        logger.info("Executing Document Scraper...")
+        logger.info("📄 Executing Document Scraper...")
         try:
             run_doc_scraper(temp_dir)
         except Exception as e:
@@ -207,7 +365,7 @@ def main():
             logger.error(f"Document scraper failed: {e}")
 
         # 4. Store attachments, then hand each tender to AI processing
-        logger.info("Preparing data for AI Processing...")
+        logger.info("🤖 Preparing data for AI Processing...")
 
         for tender_folder_name in tender_folders:
             tender_path = os.path.join(temp_dir, tender_folder_name)
@@ -229,7 +387,7 @@ def main():
             )
 
             # 4b. Run tender processing on current tender
-            logger.info("Processing tender...")
+            logger.info(f"⚡ Processing tender: {tender_folder_name}...")
             current_tender = None
             try:
                 current_tender = process_tender(tender_path)
@@ -237,12 +395,30 @@ def main():
                     current_tender["source_id"] = source_id
                     if source_url:
                         current_tender["source_url"] = source_url
+                    if not current_tender.get("source_reference_id"):
+                        current_tender["source_reference_id"] = tender_folder_name
                     current_tender["documents"] = _merge_document_records(
                         documents, current_tender.get("documents") or []
                     )
             except Exception as e:
                 logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
                 continue
+
+            if current_tender is None:
+                logger.warning(f"Tender processing returned None for {tender_folder_name}, skipping.")
+                continue
+
+            # todo generate embeddings
+            logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")
+
+            # combine fields that we vectorise
+            title = current_tender.get("title") or ""
+            summary = current_tender.get("description") or ""
+
+            embed = f"Title: {title}. Summary: {summary}".strip()
+
+            # assign embedded information to current tender
+            current_tender["embedding"] = generate_embedding(embed)
 
             # Try to upload to BigQuery
             logger.info("Uploading processed tender to BigQuery...")
@@ -274,6 +450,10 @@ def main():
     if failures:
         summary = ", ".join(f"{s} ({why})" for s, why in failures)
         logger.error(f"Pipeline finished with scraper failures: {summary}")
+
+        #send alert email with gcs alerts that detect the previous error and email admins
+
+
         os._exit(1)
     os._exit(0)
 

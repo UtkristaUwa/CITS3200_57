@@ -23,6 +23,7 @@ _EXPECTED_TENDER_FIELDS = {
     "value_currency": None,
     "value_notes": None,
     "location": None,
+    "embedding": None,
     "description": None,
     "summary_headline": None,
     "contact_name": None,
@@ -70,6 +71,7 @@ CONTENT_FIELDS = [
     "lodgment_address",
     "documents",
     "raw_extra",
+    "embedding",
 ]
 
 # Columns returned/selected for a tenders row, in one place so the SELECT
@@ -101,6 +103,7 @@ ALL_COLUMNS = [
     "last_scanned_at",
     "updated_at",
     "raw_extra",
+    "embedding",
 ]
 
 
@@ -153,11 +156,22 @@ def compute_content_hash(record: dict) -> str:
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
+_ALLOWED_DOCUMENT_FIELDS = {
+    "document_id",
+    "file_name",
+    "file_type",
+    "extracted_text",
+    "parsed_at",
+    "storage_uri",
+}
+
+
 def _prepare_documents(documents: list | None) -> list:
-    """Fill in document_id/parsed_at for any document that's missing them."""
+    """Fill in document_id/parsed_at for any document missing them, and drop
+    any field not in tender.schema.json's documents contract."""
     prepared = []
     for doc in documents or []:
-        doc = dict(doc)
+        doc = {k: v for k, v in doc.items() if k in _ALLOWED_DOCUMENT_FIELDS}
         doc.setdefault("document_id", str(uuid.uuid4()))
         doc.setdefault("parsed_at", _now_iso())
         doc.setdefault("file_type", None)
@@ -295,15 +309,18 @@ def upsert_tender(client: bigquery.Client, record: dict) -> dict:
     existing = _find_existing(client, record)
     now = _now_iso()
 
+    #
     if existing is None:
         row = {col: record.get(col) for col in ALL_COLUMNS if col in CONTENT_FIELDS
-               or col in ("source_reference_id", "source_id", "source_url")}
+               or col in ("source_reference_id", "source_id", "source_url", "embedding")}
         row["tender_id"] = str(uuid.uuid4())
         row["content_hash"] = new_hash
         row["first_seen_at"] = now
         row["last_scanned_at"] = now
         row["updated_at"] = now
         row["raw_extra"] = record.get("raw_extra")
+        row["source_url"] = record.get("source_url")  # Explicit safeguard
+        row["embedding"] = record.get("embedding")  # <--- CRITICAL FIX: Add this line!
         _load_row(client, row)
         return {"action": "inserted", "tender_id": row["tender_id"]}
 
@@ -313,13 +330,14 @@ def upsert_tender(client: bigquery.Client, record: dict) -> dict:
 
     changed_fields = _diff_fields(existing, record)
     row = {col: record.get(col) for col in ALL_COLUMNS if col in CONTENT_FIELDS
-           or col in ("source_reference_id", "source_id", "source_url")}
+           or col in ("source_reference_id", "source_id", "source_url", "embedding")}
     row["tender_id"] = existing["tender_id"]
     row["content_hash"] = new_hash
     row["first_seen_at"] = existing["first_seen_at"]
     row["last_scanned_at"] = now
     row["updated_at"] = now
     row["raw_extra"] = record.get("raw_extra")
+    row["embedding"] = record.get("embedding")
 
     _delete_row(client, existing["tender_id"])
     _load_row(client, row)

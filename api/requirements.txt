@@ -4,3 +4,5 @@ google-cloud-bigquery>=3.25.0
 google-cloud-storage>=2.0.0
 pydantic-settings>=2.4.0
 firebase-admin>=6.5.0
+google-genai
+pydantic
