@@ -23,6 +23,7 @@ _EXPECTED_TENDER_FIELDS = {
     "value_currency": None,
     "value_notes": None,
     "location": None,
+    "embedding": None,
     "description": None,
     "summary_headline": None,
     "contact_name": None,
