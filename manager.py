@@ -22,6 +22,7 @@ FAILURE_CODES = {
 
 # Improt tender processing code
 from processing.tender_processor import process_tender
+from processing.relevance_determination import determine_relevance
 
 # Copies each tender's original attachments into Cloud Storage before the
 # temporary directory (and everything in it) is deleted.
@@ -268,6 +269,19 @@ def main():
             if current_tender is None:
                 logger.warning(f"Tender processing returned None for {tender_folder_name}, skipping.")
                 continue
+
+            # 4c. Score the tender against the focus area / work type taxonomies.
+            # Enrichment only: a tender still belongs in the database unscored.
+            logger.info(f"🎯 Determining relevance for {tender_folder_name}...")
+            try:
+                current_tender = determine_relevance(current_tender)
+                logger.info(
+                    f"Fit score for {tender_folder_name}: {current_tender.get('fit')} "
+                    f"(focus_areas={current_tender.get('focus_areas')}, "
+                    f"work_types={current_tender.get('work_types')})"
+                )
+            except Exception as e:
+                logger.error(f"Relevance determination failed for {tender_folder_name}: {e}")
 
             # todo generate embeddings
             logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")

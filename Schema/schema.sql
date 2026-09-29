@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS `tenderai-dev.TenderAI.tenders` (
   description           STRING,                -- raw extracted description text
   summary_headline      STRING,                -- AI-generated one-line headline for the tender
 
+  -- Relevance layer, written by processing/relevance_determination.py.
+  -- focus_areas/work_types are {tag_id: score 1-5} maps — JSON because
+  -- BigQuery has no MAP type. Taxonomies live in tender_processor.cfg.
+  focus_areas           JSON,                  -- the issue/cohort/system the opportunity is about
+  work_types            JSON,                  -- what is actually being bought
+  fit                   INT64,                 -- overall fit, 0-100; near 0 when out of scope
+  fit_reason            STRING,                -- 1-2 sentences citing the text behind the score
+
   contact_name          STRING,
   contact_email         STRING,
   contact_phone         STRING,
