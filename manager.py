@@ -137,8 +137,13 @@ def _merge_document_records(attachment_records, txt_documents):
     for record in attachment_records:
         record = dict(record)
         base, _ext = os.path.splitext(record["file_name"])
-        record["extracted_text"] = extracted_text_by_txt_name.get(f"{base}.txt")
-        merged.append(record)
+        doc_entry = {
+            "file_name": record.get("file_name"),
+            "file_type": record.get("file_type"),
+            "storage_uri": record.get("storage_uri"),
+            "extracted_text": extracted_text_by_txt_name.get(f"{base}.txt"),
+        }
+        merged.append(doc_entry)
     return merged
 
 

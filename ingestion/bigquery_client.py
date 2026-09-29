@@ -155,16 +155,28 @@ def compute_content_hash(record: dict) -> str:
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
+DOCUMENT_SCHEMA_FIELDS = {
+    "document_id",
+    "file_name",
+    "file_type",
+    "extracted_text",
+    "parsed_at",
+    "storage_uri",
+}
+
+
 def _prepare_documents(documents: list | None) -> list:
-    """Fill in document_id/parsed_at for any document that's missing them."""
+    """Fill in document_id/parsed_at for any document that's missing them,
+    and strip any extra fields not defined in the BigQuery documents RECORD schema."""
     prepared = []
     for doc in documents or []:
-        doc = dict(doc)
-        doc.setdefault("document_id", str(uuid.uuid4()))
-        doc.setdefault("parsed_at", _now_iso())
-        doc.setdefault("file_type", None)
-        doc.setdefault("extracted_text", None)
-        prepared.append(doc)
+        doc_dict = {k: v for k, v in dict(doc).items() if k in DOCUMENT_SCHEMA_FIELDS}
+        doc_dict.setdefault("document_id", str(uuid.uuid4()))
+        doc_dict.setdefault("parsed_at", _now_iso())
+        doc_dict.setdefault("file_type", None)
+        doc_dict.setdefault("extracted_text", None)
+        doc_dict.setdefault("storage_uri", None)
+        prepared.append(doc_dict)
     return prepared
 
 
