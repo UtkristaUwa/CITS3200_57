@@ -461,6 +461,12 @@ def process_tender(documents_dir: str) -> dict:
     raw_context = build_tender_context(relevant_docs)
     documents = list_tender_documents(documents_dir)
 
+    # Temporary safety cap to stay comfortably under Gemini's 1,048,576 token limit (prevents 400 INVALID_ARGUMENT)
+    MAX_CONTEXT_CHARS = 3_000_000  # ~750,000 tokens
+    if raw_context and len(raw_context) > MAX_CONTEXT_CHARS:
+        print("context too large, trimmed ✂️ (temp fix)")
+        raw_context = raw_context[:MAX_CONTEXT_CHARS]
+
 
     # 1. AI Summarisation & Extraction
     summary = summarise_tender(raw_context)
