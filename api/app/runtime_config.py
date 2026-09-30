@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import configparser
+import math
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -22,6 +23,26 @@ _MODEL_KEY_RE = re.compile(
     re.IGNORECASE,
 )
 _MODEL_KEYS = {"triage_model", "extraction_model"}
+_RELEVANCE_PROMPT_KEYS = (
+    "classification_thoughts",
+    "focus_areas",
+    "work_types",
+    "out_of_scope",
+)
+_RELEVANCE_SCORING_KEYS = (
+    "focus_area_weight",
+    "work_type_weight",
+    "recency_weight",
+    "recency_horizon_days",
+    "out_of_scope_fit_cap",
+    "max_focus_areas",
+    "max_work_types",
+)
+_RELEVANCE_MODEL_KEYS = ("relevance_model", "relevance_temperature")
+_OPTION_RE = re.compile(
+    r"^(?P<key>[A-Za-z][A-Za-z0-9_]*)(?P<separator>\s*=\s*)"
+    r"(?P<value>[^\r\n]*?)(?P<ending>\r?\n)?$"
+)
 
 
 class RuntimeConfigError(Exception):
@@ -40,10 +61,32 @@ class RuntimeConfigConflict(RuntimeConfigError):
     """The stored object changed after the caller read it."""
 
 
+class RuntimeConfigInvalidUpdate(RuntimeConfigError):
+    """A requested update would make the runtime configuration invalid."""
+
+
 @dataclass(frozen=True)
 class RuntimeModelConfig:
     triage_model: str
     extraction_model: str
+    generation: str
+
+
+@dataclass(frozen=True)
+class RuntimeRelevanceConfig:
+    classification_thoughts: str
+    focus_areas: str
+    work_types: str
+    out_of_scope: str
+    focus_area_weight: float
+    work_type_weight: float
+    recency_weight: float
+    recency_horizon_days: int
+    out_of_scope_fit_cap: int
+    max_focus_areas: int
+    max_work_types: int
+    relevance_model: str
+    relevance_temperature: float
     generation: str
 
 
@@ -120,6 +163,88 @@ def _parse_models(text: str) -> dict[str, str]:
     return models
 
 
+def _parse_relevance(text: str) -> dict[str, str | float | int]:
+    try:
+        parser = configparser.ConfigParser(interpolation=None, strict=True)
+        parser.read_string(text)
+    except configparser.Error as exc:
+        raise RuntimeConfigMalformed("runtime configuration is malformed") from exc
+
+    for section in ("models", "relevance_prompts", "relevance_scoring"):
+        if not parser.has_section(section):
+            raise RuntimeConfigMalformed(f"runtime configuration has no [{section}] section")
+
+    values: dict[str, str | float | int] = {}
+    for key in _RELEVANCE_PROMPT_KEYS:
+        if not parser.has_option("relevance_prompts", key):
+            raise RuntimeConfigMalformed(f"runtime configuration has no relevance_prompts.{key}")
+        value = parser.get("relevance_prompts", key).strip()
+        if not value:
+            raise RuntimeConfigMalformed(f"runtime configuration has an empty relevance_prompts.{key}")
+        values[key] = value
+
+    if not parser.has_option("models", "relevance_model"):
+        raise RuntimeConfigMalformed("runtime configuration has no models.relevance_model")
+    relevance_model = parser.get("models", "relevance_model").strip()
+    if not relevance_model:
+        raise RuntimeConfigMalformed("runtime configuration has an empty models.relevance_model")
+    values["relevance_model"] = relevance_model
+
+    float_fields = (
+        ("relevance_scoring", "focus_area_weight"),
+        ("relevance_scoring", "work_type_weight"),
+        ("relevance_scoring", "recency_weight"),
+        ("models", "relevance_temperature"),
+    )
+    for section, key in float_fields:
+        if not parser.has_option(section, key):
+            raise RuntimeConfigMalformed(f"runtime configuration has no {section}.{key}")
+        try:
+            value = parser.getfloat(section, key)
+        except (ValueError, configparser.Error) as exc:
+            raise RuntimeConfigMalformed(
+                f"runtime configuration has an invalid {section}.{key}"
+            ) from exc
+        if not math.isfinite(value):
+            raise RuntimeConfigMalformed(f"runtime configuration has an invalid {section}.{key}")
+        values[key] = value
+
+    int_fields = (
+        "recency_horizon_days",
+        "out_of_scope_fit_cap",
+        "max_focus_areas",
+        "max_work_types",
+    )
+    for key in int_fields:
+        if not parser.has_option("relevance_scoring", key):
+            raise RuntimeConfigMalformed(f"runtime configuration has no relevance_scoring.{key}")
+        try:
+            values[key] = parser.getint("relevance_scoring", key)
+        except (ValueError, configparser.Error) as exc:
+            raise RuntimeConfigMalformed(
+                f"runtime configuration has an invalid relevance_scoring.{key}"
+            ) from exc
+
+    focus_weight = float(values["focus_area_weight"])
+    work_weight = float(values["work_type_weight"])
+    if not 0 <= focus_weight <= 1 or not 0 <= work_weight <= 1:
+        raise RuntimeConfigMalformed("relevance scoring weights must be between 0 and 1")
+    if not math.isclose(focus_weight + work_weight, 1.0, rel_tol=0.0, abs_tol=1e-9):
+        raise RuntimeConfigMalformed("relevance scoring weights must sum to 1")
+    if float(values["recency_weight"]) < 0:
+        raise RuntimeConfigMalformed("relevance recency weight must not be negative")
+    if int(values["recency_horizon_days"]) <= 0:
+        raise RuntimeConfigMalformed("relevance recency horizon must be greater than zero")
+    if not 0 <= int(values["out_of_scope_fit_cap"]) <= 100:
+        raise RuntimeConfigMalformed("relevance out-of-scope cap must be between 0 and 100")
+    if int(values["max_focus_areas"]) <= 0 or int(values["max_work_types"]) <= 0:
+        raise RuntimeConfigMalformed("relevance maximum tag counts must be greater than zero")
+    if float(values["relevance_temperature"]) < 0:
+        raise RuntimeConfigMalformed("relevance temperature must not be negative")
+
+    return values
+
+
 def _download_current(*, precondition_is_conflict: bool = False) -> tuple[object, _StoredConfig]:
     bucket_name, object_name = _runtime_location()
 
@@ -163,6 +288,30 @@ def get_model_config() -> RuntimeModelConfig:
     )
 
 
+def _relevance_config(values: dict[str, str | float | int], generation: str) -> RuntimeRelevanceConfig:
+    return RuntimeRelevanceConfig(
+        classification_thoughts=str(values["classification_thoughts"]),
+        focus_areas=str(values["focus_areas"]),
+        work_types=str(values["work_types"]),
+        out_of_scope=str(values["out_of_scope"]),
+        focus_area_weight=float(values["focus_area_weight"]),
+        work_type_weight=float(values["work_type_weight"]),
+        recency_weight=float(values["recency_weight"]),
+        recency_horizon_days=int(values["recency_horizon_days"]),
+        out_of_scope_fit_cap=int(values["out_of_scope_fit_cap"]),
+        max_focus_areas=int(values["max_focus_areas"]),
+        max_work_types=int(values["max_work_types"]),
+        relevance_model=str(values["relevance_model"]),
+        relevance_temperature=float(values["relevance_temperature"]),
+        generation=generation,
+    )
+
+
+def get_relevance_config() -> RuntimeRelevanceConfig:
+    _, stored = _download_current()
+    return _relevance_config(_parse_relevance(stored.text), stored.generation)
+
+
 def _replace_models(text: str, updates: dict[str, str]) -> str:
     lines = text.splitlines(keepends=True)
     in_models = False
@@ -190,6 +339,73 @@ def _replace_models(text: str, updates: dict[str, str]) -> str:
 
     if any(count != 1 for count in replacement_counts.values()):
         raise RuntimeConfigMalformed("approved model keys could not be updated unambiguously")
+    return "".join(updated_lines)
+
+
+def _replace_relevance_values(text: str, updates: dict[str, str]) -> str:
+    sections = {
+        **{key: "relevance_prompts" for key in _RELEVANCE_PROMPT_KEYS},
+        **{key: "relevance_scoring" for key in _RELEVANCE_SCORING_KEYS},
+        **{key: "models" for key in _RELEVANCE_MODEL_KEYS},
+    }
+    lines = text.splitlines(keepends=True)
+    replacement_counts = {key: 0 for key in updates}
+    updated_lines: list[str] = []
+    current_section = ""
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        section_match = _SECTION_RE.match(line)
+        if section_match:
+            current_section = section_match.group(1).strip().lower()
+            updated_lines.append(line)
+            index += 1
+            continue
+
+        option_match = _OPTION_RE.match(line)
+        key = option_match.group("key").lower() if option_match else ""
+        if option_match and key in updates and sections[key] == current_section:
+            replacement_counts[key] += 1
+            end = index + 1
+            while end < len(lines) and (not lines[end].strip() or lines[end][0].isspace()):
+                end += 1
+
+            preserved_comments = [
+                span_line
+                for span_line in lines[index + 1:end]
+                if span_line.lstrip().startswith(("#", ";"))
+            ]
+            trailing_blanks: list[str] = []
+            while end > index + 1 and not lines[end - 1].strip():
+                trailing_blanks.insert(0, lines[end - 1])
+                end -= 1
+
+            original_ending = option_match.group("ending")
+            line_ending = original_ending or ("\r\n" if "\r\n" in text else "\n")
+            value_lines = updates[key].splitlines() or [""]
+            first_ending = line_ending if original_ending is not None or len(value_lines) > 1 else ""
+            updated_lines.append(
+                f'{option_match.group("key")}{option_match.group("separator")}'
+                f"{value_lines[0]}{first_ending}"
+            )
+            for value_index, value in enumerate(value_lines[1:], start=1):
+                ending = (
+                    line_ending
+                    if original_ending is not None or value_index < len(value_lines) - 1
+                    else ""
+                )
+                updated_lines.append(f"    {value}{ending}")
+            updated_lines.extend(preserved_comments)
+            updated_lines.extend(trailing_blanks)
+            index = end
+            continue
+
+        updated_lines.append(line)
+        index += 1
+
+    if any(count != 1 for count in replacement_counts.values()):
+        raise RuntimeConfigMalformed("approved relevance keys could not be updated unambiguously")
     return "".join(updated_lines)
 
 
@@ -242,3 +458,70 @@ def update_model_config(
         extraction_model=updated_models["extraction_model"],
         generation=str(new_generation),
     )
+
+
+def update_relevance_config(
+    *,
+    expected_generation: str,
+    classification_thoughts: str | None = None,
+    focus_areas: str | None = None,
+    work_types: str | None = None,
+    out_of_scope: str | None = None,
+    focus_area_weight: float | None = None,
+    work_type_weight: float | None = None,
+    recency_weight: float | None = None,
+    recency_horizon_days: int | None = None,
+    out_of_scope_fit_cap: int | None = None,
+    max_focus_areas: int | None = None,
+    max_work_types: int | None = None,
+    relevance_model: str | None = None,
+    relevance_temperature: float | None = None,
+) -> RuntimeRelevanceConfig:
+    blob, stored = _download_current(precondition_is_conflict=True)
+    if stored.generation != expected_generation:
+        raise RuntimeConfigConflict("runtime model configuration has changed; reload and try again")
+    _parse_relevance(stored.text)
+
+    raw_updates = {
+        "classification_thoughts": classification_thoughts,
+        "focus_areas": focus_areas,
+        "work_types": work_types,
+        "out_of_scope": out_of_scope,
+        "focus_area_weight": focus_area_weight,
+        "work_type_weight": work_type_weight,
+        "recency_weight": recency_weight,
+        "recency_horizon_days": recency_horizon_days,
+        "out_of_scope_fit_cap": out_of_scope_fit_cap,
+        "max_focus_areas": max_focus_areas,
+        "max_work_types": max_work_types,
+        "relevance_model": relevance_model,
+        "relevance_temperature": relevance_temperature,
+    }
+    updates = {key: str(value) for key, value in raw_updates.items() if value is not None}
+    updated_text = _replace_relevance_values(stored.text, updates)
+    try:
+        updated_values = _parse_relevance(updated_text)
+    except RuntimeConfigMalformed as exc:
+        raise RuntimeConfigInvalidUpdate(str(exc)) from exc
+
+    try:
+        blob.upload_from_string(
+            updated_text.encode("utf-8"),
+            content_type="text/plain; charset=utf-8",
+            if_generation_match=int(expected_generation),
+        )
+    except google_exceptions.PreconditionFailed as exc:
+        raise RuntimeConfigConflict(
+            "runtime model configuration has changed; reload and try again"
+        ) from exc
+    except (
+        google_exceptions.GoogleAPIError,
+        google_auth_exceptions.GoogleAuthError,
+        requests_exceptions.RequestException,
+    ) as exc:
+        raise RuntimeConfigUnavailable("runtime model configuration could not be saved") from exc
+
+    new_generation = blob.generation
+    if new_generation is None:
+        raise RuntimeConfigUnavailable("saved runtime configuration has no generation")
+    return _relevance_config(updated_values, str(new_generation))

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import importlib.util
 import os
 from pathlib import Path
 import sys
@@ -19,24 +18,23 @@ sys.path.insert(0, str(API_ROOT))
 os.environ.setdefault("ALLOWED_ORIGINS", "http://localhost:5173")
 
 
-# The repository's API image installs firebase-admin, but the shared local test
-# virtualenv may not. Supply only the import surface needed to construct the app;
-# all authentication calls are replaced through FastAPI dependency overrides.
-if importlib.util.find_spec("firebase_admin") is None:
-    firebase_admin = types.ModuleType("firebase_admin")
-    firebase_admin._apps = [object()]
-    firebase_auth = types.ModuleType("firebase_admin.auth")
-    firebase_credentials = types.ModuleType("firebase_admin.credentials")
-    firebase_firestore = types.ModuleType("firebase_admin.firestore")
-    firebase_firestore.client = lambda: None
-    firebase_firestore.SERVER_TIMESTAMP = object()
-    firebase_admin.auth = firebase_auth
-    firebase_admin.credentials = firebase_credentials
-    firebase_admin.firestore = firebase_firestore
-    sys.modules["firebase_admin"] = firebase_admin
-    sys.modules["firebase_admin.auth"] = firebase_auth
-    sys.modules["firebase_admin.credentials"] = firebase_credentials
-    sys.modules["firebase_admin.firestore"] = firebase_firestore
+# Supply only the Firebase import surface needed to construct the app. These
+# API tests replace authentication calls through FastAPI dependency overrides
+# and must not require local Application Default Credentials.
+firebase_admin = types.ModuleType("firebase_admin")
+firebase_admin._apps = [object()]
+firebase_auth = types.ModuleType("firebase_admin.auth")
+firebase_credentials = types.ModuleType("firebase_admin.credentials")
+firebase_firestore = types.ModuleType("firebase_admin.firestore")
+firebase_firestore.client = lambda: None
+firebase_firestore.SERVER_TIMESTAMP = object()
+firebase_admin.auth = firebase_auth
+firebase_admin.credentials = firebase_credentials
+firebase_admin.firestore = firebase_firestore
+sys.modules["firebase_admin"] = firebase_admin
+sys.modules["firebase_admin.auth"] = firebase_auth
+sys.modules["firebase_admin.credentials"] = firebase_credentials
+sys.modules["firebase_admin.firestore"] = firebase_firestore
 
 from app import runtime_config
 from app.auth import current_user
@@ -49,7 +47,9 @@ CFG = """# file header
 # model comment
 triage_model = gemini-triage-old
 extraction_model = gemini-extraction-old
+relevance_model = gemini-relevance-old
 triage_temperature = 0.1
+relevance_temperature = 0.1
 
 [taxonomies]
 tags = construction, consulting
@@ -57,6 +57,25 @@ tags = construction, consulting
 [system_prompts]
 summary = Keep this prompt exactly as it is.
     Including this continuation line.
+
+[relevance_prompts]
+classification_thoughts = Classify using the tender scope.
+    Prefer inclusion when uncertain.
+focus_areas = FACET A: FOCUS AREA
+    housing | Housing
+work_types = FACET B: WORK TYPE
+    evaluation | Evaluation
+out_of_scope = OUT OF SCOPE
+    - Construction
+
+[relevance_scoring]
+focus_area_weight = 0.6
+work_type_weight = 0.4
+recency_weight = 8
+recency_horizon_days = 120
+out_of_scope_fit_cap = 2
+max_focus_areas = 3
+max_work_types = 2
 """
 
 
@@ -437,11 +456,15 @@ def test_repository_tender_processor_cfg_is_compatible():
     text = (REPO_ROOT / "processing" / "tender_processor.cfg").read_text(encoding="utf-8")
 
     models = runtime_config._parse_models(text)
+    relevance = runtime_config._parse_relevance(text)
 
     assert models == {
         "triage_model": "gemini-2.5-flash",
         "extraction_model": "gemini-2.5-flash",
     }
+    assert relevance["relevance_model"] == "gemini-2.5-flash"
+    assert relevance["focus_area_weight"] == 0.6
+    assert relevance["work_type_weight"] == 0.4
 
 
 def test_crlf_is_preserved(client, blob):
@@ -475,3 +498,287 @@ def test_no_final_newline_is_preserved(client, blob):
     )
     assert blob.content == expected.encode("utf-8")
     assert not blob.content.endswith(b"\n")
+
+
+def test_get_relevance_returns_only_approved_fields_and_generation(client, blob):
+    response = client.get("/admin/config/relevance")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "classification_thoughts": "Classify using the tender scope.\nPrefer inclusion when uncertain.",
+        "focus_areas": "FACET A: FOCUS AREA\nhousing | Housing",
+        "work_types": "FACET B: WORK TYPE\nevaluation | Evaluation",
+        "out_of_scope": "OUT OF SCOPE\n- Construction",
+        "focus_area_weight": 0.6,
+        "work_type_weight": 0.4,
+        "recency_weight": 8.0,
+        "recency_horizon_days": 120,
+        "out_of_scope_fit_cap": 2,
+        "max_focus_areas": 3,
+        "max_work_types": 2,
+        "relevance_model": "gemini-relevance-old",
+        "relevance_temperature": 0.1,
+        "generation": "41",
+    }
+    assert "system_prompts" not in response.text
+    assert "relevance_char_limit" not in response.text
+
+
+def test_patch_relevance_prompt_preserves_unrelated_content(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "classification_thoughts": "Use the scope.\nExplain the decision.",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["classification_thoughts"] == "Use the scope.\nExplain the decision."
+    assert response.json()["generation"] == "42"
+    expected = CFG.replace(
+        "classification_thoughts = Classify using the tender scope.\n"
+        "    Prefer inclusion when uncertain.",
+        "classification_thoughts = Use the scope.\n"
+        "    Explain the decision.",
+        1,
+    )
+    assert blob.content == expected.encode("utf-8")
+
+
+def test_patch_relevance_prompt_preserves_indented_comment(client, blob):
+    original = CFG.replace(
+        "    Prefer inclusion when uncertain.\n",
+        "    Prefer inclusion when uncertain.\n    # Keep this operator note.\n",
+        1,
+    )
+    blob.content = original.encode("utf-8")
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "classification_thoughts": "Use the scope.\nExplain the decision.",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    expected = original.replace(
+        "classification_thoughts = Classify using the tender scope.\n"
+        "    Prefer inclusion when uncertain.\n"
+        "    # Keep this operator note.",
+        "classification_thoughts = Use the scope.\n"
+        "    Explain the decision.\n"
+        "    # Keep this operator note.",
+        1,
+    )
+    assert blob.content == expected.encode("utf-8")
+
+
+@pytest.mark.parametrize("comment_line", ["# heading", "; operator note"])
+def test_relevance_text_rejects_cfg_comment_lines(client, blob, comment_line):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "classification_thoughts": f"Use the scope.\n{comment_line}\nExplain the decision.",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 422
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_multiline_patch_preserves_crlf(client, blob):
+    original = CFG.replace("\n", "\r\n")
+    blob.content = original.encode("utf-8")
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "classification_thoughts": "Use the scope.\nExplain the decision.",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    expected = original.replace(
+        "classification_thoughts = Classify using the tender scope.\r\n"
+        "    Prefer inclusion when uncertain.",
+        "classification_thoughts = Use the scope.\r\n"
+        "    Explain the decision.",
+        1,
+    )
+    assert blob.content == expected.encode("utf-8")
+
+
+def test_patch_relevance_scoring_model_and_temperature(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "focus_area_weight": 0.7,
+            "work_type_weight": 0.3,
+            "recency_horizon_days": 90,
+            "relevance_model": "gemini-relevance-new",
+            "relevance_temperature": 0.2,
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["focus_area_weight"] == 0.7
+    assert body["work_type_weight"] == 0.3
+    assert body["recency_horizon_days"] == 90
+    assert body["relevance_model"] == "gemini-relevance-new"
+    assert body["relevance_temperature"] == 0.2
+    assert body["recency_weight"] == 8.0
+    assert b"summary = Keep this prompt exactly as it is." in blob.content
+
+
+def test_patch_single_weight_validates_against_stored_partner(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"focus_area_weight": 0.5, "generation": "41"},
+    )
+
+    assert response.status_code == 422
+    assert "must sum to 1" in response.json()["detail"]
+    assert blob.content == CFG.encode("utf-8")
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"classification_thoughts": ""},
+        {"focus_areas": "   "},
+        {"relevance_model": "model\nname"},
+        {"focus_area_weight": -0.1},
+        {"work_type_weight": 1.1},
+        {"recency_weight": -1},
+        {"recency_horizon_days": 0},
+        {"out_of_scope_fit_cap": 101},
+        {"max_focus_areas": 0},
+        {"max_work_types": -1},
+        {"relevance_temperature": -0.1},
+    ],
+)
+def test_invalid_relevance_updates_return_422(client, blob, payload):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={**payload, "generation": "41"},
+    )
+
+    assert response.status_code == 422
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_weights_must_sum_to_one(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "focus_area_weight": 0.8,
+            "work_type_weight": 0.3,
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 422
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_patch_rejects_no_update_and_unknown_fields(client, blob):
+    no_update = client.patch("/admin/config/relevance", json={"generation": "41"})
+    unknown = client.patch(
+        "/admin/config/relevance",
+        json={"classification_thoughts": "Valid", "system_prompt": "hidden", "generation": "41"},
+    )
+
+    assert no_update.status_code == 422
+    assert unknown.status_code == 422
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_stale_generation_returns_409(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"relevance_model": "gemini-new", "generation": "40"},
+    )
+
+    assert response.status_code == 409
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_upload_race_returns_409(client, blob, monkeypatch):
+    original_upload = blob.upload_from_string
+
+    def race(data, *, content_type, if_generation_match):
+        blob.generation += 1
+        return original_upload(
+            data,
+            content_type=content_type,
+            if_generation_match=if_generation_match,
+        )
+
+    monkeypatch.setattr(blob, "upload_from_string", race)
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"relevance_model": "gemini-new", "generation": "41"},
+    )
+
+    assert response.status_code == 409
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_download_race_returns_409(client, blob):
+    blob.race_on_download = True
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"relevance_model": "gemini-new", "generation": "41"},
+    )
+
+    assert response.status_code == 409
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_missing_required_key_returns_503(client, blob):
+    blob.content = CFG.replace("max_work_types = 2\n", "").encode("utf-8")
+
+    response = client.get("/admin/config/relevance")
+
+    assert response.status_code == 503
+    assert "max_work_types" in response.json()["detail"]
+
+
+def test_relevance_patch_with_malformed_existing_config_returns_503(client, blob):
+    malformed = CFG.replace("max_work_types = 2\n", "")
+    blob.content = malformed.encode("utf-8")
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"relevance_model": "gemini-new", "generation": "41"},
+    )
+
+    assert response.status_code == 503
+    assert "max_work_types" in response.json()["detail"]
+    assert blob.content == malformed.encode("utf-8")
+
+
+def test_non_admin_is_forbidden_from_relevance(blob):
+    app.dependency_overrides[current_user] = lambda: {
+        "uid": "user-1",
+        "isAdmin": False,
+    }
+    try:
+        with TestClient(app) as test_client:
+            get_response = test_client.get("/admin/config/relevance")
+            patch_response = test_client.patch(
+                "/admin/config/relevance",
+                json={"relevance_model": "valid", "generation": "41"},
+            )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert get_response.status_code == 403
+    assert patch_response.status_code == 403
