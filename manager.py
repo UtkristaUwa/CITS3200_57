@@ -103,8 +103,6 @@ def publish_health_status_to_gcs(
   except Exception as e:
     logger.error(f"❌ Failed to publish health status JSON to Cloud Storage: {e}")
 
-
-
 # Copies each tender's original attachments into Cloud Storage before the
 # temporary directory (and everything in it) is deleted.
 import attachment_store
@@ -155,11 +153,13 @@ def _load_process_tender(runtime_directory):
 
     return process_tender
 
+
 def _load_determine_relevance():
     """Import relevance processing after the runtime CFG has been prepared."""
     from processing.relevance_determination import determine_relevance
 
     return determine_relevance
+
 
 def _site_code(result):
     """Status code from a (code, tenders) result, or None for scrapers
