@@ -54,6 +54,28 @@ export async function getMe(): Promise<Me> {
   return data;
 }
 
+export interface ModelConfigResponse {
+  triage_model: string;
+  extraction_model: string;
+  generation: string;
+}
+
+export interface ModelConfigUpdate {
+  triage_model?: string;
+  extraction_model?: string;
+  generation: string;
+}
+
+export async function getModelConfig(): Promise<ModelConfigResponse> {
+  const { data } = await http.get<ModelConfigResponse>(`${API_BASE_URL}/admin/config/models`);
+  return data;
+}
+
+export async function updateModelConfig(update: ModelConfigUpdate): Promise<ModelConfigResponse> {
+  const { data } = await http.patch<ModelConfigResponse>(`${API_BASE_URL}/admin/config/models`, update);
+  return data;
+}
+
 export interface TenderDocument {
   document_id: string | null;
   file_name: string;
