@@ -13,9 +13,11 @@ from processing import runtime_config
 VALID_CFG = b"""[models]
 triage_model = gemini-triage
 extraction_model = gemini-extraction
+relevance_model = gemini-relevance
 triage_temperature = 0.1
 summary_temperature = 0.2
 extraction_temperature = 0.1
+relevance_temperature = 0.1
 triage_char_limit = 6000
 
 [taxonomies]
@@ -25,6 +27,24 @@ tags = consulting
 doc_triage = Triage documents.
 summary = Summarise tenders.
 field_extraction = Extract fields.
+
+[relevance_prompts]
+classification_thoughts = Classify using the tender scope.
+focus_areas = FACET A: FOCUS AREA
+    housing | Housing
+work_types = FACET B: WORK TYPE
+    evaluation | Evaluation
+out_of_scope = OUT OF SCOPE
+    - Construction
+
+[relevance_scoring]
+focus_area_weight = 0.6
+work_type_weight = 0.4
+recency_weight = 8
+recency_horizon_days = 120
+out_of_scope_fit_cap = 2
+max_focus_areas = 3
+max_work_types = 2
 
 [field_descriptions]
 summary_headline = Headline.
@@ -232,6 +252,250 @@ def test_missing_non_model_required_section_uses_fallback(tmp_path, monkeypatch)
 
     assert_fallback(result)
     assert "prompt_templates" in result.reason
+
+
+@pytest.mark.parametrize("section", ["relevance_prompts", "relevance_scoring"])
+def test_missing_relevance_section_uses_fallback(tmp_path, monkeypatch, section):
+    data = VALID_CFG.replace(f"[{section}]".encode(), f"[not_{section}]".encode())
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert section in result.reason
+
+
+@pytest.mark.parametrize(
+    ("section", "key"),
+    [
+        ("relevance_prompts", "classification_thoughts"),
+        ("relevance_prompts", "focus_areas"),
+        ("relevance_prompts", "work_types"),
+        ("relevance_prompts", "out_of_scope"),
+        ("relevance_scoring", "focus_area_weight"),
+        ("relevance_scoring", "work_type_weight"),
+        ("relevance_scoring", "recency_weight"),
+        ("relevance_scoring", "recency_horizon_days"),
+        ("relevance_scoring", "out_of_scope_fit_cap"),
+        ("relevance_scoring", "max_focus_areas"),
+        ("relevance_scoring", "max_work_types"),
+        ("models", "relevance_model"),
+        ("models", "relevance_temperature"),
+    ],
+)
+def test_missing_required_relevance_key_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    section,
+    key,
+):
+    lines = VALID_CFG.decode().splitlines(keepends=True)
+    data = "".join(line for line in lines if not line.startswith(f"{key} = ")).encode()
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert f"{section}.{key}" in result.reason
+
+
+@pytest.mark.parametrize(
+    ("section", "key", "valid_block"),
+    [
+        (
+            "relevance_prompts",
+            "classification_thoughts",
+            "classification_thoughts = Classify using the tender scope.",
+        ),
+        (
+            "relevance_prompts",
+            "focus_areas",
+            "focus_areas = FACET A: FOCUS AREA\n    housing | Housing",
+        ),
+        (
+            "relevance_prompts",
+            "work_types",
+            "work_types = FACET B: WORK TYPE\n    evaluation | Evaluation",
+        ),
+        (
+            "relevance_prompts",
+            "out_of_scope",
+            "out_of_scope = OUT OF SCOPE\n    - Construction",
+        ),
+        ("models", "relevance_model", "relevance_model = gemini-relevance"),
+    ],
+)
+def test_empty_required_relevance_value_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    section,
+    key,
+    valid_block,
+):
+    data = VALID_CFG.replace(
+        valid_block.encode(),
+        f"{key} =   ".encode(),
+        1,
+    )
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert f"empty {section}.{key}" in result.reason
+
+
+@pytest.mark.parametrize(
+    ("section", "key", "valid_value"),
+    [
+        ("relevance_scoring", "focus_area_weight", "0.6"),
+        ("relevance_scoring", "work_type_weight", "0.4"),
+        ("relevance_scoring", "recency_weight", "8"),
+        ("models", "relevance_temperature", "0.1"),
+        ("relevance_scoring", "recency_horizon_days", "120"),
+        ("relevance_scoring", "out_of_scope_fit_cap", "2"),
+        ("relevance_scoring", "max_focus_areas", "3"),
+        ("relevance_scoring", "max_work_types", "2"),
+    ],
+)
+def test_invalid_relevance_numeric_value_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    section,
+    key,
+    valid_value,
+):
+    data = VALID_CFG.replace(
+        f"{key} = {valid_value}".encode(),
+        f"{key} = not-a-number".encode(),
+        1,
+    )
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert f"invalid numeric {section}.{key}" in result.reason
+
+
+@pytest.mark.parametrize(
+    ("key", "valid_value", "non_finite"),
+    [
+        ("focus_area_weight", "0.6", "nan"),
+        ("work_type_weight", "0.4", "inf"),
+        ("recency_weight", "8", "-inf"),
+        ("relevance_temperature", "0.1", "nan"),
+    ],
+)
+def test_non_finite_relevance_numeric_value_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    key,
+    valid_value,
+    non_finite,
+):
+    data = VALID_CFG.replace(
+        f"{key} = {valid_value}".encode(),
+        f"{key} = {non_finite}".encode(),
+        1,
+    )
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert key in result.reason
+
+
+@pytest.mark.parametrize(
+    ("key", "valid_value", "invalid_value", "expected_reason"),
+    [
+        ("focus_area_weight", "0.6", "-0.1", "weights must be between"),
+        ("work_type_weight", "0.4", "1.1", "weights must be between"),
+        ("recency_weight", "8", "-1", "recency weight"),
+        ("recency_horizon_days", "120", "0", "recency horizon"),
+        ("out_of_scope_fit_cap", "2", "101", "out-of-scope cap"),
+        ("max_focus_areas", "3", "0", "maximum tag counts"),
+        ("max_work_types", "2", "-1", "maximum tag counts"),
+        ("relevance_temperature", "0.1", "-0.1", "temperature"),
+    ],
+)
+def test_invalid_relevance_numeric_range_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    key,
+    valid_value,
+    invalid_value,
+    expected_reason,
+):
+    data = VALID_CFG.replace(
+        f"{key} = {valid_value}".encode(),
+        f"{key} = {invalid_value}".encode(),
+        1,
+    )
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert expected_reason in result.reason
+
+
+def test_relevance_weights_not_summing_to_one_use_fallback(tmp_path, monkeypatch):
+    data = VALID_CFG.replace(b"work_type_weight = 0.4", b"work_type_weight = 0.3")
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert "weights must sum to 1" in result.reason
+
+
+@pytest.mark.parametrize(
+    ("key", "valid_definition"),
+    [
+        ("focus_areas", "    housing | Housing\n"),
+        ("work_types", "    evaluation | Evaluation\n"),
+    ],
+)
+def test_taxonomy_without_valid_tag_definition_uses_fallback(
+    tmp_path,
+    monkeypatch,
+    key,
+    valid_definition,
+):
+    data = VALID_CFG.replace(valid_definition.encode(), b"    Not a tag definition\n", 1)
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert f"no valid tag definitions in relevance_prompts.{key}" in result.reason
+
+
+@pytest.mark.parametrize(
+    ("key", "valid_definition"),
+    [
+        ("focus_areas", "    housing | Housing\n"),
+        ("work_types", "    evaluation | Evaluation\n"),
+    ],
+)
+def test_duplicate_taxonomy_tag_ids_use_fallback(
+    tmp_path,
+    monkeypatch,
+    key,
+    valid_definition,
+):
+    duplicate = valid_definition + valid_definition.replace("Housing", "Housing duplicate").replace(
+        "Evaluation", "Evaluation duplicate"
+    )
+    data = VALID_CFG.replace(valid_definition.encode(), duplicate.encode(), 1)
+    configure_runtime(monkeypatch, FakeBlob(data))
+
+    result = runtime_config.prepare_runtime_config(tmp_path)
+
+    assert_fallback(result)
+    assert f"duplicate tag IDs in relevance_prompts.{key}" in result.reason
 
 
 def test_local_file_write_failure_uses_fallback(tmp_path, monkeypatch):
