@@ -22,8 +22,11 @@ import time
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common
+from error_scrapers import common, reporting
 
+log = reporting.site_logger("TENDERS_ACT")
+
+SOURCE_ID = "tenders_act"
 BASE_URL = "https://www.tenders.act.gov.au"
 LOGIN_URL = f"{BASE_URL}/login"
 LIST_URL = f"{BASE_URL}/tenders/open"
@@ -242,6 +245,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     tender_code = fields.get("tender_code") or "UNKNOWN"
     folder = common.tender_dir(tender_code, output_dir)
     common.save_page_text(folder, tender_code, _format_detail_text(fields))
+    common.add_source_url(folder, tender_code, url)
     download_url = find_download_docs_url(response.text)
 
     attachments = []
@@ -352,25 +356,33 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
     try:
         with BrowserSession(download_dir=output_dir) as session:
             if not session.login():
+                log.error("login FAILED -- see the login lines just above for why")
                 return common.SITE_LOGIN_FAILED, tenders
+            log.info("login: OK")
 
             listing_html = session.get(LIST_URL)
             urls = parse_listing(listing_html)
             if limit:
                 urls = urls[:limit]
+            log.info("listing: %d tender link(s) found", len(urls))
 
             tender_codes = set()
-            for url in urls:
+            all_codes = []
+            for index, url in enumerate(urls, start=1):
+                log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
                     detail_html = session.get(url)
                     fields, code = parse_detail(detail_html)
                     if code != common.SITE_SUCCESS:
                         tender_codes.add(code)
+                        all_codes.append(code)
+                        reporting.tender_line(log, index, len(urls), url, code)
                         continue
 
                     tender_code = fields.get("tender_code") or "UNKNOWN"
                     folder = common.tender_dir(tender_code, output_dir)
                     common.save_page_text(folder, tender_code, _format_detail_text(fields))
+                    common.add_source_url(folder, tender_code, url)
                     download_url = find_download_docs_url(detail_html)
 
                     attachments = []
@@ -381,13 +393,26 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                             zip_path = session.download_via_form(download_url, form["ids"])
                             attachments = _extract_zip_into_folder(zip_path, folder)
                             os.remove(zip_path)
+                            reporting.documents_line(log, len(attachments), len(form["ids"]))
+                        else:
+                            log.warning("       documents: the download page had no usable "
+                                        "form (%s)", reporting.code_name(form["code"]))
+                    else:
+                        reporting.documents_line(log, 0)
 
                     tenders.append({"title": fields.get("title"), "folder": folder,
                                      "attachments": attachments,
                                      "source_url": url, **fields})
-                except Exception:
+                    all_codes.append(common.SITE_SUCCESS)
+                    reporting.tender_line(log, index, len(urls), tender_code,
+                                          common.SITE_SUCCESS)
+                except Exception as exc:
+                    reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
+                    all_codes.append(common.TENDER_PARTIAL)
                     continue
+
+            reporting.diagnose(log, all_codes, logged_in=True)
 
             if not tender_codes:
                 return common.SITE_SUCCESS, tenders
@@ -396,13 +421,12 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
             return common.TENDER_PARTIAL, tenders
 
     except Exception:
-        import traceback
-        traceback.print_exc()
+        log.exception("browser run crashed")
         return common.SITE_TOTAL_FAILURE, tenders
 
 
-def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data",
-                            attempts: int = 3) -> tuple[int, list[dict]]:
+def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
+                         attempts: int = 3) -> tuple[int, list[dict]]:
     """
     Retry wrapper: each attempt opens a brand-new browser, since a flagged
     session can stay flagged. Only retries when nothing was scraped and the
@@ -410,10 +434,12 @@ def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data",
     """
     code, tenders = common.SITE_TOTAL_FAILURE, []
     for attempt in range(1, attempts + 1):
+        log.info("browser attempt %d/%d", attempt, attempts)
         code, tenders = _run_once(limit, output_dir)
         if tenders or code not in (common.SITE_TOTAL_FAILURE, common.SITE_LOGIN_FAILED):
             return code, tenders
-        print(f"[ACT] attempt {attempt}/{attempts} got code {code} with 0 tenders, retrying", flush=True)
+        log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
+                    attempt, attempts, reporting.code_name(code), 15 * attempt)
         time.sleep(15 * attempt)
     return code, tenders
 
@@ -442,8 +468,8 @@ def _extract_zip_into_folder(zip_path: str, folder: str) -> list[dict]:
                 try:
                     text = extractor(raw_path)
                     common.save_extracted_text(folder, file_name, text)
-                except common.ExtractionError:
-                    pass
+                except common.ExtractionError as exc:
+                    log.warning("       text extraction FAILED  %s  (%s)", file_name, exc)
             attachments.append({"file_name": file_name, "content_type": None})
     return attachments
 
@@ -468,11 +494,20 @@ def _scrape_all(client, urls, output_dir, tenders):
     return common.TENDER_PARTIAL, tenders
 
 
+@reporting.reported(SOURCE_ID.upper())
+def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data",
+                            attempts: int = 3) -> common.ScrapeResult:
+    """
+    The pipeline's entry point. Returns (error code, site name, tenders scraped)
+    and nothing else -- the tenders themselves are left in output_dir.
+    """
+    code, tenders = _scrape_with_retries(limit, output_dir, attempts)
+    return common.ScrapeResult(code, SOURCE_ID, len(tenders))
+
+
 def main():
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    code, tenders = run_scraper_via_browser(limit=2)
-    print(f"Tenders ACT run finished with code {code}, {len(tenders)} tenders scraped")
+    reporting.configure_logging()
+    run_scraper_via_browser()  # no cap; for a capped local run use: python manager.py --local
 
 
 if __name__ == "__main__":

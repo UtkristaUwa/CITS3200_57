@@ -250,9 +250,10 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
         raise httpx.ConnectError("connection failed")
 
     monkeypatch.setattr(httpx.Client, "get", exploding_get)
-    code, tenders = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
-    assert tenders == []
+    assert site == "buynsw"
+    assert count == 0
 
 def test_nested_zip_gets_recursed_into(tmp_path, monkeypatch):
     monkeypatch.setattr(scraper.common, "extract_pdf", lambda path: "fake text")
