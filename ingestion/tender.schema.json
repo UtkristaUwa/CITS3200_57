@@ -48,6 +48,26 @@
       "type": ["string", "null"],
       "description": "Plain text only — no HTML/markdown."
     },
+    "focus_areas": {
+      "type": ["object", "null"],
+      "description": "Relevance layer, set by processing/relevance_determination.py — never by hand. Maps a focus area tag_id from tender_processor.cfg to how central it is to the opportunity (1-5).",
+      "additionalProperties": { "type": "integer", "minimum": 1, "maximum": 5 }
+    },
+    "work_types": {
+      "type": ["object", "null"],
+      "description": "As focus_areas, but for the work type tag_ids — what is actually being bought.",
+      "additionalProperties": { "type": "integer", "minimum": 1, "maximum": 5 }
+    },
+    "fit": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall fit score derived from the focus_areas/work_types scores and the tender's recency. Near 0 when the main deliverable is out of scope."
+    },
+    "fit_reason": {
+      "type": ["string", "null"],
+      "description": "1-2 sentences pointing to the text that drove the fit decision."
+    },
     "contact_name": { "type": ["string", "null"] },
     "contact_email": { "type": ["string", "null"] },
     "contact_phone": { "type": ["string", "null"] },
