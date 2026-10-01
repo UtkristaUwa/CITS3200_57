@@ -43,6 +43,7 @@ _OPTION_RE = re.compile(
     r"^(?P<key>[A-Za-z][A-Za-z0-9_]*)(?P<separator>\s*=\s*)"
     r"(?P<value>[^\r\n]*?)(?P<ending>\r?\n)?$"
 )
+_TAG_DEFINITION = re.compile(r"^([a-z][a-z0-9_]*)\s*\|\s*\S")
 
 
 class RuntimeConfigError(Exception):
@@ -95,6 +96,14 @@ class _StoredConfig:
     text: str
     models: dict[str, str]
     generation: str
+
+
+def _taxonomy_tag_ids(value: str) -> list[str]:
+    return [
+        match.group(1)
+        for line in value.splitlines()
+        if (match := _TAG_DEFINITION.match(line.strip()))
+    ]
 
 
 @lru_cache
@@ -182,6 +191,17 @@ def _parse_relevance(text: str) -> dict[str, str | float | int]:
         if not value:
             raise RuntimeConfigMalformed(f"runtime configuration has an empty relevance_prompts.{key}")
         values[key] = value
+
+    for key in ("focus_areas", "work_types"):
+        tag_ids = _taxonomy_tag_ids(str(values[key]))
+        if not tag_ids:
+            raise RuntimeConfigMalformed(
+                f"runtime configuration has no valid tag definitions in relevance_prompts.{key}"
+            )
+        if len(tag_ids) != len(set(tag_ids)):
+            raise RuntimeConfigMalformed(
+                f"runtime configuration has duplicate tag IDs in relevance_prompts.{key}"
+            )
 
     if not parser.has_option("models", "relevance_model"):
         raise RuntimeConfigMalformed("runtime configuration has no models.relevance_model")
@@ -370,6 +390,7 @@ def _replace_relevance_values(text: str, updates: dict[str, str]) -> str:
             end = index + 1
             while end < len(lines) and (not lines[end].strip() or lines[end][0].isspace()):
                 end += 1
+            span_end = end
 
             preserved_comments = [
                 span_line
@@ -398,7 +419,7 @@ def _replace_relevance_values(text: str, updates: dict[str, str]) -> str:
                 updated_lines.append(f"    {value}{ending}")
             updated_lines.extend(preserved_comments)
             updated_lines.extend(trailing_blanks)
-            index = end
+            index = span_end
             continue
 
         updated_lines.append(line)

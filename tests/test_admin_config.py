@@ -612,6 +612,48 @@ def test_relevance_multiline_patch_preserves_crlf(client, blob):
     assert blob.content == expected.encode("utf-8")
 
 
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+def test_relevance_out_of_scope_patch_preserves_single_trailing_blank_line(
+    client,
+    blob,
+    line_ending,
+):
+    original = CFG.replace("\n", line_ending)
+    blob.content = original.encode("utf-8")
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "out_of_scope": "OUT OF SCOPE\n- Frontline delivery",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    expected = original.replace(
+        f"out_of_scope = OUT OF SCOPE{line_ending}"
+        f"    - Construction{line_ending}",
+        f"out_of_scope = OUT OF SCOPE{line_ending}"
+        f"    - Frontline delivery{line_ending}",
+        1,
+    )
+    assert blob.content == expected.encode("utf-8")
+
+
+def test_relevance_final_scoring_key_patch_preserves_surrounding_bytes(client, blob):
+    original = CFG + "\n[after_relevance]\nuntouched = exactly\n"
+    blob.content = original.encode("utf-8")
+
+    response = client.patch(
+        "/admin/config/relevance",
+        json={"max_work_types": 4, "generation": "41"},
+    )
+
+    assert response.status_code == 200
+    expected = original.replace("max_work_types = 2", "max_work_types = 4", 1)
+    assert blob.content == expected.encode("utf-8")
+
+
 def test_patch_relevance_scoring_model_and_temperature(client, blob):
     response = client.patch(
         "/admin/config/relevance",
@@ -645,6 +687,62 @@ def test_patch_single_weight_validates_against_stored_partner(client, blob):
     assert response.status_code == 422
     assert "must sum to 1" in response.json()["detail"]
     assert blob.content == CFG.encode("utf-8")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("focus_areas", "FACET A: FOCUS AREA\nNot a tag definition"),
+        ("work_types", "FACET B: WORK TYPE\nNot a tag definition"),
+    ],
+)
+def test_relevance_taxonomy_without_valid_definition_returns_422(
+    client,
+    blob,
+    field,
+    value,
+):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={field: value, "generation": "41"},
+    )
+
+    assert response.status_code == 422
+    assert "no valid tag definitions" in response.json()["detail"]
+    assert blob.content == CFG.encode("utf-8")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("focus_areas", "housing | Housing\nhousing | Housing duplicate"),
+        ("work_types", "evaluation | Evaluation\nevaluation | Evaluation duplicate"),
+    ],
+)
+def test_relevance_duplicate_taxonomy_tag_id_returns_422(client, blob, field, value):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={field: value, "generation": "41"},
+    )
+
+    assert response.status_code == 422
+    assert "duplicate tag IDs" in response.json()["detail"]
+    assert blob.content == CFG.encode("utf-8")
+
+
+def test_relevance_same_tag_id_across_taxonomies_is_allowed(client, blob):
+    response = client.patch(
+        "/admin/config/relevance",
+        json={
+            "focus_areas": "shared_tag | Shared focus area",
+            "work_types": "shared_tag | Shared work type",
+            "generation": "41",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["focus_areas"] == "shared_tag | Shared focus area"
+    assert response.json()["work_types"] == "shared_tag | Shared work type"
 
 
 @pytest.mark.parametrize(
@@ -762,6 +860,23 @@ def test_relevance_patch_with_malformed_existing_config_returns_503(client, blob
 
     assert response.status_code == 503
     assert "max_work_types" in response.json()["detail"]
+    assert blob.content == malformed.encode("utf-8")
+
+
+def test_malformed_existing_relevance_taxonomy_returns_503(client, blob):
+    malformed = CFG.replace("    housing | Housing\n", "    Not a tag definition\n", 1)
+    blob.content = malformed.encode("utf-8")
+
+    get_response = client.get("/admin/config/relevance")
+    patch_response = client.patch(
+        "/admin/config/relevance",
+        json={"relevance_model": "gemini-new", "generation": "41"},
+    )
+
+    assert get_response.status_code == 503
+    assert patch_response.status_code == 503
+    assert "focus_areas" in get_response.json()["detail"]
+    assert "focus_areas" in patch_response.json()["detail"]
     assert blob.content == malformed.encode("utf-8")
 
 
