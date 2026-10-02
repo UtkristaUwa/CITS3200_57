@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type { Tender } from '../lib/api';
+import { generateTenderEmailBody, generateTenderEmailSubject } from '../lib/tenderShare';
 
 interface ShareTenderDialogProps {
   tender: Tender;
@@ -35,6 +36,8 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
   const [recipientEmail, setRecipientEmail] = useState('');
   const [personalMessage, setPersonalMessage] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
+  const emailSubject = generateTenderEmailSubject(tender);
+  const emailBody = generateTenderEmailBody(tender, personalMessage);
 
   useEffect(() => {
     if (!open) {
@@ -160,11 +163,24 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
           <Typography id={emailPreviewHeadingId} variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
             Email preview
           </Typography>
-          <Typography variant="body2" sx={{ overflowWrap: 'anywhere', mb: 1 }}>
-            {tender.title || 'Untitled tender'}
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontWeight: 700 }}>
+            Subject
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Generated email content will appear here in a later phase.
+          <Typography
+            variant="body2"
+            sx={{ overflowWrap: 'anywhere', wordBreak: 'break-word', mb: 2 }}
+          >
+            {emailSubject}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontWeight: 700 }}>
+            Body
+          </Typography>
+          <Typography
+            variant="body2"
+            component="div"
+            sx={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+          >
+            {emailBody}
           </Typography>
         </Box>
       </DialogContent>
