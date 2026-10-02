@@ -209,7 +209,7 @@ import {
           </Typography>
         </CardContent>
 
-        <Collapse in={expanded} timeout={300} id={detailsId}>
+        <Collapse in={expanded} timeout={300} unmountOnExit id={detailsId}>
           <Divider sx={{ mx: 2 }} />
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
@@ -261,11 +261,13 @@ import {
             {expanded ? 'View Less' : 'View More'}
           </Button>
         </CardActions>
-        <ShareTenderDialog
-          tender={tender}
-          open={shareDialogOpen}
-          onClose={() => setShareDialogOpen(false)}
-        />
+        {shareDialogOpen && (
+          <ShareTenderDialog
+            tender={tender}
+            open={shareDialogOpen}
+            onClose={() => setShareDialogOpen(false)}
+          />
+        )}
       </Card>
     );
   }
