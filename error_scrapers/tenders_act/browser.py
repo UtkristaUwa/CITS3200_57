@@ -35,14 +35,13 @@ import time
 
 from seleniumbase import SB
 
-BASE_URL = "https://www.tenders.act.gov.au"
-LOGIN_URL = f"{BASE_URL}/login"
-LIST_URL = f"{BASE_URL}/tenders/open"
-
-USERNAME = os.environ.get("ACT_USERNAME")
-PASSWORD = os.environ.get("ACT_PASSWORD")
-
-LOGIN_ERROR_TEXT = "Invalid username/password combination"
+from error_scrapers.tenders_act.scraper import (
+    LOGIN_ERROR_TEXT,
+    LOGIN_URL,
+    BotBlockedError,
+    credentials,
+    is_blocked,
+)
 
 # How many times get() tries a page, and how long it waits for a selector.
 GET_ATTEMPTS = 3
@@ -113,6 +112,11 @@ class BrowserSession:
         Navigate to url and return the rendered page's HTML. Retries, giving
         each attempt a longer reconnect, and dumps what the page looked like
         whenever an attempt fails.
+
+        Raises BotBlockedError as soon as an attempt ends on a Cloudflare
+        challenge. Retrying the same page in the same browser has never
+        cleared one (every attempt in the logs hit it again, ~45s each), so
+        the caller's fresh-browser retry is the only one worth paying for.
         """
         last_err = None
         for attempt in range(1, attempts + 1):
@@ -129,17 +133,28 @@ class BrowserSession:
                     flush=True,
                 )
                 self._debug_dump(f"attempt {attempt}")
+                if self._on_challenge_page():
+                    raise BotBlockedError(
+                        f"Cloudflare challenge instead of {url}"
+                    ) from e
         raise last_err
+
+    def _on_challenge_page(self) -> bool:
+        try:
+            return is_blocked(self.sb.get_title(), self.sb.get_page_source())
+        except Exception:
+            return False
 
     def login(self) -> bool:
         """Fill and submit the supplier login form. Returns True on success."""
-        if not USERNAME or not PASSWORD:
+        username, password = credentials()
+        if not username or not password:
             print("[ACT] ACT_USERNAME / ACT_PASSWORD are not set", flush=True)
             return False
 
         self.get(LOGIN_URL, wait_selector="#supplierUsername")
-        self.sb.type("#supplierUsername", USERNAME)
-        self.sb.type("#supplierPassword", PASSWORD)
+        self.sb.type("#supplierUsername", username)
+        self.sb.type("#supplierPassword", password)
         self.sb.click("#supplierLoginForm button[type='submit']")
 
         # Wait up to ~10s for a definite outcome instead of a blind sleep:
