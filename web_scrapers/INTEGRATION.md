@@ -1,5 +1,11 @@
 # How the pipeline calls the scrapers
 
+> **Superseded for the daily pipeline.** `manager.py` now runs AusTender, NT
+> QTOL, QLD QTenders and Buying for Victoria from `error_scrapers/` (see
+> [error_scrapers/README.md](../error_scrapers/README.md)), which write the
+> `__tender__<REF>.txt` + attachments layout and return status codes. The
+> modules below are kept for reference until they are removed.
+
 The scraper stage is a **library the manager function imports**, not a service
 and not a job. `manager.py` is the only thing that is scheduled; it decides
 when the scrape runs, and what becomes of the folders afterwards.
