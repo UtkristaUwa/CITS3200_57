@@ -28,6 +28,23 @@ def _read_fixture(name: str) -> str:
         return f.read()
 
 
+@pytest.fixture(autouse=True)
+def act_credentials(monkeypatch):
+    """Every test runs with credentials set, so a login test exercises the
+    form rather than the missing-credentials short-circuit. Tests about
+    missing credentials delete them again."""
+    monkeypatch.setenv("ACT_USERNAME", "supplier@example.com")
+    monkeypatch.setenv("ACT_PASSWORD", "not-a-real-password")
+
+
+CLOUDFLARE_CHALLENGE_HTML = (
+    '<html lang="en-US" dir="ltr"><head><title>Just a moment...</title>'
+    '<meta name="robots" content="noindex,nofollow"></head>'
+    '<body><div id="challenge-error-text">Enable JavaScript and cookies to continue</div>'
+    '</body></html>'
+)
+
+
 # ---------------------------------------------------------------------------
 # Login
 # ---------------------------------------------------------------------------
@@ -265,3 +282,128 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
     code, tenders = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
     assert tenders == []
+
+
+# ---------------------------------------------------------------------------
+# Missing credentials and Cloudflare
+# ---------------------------------------------------------------------------
+
+def test_missing_credentials_fail_without_contacting_the_site(monkeypatch):
+    monkeypatch.delenv("ACT_USERNAME")
+    monkeypatch.delenv("ACT_PASSWORD")
+
+    class NoNetworkClient:
+        def get(self, *args, **kwargs):
+            raise AssertionError("login should not have touched the network")
+        post = get
+
+    assert scraper.login(NoNetworkClient()) is False
+
+
+def test_browser_run_with_missing_credentials_never_opens_a_browser(monkeypatch):
+    monkeypatch.delenv("ACT_USERNAME")
+    calls = []
+    monkeypatch.setattr(scraper, "_run_once", lambda *a, **kw: calls.append(1))
+
+    code, tenders = scraper.run_scraper_via_browser()
+
+    assert code == common.SITE_LOGIN_FAILED
+    assert tenders == []
+    assert calls == []
+
+
+def test_cloudflare_challenge_page_is_recognised():
+    assert scraper.is_blocked("Just a moment...", CLOUDFLARE_CHALLENGE_HTML) is True
+
+
+def test_real_login_page_is_not_mistaken_for_a_block():
+    html = _read_fixture("act_login_page.html")
+    assert scraper.is_blocked("Tenders ACT", html) is False
+
+
+class _FakeSB:
+    """Stands in for SeleniumBase's SB: every page is Cloudflare's challenge."""
+
+    def __init__(self):
+        self.opens = 0
+
+    def uc_open_with_reconnect(self, url, reconnect_time=None):
+        self.opens += 1
+
+    def wait_for_element(self, selector, timeout=None):
+        raise RuntimeError(f"{selector} never appeared")
+
+    def get_title(self):
+        return "Just a moment..."
+
+    def get_page_source(self):
+        return CLOUDFLARE_CHALLENGE_HTML
+
+    def get_current_url(self):
+        return scraper.LOGIN_URL
+
+
+def test_browser_get_gives_up_on_the_first_challenge(tmp_path):
+    from error_scrapers.tenders_act.browser import BrowserSession
+
+    session = BrowserSession(download_dir=str(tmp_path))
+    session.sb = _FakeSB()
+
+    with pytest.raises(scraper.BotBlockedError):
+        session.get(scraper.LOGIN_URL, wait_selector="#supplierUsername")
+    assert session.sb.opens == 1
+
+
+def test_a_challenge_at_login_is_reported_as_bot_blocked(tmp_path, monkeypatch):
+    from error_scrapers.tenders_act import browser
+
+    class BlockedSession:
+        def __init__(self, download_dir):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc_info):
+            return False
+
+        def login(self):
+            raise scraper.BotBlockedError("Cloudflare challenge instead of /login")
+
+    monkeypatch.setattr(browser, "BrowserSession", BlockedSession)
+
+    code, tenders = scraper._run_once(output_dir=str(tmp_path))
+
+    assert code == common.SITE_BOT_BLOCKED
+    assert tenders == []
+
+
+def test_bot_blocked_is_retried_with_a_fresh_browser_then_reported(monkeypatch):
+    attempts = []
+
+    def blocked_run(limit, output_dir):
+        attempts.append(1)
+        return common.SITE_BOT_BLOCKED, []
+
+    monkeypatch.setattr(scraper, "_run_once", blocked_run)
+    monkeypatch.setattr(scraper.time, "sleep", lambda seconds: None)
+
+    code, tenders = scraper.run_scraper_via_browser(attempts=3)
+
+    assert code == common.SITE_BOT_BLOCKED
+    assert len(attempts) == 3
+
+
+def test_a_structure_change_is_not_retried(monkeypatch):
+    attempts = []
+
+    def changed_run(limit, output_dir):
+        attempts.append(1)
+        return common.SITE_STRUCTURE_CHANGE, []
+
+    monkeypatch.setattr(scraper, "_run_once", changed_run)
+
+    code, _ = scraper.run_scraper_via_browser(attempts=3)
+
+    assert code == common.SITE_STRUCTURE_CHANGE
+    assert len(attempts) == 1
