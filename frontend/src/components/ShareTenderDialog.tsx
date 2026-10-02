@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import {
   Box,
   Dialog,
@@ -30,9 +30,19 @@ function validateEmail(value: string): string | null {
 }
 
 export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogProps) {
+  const dialogTitleId = useId();
+  const emailPreviewHeadingId = useId();
   const [recipientEmail, setRecipientEmail] = useState('');
   const [personalMessage, setPersonalMessage] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setRecipientEmail('');
+      setPersonalMessage('');
+      setEmailError(null);
+    }
+  }, [open]);
 
   const resetInputs = () => {
     setRecipientEmail('');
@@ -64,7 +74,7 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
       onClose={handleClose}
       fullWidth
       maxWidth="sm"
-      aria-labelledby="share-tender-dialog-title"
+      aria-labelledby={dialogTitleId}
       slotProps={{
         paper: {
           sx: {
@@ -75,7 +85,7 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
         },
       }}
     >
-      <DialogTitle id="share-tender-dialog-title" sx={{ pr: 7 }}>
+      <DialogTitle id={dialogTitleId} sx={{ pr: 7 }}>
         Share Tender
         <IconButton
           aria-label="Close share tender dialog"
@@ -137,7 +147,7 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
 
         <Box
           component="section"
-          aria-labelledby="email-preview-heading"
+          aria-labelledby={emailPreviewHeadingId}
           sx={{
             p: { xs: 1.5, sm: 2 },
             minWidth: 0,
@@ -147,7 +157,7 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
             bgcolor: 'background.default',
           }}
         >
-          <Typography id="email-preview-heading" variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography id={emailPreviewHeadingId} variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
             Email preview
           </Typography>
           <Typography variant="body2" sx={{ overflowWrap: 'anywhere', mb: 1 }}>
