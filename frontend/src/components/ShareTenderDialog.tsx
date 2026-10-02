@@ -114,7 +114,7 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
             variant="subtitle1"
             sx={{ fontWeight: 700, overflowWrap: 'anywhere', wordBreak: 'break-word' }}
           >
-            {tender.title || 'Untitled tender'}
+            {tender.title.trim() || 'Untitled tender'}
           </Typography>
         </Box>
 

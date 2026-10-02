@@ -13,30 +13,38 @@ function tenderTitle(tender: Tender): string {
   return nonEmptyText(tender.title) ?? UNTITLED_TENDER;
 }
 
+function singleLineEmailText(value: string): string {
+  const withoutControlCharacters = Array.from(value, (character) => {
+    const codePoint = character.codePointAt(0);
+    const isControlCharacter = codePoint !== undefined
+      && (codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f));
+    return isControlCharacter ? ' ' : character;
+  }).join('');
+
+  return withoutControlCharacters
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function formatClosingDate(value: string | null): string | null {
   const dateText = nonEmptyText(value);
   if (!dateText) return null;
 
   const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateText);
-  let parsedDate: Date;
+  if (!dateOnlyMatch) return null;
 
-  if (dateOnlyMatch) {
-    const [, yearText, monthText, dayText] = dateOnlyMatch;
-    const year = Number(yearText);
-    const month = Number(monthText);
-    const day = Number(dayText);
-    parsedDate = new Date(year, month - 1, day);
+  const [, yearText, monthText, dayText] = dateOnlyMatch;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const parsedDate = new Date(year, month - 1, day);
 
-    if (
-      parsedDate.getFullYear() !== year
-      || parsedDate.getMonth() !== month - 1
-      || parsedDate.getDate() !== day
-    ) {
-      return null;
-    }
-  } else {
-    parsedDate = new Date(dateText);
-    if (Number.isNaN(parsedDate.getTime())) return null;
+  if (
+    parsedDate.getFullYear() !== year
+    || parsedDate.getMonth() !== month - 1
+    || parsedDate.getDate() !== day
+  ) {
+    return null;
   }
 
   return parsedDate.toLocaleDateString('en-AU', {
@@ -53,14 +61,29 @@ function originalTenderUrl(value: string | null): string | null {
   try {
     const parsedUrl = new URL(urlText);
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return null;
+    if (parsedUrl.username || parsedUrl.password) return null;
 
     const hostname = parsedUrl.hostname.toLowerCase();
     if (
       hostname === 'storage.googleapis.com'
       || hostname.endsWith('.storage.googleapis.com')
+      || hostname === 'storage.cloud.google.com'
       || hostname === 'firebasestorage.googleapis.com'
+      || hostname === 'firebasestorage.app'
+      || hostname.endsWith('.firebasestorage.app')
     ) {
       return null;
+    }
+
+    const pathname = decodeURIComponent(parsedUrl.pathname).toLowerCase();
+    if (pathname.includes('/documents/download')) return null;
+
+    const sensitiveParameters = new Set(['token', 'access_token', 'auth', 'signature']);
+    for (const parameterName of parsedUrl.searchParams.keys()) {
+      const normalisedName = parameterName.toLowerCase();
+      if (sensitiveParameters.has(normalisedName) || normalisedName.startsWith('x-goog-')) {
+        return null;
+      }
     }
 
     return parsedUrl.href;
@@ -95,7 +118,8 @@ function tenderSummary(tender: Tender): string {
 }
 
 export function generateTenderEmailSubject(tender: Tender): string {
-  return `Tender opportunity: ${tenderTitle(tender)}`;
+  const title = singleLineEmailText(tenderTitle(tender)) || UNTITLED_TENDER;
+  return `Tender opportunity: ${title}`;
 }
 
 export function generateTenderEmailBody(tender: Tender, personalMessage = ''): string {
