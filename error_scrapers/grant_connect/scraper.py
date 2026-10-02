@@ -15,6 +15,7 @@ Returns a per-opportunity status code from scrape_opportunity(), and one
 site-level code from run_scraper() for the whole run.
 """
  
+import logging
 import os
 
 import re
@@ -27,6 +28,8 @@ from error_scrapers import common
 from dotenv import load_dotenv
 load_dotenv()
  
+logger = logging.getLogger(__name__)
+
 SOURCE_ID = "grantconnect"
 BASE_URL = "https://www.grants.gov.au"
 LOGIN_URL = f"{BASE_URL}/RegisteredUser/Login"
@@ -83,13 +86,33 @@ def login_failed(html: str) -> bool:
     return "Error Message" in html
  
  
+def find_login_form(html: str):
+    """
+    The form that actually takes a password. The login page carries four
+    forms (desktop and mobile login, keyword search, a footer login), so
+    "the first form" only works for as long as the layout keeps the main
+    login form first.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for form in soup.select("form"):
+        if form.select_one("input[name='Password']"):
+            return form
+    return None
+
+
 def login(client: httpx.Client) -> bool:
     username, password = credentials()
+    if not username or not password:
+        # Not a portal problem: the job is missing its secrets. Posting an
+        # empty form would come back as GrantConnect's generic error page
+        # and look exactly like a wrong password.
+        logger.error("GRANTCONNECT_USERNAME / GRANTCONNECT_PASSWORD are not set")
+        return False
 
     # First GET the login page -- needed for its anti-forgery token,
     # which the server rejects the POST without.
     get_response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
-    form = BeautifulSoup(get_response.text, "html.parser").select_one("form")
+    form = find_login_form(get_response.text)
     if form is None:
         raise common.StructureChangedError(
             "No login form found on GrantConnect's login page."
@@ -108,6 +131,7 @@ def login(client: httpx.Client) -> bool:
     if login_succeeded(response.text):
         return True
     if login_failed(response.text):
+        logger.error("GrantConnect rejected the login (wrong password or suspended account)")
         return False
 
     raise common.StructureChangedError(
