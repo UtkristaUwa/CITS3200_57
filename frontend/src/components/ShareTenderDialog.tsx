@@ -22,9 +22,20 @@ interface ShareTenderDialogProps {
 
 const MAX_MESSAGE_LENGTH = 500;
 
+function containsControlCharacter(value: string): boolean {
+  return Array.from(value).some((character) => {
+    const codePoint = character.codePointAt(0);
+    return codePoint !== undefined
+      && (codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f));
+  });
+}
+
 function validateEmail(value: string): string | null {
   if (!value) return 'Recipient email is required.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+  if (
+    containsControlCharacter(value)
+    || !/^[a-z0-9!$&'*+=^_`{|}~-]+(?:\.[a-z0-9!$&'*+=^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(value)
+  ) {
     return 'Enter a valid email address.';
   }
   return null;
@@ -69,6 +80,18 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
     if (emailError) {
       setEmailError(validateEmail(value.trim()));
     }
+  };
+
+  const handleOpenEmailApp = () => {
+    const trimmedEmail = recipientEmail.trim();
+    const validationError = validateEmail(trimmedEmail);
+
+    setRecipientEmail(trimmedEmail);
+    setEmailError(validationError);
+    if (validationError) return;
+
+    const mailtoUrl = `mailto:${trimmedEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoUrl;
   };
 
   return (
@@ -185,8 +208,24 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
-        <Button onClick={handleClose}>Cancel</Button>
+      <DialogActions
+        sx={{
+          px: { xs: 2, sm: 3 },
+          py: 2,
+          gap: 1,
+          alignItems: { xs: 'stretch', sm: 'center' },
+          flexDirection: { xs: 'column', sm: 'row' },
+        }}
+      >
+        <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
+          Opens a draft in your default email app. You will send it from there.
+        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+          <Button type="button" onClick={handleClose}>Cancel</Button>
+          <Button type="button" variant="contained" onClick={handleOpenEmailApp}>
+            Open email app
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
