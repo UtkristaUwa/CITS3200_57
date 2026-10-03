@@ -3,6 +3,13 @@ import type { Tender } from './api';
 const UNTITLED_TENDER = 'Untitled tender';
 const NO_SUMMARY = 'No summary available';
 const MAX_DESCRIPTION_SUMMARY_LENGTH = 500;
+const SENSITIVE_URL_PARAMETERS = new Set([
+  'token',
+  'access_token',
+  'auth',
+  'signature',
+  'sig',
+]);
 
 function nonEmptyText(value: string | null | undefined): string | null {
   const trimmedValue = value?.trim();
@@ -10,7 +17,8 @@ function nonEmptyText(value: string | null | undefined): string | null {
 }
 
 function tenderTitle(tender: Tender): string {
-  return nonEmptyText(tender.title) ?? UNTITLED_TENDER;
+  const title = singleLineEmailText(nonEmptyText(tender.title) ?? '');
+  return title || UNTITLED_TENDER;
 }
 
 function singleLineEmailText(value: string): string {
@@ -24,6 +32,21 @@ function singleLineEmailText(value: string): string {
   return withoutControlCharacters
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function isSensitiveUrlParameter(value: string): boolean {
+  const normalisedName = value.toLowerCase();
+  return SENSITIVE_URL_PARAMETERS.has(normalisedName)
+    || normalisedName.startsWith('x-goog-')
+    || normalisedName.startsWith('x-amz-');
+}
+
+function safelyDecodeUrlComponent(value: string): string {
+  try {
+    return decodeURIComponent(value.replace(/\+/g, ' '));
+  } catch {
+    return value;
+  }
 }
 
 function formatClosingDate(value: string | null): string | null {
@@ -78,12 +101,14 @@ function originalTenderUrl(value: string | null): string | null {
     const pathname = decodeURIComponent(parsedUrl.pathname).toLowerCase();
     if (pathname.includes('/documents/download')) return null;
 
-    const sensitiveParameters = new Set(['token', 'access_token', 'auth', 'signature']);
     for (const parameterName of parsedUrl.searchParams.keys()) {
-      const normalisedName = parameterName.toLowerCase();
-      if (sensitiveParameters.has(normalisedName) || normalisedName.startsWith('x-goog-')) {
-        return null;
-      }
+      if (isSensitiveUrlParameter(parameterName)) return null;
+    }
+
+    const fragmentSegments = parsedUrl.hash.slice(1).split(/[&;?]/);
+    for (const segment of fragmentSegments) {
+      const parameterName = safelyDecodeUrlComponent(segment.split('=', 1)[0]);
+      if (isSensitiveUrlParameter(parameterName)) return null;
     }
 
     return parsedUrl.href;
@@ -128,13 +153,13 @@ export function generateTenderEmailBody(tender: Tender, personalMessage = ''): s
   if (message) sections.push(message);
 
   const tenderDetails = [`Tender: ${tenderTitle(tender)}`];
-  const organisation = nonEmptyText(tender.issuing_agency);
+  const organisation = singleLineEmailText(nonEmptyText(tender.issuing_agency) ?? '');
   if (organisation) tenderDetails.push(`Organisation: ${organisation}`);
 
   const closingDate = formatClosingDate(tender.closing_date);
   if (closingDate) tenderDetails.push(`Closing date: ${closingDate}`);
 
-  const reference = nonEmptyText(tender.source_reference_id);
+  const reference = singleLineEmailText(nonEmptyText(tender.source_reference_id) ?? '');
   if (reference) tenderDetails.push(`Reference: ${reference}`);
 
   sections.push(tenderDetails.join('\n'));

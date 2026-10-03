@@ -30,6 +30,15 @@ function containsControlCharacter(value: string): boolean {
   });
 }
 
+function toWellFormedUnicode(value: string): string {
+  return Array.from(value, (character) => {
+    const codePoint = character.codePointAt(0);
+    return codePoint !== undefined && codePoint >= 0xd800 && codePoint <= 0xdfff
+      ? '\ufffd'
+      : character;
+  }).join('');
+}
+
 function validateEmail(value: string): string | null {
   if (!value) return 'Recipient email is required.';
   if (
@@ -90,7 +99,9 @@ export function ShareTenderDialog({ tender, open, onClose }: ShareTenderDialogPr
     setEmailError(validationError);
     if (validationError) return;
 
-    const mailtoUrl = `mailto:${trimmedEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    const encodedSubject = encodeURIComponent(toWellFormedUnicode(emailSubject));
+    const encodedBody = encodeURIComponent(toWellFormedUnicode(emailBody));
+    const mailtoUrl = `mailto:${trimmedEmail}?subject=${encodedSubject}&body=${encodedBody}`;
     window.location.href = mailtoUrl;
   };
 
