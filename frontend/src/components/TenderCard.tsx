@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -15,8 +15,10 @@ import {
   } from '@mui/material';
   import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+  import ShareIcon from '@mui/icons-material/Share';
   import type { Tender } from '../lib/api';
   import { TenderDocuments } from './TenderDocuments';
+  import { ShareTenderDialog } from './ShareTenderDialog';
 
   const BRAND_COLORS = {
     blue: '#2D3AF1',
@@ -76,6 +78,7 @@ import {
     onToggleExpand: (tenderId: string) => void;
   }) {
     const detailsId = useId();
+    const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
     return (
       <Card
@@ -111,6 +114,24 @@ import {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
               {isNew && <Chip label="New" color="primary" size="small" />}
+              <Tooltip title="Share tender">
+                <IconButton
+                  size="small"
+                  aria-label="Share tender"
+                  onClick={() => setShareDialogOpen(true)}
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    color: BRAND_COLORS.blue,
+                    '&:hover': {
+                      color: BRAND_COLORS.blue,
+                      bgcolor: (theme) => theme.palette.mode === 'light' ? 'rgba(207,158,255,0.28)' : 'rgba(207,158,255,0.16)',
+                    },
+                  }}
+                >
+                  <ShareIcon />
+                </IconButton>
+              </Tooltip>
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
                   size="small"
@@ -188,7 +209,7 @@ import {
           </Typography>
         </CardContent>
 
-        <Collapse in={expanded} timeout={300} id={detailsId}>
+        <Collapse in={expanded} timeout={300} unmountOnExit id={detailsId}>
           <Divider sx={{ mx: 2 }} />
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
@@ -240,6 +261,13 @@ import {
             {expanded ? 'View Less' : 'View More'}
           </Button>
         </CardActions>
+        {shareDialogOpen && (
+          <ShareTenderDialog
+            tender={tender}
+            open={shareDialogOpen}
+            onClose={() => setShareDialogOpen(false)}
+          />
+        )}
       </Card>
     );
   }
