@@ -21,8 +21,11 @@ import time
 
 import httpx
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 from error_scrapers import common, reporting
+
+load_dotenv()
 
 log = reporting.site_logger("TENDERS_ACT")
 
@@ -41,8 +44,32 @@ HEADERS = {
     "Accept-Language": "en-AU,en;q=0.9",
 }
 
-USERNAME = os.environ.get("ACT_USERNAME")
-PASSWORD = os.environ.get("ACT_PASSWORD")
+def credentials():
+    """Return (username, password) from the environment, or (None, None).
+    Read on every call rather than at import, so a .env loaded after this
+    module is imported is still picked up."""
+    return (
+        os.environ.get("ACT_USERNAME") or None,
+        os.environ.get("ACT_PASSWORD") or None,
+    )
+
+
+class BotBlockedError(Exception):
+    """Raised when Cloudflare serves its challenge instead of the page."""
+
+
+def is_blocked(title: str, html: str) -> bool:
+    """
+    True if what loaded is a Cloudflare challenge or block page, not the
+    site. Tenders ACT sits behind Cloudflare, and from Cloud Run's address
+    range it sometimes serves the "Just a moment..." interstitial in place
+    of the login page.
+    """
+    title = (title or "").lower()
+    if "attention required" in title or "just a moment" in title:
+        return True
+    text = BeautifulSoup(html or "", "html.parser").get_text(" ", strip=True).lower()
+    return "you have been blocked" in text or "verify you are human" in text
 
 DETAIL_LINK_SELECTOR = "a.tenderRowTitle"
 
@@ -81,14 +108,18 @@ def login_failed(html: str) -> bool:
 
 def login(client) -> bool:
     """Log in as a supplier. Returns True on success, False on failure."""
+    username, password = credentials()
+    if not username or not password:
+        log.error("login: ACT_USERNAME / ACT_PASSWORD are not set")
+        return False
     response = client.get(LOGIN_URL, headers=HEADERS, timeout=30.0)
     fields = parse_login_form(response.text)
     if not fields:
         return False
 
     data = {
-        "username": USERNAME,
-        "password": PASSWORD,
+        "username": username,
+        "password": password,
         "businessType": fields.get("businessType", "SUPPLIER"),
         "tenantCode": fields.get("tenantCode", "act"),
         "_csrf": fields.get("_csrf", ""),
@@ -406,6 +437,11 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                     all_codes.append(common.SITE_SUCCESS)
                     reporting.tender_line(log, index, len(urls), tender_code,
                                           common.SITE_SUCCESS)
+                except BotBlockedError as exc:
+                    # Blocked partway through: keep what was already scraped,
+                    # but report the block rather than a partial.
+                    log.error("blocked at tender %d/%d: %s", index, len(urls), exc)
+                    return common.SITE_BOT_BLOCKED, tenders
                 except Exception as exc:
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
@@ -420,9 +456,22 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                 return common.SITE_STRUCTURE_CHANGE, tenders
             return common.TENDER_PARTIAL, tenders
 
+    except BotBlockedError as exc:
+        log.error("blocked: %s", exc)
+        return common.SITE_BOT_BLOCKED, tenders
     except Exception:
         log.exception("browser run crashed")
         return common.SITE_TOTAL_FAILURE, tenders
+
+
+# Site-level codes worth another attempt with a fresh browser. A Cloudflare
+# challenge is intermittent from Cloud Run, so it is retried; if every attempt
+# hits it, it is reported as SITE_BOT_BLOCKED rather than worked around.
+RETRYABLE_CODES = (
+    common.SITE_TOTAL_FAILURE,
+    common.SITE_LOGIN_FAILED,
+    common.SITE_BOT_BLOCKED,
+)
 
 
 def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
@@ -433,10 +482,14 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
     failure was a login/total failure.
     """
     code, tenders = common.SITE_TOTAL_FAILURE, []
+    if not all(credentials()):
+        log.error("ACT_USERNAME / ACT_PASSWORD are not set -- not opening a browser. "
+                  "Check the job's env vars / Secret Manager mapping.")
+        return common.SITE_LOGIN_FAILED, tenders
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
         code, tenders = _run_once(limit, output_dir)
-        if tenders or code not in (common.SITE_TOTAL_FAILURE, common.SITE_LOGIN_FAILED):
+        if tenders or code not in RETRYABLE_CODES:
             return code, tenders
         log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
                     attempt, attempts, reporting.code_name(code), 15 * attempt)

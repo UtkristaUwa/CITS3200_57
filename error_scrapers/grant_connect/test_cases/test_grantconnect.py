@@ -1,7 +1,6 @@
 #This tests each status code per the GrantConnect scraper. We have also created fixtures for as many error codes as we can, such as failed login.
 
 from pathlib import Path
-import pytest
 from error_scrapers.grant_connect import scraper
 from error_scrapers import common
 import httpx
@@ -25,6 +24,9 @@ def test_login_failure_detected():
 
 #If a login fails, we must stop the run immediately as we dont want to scrape without the attachements which do require login
 def test_site_login_failed_stops_the_run(monkeypatch):
+    monkeypatch.setenv("GRANTCONNECT_USERNAME", "someone@example.com")
+    monkeypatch.setenv("GRANTCONNECT_PASSWORD", "wrong-password")
+
     def fake_submit_login(client, url, payload):
         class FakeResponse:
             text = load_fixture("grantconnect_login_failure.html")
@@ -35,6 +37,38 @@ def test_site_login_failed_stops_the_run(monkeypatch):
     assert code == common.SITE_LOGIN_FAILED
     assert site == "grantconnect"
     assert count == 0
+
+
+#Missing credentials are a deployment problem, not a portal one, so we fail without posting an empty form
+def test_missing_credentials_fail_without_contacting_the_site(monkeypatch):
+    monkeypatch.delenv("GRANTCONNECT_USERNAME", raising=False)
+    monkeypatch.delenv("GRANTCONNECT_PASSWORD", raising=False)
+
+    def no_network(self, request, **kwargs):
+        raise AssertionError(f"unexpected request to {request.url}")
+
+    monkeypatch.setattr(httpx.Client, "send", no_network)
+    code, site, count = scraper.run_scraper()
+    assert code == common.SITE_LOGIN_FAILED
+    assert count == 0
+
+
+#The login page has four forms; the one we post must be the one with a password field, wherever it sits
+def test_login_form_is_the_one_with_a_password_field():
+    html = """
+    <form action="/Search/KeywordSearch" method="GET"><input name="keyword"></form>
+    <form action="/RegisteredUser/Login" method="post">
+      <input name="__RequestVerificationToken" type="hidden" value="tok">
+      <input name="Email" type="text"><input name="Password" type="password">
+    </form>
+    """
+    form = scraper.find_login_form(html)
+    assert form is not None
+    assert form.get("action") == "/RegisteredUser/Login"
+
+
+def test_no_login_form_found():
+    assert scraper.find_login_form("<form action='/Search'><input name='q'></form>") is None
 
 
 #-----
@@ -100,6 +134,9 @@ def test_tender_partial_when_attachment_extraction_fails(monkeypatch):
 #-----
  
 def test_site_total_failure_on_unreachable_url(monkeypatch):
+    monkeypatch.setenv("GRANTCONNECT_USERNAME", "someone@example.com")
+    monkeypatch.setenv("GRANTCONNECT_PASSWORD", "any-password")
+
     def broken_get(*args, **kwargs):
         raise ConnectionError("simulated unreachable host")
  

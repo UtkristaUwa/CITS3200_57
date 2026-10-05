@@ -85,6 +85,20 @@ def login_failed(html: str) -> bool:
     return "Error Message" in html
  
  
+def find_login_form(html: str):
+    """
+    The form that actually takes a password. The login page carries four
+    forms (desktop and mobile login, keyword search, a footer login), so
+    "the first form" only works for as long as the layout keeps the main
+    login form first.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for form in soup.select("form"):
+        if form.select_one("input[name='Password']"):
+            return form
+    return None
+
+
 def login(client: httpx.Client) -> bool:
     username, password = credentials()
 
@@ -92,13 +106,17 @@ def login(client: httpx.Client) -> bool:
     log.info("login: GRANTCONNECT_USERNAME %s, GRANTCONNECT_PASSWORD %s",
              "set" if username else "MISSING", "set" if password else "MISSING")
     if not (username and password):
-        log.error("login: credentials are not in the environment -- the login will "
-                  "fail. Check the job's env vars / Secret Manager mapping.")
+        # Not a portal problem: the job is missing its secrets. Posting an empty
+        # form would come back as GrantConnect's generic error page and look
+        # exactly like a wrong password.
+        log.error("login: credentials are not in the environment. Check the job's "
+                  "env vars / Secret Manager mapping.")
+        return False
 
     # First GET the login page -- needed for its anti-forgery token,
     # which the server rejects the POST without.
     get_response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
-    form = BeautifulSoup(get_response.text, "html.parser").select_one("form")
+    form = find_login_form(get_response.text)
     if form is None:
         raise common.StructureChangedError(
             "No login form found on GrantConnect's login page."
