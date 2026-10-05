@@ -43,7 +43,15 @@
     "value_amount": { "type": ["number", "null"] },
     "value_currency": { "type": ["string", "null"] },
     "value_notes": { "type": ["string", "null"] },
-    "location": { "type": ["string", "null"] },
+    "location": {
+      "type": ["string", "null"],
+      "description": "Where the work happens, verbatim from the source — anything from a state abbreviation to a street address. Display field; filter on location_state instead."
+    },
+    "location_state": {
+      "type": ["string", "null"],
+      "enum": ["WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL", "MULTI", null],
+      "description": "Filterable form of location. Resolved by the pipeline from the location's postcode where there is one; null when the source doesn't support an answer, which is deliberate — a guessed state hides the tender behind the wrong filter."
+    },
     "description": {
       "type": ["string", "null"],
       "description": "Plain text only — no HTML/markdown."
