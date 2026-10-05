@@ -8,3 +8,12 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args: ['run', 'jobs', 'update', 'tender-batch-job', '--image', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/tender-jobs/pipeline:latest', '--region', 'australia-southeast1']
+
+# The Tender-AI-Daily-Build trigger runs as a user-specified service account,
+# and Cloud Build rejects any such build that doesn't say where its logs go
+# ("if 'build.service_account' is specified, the build must either specify
+# 'build.logs_bucket' ... or use CLOUD_LOGGING_ONLY"). Without this every
+# scheduled build fails, and the job keeps running whichever image someone
+# last built by hand rather than what is on main.
+options:
+  logging: CLOUD_LOGGING_ONLY

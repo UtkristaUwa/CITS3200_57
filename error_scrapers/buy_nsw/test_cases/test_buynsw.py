@@ -141,8 +141,7 @@ def test_summary_pdf_becomes_the_tenders_own_page_text(tmp_path, monkeypatch):
     # the page text file should be saved under the tender's own id, not
     # under the summary pdf's original filename
     assert os.path.exists(
-        os.path.join(str(tmp_path), "RFT-12634672652.txt")
-    )
+        os.path.join(str(tmp_path), "__tender__RFT-12634672652.txt")    )
 
 
 def test_real_attachments_get_their_own_extracted_text_files(tmp_path, monkeypatch):
@@ -250,9 +249,10 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
         raise httpx.ConnectError("connection failed")
 
     monkeypatch.setattr(httpx.Client, "get", exploding_get)
-    code, tenders = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
-    assert tenders == []
+    assert site == "buynsw"
+    assert count == 0
 
 def test_nested_zip_gets_recursed_into(tmp_path, monkeypatch):
     monkeypatch.setattr(scraper.common, "extract_pdf", lambda path: "fake text")

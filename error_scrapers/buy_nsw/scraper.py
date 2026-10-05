@@ -24,13 +24,18 @@ tender_dir/save_page_text/save_attachment/save_extracted_text):
 import io
 import os
 import re
+import time
 import zipfile
 
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common
+from error_scrapers import common, crawl_state, reporting
+from error_scrapers.buy_nsw import crawl
 
+log = reporting.site_logger("BUYNSW")
+
+SOURCE_ID = "buynsw"
 BASE_URL = "https://buy.nsw.gov.au"
 LIST_URL = f"{BASE_URL}/opportunity/search"
 
@@ -52,6 +57,12 @@ DETAIL_LINK_SELECTOR = "a[href*='/prcOpportunity/']"
 # is the exact class the structure-changed fixture renames to simulate
 # that.
 FIELD_ROW_SELECTOR = ".nsw-table-row"
+
+# Be polite to buy.nsw: it answers with HTTP 202 and no page once we go too fast.
+REQUEST_DELAY_SECONDS = 1.5   # pause before each detail-page request
+BLOCK_RETRIES = 0             # in a real run: wait out the WAF block and resume this many times
+BLOCK_COOLDOWN_SECONDS = 600  # how long to wait each time (the true cooldown is ~4-6 min, unmeasured)
+RATE_LIMIT_ABORT_AFTER = 3    # stop the site after this many rate-limited tenders in a row
 
 # The opportunity package's auto-generated summary PDF is always named
 # "opportunity-<opportunity-id>.pdf" -- everything else in the zip is a
@@ -264,7 +275,11 @@ def extract_package(zip_bytes: bytes, output_dir: str, opportunity_id: str) -> d
 
 def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tuple[int, dict]:
     """Scrape one opportunity into its own folder. Returns (status_code, tender)."""
-    response = client.get(url, headers=HEADERS, timeout=30.0)
+    time.sleep(REQUEST_DELAY_SECONDS)
+    response = _get_with_retry(client, url, retries=1, headers=HEADERS, timeout=30.0)
+    if response.status_code == 202:
+        log.warning("       HTTP 202, no page served (rate limited?)  body: %r", response.text[:100])
+        return common.SITE_RATE_LIMITED, {}
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
@@ -280,12 +295,16 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             pkg_response = client.get(package_url, headers=HEADERS, timeout=60.0)
             pkg_response.raise_for_status()
             result = extract_package(pkg_response.content, folder, opportunity_id)
+            common.add_source_url(folder, opportunity_id, url)
             attachments = result["attachments"]
+            reporting.documents_line(log, len(attachments))
             if result["any_failed"]:
                 tender = {"title": fields.get("title"), "folder": folder,
                           "attachments": attachments, "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
-        except Exception:
+        except Exception as exc:
+            log.warning("       package download/extract FAILED  %s  (%s: %s)",
+                        package_url, type(exc).__name__, exc)
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
                 "source_url": url, **fields,
@@ -295,6 +314,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         # attached" opportunity) -- save the fields we already have as
         # the tender's own page text instead.
         common.save_page_text(folder, opportunity_id, format_detail_text(fields))
+        common.add_source_url(folder, opportunity_id, url)
+        reporting.documents_line(log, 0)
 
     tender = {"title": fields.get("title"), "folder": folder,
               "attachments": attachments, "source_url": url, **fields}
@@ -314,6 +335,8 @@ def _get_with_retry(client, url, *, retries=2, **kwargs):
         if response.status_code == 200:
             return response
         last_response = response
+        if attempt < retries:
+            time.sleep(3 * (attempt + 1))  # back off 3s, 6s, 9s
     return last_response
 
 
@@ -343,50 +366,95 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     return urls
 
 
-def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
-    """
-    Scrape every current opportunity across every page of the listing.
-    `limit` of 0 means every opportunity found.
+def _fetch_listing_page(client, page):
+    """(http_status, detail urls) for one listing page; non-200 means the WAF stopped us."""
+    response = _get_with_retry(
+        client, LIST_URL, retries=1,
+        params={"query": "", "categories": "", "types": "", "area": "", "page": page},
+        headers=HEADERS, timeout=30.0,
+    )
+    if response.status_code != 200:
+        return response.status_code, []
+    return 200, parse_listing(response.text)
 
-    Returns (site_code, tenders) -- one entry per opportunity
-    successfully scraped, each with the attachment files it saved.
+
+def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
+                 known_urls=None, resume: bool = False) -> tuple[int, list[dict]]:
     """
-    tenders: list[dict] = []
+    Crawl the listing from the saved cursor (page 1 when resume is False), skip
+    tenders already in the DB, scrape the new ones, and stop when the WAF
+    answers 202. `limit` caps NEW tenders per run (0 = no cap).
+
+    Returns (site_code, tenders): one entry per tender scraped this run.
+    """
+    known_urls = known_urls or frozenset()
+    start_page = crawl_state.load_page(SOURCE_ID) if resume else 1
+    res = crawl.CrawlResult(next_page=start_page)
     try:
         with httpx.Client(follow_redirects=True) as client:
-            urls = collect_all_listing_urls(client, limit)
+            counter = {"n": 0}
 
-            tender_codes = set()
-            for url in urls:
+            def scrape_one(url):
+                counter["n"] += 1
+                n = counter["n"]
                 try:
                     code, tender = scrape_opportunity(client, url, output_dir)
-                    if tender:
-                        tenders.append(tender)
-                    if code != common.SITE_SUCCESS:
-                        tender_codes.add(code)
-                except Exception:
-                    tender_codes.add(common.TENDER_PARTIAL)
-                    continue
+                except Exception as exc:
+                    reporting.tender_failed(log, n, "?", url, exc)
+                    return common.TENDER_PARTIAL, {}
+                reporting.tender_line(log, n, "?",
+                                      tender.get("opportunity_id", url) if tender else url, code)
+                return code, tender
 
-        if not tender_codes:
-            return common.SITE_SUCCESS, tenders
-        if common.SITE_STRUCTURE_CHANGE in tender_codes:
-            return common.SITE_STRUCTURE_CHANGE, tenders
-        return common.TENDER_PARTIAL, tenders
+            crawl.crawl(lambda page: _fetch_listing_page(client, page), scrape_one,
+                        known_urls, start_page, limit, log, res,
+                        retries_after_block=BLOCK_RETRIES if resume else 0,
+                        cooldown_seconds=BLOCK_COOLDOWN_SECONDS)
+
+        if resume:
+            crawl_state.save_page(SOURCE_ID, res.next_page)
+            log.info("crawl: cursor saved -> next run starts at listing page %d", res.next_page)
+
+        if res.codes:
+            reporting.diagnose(log, res.codes)
+        elif not res.blocked:
+            log.info("verdict: nothing new -- every tender seen is already stored")
+
+        codes = set(res.codes) - {common.SITE_SUCCESS}
+        if common.SITE_STRUCTURE_CHANGE in codes:
+            return common.SITE_STRUCTURE_CHANGE, res.tenders
+        if res.blocked:
+            if res.pages <= 1 and not res.tenders and not res.skipped:
+                log.error("verdict: buy.nsw's WAF turned us away before anything could be read")
+                return common.SITE_RATE_LIMITED, res.tenders
+            log.warning("verdict: stopped early, buy.nsw's WAF answered 202 -- %d new tender(s) "
+                        "scraped, %d already stored; next run resumes at listing page %d",
+                        len(res.tenders), res.skipped, res.next_page)
+            return common.TENDER_PARTIAL, res.tenders
+        return (common.TENDER_PARTIAL if codes else common.SITE_SUCCESS), res.tenders
 
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code == 429:
-            return common.SITE_RATE_LIMITED, tenders
-        return common.SITE_TOTAL_FAILURE, tenders
+            return common.SITE_RATE_LIMITED, res.tenders
+        return common.SITE_TOTAL_FAILURE, res.tenders
     except (httpx.ConnectError, ConnectionError):
-        return common.SITE_TOTAL_FAILURE, tenders
+        return common.SITE_TOTAL_FAILURE, res.tenders
+
+
+@reporting.reported(SOURCE_ID.upper())
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
+                known_urls=None, resume: bool = False) -> common.ScrapeResult:
+    """
+    The pipeline's entry point. Returns (error code, site name, tenders scraped)
+    and nothing else -- the tenders themselves are left in output_dir.
+    """
+    code, tenders = _scrape_site(limit, output_dir, known_urls, resume)
+    return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 
 def main():
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    code, tenders = run_scraper()#limit=2)
-    print(f"buy.nsw run finished with code {code}, {len(tenders)} tenders scraped")
+    reporting.configure_logging()
+    run_scraper()  # no cap; for a capped local run use: python manager.py --local
 
 
 if __name__ == "__main__":

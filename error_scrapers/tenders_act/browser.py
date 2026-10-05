@@ -35,13 +35,17 @@ import time
 
 from seleniumbase import SB
 
-from error_scrapers.tenders_act.scraper import (
-    LOGIN_ERROR_TEXT,
-    LOGIN_URL,
-    BotBlockedError,
-    credentials,
-    is_blocked,
-)
+from error_scrapers import reporting
+
+log = reporting.site_logger("TENDERS_ACT")
+
+BASE_URL = "https://www.tenders.act.gov.au"
+LOGIN_URL = f"{BASE_URL}/login"
+LIST_URL = f"{BASE_URL}/tenders/open"
+
+from error_scrapers.tenders_act.scraper import BotBlockedError, credentials, is_blocked
+
+LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
 # How many times get() tries a page, and how long it waits for a selector.
 GET_ATTEMPTS = 3
@@ -84,7 +88,7 @@ class BrowserSession:
         # in the logs if it ever matters.
         try:
             caps = self.sb.driver.capabilities
-            print(f"[ACT] chrome {caps.get('browserVersion')}", flush=True)
+            log.info("chrome %s", caps.get("browserVersion"))
         except Exception:
             pass
         return self
@@ -99,12 +103,18 @@ class BrowserSession:
         onto one line so Cloud Logging keeps it in a single entry.
         """
         try:
-            print(f"[ACT DEBUG] {label} title: {self.sb.get_title()}", flush=True)
-            print(f"[ACT DEBUG] {label} url: {self.sb.get_current_url()}", flush=True)
+            log.warning("debug %s title: %s", label, self.sb.get_title())
+            log.warning("debug %s url: %s", label, self.sb.get_current_url())
             html = self.sb.get_page_source()[:1500].replace("\n", " ").replace("\r", " ")
-            print(f"[ACT DEBUG] {label} html: {html}", flush=True)
+            log.warning("debug %s html: %s", label, html)
         except Exception as e:
-            print(f"[ACT DEBUG] {label} could not read page: {e}", flush=True)
+            log.warning("debug %s could not read page: %s", label, e)
+
+    def _on_challenge_page(self) -> bool:
+        try:
+            return is_blocked(self.sb.get_title(), self.sb.get_page_source())
+        except Exception:
+            return False
 
     def get(self, url: str, wait_selector: str | None = None,
             attempts: int = GET_ATTEMPTS) -> str:
@@ -112,11 +122,6 @@ class BrowserSession:
         Navigate to url and return the rendered page's HTML. Retries, giving
         each attempt a longer reconnect, and dumps what the page looked like
         whenever an attempt fails.
-
-        Raises BotBlockedError as soon as an attempt ends on a Cloudflare
-        challenge. Retrying the same page in the same browser has never
-        cleared one (every attempt in the logs hit it again, ~45s each), so
-        the caller's fresh-browser retry is the only one worth paying for.
         """
         last_err = None
         for attempt in range(1, attempts + 1):
@@ -127,30 +132,24 @@ class BrowserSession:
                 return self.sb.get_page_source()
             except Exception as e:
                 last_err = e
-                print(
-                    f"[ACT DEBUG] get attempt {attempt}/{attempts} failed "
-                    f"({type(e).__name__}) for {url}",
-                    flush=True,
-                )
+                log.warning("get attempt %d/%d failed (%s) for %s",
+                            attempt, attempts, type(e).__name__, url)
                 self._debug_dump(f"attempt {attempt}")
                 if self._on_challenge_page():
-                    raise BotBlockedError(
-                        f"Cloudflare challenge instead of {url}"
-                    ) from e
+                    # Retrying the same page in the same browser has never cleared
+                    # a challenge; only a fresh browser (the caller's retry) is worth it.
+                    raise BotBlockedError(f"Cloudflare challenge instead of {url}") from e
         raise last_err
-
-    def _on_challenge_page(self) -> bool:
-        try:
-            return is_blocked(self.sb.get_title(), self.sb.get_page_source())
-        except Exception:
-            return False
 
     def login(self) -> bool:
         """Fill and submit the supplier login form. Returns True on success."""
         username, password = credentials()
         if not username or not password:
-            print("[ACT] ACT_USERNAME / ACT_PASSWORD are not set", flush=True)
+            log.error("login: ACT_USERNAME %s, ACT_PASSWORD %s -- credentials are not in "
+                      "the environment. Check the job's env vars / Secret Manager mapping.",
+                      "set" if username else "MISSING", "set" if password else "MISSING")
             return False
+        log.info("login: ACT_USERNAME set, ACT_PASSWORD set -- submitting the form")
 
         self.get(LOGIN_URL, wait_selector="#supplierUsername")
         self.sb.type("#supplierUsername", username)

@@ -15,7 +15,6 @@ Returns a per-opportunity status code from scrape_opportunity(), and one
 site-level code from run_scraper() for the whole run.
 """
  
-import logging
 import os
 
 import re
@@ -23,13 +22,13 @@ import re
 import httpx
 from bs4 import BeautifulSoup
  
-from error_scrapers import common
+from error_scrapers import common, reporting
 
 from dotenv import load_dotenv
 load_dotenv()
- 
-logger = logging.getLogger(__name__)
 
+log = reporting.site_logger("GRANTCONNECT")
+ 
 SOURCE_ID = "grantconnect"
 BASE_URL = "https://www.grants.gov.au"
 LOGIN_URL = f"{BASE_URL}/RegisteredUser/Login"
@@ -102,11 +101,16 @@ def find_login_form(html: str):
 
 def login(client: httpx.Client) -> bool:
     username, password = credentials()
-    if not username or not password:
-        # Not a portal problem: the job is missing its secrets. Posting an
-        # empty form would come back as GrantConnect's generic error page
-        # and look exactly like a wrong password.
-        logger.error("GRANTCONNECT_USERNAME / GRANTCONNECT_PASSWORD are not set")
+
+    # Say plainly whether the secrets reached this process. Values are never logged.
+    log.info("login: GRANTCONNECT_USERNAME %s, GRANTCONNECT_PASSWORD %s",
+             "set" if username else "MISSING", "set" if password else "MISSING")
+    if not (username and password):
+        # Not a portal problem: the job is missing its secrets. Posting an empty
+        # form would come back as GrantConnect's generic error page and look
+        # exactly like a wrong password.
+        log.error("login: credentials are not in the environment. Check the job's "
+                  "env vars / Secret Manager mapping.")
         return False
 
     # First GET the login page -- needed for its anti-forgery token,
@@ -129,11 +133,15 @@ def login(client: httpx.Client) -> bool:
     response = common.submit_login(client, LOGIN_URL, payload)
 
     if login_succeeded(response.text):
+        log.info("login: OK")
         return True
     if login_failed(response.text):
-        logger.error("GrantConnect rejected the login (wrong password or suspended account)")
+        log.error("login: REJECTED by GrantConnect (%s)",
+                  "credentials were missing" if not (username and password)
+                  else "wrong password, or account suspended")
         return False
 
+    log.error("login: response matched neither success nor failure -- page may have changed")
     raise common.StructureChangedError(
         "GrantConnect login response matched neither the known success "
         "nor known failure pattern -- the login page may have changed."
@@ -264,7 +272,9 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
                 raw_path = common.save_attachment_stream(
                     output_dir, document["file_name"], response
                 )
-        except Exception:
+        except Exception as exc:
+            log.warning("       download FAILED  %s  (%s: %s)",
+                        document["file_name"], type(exc).__name__, exc)
             any_failed = True
             continue
 
@@ -285,7 +295,7 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         try:
             common.save_extracted_text(output_dir, saved_name, extractor(raw_path))
         except common.ExtractionError as e:
-            print(f"EXTRACTION FAILED: {e}")
+            log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
             any_failed = True
 
     code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
@@ -313,6 +323,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     go_id = fields.get("go_id") or "UNKNOWN"
     folder = common.tender_dir(go_id, output_dir)
     common.save_page_text(folder, go_id, format_detail_text(fields))
+    common.add_source_url(folder, go_id, url)
 
     documents_url = url.replace("/Go/Show", "/Go/ViewDocuments")
     doc_response = client.get(documents_url, headers=HEADERS, timeout=30.0)
@@ -320,6 +331,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     documents = parse_documents(doc_response.text)
 
     code, attachments = process_documents(client, documents, folder)
+    reporting.documents_line(log, len(attachments), len(documents))
     return code, {
         "tender_id": go_id,
         "folder": folder,
@@ -348,7 +360,7 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     return urls
 
 
-def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
+def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
     """
     Log in, then scrape every current opportunity across every page of
     the listing. `limit` of 0 means every opportunity found.
@@ -365,18 +377,28 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, 
                 return common.SITE_LOGIN_FAILED, tenders
 
             urls = collect_all_listing_urls(client, limit)
+            log.info("listing: %d opportunity link(s) found", len(urls))
 
             tender_codes = set()
-            for url in urls:
+            all_codes = []
+            for index, url in enumerate(urls, start=1):
+                log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
                     code, tender = scrape_opportunity(client, url, output_dir)
                     if tender:
                         tenders.append(tender)
                     if code != common.SITE_SUCCESS:
                         tender_codes.add(code)
-                except Exception:
+                    all_codes.append(code)
+                    reporting.tender_line(log, index, len(urls),
+                                          tender.get("tender_id", url) if tender else url, code)
+                except Exception as exc:
+                    reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
+                    all_codes.append(common.TENDER_PARTIAL)
                     continue
+
+            reporting.diagnose(log, all_codes, logged_in=True)
 
         if not tender_codes:
             return common.SITE_SUCCESS, tenders
@@ -385,18 +407,28 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, 
         return common.TENDER_PARTIAL, tenders
 
     except httpx.HTTPStatusError as exc:
+        log.error("HTTP %s from %s", exc.response.status_code, exc.request.url)
         if exc.response.status_code == 429:
             return common.SITE_RATE_LIMITED, tenders
         return common.SITE_TOTAL_FAILURE, tenders
-    except (httpx.ConnectError, ConnectionError):
+    except (httpx.ConnectError, ConnectionError) as exc:
+        log.error("could not connect: %s", exc)
         return common.SITE_TOTAL_FAILURE, tenders
 
 
+@reporting.reported(SOURCE_ID.upper())
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.ScrapeResult:
+    """
+    The pipeline's entry point. Returns (error code, site name, tenders scraped)
+    and nothing else -- the tenders themselves are left in output_dir.
+    """
+    code, tenders = _scrape_site(limit, output_dir)
+    return common.ScrapeResult(code, SOURCE_ID, len(tenders))
+
+
 def main():
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    code, tenders = run_scraper(limit=20)
-    print(f"GrantConnect run finished with code {code}, {len(tenders)} tenders scraped")
+    reporting.configure_logging()
+    run_scraper()  # no cap; for a capped local run use: python manager.py --local
  
  
 if __name__ == "__main__":

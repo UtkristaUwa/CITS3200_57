@@ -305,10 +305,10 @@ def test_browser_run_with_missing_credentials_never_opens_a_browser(monkeypatch)
     calls = []
     monkeypatch.setattr(scraper, "_run_once", lambda *a, **kw: calls.append(1))
 
-    code, tenders = scraper.run_scraper_via_browser()
+    code, site, count = scraper.run_scraper_via_browser()
 
     assert code == common.SITE_LOGIN_FAILED
-    assert tenders == []
+    assert count == 0
     assert calls == []
 
 
@@ -388,7 +388,7 @@ def test_bot_blocked_is_retried_with_a_fresh_browser_then_reported(monkeypatch):
     monkeypatch.setattr(scraper, "_run_once", blocked_run)
     monkeypatch.setattr(scraper.time, "sleep", lambda seconds: None)
 
-    code, tenders = scraper.run_scraper_via_browser(attempts=3)
+    code, site, count = scraper.run_scraper_via_browser(attempts=3)
 
     assert code == common.SITE_BOT_BLOCKED
     assert len(attempts) == 3
@@ -403,7 +403,7 @@ def test_a_structure_change_is_not_retried(monkeypatch):
 
     monkeypatch.setattr(scraper, "_run_once", changed_run)
 
-    code, _ = scraper.run_scraper_via_browser(attempts=3)
+    code, _site, _count = scraper.run_scraper_via_browser(attempts=3)
 
     assert code == common.SITE_STRUCTURE_CHANGE
     assert len(attempts) == 1

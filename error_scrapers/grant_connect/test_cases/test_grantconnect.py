@@ -33,8 +33,10 @@ def test_site_login_failed_stops_the_run(monkeypatch):
         return FakeResponse()
 
     monkeypatch.setattr(common, "submit_login", fake_submit_login)
-    code, _ = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_LOGIN_FAILED
+    assert site == "grantconnect"
+    assert count == 0
 
 
 #Missing credentials are a deployment problem, not a portal one, so we fail without posting an empty form
@@ -46,9 +48,9 @@ def test_missing_credentials_fail_without_contacting_the_site(monkeypatch):
         raise AssertionError(f"unexpected request to {request.url}")
 
     monkeypatch.setattr(httpx.Client, "send", no_network)
-    code, tenders = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_LOGIN_FAILED
-    assert tenders == []
+    assert count == 0
 
 
 #The login page has four forms; the one we post must be the one with a password field, wherever it sits
@@ -141,8 +143,10 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
     monkeypatch.setattr("httpx.Client.get", broken_get)
     monkeypatch.setattr("httpx.Client.post", broken_get)
  
-    code, _ = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
+    assert site == "grantconnect"
+    assert count == 0
 
 
 #-----
