@@ -141,8 +141,7 @@ def test_summary_pdf_becomes_the_tenders_own_page_text(tmp_path, monkeypatch):
     # the page text file should be saved under the tender's own id, not
     # under the summary pdf's original filename
     assert os.path.exists(
-        os.path.join(str(tmp_path), "RFT-12634672652.txt")
-    )
+        os.path.join(str(tmp_path), "__tender__RFT-12634672652.txt")    )
 
 
 def test_real_attachments_get_their_own_extracted_text_files(tmp_path, monkeypatch):

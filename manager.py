@@ -111,8 +111,7 @@ from processing.tender_processor import process_tender
 import attachment_store
 
 # Import the BigQuery upload function
-from ingestion.bigquery_client import get_client, upsert_tender
-
+from ingestion.bigquery_client import get_client, upsert_tender, TENDERS_TABLE
 #for ved embedding in tables
 from google import genai
 from google.cloud import bigquery
@@ -140,6 +139,11 @@ SCRAPERS = [
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
 # stray folder should not end up filed under the wrong portal.
+# Sources that can't be read in one run (buy.nsw's WAF stops us after a few requests).
+# Their scraper gets the URLs already in BigQuery and resumes from a saved listing page.
+# Not applied to --local runs.
+CRAWL_RESUME_SOURCES = {"buynsw"}
+
 UNKNOWN_SOURCE_ID = "unknown"
 
 def _stage(number, total, title):
@@ -147,6 +151,23 @@ def _stage(number, total, title):
     logger.info(reporting.RULE)
     logger.info(f"STAGE {number}/{total}: {title}")
     logger.info(reporting.RULE)
+
+
+def _known_source_urls(source_id):
+    """source_urls already stored for this source. Empty set if the lookup fails."""
+    try:
+        job = bq_client.query(
+            f"SELECT DISTINCT source_url FROM `{TENDERS_TABLE}` "
+            "WHERE source_id = @sid AND source_url IS NOT NULL",
+            job_config=bigquery.QueryJobConfig(query_parameters=[
+                bigquery.ScalarQueryParameter("sid", "STRING", source_id)]),
+        )
+        urls = {row.source_url for row in job.result()}
+        logger.info(f"{source_id}: {len(urls)} tender URL(s) already in the DB")
+        return urls
+    except Exception as e:
+        logger.warning(f"{source_id}: could not load known URLs ({e}); treating none as stored")
+        return set()
 
 
 def _site_code(result):
@@ -254,7 +275,10 @@ def run_scrapers(temp_dir, limit, publish=True):
         started = time.monotonic()
 
         try:
-            result = scrape(limit=limit, output_dir=temp_dir)
+            extra = {}
+            if publish and source_id in CRAWL_RESUME_SOURCES:
+                extra = {"known_urls": _known_source_urls(source_id), "resume": True}
+            result = scrape(limit=limit, output_dir=temp_dir, **extra)
         except Exception as e:
             logger.error(f"Scraper '{source_id}' failed: {e}")
             failures.append((source_id, f"exception: {e}"))
