@@ -31,8 +31,10 @@ def test_site_login_failed_stops_the_run(monkeypatch):
         return FakeResponse()
 
     monkeypatch.setattr(common, "submit_login", fake_submit_login)
-    code, _ = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_LOGIN_FAILED
+    assert site == "grantconnect"
+    assert count == 0
 
 
 #-----
@@ -104,8 +106,10 @@ def test_site_total_failure_on_unreachable_url(monkeypatch):
     monkeypatch.setattr("httpx.Client.get", broken_get)
     monkeypatch.setattr("httpx.Client.post", broken_get)
  
-    code, _ = scraper.run_scraper()
+    code, site, count = scraper.run_scraper()
     assert code == common.SITE_TOTAL_FAILURE
+    assert site == "grantconnect"
+    assert count == 0
 
 
 #-----
