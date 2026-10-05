@@ -38,12 +38,14 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from error_scrapers import common
+from error_scrapers import common, reporting
 
 from dotenv import load_dotenv
 load_dotenv()
 
-SOURCE_ID = "vic-buyingfor"
+log = reporting.site_logger("VIC_BUYINGFOR")
+
+SOURCE_ID = "vic_buyingfor"
 BASE_URL = "https://www.tenders.vic.gov.au"
 LOGIN_URL = f"{BASE_URL}/login"
 LIST_URL = f"{BASE_URL}/tenders/open"
@@ -62,9 +64,32 @@ SPEC_DOC_SELECTOR = "#specsList li.specDoc"
 LOGIN_REQUIRED_TEXT = "must be logged in to download"
 LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
-GET_ATTEMPTS = 3
+RECONNECT_SECONDS = 7
 WAIT_TIMEOUT = 30
 PAUSE_SECONDS = 2.0
+
+# A whole-run retry (fresh browser) is for a browser that would not start or
+# crashed, or for a Cloudflare challenge (intermittent from Cloud Run). This is
+# the most attempts in total. A failed login is never retried: repeated bad
+# logins can lock the account.
+BROWSER_ATTEMPTS = 3
+
+# Site-level codes worth another attempt with a fresh browser when nothing was
+# scraped. If every attempt is blocked the run is reported as SITE_BOT_BLOCKED
+# and nothing is worked around.
+RETRYABLE_CODES = (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED)
+
+# The document form on the "Download Now" page: a checkbox per document
+# (all ticked by default) and one submit button that returns a single zip.
+DOWNLOAD_FORM_SELECTOR = "form#spec"
+DOCUMENT_CHECKBOX_SELECTOR = "input[name='ids[]']"
+
+# Signed-in pages carry a Log Out link; anonymous ones carry Log In.
+SIGNED_IN_SELECTOR = "a[href='/logout']"
+
+# A session that lapses mid-run is replaced by signing in again, this many
+# times at most -- a login that keeps failing is a real problem, not a blip.
+MAX_RELOGINS = 3
 
 
 def credentials():
@@ -221,6 +246,24 @@ def documents_require_login(html: str) -> bool:
     return LOGIN_REQUIRED_TEXT in BeautifulSoup(html, "html.parser").get_text(" ", strip=True).lower()
 
 
+def is_signed_in(html: str) -> bool:
+    """True if the page was served to a signed-in user."""
+    return BeautifulSoup(html, "html.parser").select_one(SIGNED_IN_SELECTOR) is not None
+
+
+def parse_download_form(html: str) -> dict | None:
+    """
+    The document form's state: {"count": documents offered, "unchecked": how many
+    are not ticked}, or None if the page has no form (the layout changed, or
+    we are not signed in).
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    if soup.select_one(DOWNLOAD_FORM_SELECTOR) is None:
+        return None
+    boxes = soup.select(f"{DOWNLOAD_FORM_SELECTOR} {DOCUMENT_CHECKBOX_SELECTOR}")
+    return {"count": len(boxes), "unchecked": sum(1 for b in boxes if not b.has_attr("checked"))}
+
+
 def find_download_docs_url(html: str, base_url: str = BASE_URL) -> str | None:
     """The signed-in "Download Now" link to the document form, or None."""
     for anchor in BeautifulSoup(html, "html.parser").select("a[href*='downloadSpecDocs']"):
@@ -229,14 +272,12 @@ def find_download_docs_url(html: str, base_url: str = BASE_URL) -> str | None:
     return None
 
 
-def format_detail_text(fields: dict, entry: dict, documents: list[dict], url: str) -> str:
+def format_detail_text(fields: dict, entry: dict, documents: list[dict]) -> str:
     """Render the tender as its page-text file."""
     lines = [
         "=" * 80,
         f"BUYING FOR VICTORIA: {fields.get('title') or fields.get('tender_code')}",
         "=" * 80,
-        "",
-        f"Detail URL: {url}",
         "",
     ]
     for key, value in fields.items():
@@ -282,10 +323,13 @@ class BrowserSession:
         if os.environ.get("RUNNING_IN_CONTAINER", "").lower() in ("1", "true", "yes"):
             # Chrome can't run as root without --no-sandbox, and needs its
             # shared memory off the container's tiny /dev/shm.
-            options["no_sandbox"] = True
             options["chromium_arg"] = "disable-dev-shm-usage,disable-gpu"
         self._sb_cm = SB(**options)
         self.sb = self._sb_cm.__enter__()
+        try:
+            log.info("chrome %s", self.sb.driver.capabilities.get("browserVersion"))
+        except Exception:
+            pass  # only for the logs; never worth failing the run
         # SeleniumBase saves clicked downloads into ./downloaded_files, a
         # fixed location with no SB() option to move it.
         self._downloads_dir = os.path.join(os.getcwd(), "downloaded_files")
@@ -295,29 +339,42 @@ class BrowserSession:
         if self._sb_cm is not None:
             self._sb_cm.__exit__(exc_type, exc_val, exc_tb)
 
+    def _debug_dump(self, label: str) -> None:
+        """Log what the browser is looking at, flattened to one line for Cloud Logging."""
+        try:
+            log.warning("debug %s title: %s", label, self.sb.get_title())
+            log.warning("debug %s url: %s", label, self.sb.get_current_url())
+            html = self.sb.get_page_source()[:1500].replace("\n", " ").replace("\r", " ")
+            log.warning("debug %s html: %s", label, html)
+        except Exception as e:
+            log.warning("debug %s could not read page: %s", label, e)
+
     def get(self, url: str, wait_selector: str | None = None) -> str:
         """
-        Load url and return its HTML. Retries a Cloudflare challenge with a
-        longer reconnect each time, raising BotBlockedError if it never
-        clears. A page that loads but never shows wait_selector is returned
-        as-is, so the parser can report it as a structure change.
+        Load url once and return its HTML. If Cloudflare serves its challenge
+        instead, log what the page looked like and raise BotBlockedError at
+        once: reloading in the same browser does not clear it and only adds
+        load to the site. A page that loads but never shows wait_selector is
+        returned as-is, so the parser can report it as a structure change.
         """
-        html = ""
-        for attempt in range(1, GET_ATTEMPTS + 1):
-            self.sb.uc_open_with_reconnect(url, reconnect_time=4 + 3 * attempt)
-            if wait_selector:
-                try:
-                    self.sb.wait_for_element(wait_selector, timeout=WAIT_TIMEOUT)
-                except Exception:
-                    pass
-            html = self.sb.get_page_source()
-            if not is_blocked(self.sb.get_title(), html):
-                return html
-            print(f"[VIC] Cloudflare challenge on {url} (attempt {attempt}/{GET_ATTEMPTS})", flush=True)
-        raise BotBlockedError(f"Cloudflare kept blocking {url}")
+        self.sb.uc_open_with_reconnect(url, reconnect_time=RECONNECT_SECONDS)
+        if wait_selector:
+            try:
+                self.sb.wait_for_element(wait_selector, timeout=WAIT_TIMEOUT)
+            except Exception:
+                pass
+        html = self.sb.get_page_source()
+        if is_blocked(self.sb.get_title(), html):
+            self._debug_dump("challenge")
+            raise BotBlockedError(f"Cloudflare challenge instead of {url}")
+        return html
 
     def login(self) -> bool:
-        """Fill and submit the supplier login form. Returns True on success."""
+        """
+        Fill and submit the supplier login form. True once the page shows the
+        Log Out link; False if the site says the username/password is wrong
+        or nothing signs us in within ten seconds.
+        """
         username, password = credentials()
         self.get(LOGIN_URL, wait_selector="#supplierUsername")
         self.sb.type("#supplierUsername", username)
@@ -326,17 +383,27 @@ class BrowserSession:
         for _ in range(10):
             time.sleep(1)
             if LOGIN_ERROR_TEXT in self.sb.get_page_source():
+                log.error("login: the site says %r", LOGIN_ERROR_TEXT)
                 return False
-            if not self.sb.is_element_visible("#supplierLoginForm"):
+            if self.sb.is_element_present(SIGNED_IN_SELECTOR):
                 return True
-        return "/login" not in self.sb.get_current_url()
+        return False
 
     def download_documents(self, download_docs_url: str, folder: str) -> str:
         """
         Open the document form, click Download, and move the zip that lands
         in SeleniumBase's downloads folder into `folder`. Returns its path.
         """
-        self.get(download_docs_url, wait_selector="#downloadButton")
+        html = self.get(download_docs_url, wait_selector="#downloadButton")
+        form = parse_download_form(html)
+        if form is None:
+            raise common.StructureChangedError(
+                f"no document form ({DOWNLOAD_FORM_SELECTOR}) on {download_docs_url}")
+        if form["count"] == 0:
+            raise common.StructureChangedError(f"the document form lists no documents on {download_docs_url}")
+        if form["unchecked"]:
+            # Every box is ticked by default; if that changes, Select All restores it.
+            self.sb.click("#checkAll")
         os.makedirs(self._downloads_dir, exist_ok=True)
         before = set(os.listdir(self._downloads_dir))
         self.sb.click("#downloadButton")
@@ -372,7 +439,8 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
     tender_code = fields["tender_code"]
     folder = common.tender_dir(tender_code, output_dir)
     documents = parse_documents(html)
-    common.save_page_text(folder, tender_code, format_detail_text(fields, entry, documents, url))
+    common.save_page_text(folder, tender_code, format_detail_text(fields, entry, documents))
+    common.add_source_url(folder, tender_code, url)
 
     tender = {
         "tender_id": tender_code,
@@ -383,24 +451,31 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
         "documents_gated": False,
     }
     if not documents:
+        reporting.documents_line(log, 0, 0)
         return common.SITE_SUCCESS, tender
 
     download_url = find_download_docs_url(html)
     if download_url is None:
-        tender["documents_gated"] = documents_require_login(html)
+        tender["documents_gated"] = documents_require_login(html) or not is_signed_in(html)
+        log.warning("       documents: %d advertised, 0 downloaded -- %s", len(documents),
+                    "not signed in" if tender["documents_gated"]
+                    else "signed in but the page offers no download link")
         return common.TENDER_PARTIAL, tender
 
     zip_path = None
     try:
         zip_path = session.download_documents(download_url, folder)
         tender["attachments"], any_failed = common.unpack_zip(zip_path, folder)
+    except BotBlockedError:
+        raise  # a Cloudflare challenge ends the run -- it is not a per-tender failure
     except Exception as e:
-        print(f"[VIC] document download failed for {tender_code}: {e}", flush=True)
+        log.warning("       document download FAILED for %s: %s", tender_code, e)
         return common.TENDER_PARTIAL, tender
     finally:
         if zip_path and os.path.exists(zip_path):
             os.remove(zip_path)
 
+    reporting.documents_line(log, len(tender["attachments"]), len(documents))
     return (common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS), tender
 
 
@@ -436,8 +511,8 @@ def collect_all_listing_entries(session, limit: int = 0) -> list[dict]:
     return entries
 
 
-def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
-                headless: bool = True) -> tuple[int, list[dict]]:
+def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
+                 headless: bool = True) -> tuple[int, list[dict]]:
     """
     Scrape every open Victorian tender. `limit` of 0 means every tender found.
 
@@ -445,56 +520,116 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     SITE_LOGIN_FAILED, but the page text is still scraped.
     """
     username, password = credentials()
+    # Say plainly whether the secrets reached this process. Values are never logged.
+    log.info("login: VIC_USERNAME %s, VIC_PASSWORD %s",
+             "set" if username else "MISSING", "set" if password else "MISSING")
     tenders: list[dict] = []
+    logged_in = False
     login_failed = False
     try:
         with BrowserSession(headless=headless) as session:
             if username and password:
-                login_failed = not session.login()
-                if login_failed:
-                    print("[VIC] login failed -- continuing without documents", flush=True)
+                logged_in = session.login()
+                login_failed = not logged_in
+                if logged_in:
+                    log.info("login: ok")
+                else:
+                    log.error("login: FAILED -- continuing without documents")
             else:
-                print("[VIC] VIC_USERNAME/VIC_PASSWORD not set -- documents will be skipped", flush=True)
+                log.warning("login: no credentials -- documents will be skipped and "
+                            "tenders with documents will be TENDER_PARTIAL")
 
             entries = collect_all_listing_entries(session, limit)
+            log.info("listing: %d tender(s) found", len(entries))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
-            for entry in entries:
+            all_codes = []
+            relogins = 0
+            for index, entry in enumerate(entries, start=1):
                 try:
                     code, tender = scrape_opportunity(session, entry, output_dir)
+                    if tender and tender["documents_gated"] and logged_in and relogins < MAX_RELOGINS:
+                        # We were signed in, so the session probably lapsed.
+                        relogins += 1
+                        log.warning("       documents refused while signed in -- signing in again "
+                                    "(%d/%d) and retrying this tender", relogins, MAX_RELOGINS)
+                        logged_in = session.login()
+                        if logged_in:
+                            code, tender = scrape_opportunity(session, entry, output_dir)
+                        else:
+                            log.error("login: FAILED on re-login")
                     if tender:
                         tenders.append(tender)
                     tender_codes.add(code)
+                    all_codes.append(code)
+                    reporting.tender_line(log, index, len(entries),
+                                          tender.get("tender_id") or entry["url"], code)
                 except BotBlockedError:
                     raise
-                except Exception as e:
-                    print(f"[VIC] tender failed: {entry['url']}: {e}", flush=True)
+                except Exception as exc:
+                    reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
+                    all_codes.append(common.TENDER_PARTIAL)
                 time.sleep(PAUSE_SECONDS)
+
+            reporting.diagnose(log, all_codes, logged_in=logged_in)
 
         return common.site_code_from(tender_codes), tenders
 
     except BotBlockedError:
+        log.error("Cloudflare challenge did not clear -- stopping the run")
         return common.SITE_BOT_BLOCKED, tenders
-    except common.StructureChangedError:
+    except common.StructureChangedError as exc:
+        log.error("structure change: %s", exc)
         return common.SITE_STRUCTURE_CHANGE, tenders
-    except Exception as e:
-        print(f"[VIC] run failed: {type(e).__name__}: {e}", flush=True)
+    except Exception as exc:
+        log.error("run failed: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, tenders
+
+
+def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
+                         headless: bool = True,
+                         attempts: int = BROWSER_ATTEMPTS) -> tuple[int, list[dict]]:
+    """
+    Retry, each time with a brand-new browser, only when nothing was scraped
+    and the code is in RETRYABLE_CODES: the browser would not start or
+    crashed, or Cloudflare served its challenge. At most `attempts` tries in
+    total, waiting longer between each. A failed login, structure change or any
+    partial result is returned as-is.
+    """
+    code, tenders = common.SITE_TOTAL_FAILURE, []
+    for attempt in range(1, attempts + 1):
+        log.info("browser attempt %d/%d", attempt, attempts)
+        code, tenders = _scrape_site(limit, output_dir, headless)
+        if tenders or code not in RETRYABLE_CODES:
+            return code, tenders
+        if attempt < attempts:
+            log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
+                        attempt, attempts, reporting.code_name(code), 15 * attempt)
+            time.sleep(15 * attempt)
+    return code, tenders
+
+
+@reporting.reported(SOURCE_ID.upper())
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
+                headless: bool = True) -> common.ScrapeResult:
+    """
+    The pipeline's entry point. Returns (error code, site name, tenders scraped)
+    and nothing else -- the tenders themselves are left in output_dir.
+    """
+    code, tenders = _scrape_with_retries(limit, output_dir, headless)
+    return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Scrape open Buying for Victoria tenders.")
-    parser.add_argument("--limit", type=int, default=5, help="max tenders (0 = all)")
-    parser.add_argument("--output-dir", default="tenders_data")
     parser.add_argument("--visible", action="store_true", help="show the browser window")
     args = parser.parse_args()
 
-    code, tenders = run_scraper(limit=args.limit, output_dir=args.output_dir,
-                                headless=not args.visible)
-    print(f"Buying for Victoria run finished with code {code}, {len(tenders)} tenders scraped")
+    reporting.configure_logging()
+    run_scraper(headless=not args.visible)  # no cap; for a capped local run use: python manager.py --local
 
 
 if __name__ == "__main__":

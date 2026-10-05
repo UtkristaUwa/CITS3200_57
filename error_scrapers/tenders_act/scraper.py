@@ -13,6 +13,7 @@ checkbox; that page's form must be POSTed back (with the selected ids)
 to actually receive the zip.
 """
 
+import contextlib
 import io
 import os
 import re
@@ -81,6 +82,12 @@ FIELD_SECTION_SELECTOR = "#opportunityGeneral"
 
 LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
+# Signed-in pages carry a Log Out link; anonymous ones carry Log In.
+SIGNED_IN_SELECTOR = "a[href='/logout']"
+
+# How many times a lapsed session is signed in again before the run gives up.
+MAX_RELOGINS = 3
+
 
 # ---------------------------------------------------------------------------
 # Login
@@ -128,9 +135,21 @@ def login(client) -> bool:
     return not login_failed(response.text)
 
 
+def is_signed_in(html: str) -> bool:
+    """True if the page was served to a signed-in supplier."""
+    return BeautifulSoup(html or "", "html.parser").select_one(SIGNED_IN_SELECTOR) is not None
+
+
 # ---------------------------------------------------------------------------
 # Listing
 # ---------------------------------------------------------------------------
+
+def listing_record_count(html: str) -> int | None:
+    """The listing's own "Records: 22" total, or None if the page has none."""
+    pager = BeautifulSoup(html or "", "html.parser").select_one("p.paging")
+    match = re.search(r"Records:\s*(\d+)", pager.get_text(" ", strip=True)) if pager else None
+    return int(match.group(1)) if match else None
+
 
 def parse_listing(html: str, base_url: str = BASE_URL) -> list[str]:
     """Return every tender detail-page URL on one listing page."""
@@ -377,9 +396,36 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     except (httpx.ConnectError, ConnectionError):
         return common.SITE_TOTAL_FAILURE, tenders
 
+def _scrape_documents(session, download_url: str, folder: str) -> tuple[list[dict], int, bool]:
+    """
+    Download and unpack one tender's document package.
+
+    Returns (attachments, advertised, ok). `advertised` is the number of
+    documents the download page offered. ok is False when the page had no
+    usable form, or fewer files came out than were offered, or any file's
+    text could not be extracted -- the caller reports that as TENDER_PARTIAL.
+    """
+    docs_html = session.get(download_url)
+    form = parse_download_form(docs_html)
+    if form["code"] != common.SITE_SUCCESS or not form["ids"]:
+        log.warning("       documents: the download page had no usable form (%s)",
+                    reporting.code_name(form["code"]))
+        return [], 0, False
+
+    zip_path = session.download_via_form(download_url, form["ids"])
+    try:
+        attachments, any_failed = common.unpack_zip(zip_path, folder)
+    finally:
+        with contextlib.suppress(OSError):
+            os.remove(zip_path)
+    advertised = len(form["ids"])
+    reporting.documents_line(log, len(attachments), advertised)
+    return attachments, advertised, not any_failed and len(attachments) >= advertised
+
+
 def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
     """
-    One full browser attempt (your existing run_scraper_via_browser body).
+    One full browser attempt: sign in, walk the listing, scrape every tender.
     """
     from error_scrapers.tenders_act.browser import BrowserSession
 
@@ -393,16 +439,36 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
 
             listing_html = session.get(LIST_URL)
             urls = parse_listing(listing_html)
+            advertised_total = listing_record_count(listing_html)
+            if advertised_total is not None and len(urls) < advertised_total and not limit:
+                log.error("listing: the page says %d record(s) but only %d link(s) were "
+                          "found -- some tenders are not being seen", advertised_total, len(urls))
             if limit:
                 urls = urls[:limit]
             log.info("listing: %d tender link(s) found", len(urls))
 
             tender_codes = set()
             all_codes = []
+            relogins = 0
             for index, url in enumerate(urls, start=1):
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
                     detail_html = session.get(url)
+                    if not is_signed_in(detail_html):
+                        # The session lapsed mid-run. Sign in again (capped) and retry.
+                        if relogins >= MAX_RELOGINS:
+                            log.error("session lapsed %d times -- stopping the run", relogins)
+                            tender_codes.add(common.SITE_LOGIN_FAILED)
+                            break
+                        relogins += 1
+                        log.warning("       signed out -- signing in again (%d/%d)",
+                                    relogins, MAX_RELOGINS)
+                        if not session.login():
+                            log.error("login: FAILED on re-login -- stopping the run")
+                            tender_codes.add(common.SITE_LOGIN_FAILED)
+                            break
+                        detail_html = session.get(url)
+
                     fields, code = parse_detail(detail_html)
                     if code != common.SITE_SUCCESS:
                         tender_codes.add(code)
@@ -416,27 +482,22 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                     common.add_source_url(folder, tender_code, url)
                     download_url = find_download_docs_url(detail_html)
 
-                    attachments = []
+                    attachments, tender_code_result = [], common.SITE_SUCCESS
                     if download_url:
-                        docs_html = session.get(download_url)
-                        form = parse_download_form(docs_html)
-                        if form["code"] == common.SITE_SUCCESS and form["ids"]:
-                            zip_path = session.download_via_form(download_url, form["ids"])
-                            attachments = _extract_zip_into_folder(zip_path, folder)
-                            os.remove(zip_path)
-                            reporting.documents_line(log, len(attachments), len(form["ids"]))
-                        else:
-                            log.warning("       documents: the download page had no usable "
-                                        "form (%s)", reporting.code_name(form["code"]))
+                        attachments, _advertised, ok = _scrape_documents(
+                            session, download_url, folder)
+                        if not ok:
+                            tender_code_result = common.TENDER_PARTIAL
                     else:
                         reporting.documents_line(log, 0)
 
                     tenders.append({"title": fields.get("title"), "folder": folder,
                                      "attachments": attachments,
                                      "source_url": url, **fields})
-                    all_codes.append(common.SITE_SUCCESS)
+                    tender_codes.add(tender_code_result)
+                    all_codes.append(tender_code_result)
                     reporting.tender_line(log, index, len(urls), tender_code,
-                                          common.SITE_SUCCESS)
+                                          tender_code_result)
                 except BotBlockedError as exc:
                     # Blocked partway through: keep what was already scraped,
                     # but report the block rather than a partial.
@@ -449,12 +510,7 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                     continue
 
             reporting.diagnose(log, all_codes, logged_in=True)
-
-            if not tender_codes:
-                return common.SITE_SUCCESS, tenders
-            if common.SITE_STRUCTURE_CHANGE in tender_codes:
-                return common.SITE_STRUCTURE_CHANGE, tenders
-            return common.TENDER_PARTIAL, tenders
+            return common.site_code_from(tender_codes), tenders
 
     except BotBlockedError as exc:
         log.error("blocked: %s", exc)
@@ -495,36 +551,6 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
                     attempt, attempts, reporting.code_name(code), 15 * attempt)
         time.sleep(15 * attempt)
     return code, tenders
-
-
-def _extract_zip_into_folder(zip_path: str, folder: str) -> list[dict]:
-    """Unzip a downloaded document package into folder, extracting text
-    from each supported file type. Returns the attachment manifest."""
-    import zipfile
-
-    extractors = {
-        ".pdf": common.extract_pdf,
-        ".docx": common.extract_docx,
-        ".xlsx": common.extract_xlsx,
-    }
-    attachments = []
-    with zipfile.ZipFile(zip_path) as zf:
-        for name in zf.namelist():
-            file_name = os.path.basename(name)
-            if not file_name:
-                continue
-            content = zf.read(name)
-            raw_path = common.save_attachment(folder, file_name, content)
-            extension = os.path.splitext(file_name)[1].lower()
-            extractor = extractors.get(extension)
-            if extractor is not None:
-                try:
-                    text = extractor(raw_path)
-                    common.save_extracted_text(folder, file_name, text)
-                except common.ExtractionError as exc:
-                    log.warning("       text extraction FAILED  %s  (%s)", file_name, exc)
-            attachments.append({"file_name": file_name, "content_type": None})
-    return attachments
 
 
 def _scrape_all(client, urls, output_dir, tenders):

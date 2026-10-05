@@ -17,11 +17,15 @@ fragment endpoint that the page's own JavaScript calls, so we ask it directly.
 Documents:
     QTOL names no documents on the page. One "Download tender" button hands
     over the whole profile as a zip, and an anonymous request is redirected to
-    the login form -- the account also needs a registered business attached.
-    Set NT_QTOL_COOKIE to a signed-in browser's session cookie
-    (".AspNet.ApplicationCookie=...") to download them. Without it every
-    tender is TENDER_PARTIAL (page text only); with it, a download that still
-    lands on the login form means the cookie is stale: SITE_LOGIN_FAILED.
+    the login form (the login page itself says "To download or lodge a
+    response to a tender, you need to be logged in"), and the account may
+    also need a registered business attached.
+    Set NT_QTOL_USERNAME (the User ID -- not an email address) and
+    NT_QTOL_PASSWORD and the scraper signs in with the site's own login form,
+    so nothing needs refreshing by hand. Without them every tender is
+    TENDER_PARTIAL (page text only). A rejected login is SITE_LOGIN_FAILED
+    (page text is still scraped). If the session lapses mid-run the scraper
+    signs in again, up to MAX_RELOGINS times.
 """
 
 import math
@@ -34,14 +38,17 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common
+from error_scrapers import common, reporting
 
 from dotenv import load_dotenv
 load_dotenv()
 
-SOURCE_ID = "nt-qtol"
+log = reporting.site_logger("NT_QTOL")
+
+SOURCE_ID = "nt_qtol"
 BASE_URL = "https://tendersonline.nt.gov.au"
 LIST_URL = f"{BASE_URL}/Tender/SearchResults/Current"
+LOGIN_URL = f"{BASE_URL}/Account/LogOn"
 DETAIL_PATH = "/Tender/Details"
 
 HEADERS = {
@@ -79,20 +86,94 @@ NOT_A_DATE = re.compile(r"^\s*(to be determined|tbd|tba|n/?a|-|)\s*$", re.I)
 
 PAUSE_SECONDS = 0.3
 
+# How many times a run signs in again after a download is refused while we
+# believe we are signed in (the session lapsed). After that, it carries on
+# and the tenders are reported partial.
+MAX_RELOGINS = 3
+
+# The login form's User ID box.
+LOGIN_FIELD_SELECTOR = "input#UserId"
+
+
+def blocked_code(exc: httpx.HTTPStatusError) -> int | None:
+    """
+    429 -> SITE_RATE_LIMITED, 403 -> SITE_BOT_BLOCKED, anything else None.
+    Either one ends the run: we back off rather than retry or work around it.
+    """
+    status = exc.response.status_code
+    if status == 429:
+        return common.SITE_RATE_LIMITED
+    if status == 403:
+        return common.SITE_BOT_BLOCKED
+    return None
+
 
 # ---------------------------------------------------------------------------
 # Session
 # ---------------------------------------------------------------------------
 
-def apply_session_cookie(client) -> bool:
-    """Put NT_QTOL_COOKIE on the client. Returns True if one was set."""
-    applied = False
-    for part in os.environ.get("NT_QTOL_COOKIE", "").split(";"):
-        name, separator, value = part.strip().partition("=")
-        if separator and name:
-            client.cookies.set(name.strip(), value.strip(), domain="tendersonline.nt.gov.au")
-            applied = True
-    return applied
+def credentials():
+    """Return (username, password) from the environment, or (None, None).
+    The username is QTOL's User ID, which is not an email address."""
+    return (
+        os.environ.get("NT_QTOL_USERNAME") or None,
+        os.environ.get("NT_QTOL_PASSWORD") or None,
+    )
+
+
+def is_login_page(html: str) -> bool:
+    """True if QTOL served its login form instead of the page asked for."""
+    return BeautifulSoup(html, "html.parser").select_one(LOGIN_FIELD_SELECTOR) is not None
+
+
+def login_error(html: str) -> str:
+    """The site's own reason for refusing a login ("I don't recognise your username
+    and password..."), or "" if the page has none."""
+    box = BeautifulSoup(html, "html.parser").select_one(".validation-summary-errors")
+    return " ".join(box.get_text(" ", strip=True).split()) if box else ""
+
+
+def login(client) -> bool:
+    """
+    Submit QTOL's login form (User ID and password, no captcha or MFA).
+
+    Every hidden input on the form is replayed, so an anti-forgery token is
+    carried if the site adds one. Returns True if the page we land on is no
+    longer the login form; a rejected login redraws the form, with the site's
+    reason, which is logged.
+    """
+    username, password = credentials()
+    headers = {k: v for k, v in HEADERS.items() if k != "X-Requested-With"}  # not an AJAX call
+    response = client.get(LOGIN_URL, headers=headers, timeout=30.0)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    box = soup.select_one(LOGIN_FIELD_SELECTOR)
+    form = box.find_parent("form") if box else None
+    if form is None:
+        raise common.StructureChangedError("No login form found on QTOL's login page.")
+
+    payload = {
+        field.get("name"): field.get("value", "")
+        for field in form.select("input[type='hidden']")
+        if field.get("name")
+    }
+    payload["UserId"] = username
+    payload["Password"] = password
+    payload["RememberMe"] = "false"
+
+    result = client.post(
+        urljoin(BASE_URL, form.get("action") or "/Account/LogOn"),
+        data=payload,
+        headers=dict(headers, Referer=str(response.url)),
+        timeout=25.0,
+    )
+    result.raise_for_status()
+    if is_login_page(result.text):
+        message = login_error(result.text)
+        log.error("login: QTOL refused the sign-in%s", f" -- {message}" if message else "")
+        return False
+    return True
 
 
 def is_login_redirect(response) -> bool:
@@ -238,8 +319,6 @@ def format_detail_text(fields: dict, url: str) -> str:
         f"NT QUOTATIONS AND TENDERS ONLINE: {fields.get('title') or fields.get('reference')}",
         "=" * 80,
         "",
-        f"Detail URL: {url}",
-        "",
     ]
     for key, value in fields.items():
         if value and key != "description":
@@ -304,6 +383,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     reference = fields["reference"]
     folder = common.tender_dir(reference, output_dir)
     common.save_page_text(folder, reference, format_detail_text(fields, url))
+    common.add_source_url(folder, reference, url)
 
     tender = {
         "tender_id": reference,
@@ -316,6 +396,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
 
     download_url = find_download_url(response.text)
     if download_url is None:
+        reporting.documents_line(log, 0)
         return common.SITE_SUCCESS, tender
 
     try:
@@ -323,8 +404,16 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             client, download_url, folder
         )
     except Exception as e:
-        print(f"NT QTOL DOWNLOAD FAILED: {download_url}: {e}")
-        code = common.TENDER_PARTIAL
+        if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
+            raise  # the site says slow down: stop the run, don't keep downloading
+        log.warning("       download FAILED: %s: %s", download_url, e)
+        return common.TENDER_PARTIAL, tender
+
+    if tender["documents_gated"]:
+        log.warning("       documents: QTOL sent a web page instead of the zip -- not signed in, "
+                    "or the account has no registered business attached")
+    else:
+        reporting.documents_line(log, len(tender["attachments"]))
     return code, tender
 
 
@@ -362,59 +451,103 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     return urls
 
 
-def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
+def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
     """
     Scrape every current NT tender. `limit` of 0 means every tender found.
 
-    Returns (site_code, tenders). Downloads refused for want of a login are
-    SITE_LOGIN_FAILED when NT_QTOL_COOKIE was set (the cookie is stale) and
-    TENDER_PARTIAL when it wasn't.
+    Returns (site_code, tenders). A rejected login is SITE_LOGIN_FAILED, but
+    the page text is still scraped; no credentials at all gives TENDER_PARTIAL
+    (page text only). A 429 or 403 stops the run at once.
     """
     tenders: list[dict] = []
     try:
         with httpx.Client(follow_redirects=True) as client:
-            have_cookie = apply_session_cookie(client)
-            if not have_cookie:
-                print("NT_QTOL_COOKIE not set -- tender documents will be skipped")
+            username, password = credentials()
+            # Say plainly whether the secrets reached this process. Values are never logged.
+            log.info("login: NT_QTOL_USERNAME %s, NT_QTOL_PASSWORD %s",
+                     "set" if username else "MISSING", "set" if password else "MISSING")
+            logged_in = False
+            login_failed = False
+            if username and password:
+                logged_in = login(client)
+                login_failed = not logged_in
+                if logged_in:
+                    log.info("login: ok")
+                else:
+                    log.error("login: FAILED -- check NT_QTOL_USERNAME is the User ID (not "
+                              "an email address) and the password; carrying on without documents")
+            else:
+                log.warning("login: no credentials -- tender documents will be skipped and "
+                            "tenders with documents will be TENDER_PARTIAL")
 
             urls = collect_all_listing_urls(client, limit)
+            log.info("listing: %d tender link(s) found", len(urls))
 
-            tender_codes = set()
-            for url in urls:
+            tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
+            all_codes = []
+            relogins = 0
+            for index, url in enumerate(urls, start=1):
                 try:
                     code, tender = scrape_opportunity(client, url, output_dir)
+                    if tender and tender["documents_gated"] and logged_in and relogins < MAX_RELOGINS:
+                        # We were signed in, so the session probably lapsed.
+                        relogins += 1
+                        log.warning("       download refused while signed in -- signing in again "
+                                    "(%d/%d) and retrying this tender", relogins, MAX_RELOGINS)
+                        logged_in = login(client)
+                        if logged_in:
+                            code, tender = scrape_opportunity(client, url, output_dir)
+                        else:
+                            log.error("login: FAILED on re-login")
                     if tender:
                         tenders.append(tender)
-                        if tender["documents_gated"] and have_cookie:
-                            code = common.SITE_LOGIN_FAILED
                     tender_codes.add(code)
-                except Exception as e:
-                    print(f"NT QTOL TENDER FAILED: {url}: {e}")
+                    all_codes.append(code)
+                    reporting.tender_line(log, index, len(urls),
+                                          tender.get("tender_id", url) if tender else url, code)
+                except httpx.HTTPStatusError as exc:
+                    blocked = blocked_code(exc)
+                    if blocked is not None:
+                        log.error("HTTP %s from %s -- stopping the run",
+                                  exc.response.status_code, exc.request.url)
+                        return blocked, tenders
+                    reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
+                    all_codes.append(common.TENDER_PARTIAL)
+                except Exception as exc:
+                    reporting.tender_failed(log, index, len(urls), url, exc)
+                    tender_codes.add(common.TENDER_PARTIAL)
+                    all_codes.append(common.TENDER_PARTIAL)
                 time.sleep(PAUSE_SECONDS)
+
+            reporting.diagnose(log, all_codes, logged_in=logged_in)
 
         return common.site_code_from(tender_codes), tenders
 
-    except common.StructureChangedError:
+    except common.StructureChangedError as exc:
+        log.error("structure change: %s", exc)
         return common.SITE_STRUCTURE_CHANGE, tenders
     except httpx.HTTPStatusError as exc:
-        if exc.response.status_code == 429:
-            return common.SITE_RATE_LIMITED, tenders
+        log.error("HTTP %s from %s", exc.response.status_code, exc.request.url)
+        return blocked_code(exc) or common.SITE_TOTAL_FAILURE, tenders
+    except httpx.TransportError as exc:
+        log.error("could not connect: %s", exc)
         return common.SITE_TOTAL_FAILURE, tenders
-    except httpx.TransportError:
-        return common.SITE_TOTAL_FAILURE, tenders
+
+
+@reporting.reported(SOURCE_ID.upper())
+def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.ScrapeResult:
+    """
+    The pipeline's entry point. Returns (error code, site name, tenders scraped)
+    and nothing else -- the tenders themselves are left in output_dir.
+    """
+    code, tenders = _scrape_site(limit, output_dir)
+    return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 
 def main():
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Scrape current NT QTOL tenders.")
-    parser.add_argument("--limit", type=int, default=5, help="max tenders (0 = all)")
-    parser.add_argument("--output-dir", default="tenders_data")
-    args = parser.parse_args()
-
-    code, tenders = run_scraper(limit=args.limit, output_dir=args.output_dir)
-    print(f"NT QTOL run finished with code {code}, {len(tenders)} tenders scraped")
+    reporting.configure_logging()
+    run_scraper()  # no cap; for a capped local run use: python manager.py --local
 
 
 if __name__ == "__main__":

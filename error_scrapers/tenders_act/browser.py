@@ -17,17 +17,6 @@ Every page's HTML is handed to the same BeautifulSoup-based parsing
 functions in scraper.py (parse_detail, parse_listing,
 parse_download_form) -- nothing about how the HTML gets parsed
 changes, only how it gets fetched.
-
-NOTE on the open question: it's not yet confirmed whether the site's
-block is a one-time "prove you're a browser" check (in which case a
-browser login's cookies could be handed to a fast httpx client for
-the rest of the scrape) or checked on every request (in which case
-the browser must do the whole scrape). This module assumes the
-stricter case -- the browser does everything -- since that's
-guaranteed to work if login works. If real runs show plain httpx
-requests succeed once the browser's cookies are transplanted onto an
-httpx.Client, that's a real, safe speed optimisation to make later;
-don't assume it works without testing it directly.
 """
 
 import os
@@ -43,7 +32,9 @@ BASE_URL = "https://www.tenders.act.gov.au"
 LOGIN_URL = f"{BASE_URL}/login"
 LIST_URL = f"{BASE_URL}/tenders/open"
 
-from error_scrapers.tenders_act.scraper import BotBlockedError, credentials, is_blocked
+from error_scrapers.tenders_act.scraper import (
+    BotBlockedError, credentials, is_blocked, is_signed_in,
+)
 
 LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
@@ -156,19 +147,18 @@ class BrowserSession:
         self.sb.type("#supplierPassword", password)
         self.sb.click("#supplierLoginForm button[type='submit']")
 
-        # Wait up to ~10s for a definite outcome instead of a blind sleep:
-        # an error message means failure, the login form disappearing means
-        # we got in.
+        # Wait up to ~10s for a definite outcome: an error message means the
+        # site refused the sign-in; the Log Out link means we are in. Leaving
+        # the /login URL is not proof on its own, so it is not accepted.
         for _ in range(10):
             time.sleep(1)
-            if LOGIN_ERROR_TEXT in self.sb.get_page_source():
+            page = self.sb.get_page_source()
+            if LOGIN_ERROR_TEXT in page:
+                log.error("login: the site refused the username/password")
                 return False
-            if not self.sb.is_element_visible("#supplierLoginForm"):
+            if is_signed_in(page):
                 return True
 
-        # No clear signal. If we've left the /login URL, treat it as success.
-        if "/login" not in self.sb.get_current_url():
-            return True
         self._debug_dump("login not confirmed")
         return False
 

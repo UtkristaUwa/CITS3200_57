@@ -322,7 +322,7 @@ def _find_tender_page_text(directory: str) -> str | None:
             return os.path.join(directory, name)
     return None
 
-def gather_relevant_documents(documents_dir: str) -> list[dict]:
+def _gather_attachment_documents(documents_dir: str) -> list[dict]:
     """
     1. Triages every .txt in documents_dir to drop useless files (blank templates,
        pure CAD tables, boilerplate clauses).
@@ -369,6 +369,28 @@ def gather_relevant_documents(documents_dir: str) -> list[dict]:
             time.sleep(0.5)
 
     return relevant_docs
+
+
+def gather_relevant_documents(documents_dir: str) -> list[dict]:
+    """
+    Everything the AI reads for one tender: the tender's own scraped page text
+    first (contact, dates, status, agency and so on live there, not in the
+    attachments), then the attachments that survive triage.
+    """
+    page_docs = []
+    page_path = _find_tender_page_text(documents_dir)
+    if page_path is not None:
+        with open(page_path, "r", encoding="utf-8", errors="replace") as f:
+            text = f.read()
+        if text.strip():
+            page_docs.append({"file_name": os.path.basename(page_path), "raw_text": text})
+
+    page_names = {d["file_name"] for d in page_docs}
+    attachment_docs = [
+        d for d in _gather_attachment_documents(documents_dir)
+        if d["file_name"] not in page_names
+    ]
+    return page_docs + attachment_docs
 
 
 def build_tender_context(relevant_documents: list[dict]) -> str:

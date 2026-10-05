@@ -279,12 +279,83 @@ def extract_xlsx(file_path: str) -> str:
     except Exception as e:
         raise ExtractionError(f"XLSX extraction failed on {file_path}: {e}") from e
 
-#The file types we can pull text out of. Anything else (csv, images, video) is still
-#saved as an attachment, it just has no extracted .txt next to it.
+def extract_xls(file_path: str) -> str:
+    """
+    Extract all cell content from every sheet of a legacy Excel (.xls)
+    workbook, in the same layout extract_xlsx produces. Agencies still
+    publish schedules of rates in this pre-2007 format.
+    """
+    try:
+        import xlrd
+
+        book = xlrd.open_workbook(file_path, on_demand=True)
+        parts = []
+        for sheet in book.sheets():
+            sheet_lines = [f"## Sheet: {sheet.name}"]
+            for row_index in range(sheet.nrows):
+                cells = [str(cell.value) if cell.value is not None else ""
+                         for cell in sheet.row(row_index)]
+                cells = [c[:-2] if c.endswith(".0") and c[:-2].lstrip("-").isdigit() else c
+                         for c in cells]
+                if any(cell.strip() for cell in cells):
+                    sheet_lines.append("\t".join(cells))
+            if len(sheet_lines) > 1:
+                parts.append("\n".join(sheet_lines))
+        book.release_resources()
+        return "\n\n".join(parts)
+    except Exception as e:
+        raise ExtractionError(f"XLS extraction failed on {file_path}: {e}") from e
+
+
+def extract_pptx(file_path: str) -> str:
+    """Extract the text of every slide (shapes, tables and speaker notes)."""
+    try:
+        from pptx import Presentation
+
+        parts = []
+        for number, slide in enumerate(Presentation(file_path).slides, start=1):
+            lines = [f"## Slide {number}"]
+            for shape in slide.shapes:
+                if shape.has_text_frame and shape.text_frame.text.strip():
+                    lines.append(shape.text_frame.text.strip())
+                if getattr(shape, "has_table", False) and shape.has_table:
+                    for row in shape.table.rows:
+                        lines.append("\t".join(cell.text for cell in row.cells))
+            if slide.has_notes_slide and slide.notes_slide.notes_text_frame.text.strip():
+                lines.append("Notes: " + slide.notes_slide.notes_text_frame.text.strip())
+            if len(lines) > 1:
+                parts.append("\n".join(lines))
+        return "\n\n".join(parts)
+    except Exception as e:
+        raise ExtractionError(f"PPTX extraction failed on {file_path}: {e}") from e
+
+
+def extract_plain_text(file_path: str) -> str:
+    """Read a plain-text or CSV file, tolerating the odd Windows-1252 file."""
+    try:
+        with open(file_path, "rb") as f:
+            raw = f.read()
+        for encoding in ("utf-8-sig", "cp1252"):
+            try:
+                return raw.decode(encoding)
+            except UnicodeDecodeError:
+                continue
+        return raw.decode("utf-8", errors="replace")
+    except Exception as e:
+        raise ExtractionError(f"Text extraction failed on {file_path}: {e}") from e
+
+
+#The file types we can pull text out of. Anything else (images, video, legacy
+#.doc/.ppt) is still saved as an attachment, it just has no extracted .txt next to it.
 EXTRACTORS = {
     ".pdf": extract_pdf,
     ".docx": extract_docx,
     ".xlsx": extract_xlsx,
+    ".xlsm": extract_xlsx,
+    ".xls": extract_xls,
+    ".pptx": extract_pptx,
+    ".csv": extract_plain_text,
+    ".txt": extract_plain_text,
 }
 
 def extract_attachment_text(folder: str, file_name: str) -> bool:

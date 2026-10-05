@@ -23,7 +23,7 @@ import time
 
 from error_scrapers import common
 
-TAG_WIDTH = 12  # len("GRANTCONNECT"); keeps the [TAG] column aligned across sites
+TAG_WIDTH = 13  # len("VIC_BUYINGFOR"); keeps
 RULE = "=" * 78
 
 CODE_NAMES = {
@@ -162,12 +162,14 @@ def documents_line(log, saved: int, advertised: int | None = None) -> None:
 # End-of-run verdict
 # ---------------------------------------------------------------------------
 
-def diagnose(log, codes: list, logged_in: bool = False) -> None:
+def diagnose(log, codes: list, logged_in: bool = False, partial_is_expected: bool = False) -> None:
     """
     Say in words what the pattern of per-tender codes means. Call it once,
     after the loop, with every tender's code in `codes`. It catches the cases
     that look like success but aren't: zero tenders, or every tender partial
-    or unparseable.
+    or unparseable. Pass partial_is_expected=True for a site whose documents
+    are always out of reach by design (QLD), so all-partial is a warning, not
+    an error.
     """
     total = len(codes)
     if total == 0:
@@ -185,7 +187,10 @@ def diagnose(log, codes: list, logged_in: bool = False) -> None:
         log.error("verdict: EVERY tender page failed to parse -- the site's layout "
                   "has almost certainly changed; the selectors need updating")
     elif counts.get(common.TENDER_PARTIAL) == total:
-        if logged_in:
+        if partial_is_expected:
+            log.warning(f"verdict: all {total} tender(s) were partial -- expected: "
+                        "their documents need a login this scraper does not have")
+        elif logged_in:
             log.error(f"verdict: all {total} tender(s) were partial although login "
                       "succeeded -- document downloads are failing; check the "
                       "session, permissions and the download warnings above")
