@@ -54,6 +54,77 @@ export async function getMe(): Promise<Me> {
   return data;
 }
 
+export interface ModelConfigResponse {
+  triage_model: string;
+  extraction_model: string;
+  generation: string;
+}
+
+export interface ModelConfigUpdate {
+  triage_model?: string;
+  extraction_model?: string;
+  generation: string;
+}
+
+export async function getModelConfig(): Promise<ModelConfigResponse> {
+  const { data } = await http.get<ModelConfigResponse>(`${API_BASE_URL}/admin/config/models`);
+  return data;
+}
+
+export async function updateModelConfig(update: ModelConfigUpdate): Promise<ModelConfigResponse> {
+  const { data } = await http.patch<ModelConfigResponse>(`${API_BASE_URL}/admin/config/models`, update);
+  return data;
+}
+
+export interface RelevanceConfigResponse {
+  classification_thoughts: string;
+  focus_areas: string;
+  work_types: string;
+  out_of_scope: string;
+  focus_area_weight: number;
+  work_type_weight: number;
+  recency_weight: number;
+  recency_horizon_days: number;
+  out_of_scope_fit_cap: number;
+  max_focus_areas: number;
+  max_work_types: number;
+  relevance_model: string;
+  relevance_temperature: number;
+  generation: string;
+}
+
+export interface RelevanceConfigUpdate {
+  classification_thoughts?: string;
+  focus_areas?: string;
+  work_types?: string;
+  out_of_scope?: string;
+  focus_area_weight?: number;
+  work_type_weight?: number;
+  recency_weight?: number;
+  recency_horizon_days?: number;
+  out_of_scope_fit_cap?: number;
+  max_focus_areas?: number;
+  max_work_types?: number;
+  relevance_model?: string;
+  relevance_temperature?: number;
+  generation: string;
+}
+
+export async function getRelevanceConfig(): Promise<RelevanceConfigResponse> {
+  const { data } = await http.get<RelevanceConfigResponse>(`${API_BASE_URL}/admin/config/relevance`);
+  return data;
+}
+
+export async function updateRelevanceConfig(
+  update: RelevanceConfigUpdate,
+): Promise<RelevanceConfigResponse> {
+  const { data } = await http.patch<RelevanceConfigResponse>(
+    `${API_BASE_URL}/admin/config/relevance`,
+    update,
+  );
+  return data;
+}
+
 export interface TenderDocument {
   document_id: string | null;
   file_name: string;
