@@ -125,7 +125,7 @@ logger = logging.getLogger("Manager")
 # httpx logs every request at INFO, which buries the [SITE] lines and prints
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-SCRAPE_LIMIT_CLOUD = 30
+SCRAPE_LIMIT_CLOUD = 0 
 SCRAPE_LIMIT_LOCAL = 2
 LOCAL_OUTPUT_DIR = "tenders_data"
 
@@ -133,8 +133,8 @@ LOCAL_OUTPUT_DIR = "tenders_data"
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
     ("grantconnect", run_grantconnect),
-    #("buynsw", run_buynsw),
-    #("tenders_act", run_act),
+    ("buynsw", run_buynsw),
+    ("tenders_act", run_act),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
