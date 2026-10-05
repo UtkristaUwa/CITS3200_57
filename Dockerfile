@@ -58,9 +58,6 @@ COPY processing/ ./processing/
 COPY attachment_store.py ./attachment_store.py
 COPY manager.py ./manager.py
 
-# SCRAPE_LIMIT=0 means no cap -- the scheduled daily run should not silently
-# drop tenders past an arbitrary count picked for local testing.
-# Override per-job via --update-env-vars without rebuilding the image.
-ENV SCRAPE_LIMIT=50
+# The scrape limit is set in manager.py (SCRAPE_LIMIT_CLOUD), not here.
 
 ENTRYPOINT ["python", "manager.py"]

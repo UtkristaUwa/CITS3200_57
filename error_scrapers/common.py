@@ -2,6 +2,7 @@
 
 import os
 import re
+from typing import NamedTuple
 import fitz
 import docx
 import openpyxl
@@ -31,6 +32,16 @@ SITE_RATE_LIMITED = 5
 TENDER_PARTIAL = 6
 
 #-----
+#This is what every scraper's run_scraper() returns -- and nothing else. The tenders
+#themselves are left in the output folder for the pipeline to pick up.
+#    code, site, count = run_scraper(...)      or      result.code / result.site / result.count
+#-----
+class ScrapeResult(NamedTuple):
+    code: int    # one of the status codes above (0 = SITE_SUCCESS)
+    site: str    # the portal's source_id, e.g. "grantconnect" -- same ids manager.py uses
+    count: int   # how many tenders were scraped
+
+#-----
 #This is our folder and filename handling for the tenders
 #-----
 
@@ -57,6 +68,32 @@ def save_page_text(folder: str, tender_id: str, text: str) -> None:
     path = os.path.join(folder, f"__tender__{sanitise_filename(tender_id)}.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
+
+SOURCE_URL_PATTERN = re.compile(r"Detail URL:\s*(https?://\S+)")
+
+
+def add_source_url(folder: str, tender_id: str, url: str) -> None:
+    """Record the tender's own page URL in its page-text file as a
+    'Detail URL: <url>' line, so manager.py can read it back from the
+    folder without the scraper having to return it."""
+    path = os.path.join(folder, f"__tender__{sanitise_filename(tender_id)}.txt")
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(f"\nDetail URL: {url}\n")
+
+
+def read_source_url(folder: str) -> str | None:
+    """The 'Detail URL:' a scraper recorded in this tender's page text, if any."""
+    for name in sorted(os.listdir(folder)):
+        if name.startswith("__tender__") and name.lower().endswith(".txt"):
+            try:
+                with open(os.path.join(folder, name), encoding="utf-8", errors="ignore") as f:
+                    match = SOURCE_URL_PATTERN.search(f.read())
+            except OSError:
+                continue
+            if match:
+                return match.group(1).strip()
+    return None
+
 
 #This function makes sure we never silently overwrite a file. Portals often attach
 #several files with the same name, so the second one would otherwise replace the first.
