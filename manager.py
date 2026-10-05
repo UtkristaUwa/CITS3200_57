@@ -8,7 +8,10 @@ import time
 
 # Import your web scraper and document scraper functions
 # (Adjust the import names to match your actual python files)
-from web_scrapers.webscraperinit import run_scraper as run_austender
+from error_scrapers.austender.scraper import run_scraper as run_austender
+from error_scrapers.nt_qtol.scraper import run_scraper as run_nt_qtol
+from error_scrapers.qld_qtenders.scraper import run_scraper as run_qld_qtenders
+from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfor
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
@@ -58,6 +61,10 @@ PORTAL_URL_MAP = {
     "grantconnect": "https://www.grants.gov.au",
     "buynsw": "https://buy.nsw.gov.au",
     "tenders_act": "https://www.tenders.act.gov.au",
+    "austender": "https://www.tenders.gov.au",
+    "nt_qtol": "https://tendersonline.nt.gov.au",
+    "qld_qtenders": "https://qtenders.hpw.qld.gov.au",
+    "vic_buyingfor": "https://www.tenders.vic.gov.au",
 }
 def explain_code(code: int | None) -> tuple[str, str, str]:
   """Translates an error status code into:
@@ -123,7 +130,7 @@ logger = logging.getLogger("Manager")
 # httpx logs every request at INFO, which buries the [SITE] lines and prints
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-SCRAPE_LIMIT_CLOUD = 0 
+SCRAPE_LIMIT_CLOUD = 0
 SCRAPE_LIMIT_LOCAL = 2
 LOCAL_OUTPUT_DIR = "tenders_data"
 
@@ -133,6 +140,10 @@ SCRAPERS = [
     ("grantconnect", run_grantconnect),
     ("buynsw", run_buynsw),
     ("tenders_act", run_act),
+    ("austender", run_austender),
+    ("nt_qtol", run_nt_qtol),
+    ("qld_qtenders", run_qld_qtenders),
+    ("vic_buyingfor", run_vic_buyingfor),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
@@ -255,11 +266,18 @@ def _merge_document_records(attachment_records, txt_documents):
     for record in attachment_records:
         record = dict(record)
         base, _ext = os.path.splitext(record["file_name"])
+        # The scrapers save the full extraction as <file name>.txt (e.g.
+        # Form.docx.txt: headers, footers, tables, spreadsheets). The older
+        # document_scraper stage saves <base>.txt for PDF/DOCX only and reads
+        # body paragraphs alone. Prefer the fuller one, fall back to the other.
+        extracted_text = extracted_text_by_txt_name.get(f"{record['file_name']}.txt")
+        if not extracted_text:
+            extracted_text = extracted_text_by_txt_name.get(f"{base}.txt")
         doc_entry = {
             "file_name": record.get("file_name"),
             "file_type": record.get("file_type"),
             "storage_uri": record.get("storage_uri"),
-            "extracted_text": extracted_text_by_txt_name.get(f"{base}.txt"),
+            "extracted_text": extracted_text,
         }
         merged.append(doc_entry)
     return merged

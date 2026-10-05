@@ -10,3 +10,5 @@ openpyxl
 python-dotenv
 google-cloud-storage
 seleniumbase
+xlrd
+python-pptx

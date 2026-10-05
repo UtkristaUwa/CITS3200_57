@@ -53,3 +53,5 @@ latest_logs/
 *.tmp
 *.tmp.*
 log_history/
+tenders_data/
+*_logs.txt

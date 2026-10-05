@@ -15,6 +15,7 @@ import io
 import os
 import zipfile
 
+import fitz
 import pytest
 
 from error_scrapers import common
@@ -407,3 +408,202 @@ def test_a_structure_change_is_not_retried(monkeypatch):
 
     assert code == common.SITE_STRUCTURE_CHANGE
     assert len(attempts) == 1
+
+
+# ---------------------------------------------------------------------------
+# Signed-in detection, the listing's own count, and the browser run
+# ---------------------------------------------------------------------------
+
+def _pdf_bytes(text: str) -> bytes:
+    doc = fitz.open()
+    doc.new_page().insert_text((72, 72), text)
+    data = doc.tobytes()
+    doc.close()
+    return data
+
+
+def _offered_ids() -> int:
+    return len(scraper.parse_download_form(_read_fixture("act_download_docs_page.html"))["ids"])
+
+
+def _zip_of(count: int) -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        for n in range(count):
+            zf.writestr(f"Document {n}.pdf", _pdf_bytes(f"document {n}"))
+    return buf.getvalue()
+
+
+def test_signed_in_pages_are_recognised():
+    assert scraper.is_signed_in(_read_fixture("act_tender_detail.html")) is True
+    assert scraper.is_signed_in(_read_fixture("act_login_page.html")) is False
+
+
+def test_listing_reports_its_own_record_count():
+    html = _read_fixture("act_public_list.html")
+    assert scraper.listing_record_count(html) == len(scraper.parse_listing(html)) == 22
+    assert scraper.listing_record_count("<html></html>") is None
+
+
+class FakeBrowserSession:
+    """Stands in for BrowserSession: serves the real captured pages."""
+
+    def __init__(self, tmp_path, zip_bytes, download_page=None, lapse_after=None,
+                 relogin_works=True):
+        self.tmp_path = tmp_path
+        self.zip_bytes = zip_bytes
+        self.download_page = download_page or _read_fixture("act_download_docs_page.html")
+        self.lapse_after = lapse_after
+        self.relogin_works = relogin_works
+        self.signed_in = False
+        self.logins = 0
+        self.details_served = 0
+
+    def __call__(self, download_dir=None):
+        return self
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+    def login(self):
+        self.logins += 1
+        if self.logins > 1 and not self.relogin_works:
+            return False
+        self.signed_in = True
+        self.details_served = 0
+        return True
+
+    def get(self, url, wait_selector=None, attempts=3):
+        if url == scraper.LIST_URL:
+            return _read_fixture("act_public_list.html")
+        if "downloadSpecDocs" in url:
+            return self.download_page
+        self.details_served += 1
+        if self.lapse_after is not None and self.details_served > self.lapse_after:
+            self.signed_in = False
+        html = _read_fixture("act_tender_detail.html")
+        return html if self.signed_in else html.replace("href=\"/logout\"", "href=\"/login\"")
+
+    def download_via_form(self, url, ids):
+        path = os.path.join(str(self.tmp_path), "package.zip")
+        with open(path, "wb") as f:
+            f.write(self.zip_bytes)
+        return path
+
+
+def _run_with(monkeypatch, tmp_path, session, limit=2):
+    from error_scrapers.tenders_act import browser
+
+    monkeypatch.setattr(browser, "BrowserSession", session)
+    return scraper._run_once(limit=limit, output_dir=str(tmp_path / "out"))
+
+
+def test_every_document_unpacked_is_a_success(tmp_path, monkeypatch):
+    session = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()))
+    code, tenders = _run_with(monkeypatch, tmp_path, session)
+    assert code == common.SITE_SUCCESS
+    assert len(tenders) == 2
+    assert len(tenders[0]["attachments"]) == _offered_ids()
+
+
+def test_fewer_files_than_offered_is_partial(tmp_path, monkeypatch):
+    session = FakeBrowserSession(tmp_path, _zip_of(max(_offered_ids() - 1, 0)))
+    code, tenders = _run_with(monkeypatch, tmp_path, session)
+    assert code == common.TENDER_PARTIAL
+    assert len(tenders) == 2  # the tenders are still kept
+
+
+def test_a_download_page_with_no_usable_form_is_partial_not_success(tmp_path, monkeypatch):
+    session = FakeBrowserSession(
+        tmp_path, _zip_of(1), download_page=_read_fixture("act_structure_changed_downloads.html"))
+    code, tenders = _run_with(monkeypatch, tmp_path, session)
+    assert code == common.TENDER_PARTIAL
+    assert len(tenders) == 2
+
+
+def test_an_unreadable_document_is_partial(tmp_path, monkeypatch):
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        for n in range(_offered_ids()):
+            zf.writestr(f"Document {n}.pdf", b"not really a pdf")
+    session = FakeBrowserSession(tmp_path, buf.getvalue())
+    code, _tenders = _run_with(monkeypatch, tmp_path, session)
+    assert code == common.TENDER_PARTIAL
+
+
+def test_a_lapsed_session_signs_in_again_and_carries_on(tmp_path, monkeypatch):
+    session = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()), lapse_after=1)
+    code, tenders = _run_with(monkeypatch, tmp_path, session, limit=3)
+    assert code == common.SITE_SUCCESS
+    assert len(tenders) == 3
+    assert session.logins >= 2
+
+
+def test_a_failed_relogin_stops_the_run_as_login_failed(tmp_path, monkeypatch):
+    session = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()), lapse_after=0,
+                                 relogin_works=False)
+    code, tenders = _run_with(monkeypatch, tmp_path, session, limit=3)
+    assert code == common.SITE_LOGIN_FAILED
+    assert tenders == []
+    assert session.logins == 2  # the first sign-in plus one refused re-login, never more
+
+
+def test_relogins_are_capped(tmp_path, monkeypatch):
+    session = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()), lapse_after=0)
+    code, _tenders = _run_with(monkeypatch, tmp_path, session, limit=10)
+    assert session.logins <= 1 + scraper.MAX_RELOGINS
+    assert code == common.SITE_LOGIN_FAILED
+
+
+class _FakeLoginSB:
+    """SeleniumBase stand-in for the login page."""
+
+    def __init__(self, after_submit_html):
+        self.after_submit_html = after_submit_html
+        self.submitted = False
+
+    def uc_open_with_reconnect(self, url, reconnect_time=None):
+        pass
+
+    def wait_for_element(self, selector, timeout=None):
+        pass
+
+    def type(self, selector, text):
+        pass
+
+    def click(self, selector):
+        self.submitted = True
+
+    def get_title(self):
+        return "Tenders ACT"
+
+    def get_current_url(self):
+        return scraper.BASE_URL + "/tenders/open"  # moved off /login either way
+
+    def get_page_source(self):
+        return self.after_submit_html if self.submitted else _read_fixture("act_login_page.html")
+
+
+def _login_with(monkeypatch, tmp_path, after_submit_html):
+    from error_scrapers.tenders_act import browser
+
+    monkeypatch.setattr(browser.time, "sleep", lambda seconds: None)
+    session = browser.BrowserSession(download_dir=str(tmp_path))
+    session.sb = _FakeLoginSB(after_submit_html)
+    return session.login()
+
+
+def test_browser_login_succeeds_only_when_the_logout_link_appears(tmp_path, monkeypatch):
+    assert _login_with(monkeypatch, tmp_path, _read_fixture("act_tender_detail.html")) is True
+
+
+def test_browser_login_fails_on_the_wrong_password_page(tmp_path, monkeypatch):
+    assert _login_with(monkeypatch, tmp_path, _read_fixture("act_login_failed.html")) is False
+
+
+def test_browser_login_is_not_assumed_from_leaving_the_login_url(tmp_path, monkeypatch):
+    # The page moved off /login but shows no Log Out link: not a confirmed sign-in.
+    assert _login_with(monkeypatch, tmp_path, "<html><body>Welcome</body></html>") is False

@@ -32,6 +32,7 @@ def test_pairs_an_attachment_with_its_extracted_text():
 
     assert merged == [{
         "file_name": "Requirements.pdf",
+        "file_type": None,
         "storage_uri": "gs://b/Requirements.pdf",
         "extracted_text": "the extracted body",
     }]
@@ -48,9 +49,42 @@ def test_a_genuine_txt_attachment_is_paired_with_its_own_content():
     assert merged[0]["extracted_text"] == "a real attachment"
 
 
+def test_a_spreadsheet_is_paired_with_its_full_name_txt():
+    # document_scraper only writes <base>.txt for PDF/DOCX, so a spreadsheet's
+    # text lives in the scraper's <file name>.txt and used to be dropped.
+    attachments = [{"file_name": "Breakdown.xlsx", "storage_uri": "gs://b/Breakdown.xlsx"}]
+    txt_documents = [{"file_name": "Breakdown.xlsx.txt", "extracted_text": "sheet text"}]
+
+    merged = manager._merge_document_records(attachments, txt_documents)
+
+    assert merged[0]["extracted_text"] == "sheet text"
+
+
+def test_the_fuller_scraper_extraction_wins_over_the_paragraph_only_one():
+    # A form made of tables: the old stage finds no body paragraphs and the
+    # scraper's extraction (which reads tables) is the only real text.
+    attachments = [{"file_name": "Form.docx", "storage_uri": "gs://b/Form.docx"}]
+    txt_documents = [
+        {"file_name": "Form.txt", "extracted_text": "body only"},
+        {"file_name": "Form.docx.txt", "extracted_text": "body plus table cells"},
+    ]
+
+    merged = manager._merge_document_records(attachments, txt_documents)
+
+    assert merged[0]["extracted_text"] == "body plus table cells"
+
+
+def test_the_base_name_txt_is_still_used_when_there_is_no_full_name_txt():
+    attachments = [{"file_name": "Old.pdf", "storage_uri": "gs://b/Old.pdf"}]
+    txt_documents = [{"file_name": "Old.txt", "extracted_text": "from the old stage"}]
+
+    merged = manager._merge_document_records(attachments, txt_documents)
+
+    assert merged[0]["extracted_text"] == "from the old stage"
+
+
 def test_an_attachment_with_no_extraction_gets_no_text_rather_than_failing():
     attachments = [{"file_name": "scan.pdf", "storage_uri": "gs://b/scan.pdf"}]
-
     merged = manager._merge_document_records(attachments, [])
 
     assert merged[0]["extracted_text"] is None
