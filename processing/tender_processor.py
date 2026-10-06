@@ -79,7 +79,7 @@ class TenderFields(BaseModel):
     value_notes: Optional[str] = Field(default=None)
     location: Optional[str] = Field(default=None)
     location_postcode: Optional[str] = Field(default=None)
-    location_state: Optional[str] = Field(default=None)
+    location_states: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     contact_name: Optional[str] = Field(default=None)
     contact_email: Optional[str] = Field(default=None)
@@ -90,16 +90,18 @@ class TenderFields(BaseModel):
 # ==============================================================================
 # Location Normalisation
 #
-# `location` is kept exactly as the source words it. location_state is the
+# `location` is kept exactly as the source words it. location_states is the
 # filterable version, resolved here rather than trusted from the model: an
 # Australian address almost always carries its postcode, and a postcode maps to
 # a state deterministically, whereas a bare suburb name does not (Richmond,
 # Brighton, Kingston and Newtown all exist in several states).
+#
+# It is a list because plenty of tenders genuinely cover several states.
 # ==============================================================================
 
-# NATIONAL/MULTI describe a scope rather than a point on the map.
+# NATIONAL describes a scope rather than a point on the map, and stands alone.
 ALLOWED_LOCATION_STATES: set[str] = {
-    "WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL", "MULTI",
+    "WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL",
 }
 
 _POSTCODE_PATTERN = re.compile(r"^\d{4}$")
@@ -148,23 +150,33 @@ def state_from_postcode(postcode: Optional[str]) -> Optional[str]:
     return None
 
 
-def resolve_location_state(postcode: Optional[str], model_state: Optional[str]) -> Optional[str]:
+def resolve_location_states(
+    postcode: Optional[str], model_states: Optional[list[str]]
+) -> list[str]:
     """
-    Decide the filterable state for a tender: the postcode wins over the model
-    whenever the two disagree, and anything the model can't back up becomes None
-    rather than a guess, since a wrong state hides the tender behind the wrong
-    filter.
+    Decide the filterable states for a tender. A postcode outranks the model on a
+    single-state answer, since the model guessing a state from a suburb name is
+    exactly what goes wrong, but it can't overrule an explicitly multi-state
+    scope - it only joins it. Anything the model can't back up is dropped rather
+    than guessed: an empty list beats a wrong state that hides the tender behind
+    the wrong filter.
     """
-    claimed = (model_state or "").strip().upper()
-    if claimed not in ALLOWED_LOCATION_STATES:
-        claimed = ""
+    claimed = {
+        state
+        for state in ((s or "").strip().upper() for s in model_states or [])
+        if state in ALLOWED_LOCATION_STATES
+    }
 
-    # A postcode is one point on the map, so it can't refute a whole-of-country
-    # or multi-state scope - only a competing single state.
-    if claimed in ("NATIONAL", "MULTI"):
-        return claimed
+    # Whole-of-country already covers every state, so it stands on its own.
+    if "NATIONAL" in claimed:
+        return ["NATIONAL"]
 
-    return state_from_postcode(postcode) or claimed or None
+    postcode_state = state_from_postcode(postcode)
+    if postcode_state is None:
+        return sorted(claimed)
+    if len(claimed) <= 1:
+        return [postcode_state]
+    return sorted(claimed | {postcode_state})
 
 
 # ==============================================================================
@@ -544,7 +556,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
     fields: TenderFields = response.parsed
     # Filter tags to only allowed taxonomy
     fields.tags = [t for t in fields.tags if t in TAG_TAXONOMY]
-    fields.location_state = resolve_location_state(fields.location_postcode, fields.location_state)
+    fields.location_states = resolve_location_states(fields.location_postcode, fields.location_states)
     return fields
 
 
@@ -626,7 +638,7 @@ def process_tender(documents_dir: str) -> dict:
         "value_currency": fields.value_currency,
         "value_notes": fields.value_notes,
         "location": fields.location,
-        "location_state": fields.location_state,
+        "location_states": fields.location_states,
         "description": summary.description,
         "summary_headline": summary.headline,
         "contact_name": fields.contact_name,
