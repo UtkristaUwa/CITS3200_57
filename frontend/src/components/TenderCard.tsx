@@ -85,6 +85,7 @@ import {
         sx={{
           mb: 2,
           minWidth: 0,
+          overflow: { xs: expanded ? 'visible' : 'hidden', sm: 'hidden' },
           border: '1px solid',
           borderColor: 'secondary.main',
           borderRadius: 2,
@@ -211,6 +212,40 @@ import {
 
         <Collapse in={expanded} timeout={300} unmountOnExit id={detailsId}>
           <Divider sx={{ mx: 2 }} />
+          {expanded && (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                position: { xs: 'sticky', sm: 'static' },
+                top: { xs: 78 },
+                zIndex: { xs: 5 },
+                pointerEvents: { xs: 'none', sm: 'auto' },
+                px: { xs: 1.5, sm: 2 },
+                pt: 0.5,
+              }}
+            >
+              <Button
+                size="small"
+                variant="text"
+                onClick={() => onToggleExpand(tender.tender_id)}
+                sx={{
+                  minHeight: 44,
+                  px: 2,
+                  pointerEvents: 'auto',
+                  bgcolor: { xs: 'background.paper', sm: 'transparent' },
+                  border: { xs: '1px solid', sm: 'none' },
+                  borderColor: { xs: 'secondary.main' },
+                  boxShadow: { xs: 1, sm: 0 },
+                }}
+                aria-expanded={expanded}
+                aria-controls={detailsId}
+                endIcon={<ExpandMoreIcon sx={{ transform: 'rotate(180deg)' }} />}
+              >
+                View Less
+              </Button>
+            </Box>
+          )}
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
               <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
