@@ -229,3 +229,26 @@ def test_attachments_report_size_and_content_type(tmp_path):
 
     assert attachments[0]["size_bytes"] == 6
     assert attachments[0]["content_type"] == "text/csv"
+
+
+#-----
+#A listing page that times out is asked for again rather than ending the run
+#-----
+
+def test_a_listing_page_that_times_out_is_asked_for_again(monkeypatch):
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
+    calls = {"n": 0}
+
+    def handler(request):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise httpx.ReadTimeout("The read operation timed out", request=request)
+        if request.url.params.get("page") == "1":
+            return httpx.Response(200, text=load_fixture("grantconnect_public_list.html"))
+        return httpx.Response(200, text="<html><body>No results</body></html>")
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        urls = scraper.collect_all_listing_urls(client)
+
+    assert len(urls) > 0
+    assert calls["n"] >= 3  # timeout, page 1 again, then the empty page

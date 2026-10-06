@@ -176,7 +176,8 @@ def collect_all_tenders(client, limit: int = 0) -> list[dict]:
     """
     tenders, seen, page = [], set(), 1
     while True:
-        response = client.post(SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
+        response = common.request_with_retries(
+            client, "post", SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
         response.raise_for_status()
         try:
             data = response.json()
@@ -566,7 +567,7 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
 
     detail, code, fetch_failed = {}, common.SITE_SUCCESS, False
     try:
-        response = client.get(url, headers=HEADERS, timeout=30.0)
+        response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
         response.raise_for_status()
         detail, code = parse_detail(response.text)
     except httpx.HTTPError as e:

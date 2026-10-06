@@ -1,7 +1,9 @@
 #File holding our helper functions that are used across all scrapers. Also includes the status error codes for failures.
 
+import logging
 import os
 import re
+import time
 from typing import NamedTuple
 import fitz
 import docx
@@ -373,6 +375,35 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
     except ExtractionError as e:
         print(f"EXTRACTION FAILED: {e}")
         return False
+
+# A request that times out is made again, this many attempts in all, waiting a
+# little longer each time. Only timeouts are retried: a 403/429 is the portal
+# telling us to stop, and a login is never repeated (a lockout risk).
+PAGE_ATTEMPTS = 3
+PAGE_RETRY_SECONDS = 5
+
+
+def request_with_retries(client, method: str, url: str, **kwargs):
+    """
+    client.get / client.post (`method` is "get" or "post"), asked again when the
+    request times out.
+
+    Raises the last timeout if every attempt times out. Anything else -- an HTTP
+    status, a refused connection -- comes straight back to the caller as before.
+    """
+    send = getattr(client, method)
+    for attempt in range(1, PAGE_ATTEMPTS + 1):
+        try:
+            return send(url, **kwargs)
+        except httpx.TimeoutException as exc:
+            if attempt == PAGE_ATTEMPTS:
+                raise
+            wait = PAGE_RETRY_SECONDS * attempt
+            logging.getLogger("scraper.common").warning(
+                "       %s timed out (%s) -- trying again in %ds (attempt %d/%d)",
+                url, type(exc).__name__, wait, attempt + 1, PAGE_ATTEMPTS)
+            time.sleep(wait)
+
 
 #Raised when a portal answers a document request with an HTML page (almost
 #always its login form) instead of the file.

@@ -314,7 +314,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     the list of attachments saved into it, or is empty if the page could
     not be parsed.
     """
-    response = client.get(url, headers=HEADERS, timeout=30.0)
+    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
@@ -326,7 +326,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     common.add_source_url(folder, go_id, url)
 
     documents_url = url.replace("/Go/Show", "/Go/ViewDocuments")
-    doc_response = client.get(documents_url, headers=HEADERS, timeout=30.0)
+    doc_response = common.request_with_retries(
+        client, "get", documents_url, headers=HEADERS, timeout=30.0)
     doc_response.raise_for_status()
     documents = parse_documents(doc_response.text)
 
@@ -348,7 +349,8 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     """
     urls, page = [], 1
     while True:
-        response = client.get(LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
+        response = common.request_with_retries(
+            client, "get", LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
         response.raise_for_status()
         page_urls = parse_listing(response.text)
         if not page_urls:

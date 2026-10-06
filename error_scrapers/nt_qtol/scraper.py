@@ -374,7 +374,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     parsed. `documents_gated` on the tender records that the download was
     refused for want of a login.
     """
-    response = client.get(url, headers=HEADERS, timeout=30.0)
+    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
@@ -429,8 +429,9 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     """
     urls, page, pages = [], 1, None
     while True:
-        response = client.get(
-            LIST_URL, params={"page": page, "size": PAGE_SIZE}, headers=HEADERS, timeout=45.0
+        response = common.request_with_retries(
+            client, "get", LIST_URL, params={"page": page, "size": PAGE_SIZE},
+            headers=HEADERS, timeout=45.0
         )
         response.raise_for_status()
         if pages is None:

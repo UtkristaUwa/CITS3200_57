@@ -359,6 +359,11 @@ def process_documents(client, documents: list[dict], folder: str) -> tuple[int, 
 # Per-ATM and full-run orchestration
 # ---------------------------------------------------------------------------
 
+def _get(client, url: str, **kwargs):
+    """client.get with this portal's headers and timeout, asked again if the page times out."""
+    return common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0, **kwargs)
+
+
 def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tuple[int, dict]:
     """
     Scrape one ATM into its own folder.
@@ -368,7 +373,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     TENDER_PARTIAL with `documents_gated` set on the tender, so run_scraper
     can tell "not logged in" apart from other partial results.
     """
-    response = client.get(url, headers=HEADERS, timeout=30.0)
+    response = _get(client, url)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
@@ -393,7 +398,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         reporting.documents_line(log, 0)
         return common.SITE_SUCCESS, tender
 
-    doc_response = client.get(documents_url, headers=HEADERS, timeout=30.0)
+    doc_response = _get(client, documents_url)
     doc_response.raise_for_status()
     if "/login" in str(doc_response.url).lower() or is_login_page(doc_response.text):
         tender["documents_gated"] = True
@@ -418,7 +423,7 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     """
     urls, page = [], 1
     while True:
-        response = client.get(LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
+        response = _get(client, LIST_URL, params={"page": page})
         response.raise_for_status()
         page_urls = [u for u in parse_listing(response.text) if u not in urls]
         if not page_urls:

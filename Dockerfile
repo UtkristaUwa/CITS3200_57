@@ -7,7 +7,8 @@
 #   gcloud builds submit --config cloudbuild.yaml .
 #
 # Includes Chrome so tenders_act (which needs a real browser) runs too.
-# Needs ~4 Gi memory at runtime for the browser source.
+# Needs 16 Gi memory at runtime (tender-batch-job): the browser portals peak
+# around 6 Gi on their own, and downloaded files live in memory until stored.
 
 FROM python:3.12-slim
 
@@ -48,6 +49,13 @@ RUN pip install --no-cache-dir \
         -r ingestion/requirements.txt \
         -r web_scrapers/requirements.txt \
         -r document_scraper/requirements.txt
+
+# Bake in the browser drivers SeleniumBase would otherwise download from Google
+# at run time (a network dependency, and extra seconds on every browser portal).
+# It picks the driver matching the Chrome installed above. Best effort: if this
+# step fails the build carries on and the scrapers fetch the drivers as before.
+RUN (sbase get chromedriver && sbase get uc_driver) \
+    || echo "Driver pre-download skipped; the scrapers will fetch it at run time"
 
 # Copy all source modules that manager.py imports.
 COPY ingestion/ ./ingestion/
