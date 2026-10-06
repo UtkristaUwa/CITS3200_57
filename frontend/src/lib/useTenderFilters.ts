@@ -9,8 +9,6 @@ export function useTenderFilters() {
   const [year, setYear] = useState('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
-  const [minValue, setMinValue] = useState('');
-  const [maxValue, setMaxValue] = useState('');
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -20,8 +18,6 @@ export function useTenderFilters() {
     setYear('');
     setMinDate('');
     setMaxDate('');
-    setMinValue('');
-    setMaxValue('');
   };
 
   return {
@@ -33,8 +29,6 @@ export function useTenderFilters() {
     year, setYear,
     minDate, setMinDate,
     maxDate, setMaxDate,
-    minValue, setMinValue,
-    maxValue, setMaxValue,
     handleResetFilters,
   };
 }

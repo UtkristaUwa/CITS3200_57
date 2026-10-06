@@ -29,8 +29,6 @@ export default function FavoritesPage() {
       category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
       year: filterProps.year || undefined,
-      min_value: filterProps.minValue ? Number(filterProps.minValue) : undefined,
-      max_value: filterProps.maxValue ? Number(filterProps.maxValue) : undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
     })
@@ -46,8 +44,8 @@ export default function FavoritesPage() {
     return () => { cancelled = true; };
   }, [
     filterProps.searchQuery, filterProps.status, filterProps.category, 
-    filterProps.jurisdiction, filterProps.year, filterProps.minValue, 
-    filterProps.maxValue, filterProps.minDate, filterProps.maxDate
+    filterProps.jurisdiction, filterProps.year, filterProps.minDate,
+    filterProps.maxDate
   ]);
 
   const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));

@@ -31,10 +31,6 @@ export interface TenderFilterBarProps {
   setMinDate: (val: string) => void;
   maxDate: string;
   setMaxDate: (val: string) => void;
-  minValue: string;
-  setMinValue: (val: string) => void;
-  maxValue: string;
-  setMaxValue: (val: string) => void;
   handleResetFilters: () => void;
 }
 
@@ -48,20 +44,41 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   return (
     <Box
       sx={{
-        mb: 4,
-        p: { xs: 1.5, sm: 2 },
+        display: { xs: 'contents', sm: 'block' },
+        position: { sm: 'sticky' },
+        top: { sm: 12 },
+        zIndex: 10,
+        mb: { sm: 2 },
+        p: { sm: 1.5 },
         bgcolor: 'background.paper',
         borderRadius: 2,
         border: '1px solid',
         borderColor: 'secondary.main',
+        boxShadow: (theme) => theme.palette.mode === 'light'
+          ? '0 3px 10px rgba(36,45,50,0.08)'
+          : '0 3px 10px rgba(0,0,0,0.24)',
       }}
     >
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
+          gap: 1,
           alignItems: 'stretch',
+          position: { xs: 'sticky', sm: 'static' },
+          top: { xs: 8 },
+          zIndex: { xs: 10 },
+          mb: { xs: props.showFilters ? 0 : 2, sm: 0 },
+          p: { xs: 1, sm: 0 },
+          bgcolor: { xs: 'background.paper', sm: 'transparent' },
+          borderRadius: { xs: 2, sm: 0 },
+          border: { xs: '1px solid', sm: 'none' },
+          borderColor: { xs: 'secondary.main' },
+          boxShadow: (theme) => ({
+            xs: theme.palette.mode === 'light'
+              ? '0 3px 10px rgba(36,45,50,0.08)'
+              : '0 3px 10px rgba(0,0,0,0.24)',
+            sm: 'none',
+          }),
           '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
         }}
       >
@@ -86,7 +103,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           variant={props.showFilters ? 'contained' : 'outlined'}
           startIcon={<FilterListIcon />}
           onClick={() => props.setShowFilters(!props.showFilters)}
-          sx={{ flexShrink: 0, width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+          sx={{ flexShrink: 0, minHeight: { xs: 44, sm: 36 } }}
         >
           Filters
         </Button>
@@ -97,11 +114,16 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2,
-            mt: 2,
-            pt: 2,
+            gap: 1.5,
+            mt: { xs: 1, sm: 1.5 },
+            mb: { xs: 2, sm: 0 },
+            p: { xs: 1, sm: 0 },
+            pt: 1.5,
+            bgcolor: { xs: 'background.paper', sm: 'transparent' },
+            border: { xs: '1px solid', sm: 'none' },
             borderTop: '1px solid',
             borderColor: 'secondary.main',
+            borderRadius: { xs: 2, sm: 0 },
             '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
           }}
         >
@@ -109,7 +131,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             sx={{
               display: 'grid',
               gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
-              gap: 2,
+              gap: 1.5,
             }}
           >
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
@@ -158,8 +180,8 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
-              gap: 2,
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+              gap: 1.5,
             }}
           >
             <TextField
@@ -180,24 +202,6 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               slotProps={{ inputLabel: { shrink: true } }}
               value={props.maxDate}
               onChange={(e) => props.setMaxDate(e.target.value)}
-              sx={{ minWidth: 0 }}
-            />
-            <TextField
-              size="small"
-              fullWidth
-              type="number"
-              label="Min Value ($)"
-              value={props.minValue}
-              onChange={(e) => props.setMinValue(e.target.value)}
-              sx={{ minWidth: 0 }}
-            />
-            <TextField
-              size="small"
-              fullWidth
-              type="number"
-              label="Max Value ($)"
-              value={props.maxValue}
-              onChange={(e) => props.setMaxValue(e.target.value)}
               sx={{ minWidth: 0 }}
             />
           </Box>
