@@ -755,3 +755,21 @@ def test_an_unspecified_department_falls_back_to_the_business_name():
 def test_no_agency_at_all_is_none_and_omitted_from_the_text():
     assert scraper.agency_name({"departmentName": "Unspecified"}) is None
     assert "Agency:" not in scraper.format_detail_text({"title": "T", "vpReference": "VP1"}, {})
+
+def test_a_search_request_that_times_out_is_asked_for_again(monkeypatch):
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
+    inner = _portal()
+    calls = {"search": 0}
+
+    def handler(request):
+        if request.url.path == "/api/search/tenders":
+            calls["search"] += 1
+            if calls["search"] == 1:
+                raise httpx.ReadTimeout("The read operation timed out", request=request)
+        return inner.handler(request)
+
+    with _client(httpx.MockTransport(handler)) as client:
+        tenders = scraper.collect_all_tenders(client)
+
+    assert len(tenders) == len(_search_page()["tenders"])
+    assert calls["search"] >= 2

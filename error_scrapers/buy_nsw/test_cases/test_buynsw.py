@@ -273,3 +273,21 @@ def test_nested_zip_gets_recursed_into(tmp_path, monkeypatch):
     assert "Response Templates.zip" not in attachment_names
     assert os.path.exists(os.path.join(str(tmp_path), "Nested Document.pdf"))
     assert os.path.exists(os.path.join(str(tmp_path), "Nested Document.pdf.txt"))
+
+def test_a_page_that_times_out_is_asked_for_again(monkeypatch):
+    import httpx
+
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
+    calls = {"n": 0}
+
+    def handler(request):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise httpx.ReadTimeout("The read operation timed out", request=request)
+        return httpx.Response(200, text="the page")
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        response = scraper._get_with_retry(client, "https://buy.nsw.gov.au/page")
+
+    assert response.text == "the page"
+    assert calls["n"] == 2

@@ -331,7 +331,7 @@ def _get_with_retry(client, url, *, retries=2, **kwargs):
     """
     last_response = None
     for attempt in range(retries + 1):
-        response = client.get(url, **kwargs)
+        response = common.request_with_retries(client, "get", url, **kwargs)
         if response.status_code == 200:
             return response
         last_response = response

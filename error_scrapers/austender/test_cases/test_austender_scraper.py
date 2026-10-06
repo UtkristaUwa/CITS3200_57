@@ -131,6 +131,7 @@ def _patch_client(monkeypatch, transport):
 @pytest.fixture(autouse=True)
 def _no_pause_no_credentials(monkeypatch):
     monkeypatch.setattr(scraper, "PAUSE_SECONDS", 0)
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
     monkeypatch.delenv("AUSTENDER_USERNAME", raising=False)
     monkeypatch.delenv("AUSTENDER_PASSWORD", raising=False)
 
@@ -493,3 +494,84 @@ def test_the_contact_reaches_the_page_text():
     text = scraper.format_detail_text(fields, "https://example/atm")
     assert "contact_name: GEMS Product Review" in text
     assert "contact_email: GEMSProductReview@dcceew.gov.au" in text
+
+# ---------------------------------------------------------------------------
+# Timeouts are retried; a 429 never is
+# ---------------------------------------------------------------------------
+
+def _flaky_detail(failures, error=httpx.ReadTimeout):
+    """A portal whose detail page raises `error` the first `failures` times."""
+    inner = _portal(DOCS_ONE_PDF)
+    calls = {"detail": 0}
+
+    def handler(request):
+        if request.url.path.startswith("/Atm/Show/"):
+            calls["detail"] += 1
+            if calls["detail"] <= failures:
+                raise error("The read operation timed out", request=request)
+        return inner.handler(request)
+
+    transport = httpx.MockTransport(handler)
+    transport.calls = calls
+    return transport
+
+
+def test_a_page_that_times_out_once_is_asked_for_again(tmp_path):
+    transport = _flaky_detail(failures=1)
+    with _client(transport) as client:
+        code, tender = scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
+
+    assert code == common.SITE_SUCCESS
+    assert tender["tender_id"] == "ATM_2026_7057"
+    assert transport.calls["detail"] == 2
+
+
+def test_a_page_that_keeps_timing_out_gives_up_after_three_attempts(tmp_path):
+    transport = _flaky_detail(failures=99)
+    with _client(transport) as client, pytest.raises(httpx.ReadTimeout):
+        scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
+
+    assert transport.calls["detail"] == common.PAGE_ATTEMPTS == 3
+
+
+def test_retries_wait_longer_each_time(tmp_path, monkeypatch):
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 5)
+    waits = []
+    monkeypatch.setattr(common.time, "sleep", waits.append)
+    transport = _flaky_detail(failures=2)
+    with _client(transport) as client:
+        scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
+
+    # (the pause between document downloads also sleeps; only the retry waits matter here)
+    assert [w for w in waits if w] == [5, 10]
+
+
+def test_a_429_is_never_retried(tmp_path):
+    calls = []
+
+    def handler(request):
+        calls.append(request.url.path)
+        return httpx.Response(429)
+
+    with _client(httpx.MockTransport(handler)) as client, pytest.raises(httpx.HTTPStatusError):
+        scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
+
+    assert len(calls) == 1
+
+
+def test_one_tender_that_times_out_is_partial_and_the_run_carries_on(tmp_path, monkeypatch):
+    inner = _portal(DOCS_ONE_PDF)
+    detail_calls = {"n": 0}
+
+    def handler(request):
+        if request.url.path.startswith("/Atm/Show/"):
+            detail_calls["n"] += 1
+            if detail_calls["n"] <= common.PAGE_ATTEMPTS:  # the whole first tender
+                raise httpx.ReadTimeout("The read operation timed out", request=request)
+        return inner.handler(request)
+
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    code, tenders = scraper._scrape_site(output_dir=str(tmp_path))
+
+    assert code == common.TENDER_PARTIAL
+    assert len(tenders) >= 1  # the later tenders were still scraped

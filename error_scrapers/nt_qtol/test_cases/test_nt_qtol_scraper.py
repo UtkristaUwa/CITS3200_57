@@ -401,3 +401,22 @@ def test_page_text_records_the_source_url(tmp_path):
     with _client(_portal(_bundle_zip())) as client:
         code, tender = scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
     assert common.read_source_url(tender["folder"]) == DETAIL_URL
+
+def test_a_detail_page_that_times_out_is_asked_for_again(tmp_path, monkeypatch):
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
+    inner = _portal(_bundle_zip())
+    calls = {"detail": 0}
+
+    def handler(request):
+        if request.url.path.startswith("/Tender/Details/"):
+            calls["detail"] += 1
+            if calls["detail"] == 1:
+                raise httpx.ReadTimeout("The read operation timed out", request=request)
+        return inner.handler(request)
+
+    with _client(httpx.MockTransport(handler)) as client:
+        code, tender = scraper.scrape_opportunity(client, DETAIL_URL, str(tmp_path))
+
+    assert code == common.SITE_SUCCESS
+    assert tender["tender_id"] == "NTG26-0130"
+    assert calls["detail"] == 2

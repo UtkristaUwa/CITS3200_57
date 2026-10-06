@@ -4,7 +4,11 @@ import tempfile
 import logging
 import smtplib
 import json
+import gc
+import shutil
+import signal
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 # Import your web scraper and document scraper functions
 # (Adjust the import names to match your actual python files)
@@ -155,6 +159,18 @@ CRAWL_RESUME_SOURCES = {"buynsw"}
 
 UNKNOWN_SOURCE_ID = "unknown"
 
+# How many tenders stage 3 works on at once. Nearly all of its time is spent
+# waiting on Gemini and BigQuery, so threads are enough. Set PIPELINE_WORKERS=1
+# to process one tender at a time, as before.
+DEFAULT_PIPELINE_WORKERS = 4
+
+
+def _worker_count():
+    try:
+        return max(1, int(os.environ.get("PIPELINE_WORKERS", DEFAULT_PIPELINE_WORKERS)))
+    except ValueError:
+        return DEFAULT_PIPELINE_WORKERS
+
 def _stage(number, total, title):
     """Divider between pipeline stages so the Cloud Run log is easy to scan."""
     logger.info(reporting.RULE)
@@ -290,9 +306,52 @@ def _folders_in(directory):
     }
 
 
-def run_scrapers(temp_dir, limit, publish=True):
+# Names of the browser processes the scrapers start. Chrome and its driver can
+# outlive the scraper that launched them and keep gigabytes of RAM for the rest
+# of the run.
+def _is_browser_process(name):
+    return name == "uc_driver" or name.startswith("chrome")
+
+
+def _kill_stray_browsers(proc_root="/proc", kill=os.kill):
     """
-    Run every configured scraper into temp_dir.
+    Kill any Chrome / chromedriver a scraper left running. Called between
+    portals so one portal's leaked browser can't hold its memory for the rest
+    of the run.
+
+    Only acts inside the container (RUNNING_IN_CONTAINER): on a developer's
+    machine this would close their own Chrome. It reads /proc directly because
+    the slim image has no ps or pkill. Returns how many processes it killed."""
+    if os.environ.get("RUNNING_IN_CONTAINER", "").lower() not in ("1", "true", "yes"):
+        return 0
+    try:
+        entries = os.listdir(proc_root)
+    except OSError:
+        return 0
+
+    killed = 0
+    for entry in entries:
+        if not entry.isdigit() or int(entry) == os.getpid():
+            continue
+        try:
+            with open(os.path.join(proc_root, entry, "comm"), encoding="utf-8") as f:
+                name = f.read().strip()
+        except OSError:
+            continue
+        if _is_browser_process(name):
+            try:
+                kill(int(entry), signal.SIGKILL)
+                killed += 1
+            except OSError:
+                pass
+    if killed:
+        logger.info(f"Cleaned up {killed} leftover browser process(es)")
+    return killed
+
+
+def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
+    """
+    Run one scraper into temp_dir.
 
     Scrapers that report what they saved are used directly. For the older
     ones that return nothing, we note which folders appeared while they
@@ -300,71 +359,93 @@ def run_scrapers(temp_dir, limit, publish=True):
     end up filed in the bucket under "unknown", with no way to tell later
     which portal they came from.
 
+    Returns (manifest, failure, health_record, summary_row). manifest is
+    {folder_name: (source_id, attachments_or_None, source_url_or_None)};
+    failure is a (source_id, reason) tuple or None; health_record is the row
+    for scraper_health.json; summary_row is (site, code, tenders scraped,
+    seconds) for the end-of-run table."""
+    logger.info(f"Executing scraper: {source_id}")
+    before = _folders_in(temp_dir)
+    started = time.monotonic()
+
+    try:
+        extra = {}
+        if publish and source_id in CRAWL_RESUME_SOURCES:
+            extra = {"known_urls": _known_source_urls(source_id), "resume": True}
+        result = scrape(limit=limit, output_dir=temp_dir, **extra)
+    except Exception as e:
+        logger.error(f"Scraper '{source_id}' failed: {e}")
+        health_record = {
+            "website": source_id.upper(),
+            "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+            "last_run": now_iso,
+            "status": "Error",
+            "status_color": "error",
+            "message": f"Unhandled exception: {e}",
+        }
+        summary_row = (source_id.upper(), None, 0, time.monotonic() - started)
+        return {}, (source_id, f"exception: {e}"), health_record, summary_row
+
+    code = _site_code(result)
+    scraped_count = result.count if code is not None else 0
+    site_name = result.site if code is not None else source_id
+    summary_row = (site_name.upper(), code, scraped_count, time.monotonic() - started)
+
+    # 1. human-readable message, 2. table status text, 3. MUI chip color
+    explanation, label, chip_color = explain_code(code)
+
+    failure = None
+    if code in FAILURE_CODES:
+        logger.error(f"Scraper '{source_id}' reported failure: {explanation}")
+        failure = (source_id, explanation)
+    elif code == common.TENDER_PARTIAL:
+        logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
+
+    health_record = {
+        "website": source_id.upper(),
+        "url": PORTAL_URL_MAP.get(source_id, "N/A"),
+        "last_run": now_iso,
+        "status": label,
+        "status_color": chip_color,
+        "message": explanation,
+    }
+
+    manifest = {
+        folder_name: (source_id, None, None)
+        for folder_name in _folders_in(temp_dir) - before
+    }
+    return manifest, failure, health_record, summary_row
+
+
+def run_scrapers(temp_dir, limit, publish=True):
+    """
+    Run every configured scraper into temp_dir, one after another.
+
+    This is the scrape-only path (--local). The cloud pipeline in main() runs
+    the same scrapers one portal at a time, processing and clearing each
+    portal's tenders before starting the next.
+
     Returns (manifest, failures). manifest is
     {folder_name: (source_id, attachments_or_None, source_url_or_None)};
     failures is a list of (source_id, reason)."""
     manifest = {}
     failures = []
-
     health_records = []
-    summary_rows = []  # (site, code, tenders scraped, seconds) for the end-of-run table
+    summary_rows = []
     now_iso = datetime.now(timezone.utc).isoformat()
 
     for source_id, scrape in SCRAPERS:
-        logger.info(f"Executing scraper: {source_id}")
-        before = _folders_in(temp_dir)
-        started = time.monotonic()
+        part, failure, health_record, summary_row = _scrape_one(
+            source_id, scrape, temp_dir, limit, publish, now_iso
+        )
+        manifest.update(part)
+        if failure:
+            failures.append(failure)
+        health_records.append(health_record)
+        summary_rows.append(summary_row)
 
-        try:
-            extra = {}
-            if publish and source_id in CRAWL_RESUME_SOURCES:
-                extra = {"known_urls": _known_source_urls(source_id), "resume": True}
-            result = scrape(limit=limit, output_dir=temp_dir, **extra)
-        except Exception as e:
-            logger.error(f"Scraper '{source_id}' failed: {e}")
-            failures.append((source_id, f"exception: {e}"))
-            summary_rows.append((source_id.upper(), None, 0, time.monotonic() - started))
-
-            health_records.append({
-                "website": source_id.upper(),
-                "url": PORTAL_URL_MAP.get(source_id, "N/A"),
-                "last_run": now_iso,
-                "status": "Error",
-                "status_color": "error",
-                "message": f"Unhandled exception: {e}",
-            })
-
-            continue
-
-
-        code = _site_code(result)
-        scraped_count = result.count if code is not None else 0
-        site_name = result.site if code is not None else source_id
-        summary_rows.append((site_name.upper(), code, scraped_count, time.monotonic() - started))
-
-        # 1. human-readable message, 2. table status text, 3. MUI chip color
-        explanation, label, chip_color = explain_code(code)
-
-        if code in FAILURE_CODES:
-            logger.error(f"Scraper '{source_id}' reported failure: {explanation}")
-            failures.append((source_id, explanation))
-        elif code == common.TENDER_PARTIAL:
-            logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
-
-        health_records.append({
-            "website": source_id.upper(),
-            "url": PORTAL_URL_MAP.get(source_id, "N/A"),
-            "last_run": now_iso,
-            "status": label,
-            "status_color": chip_color,
-            "message": explanation,
-        })
-
-        for folder_name in _folders_in(temp_dir) - before:
-            manifest[folder_name] = (source_id, None, None)
-
-        #Once all scrapers have executed, upload the health_records list to Cloud Storage
-        # This creates/overwrites gs://tenderai-dev-documents/scraper_health.json
+    # Upload the health_records list to Cloud Storage. This creates/overwrites
+    # gs://tenderai-dev-documents/scraper_health.json
     if publish:
         publish_health_status_to_gcs(
             health_records, bucket_name="tenderai-dev-documents"
@@ -372,6 +453,153 @@ def run_scrapers(temp_dir, limit, publish=True):
 
     reporting.log_run_summary(summary_rows, logger)
     return manifest, failures
+
+
+def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
+                        process_tender, determine_relevance):
+    """Store one tender's attachments, AI-process it and upsert it to BigQuery."""
+    tender_path = os.path.join(temp_dir, tender_folder_name)
+    source_id, attachments, source_url = scraped.get(
+        tender_folder_name, (UNKNOWN_SOURCE_ID, None, None)
+    )
+    logger.info(
+        f"---- tender {position}/{total}: "
+        f"{tender_folder_name}  [{source_id.upper()}] ----"
+    )
+
+    # 4a. Copy the originals into Cloud Storage and drop the local
+    # copies. This runs before AI processing for two reasons: the
+    # files are gone the moment this block exits, and freeing each
+    # one as we go keeps a large attachment from exhausting the
+    # job's memory. process_tender only reads the .txt files, so
+    # removing the originals costs it nothing.
+    documents = attachment_store.upload_tender_attachments(
+        tender_path,
+        source_id=source_id,
+        tender_ref=tender_folder_name,
+        attachments=attachments,
+    )
+
+    # 4b. Run tender processing on current tender
+    logger.info(f"⚡ Processing tender: {tender_folder_name}...")
+    current_tender = None
+    try:
+        current_tender = process_tender(tender_path)
+        if current_tender is not None:
+            current_tender["source_id"] = source_id
+            source_url = common.read_source_url(tender_path) or source_url
+            if source_url:
+                current_tender["source_url"] = source_url
+            # The scraper's own reference (the folder name), never Gemini's guess:
+            # the model's value changed between runs and produced duplicate rows.
+            current_tender["source_reference_id"] = tender_folder_name
+            current_tender["documents"] = _merge_document_records(
+                documents, current_tender.get("documents") or []
+            )
+    except Exception as e:
+        logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
+        return
+
+    if current_tender is None:
+        logger.warning(f"Tender processing returned None for {tender_folder_name}, skipping.")
+        return
+
+    # 4c. Score the tender against the focus area / work type taxonomies.
+    # The enriched record (processed fields + focus_areas/work_types/fit/
+    # fit_reason) is what gets upserted below. Unlike a processing
+    # failure, a scoring failure doesn't drop the tender: it still goes
+    # to BigQuery, just with the relevance fields left null.
+    logger.info(f"🎯 Determining relevance for {tender_folder_name}...")
+    try:
+        current_tender = determine_relevance(current_tender)
+        logger.info(
+            f"Fit score for {tender_folder_name}: {current_tender.get('fit')} "
+            f"(focus_areas={current_tender.get('focus_areas')}, "
+            f"work_types={current_tender.get('work_types')})"
+        )
+    except Exception as e:
+        logger.error(f"Relevance determination failed for {tender_folder_name}: {e}")
+
+    # todo generate embeddings
+    logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")
+
+    # combine fields that we vectorise
+    title = current_tender.get("title") or ""
+    summary = current_tender.get("description") or ""
+
+    embed = f"Title: {title}. Summary: {summary}".strip()
+
+    # assign embedded information to current tender
+    current_tender["embedding"] = generate_embedding(embed)
+
+    # Try to upload to BigQuery
+    logger.info(f"Uploading processed tender {tender_folder_name} to BigQuery...")
+    try:
+        result = upsert_tender(bq_client, current_tender)
+        logger.info(
+            f"BigQuery upsert result for {tender_folder_name}: "
+            f"{result['action']} (id={result['tender_id']})"
+        )
+    except Exception as e:
+        logger.error(f"Failed to upsert to BigQuery: {e}")
+        return
+
+    # Deliberately not printing `current_tender` in full: its
+    # documents carry the entire extracted text of every attachment,
+    # which is megabytes of Cloud Logging per run. Set
+    # PIPELINE_DEBUG=on when you actually need to eyeball it.
+    if os.environ.get("PIPELINE_DEBUG", "off").lower() in {"on", "true", "1"}:
+        print(current_tender)
+
+    logger.info(
+        f"{tender_folder_name} [{source_id}]: "
+        f"{len(documents)} document(s) stored, "
+        f"title={current_tender.get('title')!r}"
+    )
+
+
+
+def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determine_relevance):
+    """
+    Store each tender's attachments, AI-process it and upsert it to BigQuery,
+    PIPELINE_WORKERS tenders at a time. Each tender has its own folder and the
+    Gemini / BigQuery / Storage clients are safe to share between threads.
+
+    Returns how many tenders raised an error nothing else handles. One bad
+    tender is logged and the rest carry on; the caller reports the count."""
+    total = len(tender_folders)
+    workers = min(_worker_count(), total)
+
+    def run_one(position, name):
+        try:
+            _process_one_tender(position, total, name, temp_dir, scraped,
+                                process_tender, determine_relevance)
+            return 0
+        except Exception:
+            logger.exception(f"Unexpected error while processing {name}; carrying on with the rest")
+            return 1
+
+    if workers <= 1:
+        return sum(run_one(position, name)
+                   for position, name in enumerate(tender_folders, start=1))
+
+    logger.info(f"Processing {total} tender(s), {workers} at a time")
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="tender") as pool:
+        results = pool.map(run_one, range(1, total + 1), tender_folders)
+        return sum(results)
+
+
+def _free_memory():
+    """
+    Give back what the portal just finished with: collect garbage, then ask
+    glibc to return freed memory to the OS (Python alone often doesn't).
+    """
+    gc.collect()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except (OSError, AttributeError):
+        pass  # not glibc (macOS, musl): nothing more to do
 
 def main():
     if "--local" in sys.argv[1:]:
@@ -383,7 +611,13 @@ def main():
 
     logger.info("Starting Daily Tender Pipeline...")
 
-    # 1. Spin up a temporary ephemeral directory in container memory
+    failures = []
+    health_records = []
+    summary_rows = []
+    total_tenders = 0
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    # Spin up a temporary ephemeral directory in container memory
     with tempfile.TemporaryDirectory() as temp_dir:
         logger.info(f"Created temporary working directory: {temp_dir}")
 
@@ -393,134 +627,70 @@ def main():
         process_tender = _load_process_tender(temp_dir)
         determine_relevance = _load_determine_relevance()
 
-        # 2. Run the Web Scrapers
-        # We pass the temp_dir so they download HTML metadata and PDFs directly
-        # into RAM
-        _stage(1, 4, "SCRAPE every portal")
-        scraped, failures = run_scrapers(temp_dir, SCRAPE_LIMIT_CLOUD)
-
-        tender_folders = sorted(
-            name for name in os.listdir(temp_dir)
-            if os.path.isdir(os.path.join(temp_dir, name))
-        )
-        if not tender_folders:
-            logger.error("No tenders were scraped. Nothing to process.")
-            sys.exit(1)
-
-        # 3. Run the Document Scraper
-        # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
-        _stage(2, 4, "EXTRACT text from attachments")
-        logger.info("📄 Executing Document Scraper...")
-        try:
-            run_doc_scraper(temp_dir)
-        except Exception as e:
-            # Not fatal: tenders still have their page text, so the AI stage can
-            # work from that alone, and the attachments are still worth storing.
-            logger.error(f"Document scraper failed: {e}")
-
-        # 4. Store attachments, then hand each tender to AI processing
-        _stage(3, 4, f"STORE attachments, AI-process, upsert ({len(tender_folders)} tender(s))")
-        logger.info("🤖 Preparing data for AI Processing...")
-
-        for position, tender_folder_name in enumerate(tender_folders, start=1):
-            tender_path = os.path.join(temp_dir, tender_folder_name)
-            source_id, attachments, source_url = scraped.get(
-                tender_folder_name, (UNKNOWN_SOURCE_ID, None, None)
+        # One portal at a time: scrape it, extract text, store + AI-process +
+        # upsert its tenders, then clear its folders before the next portal.
+        # Everything lives in RAM, so this keeps the peak at the largest single
+        # portal instead of every portal at once -- and the portals already
+        # finished are in BigQuery if a later one dies.
+        for source_id, scrape in SCRAPERS:
+            # 1. Run the web scraper. It downloads the tender page text and
+            # attachments into temp_dir.
+            _stage(1, 4, f"SCRAPE {source_id}")
+            scraped, failure, health_record, summary_row = _scrape_one(
+                source_id, scrape, temp_dir, SCRAPE_LIMIT_CLOUD, True, now_iso
             )
-            logger.info(
-                f"---- tender {position}/{len(tender_folders)}: "
-                f"{tender_folder_name}  [{source_id.upper()}] ----"
+            _kill_stray_browsers()
+            if failure:
+                failures.append(failure)
+            health_records.append(health_record)
+            summary_rows.append(summary_row)
+            # Published after every portal, not once at the end, so the health
+            # table is current while the long processing stages run.
+            publish_health_status_to_gcs(
+                health_records, bucket_name="tenderai-dev-documents"
             )
 
-            # 4a. Copy the originals into Cloud Storage and drop the local
-            # copies. This runs before AI processing for two reasons: the
-            # files are gone the moment this block exits, and freeing each
-            # one as we go keeps a large attachment from exhausting the
-            # job's memory. process_tender only reads the .txt files, so
-            # removing the originals costs it nothing.
-            documents = attachment_store.upload_tender_attachments(
-                tender_path,
-                source_id=source_id,
-                tender_ref=tender_folder_name,
-                attachments=attachments,
-            )
+            tender_folders = sorted(_folders_in(temp_dir))
+            if not tender_folders:
+                logger.warning(f"{source_id}: no tenders were scraped. Nothing to process.")
+                continue
 
-            # 4b. Run tender processing on current tender
-            logger.info(f"⚡ Processing tender: {tender_folder_name}...")
-            current_tender = None
             try:
-                current_tender = process_tender(tender_path)
-                if current_tender is not None:
-                    current_tender["source_id"] = source_id
-                    source_url = common.read_source_url(tender_path) or source_url
-                    if source_url:
-                        current_tender["source_url"] = source_url
-                    # The scraper's own reference (the folder name), never Gemini's guess:
-                    # the model's value changed between runs and produced duplicate rows.
-                    current_tender["source_reference_id"] = tender_folder_name
-                    current_tender["documents"] = _merge_document_records(
-                        documents, current_tender.get("documents") or []
+                # 2. Run the Document Scraper
+                # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
+                _stage(2, 4, f"EXTRACT text from attachments ({source_id})")
+                logger.info("📄 Executing Document Scraper...")
+                try:
+                    run_doc_scraper(temp_dir)
+                except Exception as e:
+                    # Not fatal: tenders still have their page text, so the AI stage can
+                    # work from that alone, and the attachments are still worth storing.
+                    logger.error(f"Document scraper failed: {e}")
+
+                # 3. Store attachments, then hand each tender to AI processing
+                _stage(3, 4, f"STORE attachments, AI-process, upsert "
+                             f"{source_id} ({len(tender_folders)} tender(s))")
+                logger.info("🤖 Preparing data for AI Processing...")
+                errors = _process_tenders(
+                    temp_dir, tender_folders, scraped, process_tender, determine_relevance
+                )
+                if errors:
+                    failures.append(
+                        (source_id, f"{errors} tender(s) hit an unexpected error while processing")
                     )
-            except Exception as e:
-                logger.error(f"Tender processing failed for {tender_folder_name}: {e}")
-                continue
+            finally:
+                for folder_name in tender_folders:
+                    shutil.rmtree(os.path.join(temp_dir, folder_name), ignore_errors=True)
+                _free_memory()
+                logger.info(f"{source_id}: cleared {len(tender_folders)} tender folder(s) "
+                            "from the working directory")
 
-            if current_tender is None:
-                logger.warning(f"Tender processing returned None for {tender_folder_name}, skipping.")
-                continue
+            total_tenders += len(tender_folders)
 
-            # 4c. Score the tender against the focus area / work type taxonomies.
-            # The enriched record (processed fields + focus_areas/work_types/fit/
-            # fit_reason) is what gets upserted below. Unlike a processing
-            # failure, a scoring failure doesn't drop the tender: it still goes
-            # to BigQuery, just with the relevance fields left null.
-            logger.info(f"🎯 Determining relevance for {tender_folder_name}...")
-            try:
-                current_tender = determine_relevance(current_tender)
-                logger.info(
-                    f"Fit score for {tender_folder_name}: {current_tender.get('fit')} "
-                    f"(focus_areas={current_tender.get('focus_areas')}, "
-                    f"work_types={current_tender.get('work_types')})"
-                )
-            except Exception as e:
-                logger.error(f"Relevance determination failed for {tender_folder_name}: {e}")
-
-            # todo generate embeddings
-            logger.info(f"Generating Gemini Embedding 🔍 for {tender_folder_name}...")
-
-            # combine fields that we vectorise
-            title = current_tender.get("title") or ""
-            summary = current_tender.get("description") or ""
-
-            embed = f"Title: {title}. Summary: {summary}".strip()
-
-            # assign embedded information to current tender
-            current_tender["embedding"] = generate_embedding(embed)
-
-            # Try to upload to BigQuery
-            logger.info("Uploading processed tender to BigQuery...")
-            try:
-                result = upsert_tender(bq_client, current_tender)
-                logger.info(
-                    f"BigQuery upsert result for {tender_folder_name}: "
-                    f"{result['action']} (id={result['tender_id']})"
-                )
-            except Exception as e:
-                logger.error(f"Failed to upsert to BigQuery: {e}")
-                continue
-
-            # Deliberately not printing `current_tender` in full: its
-            # documents carry the entire extracted text of every attachment,
-            # which is megabytes of Cloud Logging per run. Set
-            # PIPELINE_DEBUG=on when you actually need to eyeball it.
-            if os.environ.get("PIPELINE_DEBUG", "off").lower() in {"on", "true", "1"}:
-                print(current_tender)
-
-            logger.info(
-                f"{tender_folder_name} [{source_id}]: "
-                f"{len(documents)} document(s) stored, "
-                f"title={current_tender.get('title')!r}"
-            )
+        reporting.log_run_summary(summary_rows, logger)
+        if not total_tenders:
+            logger.error("No tenders were scraped. Nothing was processed.")
+            sys.exit(1)
 
     # Once the 'with' block ends, Python permanently deletes the temp_dir and all files inside it.
     _stage(4, 4, "FINISH")
