@@ -229,3 +229,18 @@ export async function getLocations(): Promise<string[]> {
     return [];
   }
 }
+
+export interface ScraperHealthRecord {
+  website: string;
+  url: string;
+  last_run: string;
+  status: string;
+  status_color: 'success' | 'error' | 'warning' | 'default';
+  message: string;
+}
+
+export async function getScraperHealth(): Promise<ScraperHealthRecord[]> {
+  const { data } = await http.get<ScraperHealthRecord[]>(`${API_BASE_URL}/health/scrapers`);
+  return data;
+}
+

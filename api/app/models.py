@@ -241,3 +241,13 @@ class TenderOut(BaseModel):
 
 class HealthOut(BaseModel):
     status: str
+
+
+class ScraperHealthRecord(BaseModel):
+    website: str
+    url: str = ""
+    last_run: str = ""
+    status: str = "Unknown"
+    status_color: str = "default"
+    message: str = ""
+

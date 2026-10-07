@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 
     google_cloud_project: str = "tenderai-dev"
     bigquery_dataset: str = "TenderAI"
-    allowed_origins: str
+    allowed_origins: str = "http://localhost:5173"
     use_mock_data: bool = False
 
     # Shared runtime tender processor configuration. These are intentionally
@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     # bucket or object name belongs in application code.
     runtime_config_bucket: str = ""
     runtime_config_object: str = ""
+
+    # Scraper health diagnostics storage
+    scraper_health_bucket: str = "tenderai-dev-documents"
+    scraper_health_object: str = "scraper_health.json"
 
     # Entra ID SSO. Auto-provisioning trusts the tenant boundary enforced by
     # the single-tenant Entra app registration; the domain list is optional
