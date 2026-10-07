@@ -16,6 +16,7 @@ router = APIRouter()
 # values 422 automatically instead of silently matching nothing.
 StatusFilter = Literal["open", "closed", "awarded", "unknown"]
 CategoryFilter = Literal["tender", "rfq", "eoi", "grant"]
+SearchMode = Literal["keyword", "semantic"]
 
 # Fixture data for USE_MOCK_DATA=true, shaped like ingestion/sample_tender.json
 # plus the bookkeeping fields upsert_tender() would normally compute.
@@ -146,9 +147,9 @@ def _matches_mock(
             return False
 
     if q:
-        needle = q.lower()
-        haystack = f"{row.get('title') or ''} {row.get('description') or ''}".lower()
-        if needle not in haystack:
+        tokens = q.strip().lower().split()
+        haystack = f"{row.get('title') or ''} {row.get('description') or ''} {row.get('summary_headline') or ''} {row.get('issuing_agency') or ''}".lower()
+        if not all(token in haystack for token in tokens):
             return False
     return True
 
@@ -171,6 +172,10 @@ def get_tenders(
         description="Year of closing or publish date",
     ),
     q: str | None = Query(default=None, min_length=1, max_length=200, description="Keyword search"),
+    mode: SearchMode = Query(
+        default="keyword",
+        description="Search mode: 'keyword' (fast token search) or 'semantic' (AI vector search)",
+    ),
 ) -> list[TenderOut]:
     if settings.use_mock_data:
         matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
@@ -183,6 +188,7 @@ def get_tenders(
         status=status, category=category, source_id=source_id, 
         location=location, min_value=min_value, max_value=max_value, 
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
+        mode=mode,
     )
     return [TenderOut(**row) for row in rows]
 @router.get("/documents/download")

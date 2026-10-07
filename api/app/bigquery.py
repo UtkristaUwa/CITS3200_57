@@ -103,6 +103,7 @@ def list_tenders(
     closing_after: date | None = None,
     year: str | None = None,
     q: str | None = None,
+    mode: str = "keyword",
 ) -> list[dict]:
     """
     SELECT from `tenders` with optional filters. All filter values are bound
@@ -116,7 +117,8 @@ def list_tenders(
     ]
 
     clean_q = (q or "").strip()
-    col_prefix = "base." if clean_q else ""
+    is_semantic = bool(clean_q and mode == "semantic")
+    col_prefix = "base." if is_semantic else ""
 
     if status:
         conditions.append(f"{col_prefix}status = @status")
@@ -155,9 +157,22 @@ def list_tenders(
         )
         params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
+    # Future query syntax parser (AND/OR/NOT/field:term/wildcard) slots in here.
+    if clean_q and not is_semantic:
+        tokens = clean_q.split()
+        for idx, token in enumerate(tokens):
+            param_name = f"kw_{idx}"
+            conditions.append(
+                f"(LOWER(title) LIKE @{param_name} "
+                f"OR LOWER(description) LIKE @{param_name} "
+                f"OR LOWER(summary_headline) LIKE @{param_name} "
+                f"OR LOWER(issuing_agency) LIKE @{param_name})"
+            )
+            params.append(bigquery.ScalarQueryParameter(param_name, "STRING", f"%{token.lower()}%"))
+
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
-    if clean_q:
+    if is_semantic:
         # Case A: Semantic Vector Search
         query_vector = generate_query_embedding(clean_q)
         params.append(bigquery.ArrayQueryParameter("query_vector", "FLOAT64", query_vector))
@@ -183,7 +198,7 @@ def list_tenders(
             LIMIT @limit OFFSET @offset
         """
     else:
-        # Case B: Standard chronological browse
+        # Case B: Standard chronological browse or fast keyword search
         select_cols = ", ".join(ALL_COLUMNS)
         query = f"""
             SELECT {select_cols}
