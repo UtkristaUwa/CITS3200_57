@@ -35,6 +35,18 @@ export default function TendersPage() {
     setExpandedId((prev) => (prev === tenderId ? null : tenderId));
   
   const filterProps = useTenderFilters();
+  const [debouncedQuery, setDebouncedQuery] = useState(filterProps.searchQuery);
+
+  useEffect(() => {
+    if (!filterProps.searchQuery) {
+      setDebouncedQuery('');
+      return;
+    }
+    const handler = setTimeout(() => {
+      setDebouncedQuery(filterProps.searchQuery);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [filterProps.searchQuery]);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,7 +55,8 @@ export default function TendersPage() {
     
     getTenders({ 
       limit: 50,
-      q: filterProps.searchQuery || undefined,
+      q: debouncedQuery || undefined,
+      mode: filterProps.advancedSearch ? 'semantic' : 'keyword',
       status: filterProps.status || undefined,
       category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
@@ -63,9 +76,9 @@ export default function TendersPage() {
       
     return () => { cancelled = true; };
   }, [
-    filterProps.searchQuery, filterProps.status, filterProps.category, 
-    filterProps.jurisdiction, filterProps.year, filterProps.minDate,
-    filterProps.maxDate
+    debouncedQuery, filterProps.advancedSearch, filterProps.status, 
+    filterProps.category, filterProps.jurisdiction, filterProps.year, 
+    filterProps.minDate, filterProps.maxDate
   ]);
 
   const sortedTenders = [...tenders].sort(
