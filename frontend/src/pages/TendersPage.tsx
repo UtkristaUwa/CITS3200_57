@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Container, CircularProgress, Alert } from '@mui/material';
+import { Box, Container, CircularProgress, Alert, Button } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getTenders, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard } from '../components/TenderCard';
@@ -26,6 +27,7 @@ export default function TendersPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -52,11 +54,14 @@ export default function TendersPage() {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setWarning(null);
     
+    const mode = filterProps.advancedSearch ? 'semantic' : 'keyword';
+
     getTenders({ 
       limit: 50,
       q: debouncedQuery || undefined,
-      mode: filterProps.advancedSearch ? 'semantic' : 'keyword',
+      mode,
       status: filterProps.status || undefined,
       category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
@@ -67,8 +72,32 @@ export default function TendersPage() {
       .then((data) => {
         if (!cancelled) setTenders(data);
       })
-      .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load tenders.');
+      .catch(async (err: unknown) => {
+        if (cancelled) return;
+        if (mode === 'semantic') {
+          // AI search failed — notify user and fallback to fast keyword search
+          setWarning('AI Semantic Search encountered an issue. Displaying fast keyword search results instead.');
+          try {
+            const fallbackData = await getTenders({
+              limit: 50,
+              q: debouncedQuery || undefined,
+              mode: 'keyword',
+              status: filterProps.status || undefined,
+              category: filterProps.category || undefined,
+              location: filterProps.jurisdiction || undefined,
+              year: filterProps.year || undefined,
+              closing_after: filterProps.minDate || undefined,
+              closing_before: filterProps.maxDate || undefined,
+            });
+            if (!cancelled) setTenders(fallbackData);
+          } catch (fallbackErr: unknown) {
+            if (!cancelled) {
+              setError(fallbackErr instanceof Error ? fallbackErr.message : 'Failed to load tenders.');
+            }
+          }
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to load tenders.');
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -97,10 +126,30 @@ export default function TendersPage() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
         )}
 
+        {!isDataLoading && warning && <Alert severity="warning" sx={{ mb: 2 }}>{warning}</Alert>}
         {!isDataLoading && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
         {!isDataLoading && !error && sortedTenders.length === 0 && (
-          <Alert severity="info">No tenders match your current filters.</Alert>
+          <Alert
+            severity="info"
+            action={
+              debouncedQuery && !filterProps.advancedSearch ? (
+                <Button
+                  color="inherit"
+                  size="small"
+                  startIcon={<AutoAwesomeIcon />}
+                  onClick={() => filterProps.setAdvancedSearch(true)}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Try Advanced
+                </Button>
+              ) : undefined
+            }
+          >
+            {debouncedQuery && !filterProps.advancedSearch
+              ? `No exact keyword matches found for "${debouncedQuery}". Try Advanced Search for AI conceptual matching.`
+              : 'No tenders match your current filters.'}
+          </Alert>
         )}
 
         {!isDataLoading && !error && sortedTenders.map((tender) => (
