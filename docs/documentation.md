@@ -1,4 +1,4 @@
-#TenderAI Documentation
+# TenderAI Documentation
 
 UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.com/UtkristaUwa/CITS3200_57)
 
