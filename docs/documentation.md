@@ -153,13 +153,16 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 ```mermaid
 flowchart TD
     tmp["Create temp directory"] --> scrape["Run each scraper"]
-    scrape --> extract["Extract text from attachments"]
+    scrape --> medrian["Medrian redline processing"]
+    medrian --> extract["Extract text from attachments"]
     extract --> each["For each tender folder"]
     each --> upload["Upload originals to Cloud Storage"]
     upload --> gemini["Gemini summary + fields"]
     gemini --> upsert["Upsert into BigQuery"]
     upsert --> each
     upsert --> done["Delete temp directory, exit"]
+
+
 ```
 
 ### Step by step
