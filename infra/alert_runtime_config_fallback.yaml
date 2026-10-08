@@ -1,0 +1,66 @@
+# infra/alert_runtime_config_fallback.yaml
+#
+# Alerts when the batch job runs on stale prompts.
+#
+# prepare_runtime_config() downloads tender_processor.cfg from GCS at job
+# startup. If that read or its validation fails, _fallback() logs a warning and
+# the job carries on using the copy baked into its image — the run SUCCEEDS and
+# produces plausible-looking output, so without this alert the only evidence
+# that every tender was classified with out-of-date prompts is one warning line
+# in Cloud Logging that nobody is reading.
+#
+# This should fire approximately never. If it fires, the admin page's prompt
+# edits have silently stopped reaching the pipeline.
+#
+# Create (replace the channel ID first):
+#   gcloud alpha monitoring policies create \
+#     --policy-from-file=infra/alert_runtime_config_fallback.yaml
+
+displayName: "Tender pipeline fell back to stale config"
+combiner: OR
+enabled: true
+
+documentation:
+  mimeType: text/markdown
+  content: |
+    The `tender-batch-job` could not use the shared `tender_processor.cfg` in
+    Cloud Storage and fell back to the copy baked into its container image.
+    Prompt changes made in the admin config page are NOT being applied.
+
+    Check, in order:
+
+    1. Does the object still exist and parse?
+       `bash infra/sync_runtime_config.sh diff`
+    2. Does the job still have read access? Its service account needs
+       `roles/storage.objectViewer` or better on the runtime config bucket.
+    3. Are `RUNTIME_CONFIG_BUCKET` / `RUNTIME_CONFIG_OBJECT` still set on the
+       job? `gcloud run jobs describe tender-batch-job --region australia-southeast1`
+
+    The log entry itself names the reason — missing object, bad CFG syntax, a
+    missing required section, or a permissions error.
+
+    If a bad admin edit broke validation, roll back to the previous generation:
+      `gcloud storage ls -a gs://tenderai-dev-runtime-config/runtime/tender_processor.cfg`
+      `gcloud storage cp gs://.../tender_processor.cfg#<GENERATION> gs://.../tender_processor.cfg`
+
+conditions:
+  - displayName: "Runtime config fallback warning logged"
+    conditionMatchedLog:
+      filter: |
+        resource.type="cloud_run_job"
+        resource.labels.job_name="tender-batch-job"
+        severity>=WARNING
+        "using repository fallback"
+
+# A log-match condition is REQUIRED to declare a notification rate limit, and
+# policy creation is rejected without one. One mail an hour is plenty: the
+# condition can only trigger once per job run.
+alertStrategy:
+  notificationRateLimit:
+    period: 3600s
+  autoClose: 604800s
+
+# Replace with the channel from:
+#   gcloud beta monitoring channels list --format="value(name,displayName)"
+notificationChannels:
+  - projects/tenderai-dev/notificationChannels/REPLACE_WITH_CHANNEL_ID
