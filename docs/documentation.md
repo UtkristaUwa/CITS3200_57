@@ -159,8 +159,8 @@ flowchart TD
     each --> upload["Upload originals to Cloud Storage"]
     upload --> gemini["Gemini summary + fields"]
     gemini --> upsert["Upsert into BigQuery"]
-    upsert --> each
-    upsert --> done["Delete temp directory, exit"]
+    upsert --> done["Delete temp directory"]
+    done --> scrape["Run each scraper, exit"]
 
 
 ```
