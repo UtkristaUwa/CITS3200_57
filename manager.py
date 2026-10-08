@@ -123,8 +123,8 @@ logger = logging.getLogger("Manager")
 # httpx logs every request at INFO, which buries the [SITE] lines and prints
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-SCRAPE_LIMIT_CLOUD = 0 
-SCRAPE_LIMIT_LOCAL = 2
+SCRAPE_LIMIT_CLOUD = 1
+SCRAPE_LIMIT_LOCAL = 1
 LOCAL_OUTPUT_DIR = "tenders_data"
 
 # Every scraper the daily run should execute, paired with the source_id that
