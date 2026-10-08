@@ -24,7 +24,7 @@ export default function FavoritesPage() {
     setLoading(true);
     getTenders({
       limit: 50,
-      q: filterProps.searchQuery || undefined,
+      q: filterProps.debouncedSearchQuery || undefined,
       status: filterProps.status || undefined,
       location: filterProps.jurisdiction || undefined,
       year: filterProps.year || undefined,
@@ -42,7 +42,7 @@ export default function FavoritesPage() {
       });
     return () => { cancelled = true; };
   }, [
-    filterProps.searchQuery, filterProps.status, filterProps.jurisdiction,
+    filterProps.debouncedSearchQuery, filterProps.status, filterProps.jurisdiction,
     filterProps.year, filterProps.minDate,
     filterProps.maxDate
   ]);
