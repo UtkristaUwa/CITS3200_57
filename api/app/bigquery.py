@@ -164,6 +164,7 @@ def list_tenders(
             param_name = f"kw_{idx}"
             conditions.append(
                 f"(LOWER(title) LIKE @{param_name} "
+                f"OR LOWER(source_reference_id) LIKE @{param_name} "
                 f"OR LOWER(description) LIKE @{param_name} "
                 f"OR LOWER(summary_headline) LIKE @{param_name} "
                 f"OR LOWER(issuing_agency) LIKE @{param_name})"
@@ -198,13 +199,26 @@ def list_tenders(
             LIMIT @limit OFFSET @offset
         """
     else:
-        # Case B: Standard chronological browse or fast keyword search
+        # Case B: Standard chronological browse or fast keyword search with relevance ranking
         select_cols = ", ".join(ALL_COLUMNS)
+        if clean_q:
+            order_clause = """
+                ORDER BY
+                    CASE
+                        WHEN LOWER(title) LIKE @kw_0 OR LOWER(source_reference_id) LIKE @kw_0 THEN 0
+                        WHEN LOWER(summary_headline) LIKE @kw_0 THEN 1
+                        ELSE 2
+                    END ASC,
+                    first_seen_at DESC
+            """
+        else:
+            order_clause = "ORDER BY first_seen_at DESC"
+
         query = f"""
             SELECT {select_cols}
             FROM `{settings.tenders_table}`
             {where_clause}
-            ORDER BY first_seen_at DESC
+            {order_clause}
             LIMIT @limit OFFSET @offset
         """
 

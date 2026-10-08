@@ -148,7 +148,7 @@ def _matches_mock(
 
     if q:
         tokens = q.strip().lower().split()
-        haystack = f"{row.get('title') or ''} {row.get('description') or ''} {row.get('summary_headline') or ''} {row.get('issuing_agency') or ''}".lower()
+        haystack = f"{row.get('title') or ''} {row.get('source_reference_id') or ''} {row.get('description') or ''} {row.get('summary_headline') or ''} {row.get('issuing_agency') or ''}".lower()
         if not all(token in haystack for token in tokens):
             return False
     return True
