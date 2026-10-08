@@ -1,6 +1,7 @@
 #File holding our helper functions that are used across all scrapers. Also includes the status error codes for failures.
 
 import logging
+import multiprocessing
 import os
 import re
 import time
@@ -270,13 +271,20 @@ def extract_xlsx(file_path: str) -> str:
         parts = []
         for sheet_name in wb.sheetnames:
             ws = wb[sheet_name]
+            # Some files declare a sheet size of A1:XFD1048576 (stray
+            # formatting), which makes every row come back 16,384 cells wide.
+            # Ignoring the declared size reads only the cells actually stored.
+            ws.reset_dimensions()
             sheet_lines = [f"## Sheet: {sheet_name}"]
             for row in ws.iter_rows(values_only=True):
                 cells = ["" if cell is None else str(cell) for cell in row]
+                while cells and not cells[-1].strip():  # drop trailing empty cells
+                    cells.pop()
                 if any(cell.strip() for cell in cells):  # skip fully-empty rows
                     sheet_lines.append("\t".join(cells))
             if len(sheet_lines) > 1:  # only keep sheets that had real content
                 parts.append("\n".join(sheet_lines))
+        wb.close()
         return "\n\n".join(parts)
     except Exception as e:
         raise ExtractionError(f"XLSX extraction failed on {file_path}: {e}") from e
@@ -360,6 +368,58 @@ EXTRACTORS = {
     ".txt": extract_plain_text,
 }
 
+# One unreadable file must not stall a whole night's run: each extraction gets
+# this long, and is stopped (and reported as a failure) if it takes longer.
+EXTRACTION_TIMEOUT_SECONDS = 300
+
+logger = logging.getLogger("scraper.common")
+
+
+def _extract_in_child(extractor, path, conn):
+    try:
+        conn.send(("ok", extractor(path)))
+    except Exception as e:  # reported to the parent, which raises ExtractionError
+        conn.send(("error", f"{type(e).__name__}: {e}"))
+    finally:
+        conn.close()
+
+
+def run_extractor(extractor, path: str, timeout: float | None = None) -> str:
+    """
+    Run one text extractor with a time limit. The work happens in a separate
+    process so a stuck file can actually be killed. Raises ExtractionError if
+    the extractor fails or runs out of time. Where processes can't be forked
+    (Windows), the extractor runs in-process with no limit.
+    """
+    timeout = EXTRACTION_TIMEOUT_SECONDS if timeout is None else timeout
+    if "fork" not in multiprocessing.get_all_start_methods():
+        return extractor(path)
+    ctx = multiprocessing.get_context("fork")
+    parent_conn, child_conn = ctx.Pipe(duplex=False)
+    proc = ctx.Process(target=_extract_in_child, args=(extractor, path, child_conn), daemon=True)
+    proc.start()
+    child_conn.close()
+    try:
+        if not parent_conn.poll(timeout):
+            raise ExtractionError(
+                f"timed out after {timeout:.0f}s on {os.path.basename(path)}; skipped its text"
+            )
+        try:
+            status, payload = parent_conn.recv()
+        except EOFError:
+            raise ExtractionError(
+                f"extractor died without a result on {os.path.basename(path)}"
+            ) from None
+    finally:
+        if proc.is_alive():
+            proc.kill()
+        proc.join()
+        parent_conn.close()
+    if status == "error":
+        raise ExtractionError(payload)
+    return payload
+
+
 def extract_attachment_text(folder: str, file_name: str) -> bool:
     """
     Write <file_name>.txt next to a saved attachment, when we have an extractor
@@ -369,11 +429,14 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
     extractor = EXTRACTORS.get(os.path.splitext(file_name)[1].lower())
     if extractor is None:
         return True
+    logger.info(f"extracting text from {file_name}")
     try:
-        save_extracted_text(folder, file_name, extractor(os.path.join(folder, file_name)))
+        text = run_extractor(extractor, os.path.join(folder, file_name))
+        save_extracted_text(folder, file_name, text)
         return True
     except ExtractionError as e:
         print(f"EXTRACTION FAILED: {e}")
+        logger.warning(f"text extraction failed for {file_name}: {e}")
         return False
 
 # A request that times out is made again, this many attempts in all, waiting a

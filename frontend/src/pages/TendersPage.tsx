@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Container, CircularProgress, Alert, Button } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { getTenders, type Tender } from '../lib/api';
+import { getTenders, isRequestCancelled, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
@@ -37,21 +37,10 @@ export default function TendersPage() {
     setExpandedId((prev) => (prev === tenderId ? null : tenderId));
   
   const filterProps = useTenderFilters();
-  const [debouncedQuery, setDebouncedQuery] = useState(filterProps.searchQuery);
-
-  useEffect(() => {
-    if (!filterProps.searchQuery) {
-      setDebouncedQuery('');
-      return;
-    }
-    const handler = setTimeout(() => {
-      setDebouncedQuery(filterProps.searchQuery);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [filterProps.searchQuery]);
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     setWarning(null);
@@ -60,38 +49,36 @@ export default function TendersPage() {
 
     getTenders({ 
       limit: 50,
-      q: debouncedQuery || undefined,
+      q: filterProps.debouncedSearchQuery || undefined,
       mode,
       status: filterProps.status || undefined,
-      category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
-    })
+    }, controller.signal)
       .then((data) => {
         if (!cancelled) setTenders(data);
       })
       .catch(async (err: unknown) => {
-        if (cancelled) return;
+        if (cancelled || isRequestCancelled(err)) return;
         if (mode === 'semantic') {
           // AI search failed — notify user and fallback to fast keyword search
           setWarning('AI Semantic Search encountered an issue. Displaying fast keyword search results instead.');
           try {
             const fallbackData = await getTenders({
               limit: 50,
-              q: debouncedQuery || undefined,
+              q: filterProps.debouncedSearchQuery || undefined,
               mode: 'keyword',
               status: filterProps.status || undefined,
-              category: filterProps.category || undefined,
               location: filterProps.jurisdiction || undefined,
               year: filterProps.year || undefined,
               closing_after: filterProps.minDate || undefined,
               closing_before: filterProps.maxDate || undefined,
-            });
+            }, controller.signal);
             if (!cancelled) setTenders(fallbackData);
           } catch (fallbackErr: unknown) {
-            if (!cancelled) {
+            if (!cancelled && !isRequestCancelled(fallbackErr)) {
               setError(fallbackErr instanceof Error ? fallbackErr.message : 'Failed to load tenders.');
             }
           }
@@ -103,11 +90,18 @@ export default function TendersPage() {
         if (!cancelled) setLoading(false);
       });
       
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [
-    debouncedQuery, filterProps.advancedSearch, filterProps.status, 
-    filterProps.category, filterProps.jurisdiction, filterProps.year, 
-    filterProps.minDate, filterProps.maxDate
+    filterProps.debouncedSearchQuery,
+    filterProps.advancedSearch,
+    filterProps.status,
+    filterProps.jurisdiction,
+    filterProps.year,
+    filterProps.minDate,
+    filterProps.maxDate,
   ]);
 
   const sortedTenders = [...tenders].sort(
@@ -133,7 +127,7 @@ export default function TendersPage() {
           <Alert
             severity="info"
             action={
-              debouncedQuery && !filterProps.advancedSearch ? (
+              filterProps.debouncedSearchQuery && !filterProps.advancedSearch ? (
                 <Button
                   color="inherit"
                   size="small"
@@ -146,8 +140,8 @@ export default function TendersPage() {
               ) : undefined
             }
           >
-            {debouncedQuery && !filterProps.advancedSearch
-              ? `No exact keyword matches found for "${debouncedQuery}". Try Advanced Search for AI conceptual matching.`
+            {filterProps.debouncedSearchQuery && !filterProps.advancedSearch
+              ? `No exact keyword matches found for "${filterProps.debouncedSearchQuery}". Try Advanced Search for AI conceptual matching.`
               : 'No tenders match your current filters.'}
           </Alert>
         )}

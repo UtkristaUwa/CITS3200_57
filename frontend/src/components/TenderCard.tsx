@@ -268,7 +268,6 @@ import {
               <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
               <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
               <Typography variant="body2"><strong>Location:</strong> {tender.location ?? 'Not specified'}</Typography>
-              <Typography variant="body2"><strong>Category:</strong> {tender.category ?? 'Not specified'}</Typography>
               <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
             </Box>
 
