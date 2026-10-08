@@ -45,7 +45,6 @@ export default function TendersPage() {
       limit: 50,
       q: filterProps.searchQuery || undefined,
       status: filterProps.status || undefined,
-      category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
@@ -63,8 +62,8 @@ export default function TendersPage() {
       
     return () => { cancelled = true; };
   }, [
-    filterProps.searchQuery, filterProps.status, filterProps.category, 
-    filterProps.jurisdiction, filterProps.year, filterProps.minDate,
+    filterProps.searchQuery, filterProps.status, filterProps.jurisdiction,
+    filterProps.year, filterProps.minDate,
     filterProps.maxDate
   ]);
 

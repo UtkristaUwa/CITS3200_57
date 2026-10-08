@@ -23,8 +23,6 @@ export interface TenderFilterBarProps {
   setJurisdiction: (val: string) => void;
   year: string;
   setYear: (val: string) => void;
-  category: string;
-  setCategory: (val: string) => void;
   status: string;
   setStatus: (val: string) => void;
   minDate: string;
@@ -130,7 +128,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))' },
               gap: 1.5,
             }}
           >
@@ -151,17 +149,6 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
                 <MenuItem value="2026">2026</MenuItem>
                 <MenuItem value="2025">2025</MenuItem>
                 <MenuItem value="2024">2024</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
-              <InputLabel>Category</InputLabel>
-              <Select value={props.category} label="Category" onChange={(e) => props.setCategory(e.target.value)}>
-                <MenuItem value=""><em>All</em></MenuItem>
-                <MenuItem value="tender">Tender</MenuItem>
-                <MenuItem value="rfq">RFQ</MenuItem>
-                <MenuItem value="eoi">EOI</MenuItem>
-                <MenuItem value="grant">Grant</MenuItem>
               </Select>
             </FormControl>
 
