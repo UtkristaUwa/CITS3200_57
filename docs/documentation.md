@@ -6,14 +6,14 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
 
 ## Team
 
-| Name                     | GitHub           | Main areas                                   |
-|--------------------------|------------------|----------------------------------------------|
-| Utkrista Sen             | UtkristaUwa, aki | API, Schema, GCP, Firebase, documentation    |
-| Sepehr Moghani Pilehroud | sepehrmoghani    | web_scrapers, attachment storage, API, tests |
-| Jinghao Hu               | jinghao163       | Frontend, Firestore rules                    |
-| Lucan McDonald           | PiesOnTues       | AI processing, Dockerfile                    |
-| Benjamin Gilmore         | bgilmore22       | error_scrapers, Cloud Functions, frontend    |
-| Radrados                 | Radrados         | Document extraction, GCP                     |
+| Name                     | GitHub           | Student ID  |
+|--------------------------|------------------|-------------|
+| Utkrista Sen             | UtkristaUwa,     | 24145884    |   
+| Sepehr Moghani Pilehroud | sepehrmoghani    | 23642415    |
+| Jinghao Hu               | jinghao163       | 24183532    |
+| Lucan McDonald           | PiesOnTues       | 24214099    |
+| Benjamin Gilmore         | bgilmore22       | 23706738    |
+| Radrados                 | Radrados         | 23423175    |
 
 ## Contents
 
