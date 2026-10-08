@@ -1,7 +1,8 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Box,
+  Button,
   Chip,
   CircularProgress,
   Link,
@@ -14,18 +15,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-
-interface ScraperHealthRecord {
-  website: string;
-  url: string;
-  last_run: string;
-  status: string;
-  status_color: 'success' | 'error' | 'warning' | 'default';
-  message: string;
-}
-
-const STATUS_JSON_URL =
-  'https://storage.googleapis.com/tenderai-dev-documents/scraper_health.json';
+import { getScraperHealth, type ScraperHealthRecord } from '../lib/api';
 
 export default function SystemHealthPage() {
   const [statuses, setStatuses] = useState<ScraperHealthRecord[]>([]);
@@ -36,15 +26,7 @@ export default function SystemHealthPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${STATUS_JSON_URL}?t=${Date.now()}`);
-      if (!res.ok) {
-        throw new Error(
-          res.status === 404
-            ? 'No scraper health data found yet. The pipeline has not run its initial execution.'
-            : `Failed to load status (${res.status} ${res.statusText})`
-        );
-      }
-      const data: ScraperHealthRecord[] = await res.json();
+      const data = await getScraperHealth();
       setStatuses(data);
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -78,14 +60,24 @@ export default function SystemHealthPage() {
           Latest scraper run status and error output for each configured website source.
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
-            Status legend:
-          </Typography>
-          <Chip label="Success" color="success" size="small" variant="outlined" />
-          <Chip label="Error" color="error" size="small" variant="outlined" />
-          <Chip label="Failed to download" color="warning" size="small" variant="outlined" />
-          <Chip label="Unknown" size="small" variant="outlined" />
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+              Status legend:
+            </Typography>
+            <Chip label="Success" color="success" size="small" variant="outlined" />
+            <Chip label="Error" color="error" size="small" variant="outlined" />
+            <Chip label="Failed to download" color="warning" size="small" variant="outlined" />
+            <Chip label="Unknown" size="small" variant="outlined" />
+          </Box>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={fetchHealthStatus}
+            disabled={loading}
+          >
+            Refresh
+          </Button>
         </Box>
 
         <TableContainer
