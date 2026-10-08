@@ -137,6 +137,11 @@ export interface TenderDocument {
   storage_url: string | null;
 }
 
+export interface TenderTag {
+  id: string;
+  label: string;
+}
+
 export interface Tender {
   tender_id: string;
   source_reference_id: string | null;
@@ -154,6 +159,8 @@ export interface Tender {
   location: string | null;
   description: string | null;
   summary_headline: string | null;
+  focus_areas?: TenderTag[] | null;
+  work_types?: TenderTag[] | null;
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
