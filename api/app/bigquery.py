@@ -89,6 +89,23 @@ def get_storage_client() -> gcs.Client:
     return gcs.Client(project=settings.google_cloud_project)
 
 
+def _build_select_columns(col_prefix: str = "") -> str:
+    """Build column projection, excluding extracted_text to reduce payload by ~98%."""
+    cols = []
+    for col in ALL_COLUMNS:
+        if col == "documents":
+            doc_ref = f"{col_prefix}documents" if col_prefix else "documents"
+            cols.append(
+                f"ARRAY(SELECT AS STRUCT d.document_id, d.file_name, d.file_type, "
+                f"CAST(NULL AS STRING) AS extracted_text, d.parsed_at, d.storage_uri "
+                f"FROM UNNEST({doc_ref}) d) AS documents"
+            )
+        else:
+            cols.append(f"{col_prefix}{col}")
+    return ", ".join(cols)
+
+
+
 def list_tenders(
     client: bigquery.Client,
     limit: int,
@@ -178,7 +195,7 @@ def list_tenders(
         query_vector = generate_query_embedding(clean_q)
         params.append(bigquery.ArrayQueryParameter("query_vector", "FLOAT64", query_vector))
 
-        select_cols = ", ".join([f"base.{col}" for col in ALL_COLUMNS])
+        select_cols = _build_select_columns("base.")
 
         # top_k should be comfortably large so post-filtering doesn't eliminate all rows
         top_k = max((limit + offset) * 5, 150)
@@ -200,7 +217,7 @@ def list_tenders(
         """
     else:
         # Case B: Standard chronological browse or fast keyword search with relevance ranking
-        select_cols = ", ".join(ALL_COLUMNS)
+        select_cols = _build_select_columns("")
         if clean_q:
             order_clause = """
                 ORDER BY
