@@ -178,10 +178,18 @@ export interface GetTendersParams {
   closing_before?: string;
 }
 
-export async function getTenders(params: GetTendersParams = {}): Promise<Tender[]> {
+export function isRequestCancelled(error: unknown): boolean {
+  return axios.isCancel(error);
+}
+
+export async function getTenders(
+  params: GetTendersParams = {},
+  signal?: AbortSignal,
+): Promise<Tender[]> {
   const url = TENDERS_ENDPOINT_URL;
   try {
     const { data } = await http.get<Tender[]>(url, {
+      signal,
       params: {
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
@@ -198,6 +206,7 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
     });
     return data;
   } catch (err) {
+    if (isRequestCancelled(err)) throw err;
     if (axios.isAxiosError(err) && err.response) {
       if (err.response.status === 401) {
         throw new Error('Your session has expired. Please sign in again.');
