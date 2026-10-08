@@ -2,246 +2,389 @@
 
 *Prepared by the UWA CITS3200 team (Group 57) for Social Ventures Australia · 8 October 2026*
 
-## About this manual
+This manual is for the person at SVA who owns TenderAI after the student team hands it over. Today that is Dr Ramon Wenzel. Parts A to E and G to J are for the owner and need only a web browser. Part F, Microsoft sign-in, is shared: F1 is done on SVA's side, and F2 to F4 by whoever maintains the code. How the system is built in detail lives in the code repository.
 
-This manual is for the person at SVA who owns TenderAI after the UWA CITS3200 team (Group 57) hands it over. Today that is Dr Ramon Wenzel. It covers what you are taking over, the steps you take to become the owner of the Google Cloud project, the checks to run afterwards, and what owning the system involves month to month.
+```
+ Every day, 5 am Perth time
+     │
+     ▼
+ Daily pipeline (Cloud Run job tender-batch-job)
+     │  signs in to 7 tender portals (logins kept in Secret Manager)
+     │  downloads each tender and its documents
+     │  Gemini summarises each tender and scores its relevance to SVA
+     │
+     ├──────────────▶ Cloud Storage  tenderai-dev-documents   original documents, health report
+     ├──────────────▶ BigQuery       TenderAI.tenders          the tender database
+     └── on error ──▶ Cloud Monitoring alert ──▶ email to the owner
 
-It is written for an owner, not a developer. Nothing here needs code or a terminal; every step is done in a web browser. How the system is built, and how to change it, is in the technical documentation in the code repository.
+ Staff member ──▶ Website (Firebase Hosting) ──▶ API tenderai-api ──▶ BigQuery, Cloud Storage
+                    │
+                    └─ sign-in: Firebase Auth (email + password, or Microsoft)
+                       users, admins, favourites: Firestore
+```
 
-## What you are taking over
+**Ownership model:** everything in the diagram lives in one Google Cloud project, `tenderai-dev`. Whoever holds the **Owner** role on that project controls the whole system. Billing, the code repository, the portal logins and Microsoft sign-in sit outside the project and each need their own handover.
 
-TenderAI is one Google Cloud project plus a few things that sit beside it. Almost everything lives inside the project, so becoming its Owner hands you most of the system in one step.
+---
+
+## Part A — What you are taking over
 
 | Item | What it is | Where your steps are |
 | --- | --- | --- |
-| Google Cloud project `tenderai-dev` | The container for the whole system. Everything below except the last three rows lives inside it, in Google's Sydney region | Taking ownership, steps 1 to 3 |
-| Billing | The account Google charges for the project's running costs. Today it is a team member's account | Steps 4 and 5 |
+| Google Cloud project `tenderai-dev` | The container for the whole system, in Google's Sydney region | Part C, steps 1 to 3 |
+| Billing | The account Google charges for the project's running costs. Today it is a team member's account | Part C, steps 4 and 5 |
 | Tender database | BigQuery dataset `TenderAI`. Holds every tender the system has collected | Comes with the project |
-| Document storage | Cloud Storage bucket `tenderai-dev-documents`. Holds the original tender attachments and the daily health report | Comes with the project |
-| Daily pipeline | A scheduled job, `tender-batch-job`, that collects and processes tenders at 5 am Perth time every day | Comes with the project |
-| Website and API | The website is on Firebase Hosting at `tenderai-dev-f0283.firebaseapp.com`. It talks to a backend service called `tenderai-api` | Step 7 |
-| User accounts | Firebase holds the list of users, who is an admin, and each person's favourites | Step 8 |
-| Failure alert emails | Google Cloud emails a named person when the daily pipeline reports an error. Today that is a team member | Step 9 |
-| Microsoft sign-in | An app registration in SVA's own Microsoft Entra tenant. Not switched on yet | Setting up Microsoft sign-in |
-| Tender portal logins | Usernames and passwords the pipeline uses to download documents from portals that need an account | Things outside Google Cloud |
-| Code repository on GitHub | The source code. Merging a change there publishes a new version of the website | Things outside Google Cloud |
+| Document storage | Cloud Storage bucket `tenderai-dev-documents`. Holds the original tender documents and the daily health report | Comes with the project |
+| Daily pipeline | Scheduled job `tender-batch-job`. Collects and processes tenders at 5 am Perth time | Comes with the project |
+| Website and API | Website on Firebase Hosting at `tenderai-dev-f0283.firebaseapp.com`, talking to the backend service `tenderai-api` | Part C, step 7 |
+| User accounts | Firebase holds the users, who is an admin, and each person's favourites | Part C, step 8 |
+| Failure alert emails | Google Cloud emails a named person when the daily run reports an error. Today that is a team member | Part D |
+| Microsoft sign-in | An app registration in SVA's own Microsoft Entra directory. Not switched on yet | Part F |
+| Tender portal logins | The usernames and passwords the pipeline uses on portals that need an account | Part G |
+| Code repository on GitHub | The source code. Merging a change publishes a new version of the website | Part G |
 
-## Before you start
+---
 
-Have these four things ready. The transfer itself then takes about 30 minutes and is easiest done on a call with the student team.
+## Part B — Before you start
 
-- **A Google account that SVA controls.** Ownership attaches to a Google account, so avoid a personal Gmail address. If SVA has Google Workspace or Cloud Identity, use that account. If not, create a Google account with your SVA email address (choose "Use my current email address" when signing up). Turn on 2-Step Verification.
-- **A second SVA person as backup owner.** If the only owner leaves or loses the account, the project is very hard to recover. Pick the person now and have them set up a Google account the same way.
-- **An SVA Cloud Billing account.** This is a payment profile in Google Cloud, with a card or invoicing, on which you are Billing Account Administrator. Create one at console.cloud.google.com/billing if SVA does not have one. Skip this if the project already bills to SVA.
-- **The exact email address of your Google account, sent to the team.** They use it to invite you. A typo or an alias means the invitation goes to an account you cannot sign in with.
+Have these ready. The transfer itself then takes about 30 minutes and is easiest on a call with the student team.
 
-## Taking ownership of the Google Cloud project
+| You need | Details |
+| --- | --- |
+| A Google account SVA controls | Ownership attaches to a Google account, so avoid a personal Gmail address. Use an SVA Google Workspace or Cloud Identity account if SVA has one. If not, create a Google account with your SVA email address ("Use my current email address" when signing up). Turn on 2-Step Verification |
+| A backup owner | A second SVA person with a Google account set up the same way. If the only owner leaves or loses the account, the project is very hard to recover |
+| An SVA Cloud Billing account | A payment profile in Google Cloud, with a card or invoicing, on which you are **Billing Account Administrator**. Create one at console.cloud.google.com/billing if SVA does not have one |
+| Your exact Google account email, sent to the team | They use it to invite you. A typo or an alias sends the invitation to an account you cannot sign in with |
 
-There is no "transfer" button in Google Cloud. Ownership moves in three stages: the team adds you as an Owner, you move billing and settings to SVA, and then you remove the team. Do the steps in this order, and do not remove the team (step 10) until billing is on SVA's account and the checks in "Checks after the transfer" pass.
+---
 
-1. **Send the team your Google account email.** The team then grants you the Owner role on `tenderai-dev`. This is their only action; everything below is yours.
+## Part C — Taking ownership of the Google Cloud project
+
+> There is no "transfer" button in Google Cloud. Ownership moves in three stages: the team adds you as an Owner, you move billing and settings to SVA, and then the team is removed. Do not remove the team (step 10) until billing is on SVA's account and the checks in Part E pass.
+
+1. **Send the team your Google account email.** The team grants you the **Owner** role on `tenderai-dev`. This is their only action; everything below is yours.
 2. **Accept the invitation.** Google emails you an invitation to join the project as Owner. Open it while signed in to the same Google account and accept. You are not an owner until you accept.
-   - No email after a few minutes? Check spam, then ask the team to confirm the address they entered.
-   - Still nothing? Sign in at console.cloud.google.com and look for the invitation in the notifications bell, or ask the team to send you the invitation link directly.
-3. **Confirm you are an Owner.** Go to console.cloud.google.com, choose `tenderai-dev` in the project picker at the top, then open **IAM & Admin > IAM**. Your email should be listed with the role **Owner**. New access can take a few minutes to show.
-4. **Move billing to SVA.** Open **Billing**, find `tenderai-dev` in the list of projects, open the three-dot **Actions** menu on its row, choose **Change billing**, select the SVA billing account and click **Set account**.
-   - You need to be Owner of the project (you now are) and Billing Account Administrator or User on the SVA billing account.
-   - Costs incurred before the switch stay on the old account. Costs after it go to SVA. Nothing switches this automatically: handing over ownership or removing the team leaves the project on the team member's billing account until you change it here.
-5. **Set a budget alert.** In **Billing > Budgets & alerts**, create a budget for `tenderai-dev` with a monthly amount you are comfortable with, and email alerts at 50%, 90% and 100%. A budget only warns you. It does not stop spending.
-6. **Add your backup owner.** In **IAM & Admin > IAM**, click **Grant access**, enter the second SVA person's Google account, choose the role **Owner** and click **Save**. They accept an invitation the same way you did.
-7. **Check Firebase.** Sign in at console.firebase.google.com with the same Google account. The `tenderai-dev` project should appear, and **Project settings > Users and permissions** should show you as Owner. Nothing to change here; this confirms the website, user accounts and sign-in came across with the project.
+    - No email after a few minutes? Check spam, then ask the team to confirm the address they entered.
+    - Still nothing? Sign in at console.cloud.google.com and look in the notifications bell, or ask the team to send you the invitation link directly.
+3. **Confirm you are an Owner.** At console.cloud.google.com choose `tenderai-dev` in the project picker, then open **IAM & Admin > IAM**. Your email should show the role **Owner**. New access can take a few minutes to appear.
+4. **Move billing to SVA.** Open **Billing**, find `tenderai-dev` in the projects list, open the three-dot **Actions** menu on its row, choose **Change billing**, select the SVA billing account and click **Set account**.
+    - You need to be Owner of the project and Billing Account Administrator or User on the SVA billing account.
+    - Costs before the switch stay on the old account; costs after it go to SVA.
+5. **Set a budget alert.** In **Billing > Budgets & alerts**, create a budget for `tenderai-dev` with a monthly amount you are comfortable with and email alerts at 50%, 90% and 100%. A budget warns you; it does not stop spending.
+6. **Add your backup owner.** In **IAM & Admin > IAM**, click **Grant access**, enter the backup's Google account, choose **Owner** and click **Save**. They accept an invitation the same way you did.
+7. **Check Firebase.** Sign in at console.firebase.google.com with the same Google account. `tenderai-dev` should appear, and **Project settings > Users and permissions** should show you as Owner. Nothing to change; this confirms the website, user accounts and sign-in came across.
 8. **Confirm your admin rights in TenderAI.** Your TenderAI account is already an admin. Sign in to the website and check that **Admin** appears in the top menu.
-   - Your backup needs to be an admin too. Once they have a TenderAI account, turn on the switch in the Role column on their row under **Admin > User management**.
-   - Do this before the team leaves. An admin cannot remove their own admin rights, which protects you from locking yourself out, but it also means only another admin can make new ones.
-9. **Move the failure alert emails to SVA.** When the daily pipeline finishes with an error, Google Cloud sends an email headed "Log alert fired" from the policy **Pipeline finished, Scraper error**. It currently goes to a team member. The full steps are in "Moving the failure alert emails", straight after this list.
-   - In the Google Cloud console open **Monitoring > Alerting**, then **Edit notification channels**. Add your email address, and your backup's, under Email.
-   - Open the policy **Pipeline finished, Scraper error**, click **Edit**, and under notifications select the SVA channels and remove the team member's.
-10. **Remove the team's access.** Only after the checks in "Checks after the transfer" pass, and only once the Billing page shows `tenderai-dev` on SVA's billing account (step 4). Removing a team member does not move billing: the project would keep charging their account, and they could no longer see it.
+    - Make your backup an admin too: once they have a TenderAI account, turn on the switch in the Role column on their row under **Admin > User management**.
+    - Do this before the team leaves. An admin cannot remove their own admin rights, so you cannot lock yourself out, but only an existing admin can make new ones.
+9. **Move the failure alert emails to SVA.** Follow Part D.
+10. **Remove the team's access.** Only after Part E passes and the Billing page shows `tenderai-dev` on SVA's billing account.
     - In **IAM & Admin > IAM**, for each student account click **Edit principal**, delete every role and click **Save**.
-    - In TenderAI, under **Admin > User management**, turn off the admin switch on every team account. The page has no remove or disable button, so ask the team to disable their own accounts in the Firebase console before they go.
-    - Leave any entry ending in `gserviceaccount.com` alone. These are not people; they are the identities the system itself runs under.
-    - If you have agreed a support period, keep one team member on a reduced role such as Editor until it ends, then remove them.
+    - In TenderAI, under **Admin > User management**, turn off the admin switch on every team account.
+    - The Admin pages have no remove or disable button. Before they go, the team disables their own accounts: in Firestore, set `status` to `disabled` on their `users/{uid}` record (the API refuses them from the next request), and disable the account under **Authentication > Users** in the Firebase console.
+    - Leave any entry ending in `gserviceaccount.com` alone. These are the identities the system itself runs under, not people.
+    - If you have agreed a support period, keep one team member on a reduced role such as **Editor** until it ends.
 
-## Moving the failure alert emails
+> **Billing does not move by itself.** Handing over ownership or removing the team leaves the project on the team member's billing account, still charging them, until step 4 is done. Once removed, they can no longer even see it.
 
-The failure email is a Google Cloud Monitoring alert policy called **Pipeline finished, Scraper error**. It emails everyone on its notification channels whenever the daily run ends with an error. Today that is one team member. Moving it to SVA takes about ten minutes.
+---
 
-1. **Open Alerting.** Go to console.cloud.google.com/monitoring/alerting and choose `tenderai-dev` in the project picker at the top.
-2. **Add the SVA email addresses.** Click **Edit notification channels**. In the **Email** section click **Add new**, enter your email address and a description such as "Ramon (SVA)", and click **Save**. Repeat for your backup.
-   - A shared mailbox or group address works too. Set it to accept mail from `alerting-noreply@google.com`.
-3. **Open the policy.** Go back to **Alerting** and click **See all policies**. Find **Pipeline finished, Scraper error**, click the three-dot **More options** menu on its row and choose **Edit**.
-4. **Change who it notifies.** Go to the **Notifications and name** section. In the notification channels list, tick the SVA channels you added and untick the team member's. Click **Save policy**.
-5. **Check for other policies.** While the policy list is open, look for any other policy that notifies a team member, and change it the same way.
-6. **Make sure the emails get through.** Add `alerting-noreply@google.com` to your Outlook safe senders. Outlook blocks parts of these emails from unknown senders, including the **View incident** button.
-7. **Tidy up after handover.** The console cannot delete a channel while a policy still uses it. Once no policy lists the team member's channel, open **Edit notification channels**, find it under Email and click **Delete**.
+## Part D — Moving the failure alert emails
 
-The next run that reports an error confirms it works: the email should reach the SVA address. Each email lists the error codes from 0 to 6. The **System / ingestion health** page shows which portal failed, so start there.
+The failure email is a Cloud Monitoring alert policy called **Pipeline finished, Scraper error**. It emails everyone on its notification channels whenever the daily run ends with an error. Today that is one team member. Moving it takes about ten minutes.
 
-## Checks after the transfer
+Monitoring → **Alerting** → **Edit notification channels** → **Email** → **Add new**.
 
-Run these after step 9, with the team still on the call. If any fail, the team can still fix them because their access has not been removed yet.
+| Field | Value |
+| --- | --- |
+| Email address | Your SVA address, then your backup's as a second channel |
+| Description | e.g. `Ramon (SVA)` |
 
-- [ ] **IAM & Admin > IAM** lists you and your backup as Owner.
-- [ ] **Billing** shows `tenderai-dev` linked to the SVA billing account, and the budget alert exists.
-- [ ] The alert policy **Pipeline finished, Scraper error** lists an SVA email address.
-- [ ] You can open the TenderAI website and sign in with your own account.
-- [ ] **Admin > User management** opens and shows you and your backup as admins.
-- [ ] **Admin > System / ingestion health** shows a Last Run from this morning for each website.
-- [ ] The Home page shows tenders, including some published in the last few days.
+> A shared mailbox or group address works too. Set it to accept mail from `alerting-noreply@google.com`.
 
-After step 10, run the last four checks again the next day. That confirms nothing was quietly depending on a student's account.
+Then:
 
-## Optional: moving the project into an SVA Google Cloud organisation
+1. **Open Alerting.** Go to console.cloud.google.com/monitoring/alerting and choose `tenderai-dev` in the project picker.
+2. **Add the channels** using the table above, and click **Save** for each.
+3. **Open the policy.** On **Alerting**, click **See all policies**, find **Pipeline finished, Scraper error**, open the three-dot **More options** menu on its row and choose **Edit**.
+4. **Change who it notifies.** In **Notifications and name**, tick the SVA channels and untick the team member's. Click **Save policy**.
+5. **Check for other policies** that notify a team member, and change them the same way.
+6. **Add `alerting-noreply@google.com` to your Outlook safe senders.** Outlook otherwise blocks parts of these emails, including the **View incident** button.
+7. **Tidy up after handover.** The console cannot delete a channel a policy still uses. Once no policy lists the team member's channel, delete it under **Edit notification channels**.
 
-This is not needed for the handover, and it is worth raising with SVA IT afterwards. A project created by individuals usually sits under "No organisation", which means it belongs to whichever personal accounts are listed as Owner. Moving it into an SVA organisation makes SVA itself the top-level owner.
+The next run that reports an error confirms it works. Each email lists the error codes 0 to 6; the **System / ingestion health** page shows which portal failed.
 
-**What you gain:** SVA IT can always recover access, even if every named owner leaves, and SVA's security policies apply to the project.
+---
 
-**What it needs:** SVA must have a Google Cloud organisation, which comes with Google Workspace or with the free Cloud Identity service set up on SVA's domain. SVA's organisation administrator grants you the **Project Creator** role on the organisation.
+## Part E — Checks after the transfer
 
-**How you do it:** in the console, open **IAM & Admin > Manage resources**, find `tenderai-dev` under "No organisation", open its three-dot menu, choose **Migrate** and select the SVA organisation.
+Run these after step 9 of Part C, with the team still on the call. If any fail, the team can still fix them.
 
-**Cautions before you click:**
+| # | Check | Expected |
+| --- | --- | --- |
+| 1 | **IAM & Admin > IAM** | You and your backup listed as **Owner** |
+| 2 | **Billing**, project `tenderai-dev` | Linked to the SVA billing account; the budget alert exists |
+| 3 | **Monitoring > Alerting**, policy **Pipeline finished, Scraper error** | Notifies an SVA email address |
+| 4 | Open TenderAI and sign in with your own account | Lands on the tenders page |
+| 5 | **Admin > User management** | You and your backup shown as admins |
+| 6 | **Admin > System / ingestion health** | A Last Run from this morning for each portal |
+| 7 | Home page | Tenders, including some published in the last few days |
 
-- It is one-way. Moving a project back to "No organisation" needs Google support.
-- SVA's organisation policies start applying straight away. A policy that restricts access to SVA accounts only would lock out any remaining student accounts.
-- Billing does not move with the project. It stays on whichever billing account you set in step 4.
-- Do it only after the checks above pass, with the team or SVA IT available, and run the checks again afterwards.
+> After step 10, run checks 4 to 7 again the next day. That confirms nothing was quietly depending on a student's account.
 
-## Things outside Google Cloud
+---
+
+## Part F — Microsoft sign-in
+
+TenderAI keeps email and password sign-in and adds Microsoft sign-in alongside it, so SVA staff can use their existing Microsoft 365 work account. Both methods end at the same place: a **Firebase ID token**, which the API checks on every request.
+
+```
+ Staff member
+     │
+     ├─ "Sign in with Microsoft" ──▶ login.microsoftonline.com/<SVA tenant>
+     │                                        │
+     │                               tenderai-dev-f0283.firebaseapp.com/__/auth/handler
+     │                                        │
+     └─ email + password ──────────────▶ Firebase Auth
+                                              │  Firebase ID token (JWT, ~1 hour)
+                                              ▼
+                                   FastAPI  api/app/auth.py
+                                   verify → authorise → users/{uid}
+```
+
+Firebase is the only thing that ever sees the Entra client secret. The website never handles it, and it is never stored in the repository.
+
+**Access model:** the app registration is **single-tenant**, so Microsoft only issues a token to a member of SVA's directory. That boundary is the access control. A member signing in for the first time becomes an ordinary, non-admin user. Password accounts are unchanged: still invite-only, created by the `inviteUser` Cloud Function. **Nobody becomes an admin automatically** by either route.
+
+SVA already has a Microsoft Entra directory (it is what SVA's Microsoft 365 accounts sign in through). What is missing is TenderAI's registration in it.
+
+| Part | Who | Time |
+| --- | --- | --- |
+| F1 Entra app registration | Ramon, or SVA's Microsoft 365 administrator | 15 minutes |
+| F2 Firebase console | Developer, or Ramon as project Owner | 5 minutes |
+| F3 Settings and publishing | Developer | 10 minutes |
+| F4 Test plan | Developer, with one SVA staff member | 15 minutes |
+
+### F1 — Entra app registration (SVA side)
+
+> **Who can do it:** the Entra role **Cloud Application Administrator**, **Application Administrator** or Global Administrator. A normal staff account can register the app but cannot grant admin consent or restrict who signs in. If you don't hold one of these roles, ask SVA's Microsoft 365 administrator.
+
+entra.microsoft.com → **Entra ID** → **App registrations** → **New registration**. (The Azure portal's **Microsoft Entra ID** menu leads to the same place.) If you belong to more than one directory, switch to SVA's with the **Settings** icon first.
+
+| Field | Value |
+| --- | --- |
+| Name | `TenderAI (UWA CITS3200)` |
+| Supported account types | **Single tenant only** (accounts in SVA's directory only) |
+| Redirect URI | Platform **Web** → `https://tenderai-dev-f0283.firebaseapp.com/__/auth/handler` |
+
+> The redirect URI is the Firebase sign-in handler, and the subdomain really is `tenderai-dev-f0283`, not `tenderai-dev`. Getting this wrong is the most common cause of `AADSTS50011: redirect URI mismatch`.
+
+Then:
+
+1. **Overview** — copy the **Application (client) ID** and the **Directory (tenant) ID**. Both are needed below. They are identifiers, not secrets.
+2. **Certificates & secrets** → **Client secrets** → **New client secret**. Description `firebase-auth`, expiry 12 months (Microsoft's recommendation; 24 is the maximum). **Copy the `Value` column immediately**: it is shown once and never again. The `Secret ID` is not the secret.
+3. **API permissions** → Microsoft Graph → Delegated: `openid`, `email`, `profile`, `User.Read`. Most are there by default; add any missing with **Add a permission**. Then click **Grant admin consent for SVA**.
+4. *(Optional, recommended)* **Entra ID** → **Enterprise apps** → **All applications** → TenderAI → **Properties** → **Assignment required? = Yes**, then **Users and groups** → **Add user/group** → assign only the staff who should have access. Assigning a whole group needs an Entra ID P1 or P2 licence; on the free tier, add people one at a time. With **No**, anyone in SVA's directory can sign in.
+
+**Handing over:** email the client ID and tenant ID to the developer. Send the secret value through a password manager share, or read it out on a call — never by email or chat.
+
+> **Secret expiry:** Microsoft sign-in breaks for everyone the day the secret expires. Put the date in a calendar with a reminder a month before. Renewal is in F5.
+
+### F2 — Firebase console
+
+Firebase console → project **tenderai-dev** → **Authentication**.
+
+1. **Sign-in method** → **Add new provider** → **Microsoft**.
+2. Toggle **Enable**, paste the **Application (client) ID** and the client secret **Value** from F1.
+3. Confirm the **callback URL** Firebase shows matches the redirect URI registered in F1. If in doubt, copy it from here: Firebase's is the authoritative one.
+4. **Save.** Leave **Email/Password** enabled; the two work side by side.
+5. **Settings → Authorized domains** — `localhost`, `tenderai-dev-f0283.firebaseapp.com` and `tenderai-dev-f0283.web.app` must all be listed. Old pull-request preview addresses in the list are harmless but worth tidying.
+6. **Settings → User account linking** — keep **one account per email** (the default). A person who already has an invited password account and clicks "Sign in with Microsoft" is told to use their password instead. Switching to multiple accounts per email gives one person two TenderAI accounts. **Don't.**
+
+### F3 — Settings and publishing
+
+| File | Setting | Notes |
+| --- | --- | --- |
+| `frontend/.env.local` (local development, not committed) | `VITE_API_BASE_URL=http://localhost:8000`, `VITE_ENTRA_TENANT_ID=<tenant ID>` | Developer's own machine only |
+| `frontend/.env.production` (committed) | `VITE_ENTRA_TENANT_ID=<tenant ID>` | A public identifier, not a secret; it ships in the website by design. Sends staff to SVA's own Microsoft sign-in page |
+| `api/env.yaml` | `AUTO_PROVISION_SSO=true`, `ALLOWED_EMAIL_DOMAINS=` | Already set. Domains is an optional extra guard, e.g. `socialventures.org.au`; empty accepts whatever SVA's directory issues |
+
+**Publishing the tenant ID** — every merge to `main` rebuilds and publishes the website from `frontend/.env.production`, so editing that file on GitHub is all it takes. Do F2 first, or the button shows "Microsoft sign-in is not enabled for this project yet".
+
+1. Open [frontend/.env.production](https://github.com/UtkristaUwa/CITS3200_57/blob/main/frontend/.env.production) on GitHub. After the repository moves to SVA, the link redirects.
+2. Click the pencil icon, **Edit this file**.
+3. On the line `VITE_ENTRA_TENANT_ID=`, paste the tenant ID straight after the `=`, with no spaces or quotation marks. Leave every other line unchanged.
+4. Click **Commit changes...**, enter `Set Entra tenant ID`, choose **Create a new branch for this commit and start a pull request**, click **Propose changes**, then **Create pull request**.
+5. Click **Merge pull request**, then **Confirm merge**.
+6. On the [Actions](https://github.com/UtkristaUwa/CITS3200_57/actions) tab, wait for **Deploy to Firebase Hosting on merge** to show a green tick (a few minutes). A red cross means the website was not updated.
+7. Test on the live site, [tenderai-dev-f0283.firebaseapp.com](https://tenderai-dev-f0283.firebaseapp.com), after a hard refresh (Ctrl+Shift+R). Not on the pull request's preview link: preview addresses are not approved for sign-in.
+
+> **Redeploying the API:** only needed if an `api/env.yaml` setting changes. `gcloud run deploy --env-vars-file env.yaml` replaces every setting on the service with the file's contents, so the file must also carry `RUNTIME_CONFIG_BUCKET` and `RUNTIME_CONFIG_OBJECT`. If it doesn't, the redeploy removes them and the **Reference / config** page stops loading.
+
+### F4 — Test plan
+
+| # | Test | Expected |
+| --- | --- | --- |
+| 1 | On the live site, click **Sign in with Microsoft** | SVA-branded Microsoft sign-in page, not a generic one |
+| 2 | Complete sign-in as an SVA staff member who has never used TenderAI | Lands on the tenders page; Firestore gains `users/{uid}` with `autoProvisioned: true`, `isAdmin: false`, `status: "active"` |
+| 3 | Sign in again as the same person | No duplicate record, no change to `isAdmin` |
+| 4 | An existing invited password account signs in | Still works, unchanged |
+| 5 | A personal `@outlook.com` account | Rejected by Microsoft before Firebase is reached |
+| 6 | With **Assignment required? = Yes**, a staff member who is not assigned | Microsoft says the user is not assigned to the app |
+| 7 | `curl $API/tenders` with no header | `401 missing bearer token` |
+| 8 | `curl $API/tenders -H "Authorization: Bearer garbage"` | `401 invalid token` |
+| 9 | From an existing admin account, turn on the admin switch for the new Microsoft user | Admin menu appears for them after reload; the switch on your own row stays disabled |
+| 10 | Leave the tab open for over an hour, then load tenders | Silent token refresh, no visible error |
+
+### F5 — Day to day
+
+| Task | How |
+| --- | --- |
+| Give someone access | With **Assignment required? = Yes**, add them under the enterprise app's **Users and groups**. With **No**, any SVA account can already sign in |
+| Remove someone's access | Remove them from **Users and groups**, or disable their SVA account. A session already open is not ended by this; to cut access straight away, set `status: "disabled"` on their `users/{uid}` record in Firestore |
+| Make someone an admin | They sign in once, then an existing admin turns on their switch under **Admin > User management**. Nobody is made an admin automatically |
+| Renew the client secret (yearly) | Create a new secret as in F1 step 2. Paste it in the Firebase console under **Authentication > Sign-in method > Microsoft** and save; as Owner you can do this yourself. Once sign-in works, delete the old secret in Entra |
+| Limit sign-in to one email domain | Optional: set `ALLOWED_EMAIL_DOMAINS=socialventures.org.au` in `api/env.yaml` and redeploy the API (see the callout in F3) |
+
+### F6 — Troubleshooting
+
+| What the user sees | Cause | Fix |
+| --- | --- | --- |
+| Microsoft error `AADSTS50011` (redirect URI mismatch) | The redirect URI in the app registration is wrong | Set it to exactly the address in F1 |
+| "Microsoft sign-in is not enabled for this project yet" | Microsoft provider not switched on in Firebase | Complete F2 |
+| "This site is not on the list of domains approved for sign-in" | The site address is missing from Firebase's authorised domains | Add it under **Authentication → Settings → Authorized domains** |
+| "That email already has a TenderAI password account" | The person was invited with a password before Microsoft sign-in | They keep using email and password |
+| Microsoft says the account is not in the tenant | A personal or non-SVA account was used | Sign in with the SVA work account |
+| Microsoft says the user is not assigned to the app | **Assignment required?** is Yes and they are not assigned | Add them under **Users and groups** |
+| Microsoft sign-in suddenly fails for everyone | The client secret has expired | Renew it (F5) |
+
+---
+
+## Part G — Things outside Google Cloud
 
 These do not move when you become Owner of the project. Each needs its own handover.
 
 | Item | Why it matters | What you do |
 | --- | --- | --- |
-| Code repository on GitHub (`UtkristaUwa/CITS3200_57`) | Holds all the source code. Merging a change into it publishes a new version of the website automatically | Give the team the SVA GitHub account or organisation to receive it. Accept the transfer request GitHub emails you. Then ask the team to confirm a website deployment still runs from the new location |
-| Tender portal logins | AusTender, GrantConnect, Tenders ACT, NT QTOL, QLD QTenders and Buying for Victoria only release tender documents to a signed-in account. The pipeline signs in with a username and password for each. If an account belongs to a student and is closed, the tender text is still collected but its documents are not | Ask the team which email address each portal account is registered to. Register SVA accounts for any that are not SVA's and give the new details to the team to store in the project |
-| Microsoft Entra app registration | Lets staff sign in with their SVA Microsoft account. It lives in SVA's Microsoft tenant, so SVA already owns it. Its client secret expires after 12 or 24 months, and Microsoft sign-in stops working that day | Put the expiry date in a calendar. Follow "Setting up Microsoft sign-in" below to set it up and to renew it |
-| Custom web address, if SVA wants one | The site currently uses the address Firebase gave it. A domain name is registered separately from Google Cloud | Nothing unless SVA wants its own address; then SVA IT registers it and a developer connects it |
+| Code repository on GitHub (`UtkristaUwa/CITS3200_57`) | Holds all the source code. Merging a change publishes a new version of the website automatically | Give the team the SVA GitHub account or organisation to receive it. Accept the transfer request GitHub emails you. Then ask the team to confirm a website deployment still runs from the new location |
+| Tender portal logins | AusTender, GrantConnect, Tenders ACT, NT QTOL, QLD QTenders and Buying for Victoria only release documents to a signed-in account. If an account belongs to a student and is closed, the tender text is still collected but its documents are not | Ask the team which email address each portal account is registered to. Register SVA accounts for any that are not SVA's and give the new details to the team to store in the project |
+| Microsoft Entra app registration | Lives in SVA's own directory, so SVA already owns it. Its client secret expires after 12 or 24 months | Set it up with Part F. Keep the expiry date in a calendar |
+| Custom web address, if SVA wants one | The site uses the address Firebase gave it. A domain name is registered separately | Nothing unless SVA wants its own address; then SVA IT registers it and a developer connects it |
 
-## Setting up Microsoft sign-in
+---
 
-SVA already has a Microsoft Entra directory: it is what SVA's Microsoft 365 work accounts sign in through. What is missing is TenderAI's registration in it. Once that exists, staff can sign in to TenderAI with their SVA Microsoft account. Steps 1 to 7 take about 15 minutes in the Microsoft Entra admin center; step 8 is done by a developer.
+## Part H — Running TenderAI as owner
 
-**Who can do it.** You need the Entra role **Cloud Application Administrator**, **Application Administrator** or Global Administrator. A normal staff account can register the app but cannot complete steps 5 and 6. If you don't hold one of these roles, ask SVA's Microsoft 365 administrator to do it, or to sit with you while you do.
+Day to day you work in the TenderAI Admin pages. The Google Cloud console is for money and access, and the Entra admin center for Microsoft sign-in. You should rarely need either.
 
-1. **Sign in.** Go to entra.microsoft.com and sign in with your SVA work account. If you belong to more than one directory, use the **Settings** icon in the top bar to switch to SVA's.
-2. **Register TenderAI.** Go to **Entra ID > App registrations** and click **New registration**. Fill in:
-   - **Name:** `TenderAI`
-   - **Supported account types:** **Single tenant only**, meaning SVA's directory only. Only SVA accounts can then sign in.
-   - **Redirect URI:** platform **Web**, value `https://tenderai-dev-f0283.firebaseapp.com/__/auth/handler`. Copy it exactly; the `-f0283` matters.
+**How the system works.** Every day at 5 am Perth time, with nobody starting it, the pipeline works through seven portals: GrantConnect, buy.nsw, Tenders ACT, AusTender, NT QTOL, QLD QTenders and Buying for Victoria.
 
-   Click **Register**.
-3. **Copy the two IDs.** On the app's **Overview** page, copy the **Application (client) ID** and the **Directory (tenant) ID**. These are identifiers, not secrets.
-4. **Create the client secret.** Go to **Certificates & secrets > Client secrets > New client secret**. Enter the description `Firebase sign-in` and choose an expiry: 12 months is Microsoft's recommendation, and 24 months is the longest allowed. Click **Add**, then copy the **Value** column straight away.
-   - The value is never shown again after you leave the page.
-   - The **Secret ID** column is not the secret.
-   - Put the expiry date in your calendar with a reminder a month before. Microsoft sign-in stops working the day it expires.
-5. **Check the permissions.** Go to **API permissions**. Microsoft Graph should list `openid`, `email`, `profile` and `User.Read`, all Delegated. Add any that are missing with **Add a permission > Microsoft Graph > Delegated permissions**. Then click **Grant admin consent for SVA** and confirm.
-6. **Choose who can sign in.** This step is recommended. Go to **Entra ID > Enterprise apps > All applications** and open **TenderAI**.
-   - Under **Properties**, set **Assignment required?** to **Yes** and click **Save**.
-   - Under **Users and groups**, click **Add user/group**, select the staff who should have access, and click **Assign**.
-   - Assigning a whole group needs an Entra ID P1 or P2 licence. On the free tier, add people one at a time.
-   - If you leave **Assignment required?** set to **No**, anyone with an SVA account can sign in.
-7. **Hand the details to the developer.** Email the client ID and tenant ID. Send the secret value through a password manager share, or read it out on a call. Never send it by email or chat.
-8. **The developer switches it on.** In the Firebase console, go to **Authentication > Sign-in method > Add new provider > Microsoft**. Turn it on, paste the client ID and secret, and save. Then add the tenant ID to the website, as in "Adding the tenant ID to the website" below. The full technical checklist is `docs/SSO_SETUP.md` in the repository.
-
-**Adding the tenant ID to the website** (developer, about 5 minutes, all in the browser)
-
-The tenant ID lives in the file `frontend/.env.production` in the repository. It is not a secret; it is meant to be visible in the website. Every merge to `main` rebuilds and publishes the website with whatever that file says, so changing the file is all it takes. Do the Firebase part of step 8 first, or the button shows "Microsoft sign-in is not enabled for this project yet".
-
-1. Open the file on GitHub: [frontend/.env.production](https://github.com/UtkristaUwa/CITS3200_57/blob/main/frontend/.env.production). After the repository moves to SVA, this link redirects to the new location.
-2. Click the pencil icon, **Edit this file**.
-3. Find the line `VITE_ENTRA_TENANT_ID=`. Paste the Directory (tenant) ID straight after the `=`, with no spaces or quotation marks. Leave every other line unchanged.
-4. Click **Commit changes...**, enter the message `Set Entra tenant ID`, choose **Create a new branch for this commit and start a pull request**, and click **Propose changes**, then **Create pull request**.
-5. Click **Merge pull request**, then **Confirm merge**.
-6. Open the [Actions](https://github.com/UtkristaUwa/CITS3200_57/actions) tab and wait for the **Deploy to Firebase Hosting on merge** run to show a green tick. This takes a few minutes. A red cross means the website was not updated; open the run to see why.
-7. Test on the live site, [tenderai-dev-f0283.firebaseapp.com](https://tenderai-dev-f0283.firebaseapp.com), after a hard refresh (Ctrl+Shift+R). Don't test on the preview link the pull request posts: preview addresses are not approved for sign-in, so Microsoft sign-in fails there by design.
-
-**Test it.** Open TenderAI and click **Sign in with Microsoft**. You should see SVA's own Microsoft sign-in page and then land on the tenders page. A person's first Microsoft sign-in makes them an ordinary user; to make them an admin, use **Admin > User management**.
-
-**Renewing the secret each year.** Repeat step 4 to create a new secret. Then, as Owner of the project, paste it in yourself: Firebase console, **Authentication > Sign-in method > Microsoft**, replace the secret and save. Once sign-in works with the new secret, delete the old one under **Certificates & secrets**. No developer is needed for this.
-
-| If you see | Cause | Fix |
-| --- | --- | --- |
-| Microsoft error AADSTS50011 | The redirect URI does not match | Set it to exactly the address in step 2 |
-| Microsoft says the user is not assigned to the app | **Assignment required?** is Yes and the person is not assigned | Add them under **Users and groups** (step 6) |
-| Microsoft sign-in suddenly fails for everyone | The client secret has expired | Renew it as above |
-| "That email already has a TenderAI password account" | The person was invited with a password earlier | They keep signing in with email and password |
-
-## Running TenderAI as owner
-
-Day to day you work in the TenderAI Admin pages. The Google Cloud console is for money and access, and the Azure portal is for Microsoft sign-in once that is switched on. You should rarely need either.
-
-**How the system works**
-
-Every day at 5 am Perth time, with nobody needing to start it, the pipeline does the following for each of seven portals: GrantConnect, buy.nsw, Tenders ACT, AusTender, NT QTOL, QLD QTenders and Buying for Victoria.
-
-1. It reads the portal's open tenders and downloads each tender's page and documents.
+1. It reads each portal's open tenders and downloads each tender's page and documents.
 2. It extracts the text from the documents and stores the originals.
-3. An AI model (Google Gemini, running inside the project) summarises each tender, pulls out the key fields, and scores how relevant it is to SVA using the focus areas, work types and out-of-scope list you set.
-4. It saves the result to the database. A tender it has seen before is updated, not duplicated.
+3. Google Gemini, running inside the project, summarises each tender, pulls out the key fields, and scores its relevance to SVA using the focus areas, work types and out-of-scope list you set.
+4. It saves the result to the database. A tender seen before is updated, not duplicated.
 5. It publishes a health report for each portal, and emails the alert address if anything failed.
 
-Staff then sign in to the website, search and filter the tenders, mark favourites, open the original documents, and share a tender by email from their own mail program.
+Staff then sign in, search and filter tenders, mark favourites, open the original documents, and share a tender by email from their own mail program.
 
-**The Admin pages**
-
-| Page | What it shows | What you can do |
+| Admin page | What it shows | What you can do |
 | --- | --- | --- |
-| User management | Everyone with a TenderAI account: email, role, status (Active or Pending) and the date invited | Invite a person by email, with **Make admin** ticked if needed. Turn the admin switch on or off for anyone except yourself |
-| System / ingestion health | One row per portal from the latest run: when it last ran, a status and a message | Nothing to change; this is where you check the pipeline. **Success** means the portal was read. **Failed to download** means tenders were collected but some documents could not be fetched, usually because of a portal login. **Error** means the portal could not be read at all |
-| Reference / config | The AI settings the pipeline uses | Change the two AI models used for sorting documents and for summarising. Change how relevance is judged: the classification guidance, the focus-area and work-type lists, the out-of-scope list, and the scoring weights. Changes apply from the next daily run and do not re-score tenders already collected |
+| User management | Everyone with a TenderAI account: email, role, status (Active or Pending) and date invited | Invite a person by email, with **Make admin** ticked if needed. Turn the admin switch on or off for anyone except yourself |
+| System / ingestion health | One row per portal from the latest run: last run, status and message | Check the pipeline. **Success**: the portal was read. **Failed to download**: tenders collected but some documents not fetched, usually a portal login. **Error**: the portal could not be read at all |
+| Reference / config | The AI settings the pipeline uses | Change the two AI models, the classification guidance, the focus-area and work-type lists, the out-of-scope list and the scoring weights. Changes apply from the next daily run and do not re-score existing tenders |
 
-**What to do when an alert email arrives.** Open **Admin > System / ingestion health** and find the row that is not Success. A single **Failed to download** or a one-off **Error** often clears on the next run. The same portal failing for several days means the portal has changed its site or its login has stopped working, and a developer needs to look.
-
-**Known limits at handover**
-
-- **System / ingestion health** currently shows "Failed to fetch" on the live site, so the daily status cannot be read there yet. \[Team to fix before handover.\]
-- **Reference / config** currently shows "Unable to load" on the live site, so the AI settings cannot be viewed or changed there yet. \[Team to fix before handover.\]
-- Inviting a user shows a setup link on screen; no email is sent. That link currently points to a developer's test address and does not work on the live site. \[Team to fix before handover, or confirm the workaround.\]
-- The portals are fixed in the code. Adding or removing one needs a developer; there is no admin page for it.
-- The tender extraction prompt on the config page is display only and cannot be edited there.
-- There is no Microsoft Teams notification. The only automatic message is the failure alert email to the owner.
-- A user cannot be removed or disabled from the Admin pages, only have admin rights turned off.
-
-**Where each task is done**
+> **When an alert email arrives:** open **Admin > System / ingestion health** and find the row that is not Success. A single **Failed to download** or a one-off **Error** often clears on the next run. The same portal failing for several days means its site or login has changed, and a developer needs to look.
 
 | Task | Where |
 | --- | --- |
 | Invite a user, or make someone an admin | TenderAI, **Admin > User management** |
 | Check that yesterday's run worked | TenderAI, **Admin > System / ingestion health** |
 | Change what counts as relevant, or which AI models are used | TenderAI, **Admin > Reference / config** |
-| Change who receives failure alert emails | Google Cloud console, **Monitoring > Alerting** |
+| Change who receives failure alert emails | Google Cloud console, **Monitoring > Alerting** (Part D) |
 | See what the system costs | Google Cloud console, **Billing > Reports** |
-| Give or remove a person's access to the cloud project | Google Cloud console, **IAM & Admin > IAM** |
-| Give or remove a staff member's Microsoft sign-in, once it is switched on | Azure portal, the TenderAI enterprise application, **Users and groups** |
-| Renew the Microsoft client secret before it expires | Create it in the Azure portal, then paste it in the Firebase console under **Authentication > Sign-in method > Microsoft** |
+| Give or remove access to the cloud project | Google Cloud console, **IAM & Admin > IAM** |
+| Give or remove a staff member's Microsoft sign-in | Entra admin center, TenderAI enterprise app, **Users and groups** (F5) |
+| Renew the Microsoft client secret | Entra admin center, then Firebase console (F5) |
 
 **Three habits that keep you out of trouble**
 
 - Keep two Owners on the project and two admins in TenderAI at all times. When one leaves SVA, add the replacement before removing the leaver.
-- Read the alert and budget emails. A sudden jump in cost usually means the daily run is processing far more than normal and is worth a developer's look.
-- Review the IAM list and the User management page every six months and remove access nobody needs any more.
+- Read the alert and budget emails. A sudden jump in cost usually means the daily run is processing far more than normal.
+- Every six months, review the IAM list and the User management page and remove access nobody needs.
 
 **If SVA ever stops using TenderAI:** export what you want to keep from the database first. Then in the console go to **IAM & Admin > Settings** and choose **Shut down**. Charges stop, and the project can be restored for 30 days before it is deleted for good.
 
+---
+
+## Part I — Known gaps at handover
+
+1. **System / ingestion health shows "Failed to fetch" on the live site.** The page reads `scraper_health.json` straight from the document bucket and gets a 403. Fix by serving it through the API; do **not** make the bucket public, because it also holds every tender document. *[Team to fix before handover.]*
+2. **Reference / config shows "Unable to load" on the live site.** The live API is an older build without the `/admin/config` routes. It needs a redeploy from `main`, the config file in a bucket, and `RUNTIME_CONFIG_BUCKET` and `RUNTIME_CONFIG_OBJECT` set on both `tenderai-api` and `tender-batch-job`. *[Team to fix before handover.]*
+3. **Invites show a setup link on screen, and it points to `http://localhost:5173`** (`functions/src/index.ts`), so it does not work on the live site. No email is sent. *[Team to fix before handover.]*
+4. **`firestore.rules` must be deployed** with `firebase deploy --only firestore:rules`. Until it is, a user could write their own `isAdmin` flag, because favourites and `isAdmin` share one record. *[Team to confirm it is deployed.]*
+5. **`tenderai-api` allows `allUsers` to call it — deliberately.** Cloud Run's own access check expects Google-issued tokens, and Firebase tokens are not those; removing it breaks the website. The API's own token check is the real gate.
+6. **The portals are fixed in the code.** Adding or removing one needs a developer.
+7. **The tender extraction prompt** on the config page is display only.
+8. **There is no Microsoft Teams notification.** The only automatic message is the failure alert email.
+9. **Users cannot be removed or disabled from the Admin pages**, only have admin rights turned off. Use Firestore, as in Part C step 10.
+10. **The Entra client secret expires** 12 or 24 months after it is created (Part F).
+
+---
+
+## Part J — Optional: moving the project into an SVA Google Cloud organisation
+
+Not needed for the handover; worth raising with SVA IT afterwards. A project created by individuals sits under "No organisation", so it belongs to whichever accounts are listed as Owner. Moving it into an SVA organisation makes SVA itself the top-level owner.
+
+| Topic | Details |
+| --- | --- |
+| What you gain | SVA IT can always recover access, even if every named owner leaves, and SVA's security policies apply |
+| What it needs | An SVA Google Cloud organisation (from Google Workspace, or the free Cloud Identity service on SVA's domain), and the **Project Creator** role on it for you |
+| How | **IAM & Admin > Manage resources**, find `tenderai-dev` under "No organisation", three-dot menu, **Migrate**, select the SVA organisation |
+
+> **Cautions:** it is one-way; moving back needs Google support. SVA's organisation policies apply straight away, and one restricting access to SVA accounts would lock out any remaining student accounts. Billing does not move with it. Do it only after Part E passes, with the team or SVA IT available, and run Part E again afterwards.
+
+---
+
 ## Contacts and further reading
 
-**The student team** (UWA CITS3200, Group 57). Support is available until \[end date to be agreed\].
+**The student team** (UWA CITS3200, Group 57). Support is available until [end date to be agreed].
 
 | Area | Contact |
 | --- | --- |
-| Cloud project, deployment, sign-in | \[name, email\] |
-| Website and user interface | \[name, email\] |
-| Database and API | \[name, email\] |
-| Source scanning and ingestion | \[name, email\] |
-| AI matching and admin page | \[name, email\] |
+| Cloud project, deployment, sign-in | [name, email] |
+| Website and user interface | [name, email] |
+| Database and API | [name, email] |
+| Source scanning and ingestion | [name, email] |
+| AI matching and admin page | [name, email] |
 
-**Technical documentation.** How the system is built and how to change it lives in the code repository. Hand these to any developer SVA brings in later: `README.md` (overview), `DEVELOPMENT.md` (setup, sign-in, admin users, deployment and known gaps), `docs/SSO_SETUP.md` (Microsoft sign-in), `error_scrapers/README.md` (the portal scrapers and their status codes), `Schema/` (database structure) and `manager.py` (the daily pipeline itself).
+**Technical documentation** in the code repository, for any developer SVA brings in: `README.md` (overview), `DEVELOPMENT.md` (setup, sign-in, admin users, deployment, known gaps), `docs/SSO_SETUP.md` (Microsoft sign-in), `error_scrapers/README.md` (portal scrapers and status codes), `Schema/` (database structure) and `manager.py` (the daily pipeline).
 
-**Google's own instructions** for the steps in this manual:
+**Google's and Microsoft's own instructions:**
 
 - [Granting and removing access to a project](https://docs.cloud.google.com/iam/docs/granting-changing-revoking-access)
 - [Changing the billing account for a project](https://docs.cloud.google.com/billing/docs/how-to/modify-project)
+- [Managing alert notification channels](https://docs.cloud.google.com/monitoring/support/notification-options)
+- [Registering an app in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
+- [Adding a client secret](https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-credentials)
 - [Moving a project with no organisation into an organisation](https://docs.cloud.google.com/resource-manager/docs/handle-special-cases)
+
+---
+
+## Appendix — Messages to send Ramon
+
+**Before the handover call**
+
+> Hi Ramon — to hand TenderAI over we need three things from SVA before the call: a Google account SVA controls (please send us its exact email address), a second SVA person to be backup owner, and an SVA Cloud Billing account on which you are Billing Account Administrator. On the call we add you as Owner of `tenderai-dev`; you accept the email invitation, move billing to SVA, and we run the checks together before removing our access. It takes about 30 minutes. The full steps are in Parts B to E of the Owner Manual.
+
+**Microsoft sign-in**
+
+> Hi Ramon — to add Microsoft sign-in to TenderAI we need an app registration in SVA's Entra tenant. It's a short job for whoever administers your Microsoft 365 tenant:
+>
+> - **New app registration**, name `TenderAI (UWA CITS3200)`
+> - **Single tenant** (SVA directory only)
+> - **Redirect URI (Web):** `https://tenderai-dev-f0283.firebaseapp.com/__/auth/handler`
+> - **A client secret**, 12-month expiry
+> - Delegated Graph permissions `openid`, `email`, `profile`, `User.Read`, with admin consent granted
+>
+> We then need the **Application (client) ID**, the **Directory (tenant) ID**, and the **client secret value**. The secret should come through a secure channel, not email; it only ever gets stored in Firebase, never in our code.
+>
+> If you'd rather not open it to the whole directory, set **Assignment required = Yes** on the enterprise app and assign just the people who should have access — nothing changes on our end for that. Step by step, it's Part F1 of the Owner Manual.
