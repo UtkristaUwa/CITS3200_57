@@ -219,6 +219,18 @@ export async function getDocumentBlob(storageUrl: string, filename: string): Pro
   return data;
 }
 
+/**
+ * GET /tenders/{id}/documents/zip — every stored attachment of one tender as a
+ * single zip, built server-side from the tender's own document list.
+ */
+export async function getTenderDocumentsZip(tenderId: string): Promise<Blob> {
+  const { data } = await http.get<Blob>(
+    `${API_BASE_URL}/tenders/${encodeURIComponent(tenderId)}/documents/zip`,
+    { responseType: 'blob' },
+  );
+  return data;
+}
+
 export async function getLocations(): Promise<string[]> {
   const url = `${API_BASE_URL}/locations`;
   try {

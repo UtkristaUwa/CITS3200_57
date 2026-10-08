@@ -209,6 +209,27 @@ def list_tenders(
     return rows
 
 
+def get_tender_documents(client: bigquery.Client, tender_id: str) -> dict | None:
+    """One tender's id, portal reference and documents, or None if it doesn't exist."""
+    query = f"""
+        SELECT tender_id, source_reference_id, documents
+        FROM `{settings.tenders_table}`
+        WHERE tender_id = @tender_id
+        LIMIT 1
+    """
+    job = client.query(
+        query,
+        job_config=bigquery.QueryJobConfig(
+            query_parameters=[bigquery.ScalarQueryParameter("tender_id", "STRING", tender_id)]
+        ),
+    )
+    for row in job.result():
+        record = dict(row)
+        record["documents"] = [dict(d) for d in record.get("documents") or []]
+        return record
+    return None
+
+
 def get_locations(client: bigquery.Client) -> list[str]:
     """
     Fetch a deduplicated list of all available locations for the frontend filter dropdown.

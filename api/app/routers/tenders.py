@@ -1,14 +1,25 @@
+import logging
 from typing import Literal
 from datetime import date
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Path, Query
 from fastapi.responses import StreamingResponse
 
-from app.bigquery import get_client, get_storage_client, list_tenders, get_locations
+from app.bigquery import get_client, get_storage_client, get_tender_documents, list_tenders, get_locations
 from app.config import settings
+from app.document_zip import (
+    ArchiveEntry,
+    archive_filename,
+    dedupe_names,
+    entry_name,
+    parse_storage_uri,
+    stream_zip,
+)
 from app.models import TenderOut
 
 _ALLOWED_BUCKET_PREFIX = "tenderai-"
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -214,6 +225,64 @@ def download_document(
         iter([data]),
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{safe_name}"'},
+    )
+
+
+@router.get("/tenders/{tender_id}/documents/zip")
+def download_all_documents(
+    tender_id: str = Path(..., pattern=r"^[A-Za-z0-9._-]{1,128}$"),
+) -> StreamingResponse:
+    """Every stored attachment of one tender, as a single zip.
+
+    The document list comes from BigQuery rather than the caller, so the
+    archive only ever holds files that belong to that tender. Documents that
+    were never uploaded (no storage_uri) or have since gone from the bucket
+    are left out; if that leaves nothing, it's a 404 rather than an empty zip.
+    """
+    if settings.use_mock_data:
+        tender = next((row for row in _MOCK_TENDERS if row["tender_id"] == tender_id), None)
+    else:
+        tender = get_tender_documents(get_client(), tender_id)
+    if tender is None:
+        raise HTTPException(status_code=404, detail="Tender not found")
+
+    wanted: list[tuple[dict, str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for doc in tender.get("documents") or []:
+        location = parse_storage_uri(doc.get("storage_uri"))
+        if location is None or location in seen:
+            continue
+        seen.add(location)
+        wanted.append((doc, *location))
+
+    # One listing per folder (normally just the tender's own folder) instead
+    # of one metadata request per file. Listed blobs already carry the size and
+    # timestamp the zip headers need, and anything listed in BigQuery but gone
+    # from the bucket simply isn't found.
+    storage = get_storage_client()
+    stored: dict[tuple[str, str], object] = {}
+    for bucket_name, folder in {(b, p.rpartition("/")[0]) for _, b, p in wanted}:
+        try:
+            for blob in storage.list_blobs(bucket_name, prefix=f"{folder}/" if folder else None):
+                stored[(bucket_name, blob.name)] = blob
+        except Exception:
+            logger.warning("Could not list gs://%s/%s/ for tender %s", bucket_name, folder, tender_id)
+
+    located = [
+        (entry_name(doc, object_path), stored[(bucket_name, object_path)])
+        for doc, bucket_name, object_path in wanted
+        if (bucket_name, object_path) in stored
+    ]
+
+    if not located:
+        raise HTTPException(status_code=404, detail="No stored documents for this tender")
+
+    names = dedupe_names(name for name, _ in located)
+    entries = [ArchiveEntry(name, blob) for name, (_, blob) in zip(names, located)]
+    return StreamingResponse(
+        stream_zip(entries),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{archive_filename(tender)}"'},
     )
 
 
