@@ -9,6 +9,7 @@ import AdminLayout from './layouts/AdminLayout';
 import UserManagementPage from './pages/UserManagementPage';
 import SystemHealthPage from './pages/SystemHealthPage';
 import ConfigPage from './pages/ConfigPage';
+import AlertsPage from './pages/AlertsPage';
 
 export default function App() {
   return (
@@ -68,6 +69,7 @@ export default function App() {
         <Route path="users" element={<UserManagementPage />} />
         <Route path="health" element={<SystemHealthPage />} />
         <Route path="config" element={<ConfigPage />} />
+        <Route path="alerts" element={<AlertsPage />} />
       </Route>
     </Routes>
   );

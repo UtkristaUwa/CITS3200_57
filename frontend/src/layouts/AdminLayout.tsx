@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { label: 'User management', path: '/admin/users' },
   { label: 'System / ingestion health', path: '/admin/health' },
   { label: 'Reference / config', path: '/admin/config' },
+  { label: 'Tender alerts (Teams)', path: '/admin/alerts' },
 ];
 
 export default function AdminLayout() {

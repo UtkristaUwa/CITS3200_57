@@ -55,3 +55,8 @@ latest_logs/
 log_history/
 tenders_data/
 *_logs.txt
+
+# === Local Teams Alert test scripts & tools ===
+mock_teams_server.py
+test_teams_alert.py
+tests/test_teams_alerts.py

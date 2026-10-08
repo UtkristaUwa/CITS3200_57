@@ -456,7 +456,7 @@ def run_scrapers(temp_dir, limit, publish=True):
 
 
 def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
-                        process_tender, determine_relevance):
+                        process_tender, determine_relevance, inserted_collector=None):
     """Store one tender's attachments, AI-process it and upsert it to BigQuery."""
     tender_path = os.path.join(temp_dir, tender_folder_name)
     source_id, attachments, source_url = scraped.get(
@@ -540,6 +540,8 @@ def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
             f"BigQuery upsert result for {tender_folder_name}: "
             f"{result['action']} (id={result['tender_id']})"
         )
+        if result.get("action") == "inserted" and inserted_collector is not None:
+            inserted_collector.append(current_tender)
     except Exception as e:
         logger.error(f"Failed to upsert to BigQuery: {e}")
         return
@@ -558,8 +560,53 @@ def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
     )
 
 
+def _dispatch_pipeline_teams_alerts(inserted_tenders: list[dict]):
+    """Dispatches Microsoft Teams notifications for newly inserted tenders scoring fit >= 70."""
+    if not inserted_tenders:
+        return
+    if os.environ.get("DISABLE_TEAMS_ALERTS", "").lower() in ("true", "1", "yes"):
+        logger.info("Teams alerts disabled via DISABLE_TEAMS_ALERTS environment variable. Skipping.")
+        return
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "api"))
+        from app.teams import get_teams_config, send_teams_card, build_tender_card, build_digest_card
 
-def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determine_relevance):
+        cfg = get_teams_config()
+        if not cfg.get("enabled"):
+            logger.info("Teams alerts disabled in configuration. Skipping.")
+            return
+
+        webhook_url = cfg.get("webhook_url", "").strip()
+        if not webhook_url:
+            logger.warning("Teams alerts enabled but webhook URL is empty.")
+            return
+
+        min_fit = cfg.get("min_fit_score", 70)
+        qualifying = [t for t in inserted_tenders if (t.get("fit") or 0) >= min_fit]
+
+        if not qualifying:
+            logger.info(
+                f"Teams alerts: 0 of {len(inserted_tenders)} newly inserted tender(s) "
+                f"met the fit threshold ({min_fit}+). Silent."
+            )
+            return
+
+        logger.info(f"📢 Dispatching Teams alert for {len(qualifying)} qualifying tender(s) (Fit >= {min_fit})...")
+        if len(qualifying) <= 3:
+            for t in qualifying:
+                card = build_tender_card(t)
+                success, msg = send_teams_card(webhook_url, card)
+                logger.info(f"Teams alert for '{t.get('title')}': {msg}")
+                time.sleep(0.5)  # Stay safely below Teams 4 req/sec burst limit
+        else:
+            card = build_digest_card(qualifying)
+            success, msg = send_teams_card(webhook_url, card)
+            logger.info(f"Teams batch digest alert for {len(qualifying)} tenders: {msg}")
+    except Exception as exc:
+        logger.error(f"Failed to dispatch Teams alerts: {exc}")
+
+
+def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determine_relevance, inserted_collector=None):
     """
     Store each tender's attachments, AI-process it and upsert it to BigQuery,
     PIPELINE_WORKERS tenders at a time. Each tender has its own folder and the
@@ -573,7 +620,7 @@ def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determin
     def run_one(position, name):
         try:
             _process_one_tender(position, total, name, temp_dir, scraped,
-                                process_tender, determine_relevance)
+                                process_tender, determine_relevance, inserted_collector)
             return 0
         except Exception:
             logger.exception(f"Unexpected error while processing {name}; carrying on with the rest")
@@ -632,6 +679,7 @@ def main():
         # Everything lives in RAM, so this keeps the peak at the largest single
         # portal instead of every portal at once -- and the portals already
         # finished are in BigQuery if a later one dies.
+        all_inserted_tenders = []
         for source_id, scrape in SCRAPERS:
             # 1. Run the web scraper. It downloads the tender page text and
             # attachments into temp_dir.
@@ -672,7 +720,8 @@ def main():
                              f"{source_id} ({len(tender_folders)} tender(s))")
                 logger.info("🤖 Preparing data for AI Processing...")
                 errors = _process_tenders(
-                    temp_dir, tender_folders, scraped, process_tender, determine_relevance
+                    temp_dir, tender_folders, scraped, process_tender, determine_relevance,
+                    inserted_collector=all_inserted_tenders,
                 )
                 if errors:
                     failures.append(
@@ -688,6 +737,7 @@ def main():
             total_tenders += len(tender_folders)
 
         reporting.log_run_summary(summary_rows, logger)
+        _dispatch_pipeline_teams_alerts(all_inserted_tenders)
         if not total_tenders:
             logger.error("No tenders were scraped. Nothing was processed.")
             sys.exit(1)

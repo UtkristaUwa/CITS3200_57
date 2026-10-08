@@ -266,3 +266,38 @@ export async function getScraperHealth(): Promise<ScraperHealthRecord[]> {
   return data;
 }
 
+export interface TeamsConfigResponse {
+  enabled: boolean;
+  webhook_url: string;
+  min_fit_score: number;
+  updated_at: string | null;
+}
+
+export interface TeamsConfigUpdate {
+  enabled: boolean;
+  webhook_url: string;
+  min_fit_score: number;
+}
+
+export interface TeamsTestResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function getTeamsAlertConfig(): Promise<TeamsConfigResponse> {
+  const { data } = await http.get<TeamsConfigResponse>(`${API_BASE_URL}/admin/alerts/teams`);
+  return data;
+}
+
+export async function updateTeamsAlertConfig(payload: TeamsConfigUpdate): Promise<TeamsConfigResponse> {
+  const { data } = await http.put<TeamsConfigResponse>(`${API_BASE_URL}/admin/alerts/teams`, payload);
+  return data;
+}
+
+export async function testTeamsAlertWebhook(webhookUrl?: string): Promise<TeamsTestResponse> {
+  const { data } = await http.post<TeamsTestResponse>(`${API_BASE_URL}/admin/alerts/teams/test`, {
+    webhook_url: webhookUrl || undefined,
+  });
+  return data;
+}
+
