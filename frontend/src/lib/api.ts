@@ -4,6 +4,9 @@ import { auth } from './firebase';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 const TENDERS_ENDPOINT_URL = import.meta.env.VITE_TENDERS_ENDPOINT_URL ?? `${API_BASE_URL}/tenders`;
 
+let cachedLocations: string[] | null = null;
+let locationsRequestPromise: Promise<string[]> | null = null;
+
 // Every endpoint except /health sits behind app/auth.py's current_user
 // dependency, which wants the caller's Firebase ID token. Attaching it here
 // rather than at each call site means a new endpoint is authenticated by
@@ -178,10 +181,18 @@ export interface GetTendersParams {
   closing_before?: string;
 }
 
-export async function getTenders(params: GetTendersParams = {}): Promise<Tender[]> {
+export function isRequestCancelled(error: unknown): boolean {
+  return axios.isCancel(error);
+}
+
+export async function getTenders(
+  params: GetTendersParams = {},
+  signal?: AbortSignal,
+): Promise<Tender[]> {
   const url = TENDERS_ENDPOINT_URL;
   try {
     const { data } = await http.get<Tender[]>(url, {
+      signal,
       params: {
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
@@ -198,6 +209,7 @@ export async function getTenders(params: GetTendersParams = {}): Promise<Tender[
     });
     return data;
   } catch (err) {
+    if (isRequestCancelled(err)) throw err;
     if (axios.isAxiosError(err) && err.response) {
       if (err.response.status === 401) {
         throw new Error('Your session has expired. Please sign in again.');
@@ -219,15 +231,25 @@ export async function getDocumentBlob(storageUrl: string, filename: string): Pro
   return data;
 }
 
-export async function getLocations(): Promise<string[]> {
+export function getLocations(): Promise<string[]> {
+  if (cachedLocations) return Promise.resolve([...cachedLocations]);
+  if (locationsRequestPromise) return locationsRequestPromise;
+
   const url = `${API_BASE_URL}/locations`;
-  try {
-    const { data } = await http.get<string[]>(url);
-    return data;
-  } catch (err) {
-    console.error(`Failed to load locations from ${url}`, err);
-    return [];
-  }
+  locationsRequestPromise = http.get<string[]>(url)
+    .then(({ data }) => {
+      cachedLocations = [...data];
+      return [...cachedLocations];
+    })
+    .catch((err: unknown) => {
+      console.error(`Failed to load locations from ${url}`, err);
+      return [];
+    })
+    .finally(() => {
+      locationsRequestPromise = null;
+    });
+
+  return locationsRequestPromise;
 }
 
 export interface ScraperHealthRecord {
