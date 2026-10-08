@@ -91,7 +91,20 @@ Client contact at SVA: Ramon.
 
 Two halves share one BigQuery table: a daily batch job writes tenders in, and an API plus web app read them out.
 
-<p align="center"><img src="images/architecture-overview.png" alt="Architecture overview" width="800"></p>
+```mermaid
+flowchart LR
+    sched["Cloud Scheduler<br/>5 am AWST"] --> job["Cloud Run Job<br/>manager.py"]
+    job --> scrapers["Scrapers"]
+    scrapers --> extract["Text extraction"]
+    extract --> gemini["Gemini<br/>Vertex AI"]
+    gemini --> bq[("BigQuery<br/>TenderAI.tenders")]
+    extract --> gcs[("Cloud Storage<br/>attachments")]
+    bq --> api["FastAPI<br/>Cloud Run"]
+    gcs --> api
+    auth["Firebase Auth<br/>+ Firestore"] --> api
+    auth --> web["React app<br/>Firebase Hosting"]
+    api --> web
+```
 
 The job runs top to bottom once a day. The web app only ever reads.
 
@@ -137,7 +150,17 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 
 [manager.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/manager.py) is the only scheduled program. Cloud Scheduler starts the Cloud Run Job `tender-batch-job` at 5 am Perth time, which runs `python manager.py` inside the pipeline image.
 
-<p align="center"><img src="images/daily-pipeline.png" alt="Daily pipeline flow" width="360"></p>
+```mermaid
+flowchart TD
+    tmp["Create temp directory"] --> scrape["Run each scraper"]
+    scrape --> extract["Extract text from attachments"]
+    extract --> each["For each tender folder"]
+    each --> upload["Upload originals to Cloud Storage"]
+    upload --> gemini["Gemini summary + fields"]
+    gemini --> upsert["Upsert into BigQuery"]
+    upsert --> each
+    upsert --> done["Delete temp directory, exit"]
+```
 
 ### Step by step
 
@@ -239,7 +262,16 @@ Other formats (`.xlsx`, `.doc`, `.rtf`, images) are not extracted, and scanned P
 
 [processing/tender_processor.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/processing/tender_processor.py) turns a tender folder into a database record with three kinds of Gemini call. The client uses Vertex AI in project `tenderai-dev`, region `australia-southeast1`, so no API key is needed.
 
-<p align="center"><img src="images/ai-processing.png" alt="AI processing flow" width="800"></p>
+```mermaid
+flowchart LR
+    txt[".txt files"] --> triage{"Triage<br/>each file"}
+    triage -- relevant --> join["Join into<br/>one context"]
+    triage -- not relevant --> dropped["Dropped"]
+    join --> summary["Summary call"]
+    join --> fields["Field extraction call"]
+    summary --> record["Database record"]
+    fields --> record
+```
 
 ### Steps in process_tender()
 
@@ -367,7 +399,23 @@ Any other value for `status` or `category` is rejected with a 422. Every value i
 
 There are two ways to sign in, and both end with a Firebase ID token (a signed JWT, valid about an hour) that the browser sends to the API on every request. Nobody becomes an admin automatically.
 
-<p align="center"><img src="images/sign-in-sequence.png" alt="Sign-in and authorisation sequence" width="800"></p>
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as Microsoft / Firebase Auth
+    participant API as API (auth.py)
+    participant FS as Firestore users/{uid}
+
+    B->>A: Sign in (Microsoft or password)
+    A-->>B: Firebase ID token
+    B->>API: GET /auth/me + Bearer token
+    API->>API: Verify token and provider
+    API->>FS: Read profile
+    FS-->>API: Profile, or none
+    API->>FS: First Microsoft sign-in: create profile
+    API-->>B: uid, email, isAdmin, status
+```
+
 
 ### Sign-in methods
 
