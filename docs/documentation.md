@@ -271,8 +271,10 @@ flowchart LR
     triage -- relevant --> join["Join into<br/>one context"]
     triage -- not relevant --> dropped["Dropped"]
     join --> summary["Summary call"]
+    join --> relevance["Relevance Call"]
     join --> fields["Field extraction call"]
     summary --> record["Database record"]
+    relevance --> record
     fields --> record
 ```
 
