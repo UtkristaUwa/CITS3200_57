@@ -1,7 +1,5 @@
 # TenderAI Owner Manual
 
-*Prepared by the UWA CITS3200 team (Group 57) for Social Ventures Australia · 8 October 2026*
-
 This manual is for the person at SVA who owns TenderAI after the student team hands it over. Today that is Dr Ramon Wenzel. Parts A to E and G to J are for the owner and need only a web browser. Part F, Microsoft sign-in, is shared: F1 is done on SVA's side, and F2 to F4 by whoever maintains the code. How the system is built in detail lives in the code repository.
 
 ```
@@ -31,17 +29,17 @@ This manual is for the person at SVA who owns TenderAI after the student team ha
 
 | Item | What it is | Where your steps are |
 | --- | --- | --- |
-| Google Cloud project `tenderai-dev` | The container for the whole system, in Google's Sydney region | Part C, steps 1 to 3 |
-| Billing | The account Google charges for the project's running costs. Today it is a team member's account | Part C, steps 4 and 5 |
+| Google Cloud project `tenderai-dev` | The container for the whole system, in Google's Sydney region | [Part C, steps 1 to 3](#part-c--taking-ownership-of-the-google-cloud-project) |
+| Billing | The account Google charges for the project's running costs. Today it is a team member's account | [Part C, steps 4 and 5](#part-c--taking-ownership-of-the-google-cloud-project) |
 | Tender database | BigQuery dataset `TenderAI`. Holds every tender the system has collected | Comes with the project |
 | Document storage | Cloud Storage bucket `tenderai-dev-documents`. Holds the original tender documents and the daily health report | Comes with the project |
 | Daily pipeline | Scheduled job `tender-batch-job`. Collects and processes tenders at 5 am Perth time | Comes with the project |
-| Website and API | Website on Firebase Hosting at `tenderai-dev-f0283.firebaseapp.com`, talking to the backend service `tenderai-api` | Part C, step 7 |
-| User accounts | Firebase holds the users, who is an admin, and each person's favourites | Part C, step 8 |
-| Failure alert emails | Google Cloud emails a named person when the daily run reports an error. Today that is a team member | Part D |
-| Microsoft sign-in | An app registration in SVA's own Microsoft Entra directory. Not switched on yet | Part F |
-| Tender portal logins | The usernames and passwords the pipeline uses on portals that need an account | Part G |
-| Code repository on GitHub | The source code. Merging a change publishes a new version of the website | Part G |
+| Website and API | Website on Firebase Hosting at `tenderai-dev-f0283.firebaseapp.com`, talking to the backend service `tenderai-api` | [Part C, step 7](#part-c--taking-ownership-of-the-google-cloud-project) |
+| User accounts | Firebase holds the users, who is an admin, and each person's favourites | [Part C, step 8](#part-c--taking-ownership-of-the-google-cloud-project) |
+| Failure alert emails | Google Cloud emails a named person when the daily run reports an error. Today that is a team member | [Part D](#part-d--moving-the-failure-alert-emails) |
+| Microsoft sign-in | An app registration in SVA's own Microsoft Entra directory. Not switched on yet | [Part F](#part-f--microsoft-sign-in) |
+| Tender portal logins | The usernames and passwords the pipeline uses on portals that need an account | [Part G](#part-g--things-outside-google-cloud) |
+| Code repository on GitHub | The source code. Merging a change publishes a new version of the website | [Part G](#part-g--things-outside-google-cloud) |
 
 ---
 
