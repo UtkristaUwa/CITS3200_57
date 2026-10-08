@@ -171,6 +171,13 @@ class DocumentOut(BaseModel):
         return data
 
 
+class TenderTagOut(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    label: str
+
+
 class TenderOut(BaseModel):
     tender_id: str
     source_reference_id: str | None = None
@@ -192,6 +199,8 @@ class TenderOut(BaseModel):
     location: str | None = None
     description: str | None = None
     summary_headline: str | None = None
+    focus_areas: list[TenderTagOut] = Field(default_factory=list)
+    work_types: list[TenderTagOut] = Field(default_factory=list)
 
     contact_name: str | None = None
     contact_email: str | None = None
@@ -250,4 +259,3 @@ class ScraperHealthRecord(BaseModel):
     status: str = "Unknown"
     status_color: str = "default"
     message: str = ""
-

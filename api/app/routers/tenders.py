@@ -1,14 +1,19 @@
-from typing import Literal
+import json
+import logging
+import math
 from datetime import date
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
+from app import runtime_config
 from app.bigquery import get_client, get_storage_client, list_tenders, get_locations
 from app.config import settings
 from app.models import TenderOut
 
 _ALLOWED_BUCKET_PREFIX = "tenderai-"
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -90,6 +95,60 @@ _MOCK_TENDERS = [
         "raw_extra": None,
     },
 ]
+
+
+def _parse_classification_scores(value: object) -> dict[str, int | float]:
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (json.JSONDecodeError, TypeError, RecursionError):
+            return {}
+
+    if not isinstance(value, dict):
+        return {}
+
+    scores: dict[str, int | float] = {}
+    for tag_id, score in value.items():
+        if not isinstance(tag_id, str) or not tag_id:
+            continue
+        if isinstance(score, bool) or not isinstance(score, (int, float)):
+            continue
+        if not 1 <= score <= 5 or not math.isfinite(score):
+            continue
+        scores[tag_id] = score
+    return scores
+
+
+def _classification_tags(value: object, labels: dict[str, str]) -> list[dict[str, str]]:
+    scores = _parse_classification_scores(value)
+    ordered = sorted(
+        ((tag_id, score) for tag_id, score in scores.items() if tag_id in labels),
+        key=lambda item: (-item[1], item[0]),
+    )
+    return [{"id": tag_id, "label": labels[tag_id]} for tag_id, _score in ordered]
+
+
+def _tender_outputs(
+    rows: list[dict],
+    taxonomies: runtime_config.RuntimeTaxonomies | None = None,
+) -> list[TenderOut]:
+    focus_area_labels = taxonomies.focus_areas if taxonomies else {}
+    work_type_labels = taxonomies.work_types if taxonomies else {}
+    outputs: list[TenderOut] = []
+
+    for row in rows:
+        values = dict(row)
+        values["focus_areas"] = _classification_tags(
+            values.get("focus_areas"),
+            focus_area_labels,
+        )
+        values["work_types"] = _classification_tags(
+            values.get("work_types"),
+            work_type_labels,
+        )
+        outputs.append(TenderOut(**values))
+
+    return outputs
 
 
 def _matches_mock(
@@ -175,7 +234,7 @@ def get_tenders(
     if settings.use_mock_data:
         matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
         page = matches[offset : offset + limit]
-        return [TenderOut(**row) for row in page]
+        return _tender_outputs(page)
 
     client = get_client()
     rows = list_tenders(
@@ -184,7 +243,17 @@ def get_tenders(
         location=location, min_value=min_value, max_value=max_value, 
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
     )
-    return [TenderOut(**row) for row in rows]
+    if not rows:
+        return []
+
+    try:
+        taxonomies = runtime_config.get_taxonomy_labels()
+    except runtime_config.RuntimeConfigError:
+        logger.warning("Runtime taxonomy unavailable; returning empty tender classifications")
+        taxonomies = None
+    return _tender_outputs(rows, taxonomies)
+
+
 @router.get("/documents/download")
 def download_document(
     storage_url: str = Query(..., description="HTTPS GCS URL from a TenderDocument"),
