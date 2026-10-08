@@ -60,7 +60,10 @@ alertStrategy:
     period: 3600s
   autoClose: 604800s
 
-# Replace with the channel from:
+# The "TenderAI alerts" email channel. List channels, or point this at a
+# different one, with:
 #   gcloud beta monitoring channels list --format="value(name,displayName)"
+# Worth revisiting at handover: an alert sent to an address nobody reads any
+# more is the same as no alert at all.
 notificationChannels:
-  - projects/tenderai-dev/notificationChannels/REPLACE_WITH_CHANNEL_ID
+  - projects/tenderai-dev/notificationChannels/11048810474395203312
