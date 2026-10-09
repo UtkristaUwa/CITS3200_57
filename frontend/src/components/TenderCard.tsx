@@ -283,22 +283,35 @@ import {
           )}
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
-              <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
-              <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
-              <Typography variant="body2"><strong>Location:</strong> {tender.location ?? 'Not specified'}</Typography>
-              <Box sx={{ minWidth: 0 }}>
-                <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
-                {workTypes.length > 0 && (
-                  <Box component="section" aria-label="Work Types" sx={{ mt: 1.25, minWidth: 0 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>Work Types</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0 }}>
-                      {workTypes.map((workType) => (
-                        <Chip key={workType.id} label={workType.label} size="small" sx={TAG_CHIP_SX} />
-                      ))}
-                    </Box>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 1 } }}>
+                <strong>Monetary Value:</strong> {formatMoney(tender)}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 1 } }}>
+                <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 2 } }}>
+                <strong>Location:</strong> {tender.location ?? 'Not specified'}
+              </Typography>
+              {workTypes.length > 0 && (
+                <Box
+                  component="section"
+                  aria-label="Work Types"
+                  sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 2 }, minWidth: 0 }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>Work Types</Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0 }}>
+                    {workTypes.map((workType) => (
+                      <Chip key={workType.id} label={workType.label} size="small" sx={TAG_CHIP_SX} />
+                    ))}
                   </Box>
-                )}
-              </Box>
+                </Box>
+              )}
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 3 } }}>
+                <strong>Status:</strong> {tender.status ?? 'Active'}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 3 } }}>
+                <strong>Category:</strong> {tender.category ?? 'Not specified'}
+              </Typography>
             </Box>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>AI Summary</Typography>
