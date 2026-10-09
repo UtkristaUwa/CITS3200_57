@@ -87,6 +87,25 @@ def _validate_relevance_text(value: object) -> object:
     return value
 
 
+class ExtractionPromptResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_extraction: str
+    generation: str
+
+
+class ExtractionPromptUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_extraction: str
+    generation: str = Field(min_length=1, pattern=r"^[0-9]+$")
+
+    @field_validator("field_extraction", mode="before")
+    @classmethod
+    def validate_field_extraction(cls, value: object) -> object:
+        return _validate_relevance_text(value)
+
+
 class RelevanceConfigResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

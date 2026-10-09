@@ -11,10 +11,13 @@ import {
   Typography,
 } from '@mui/material';
 import {
+  getExtractionPrompt,
   getRelevanceConfig,
   getModelConfig,
+  updateExtractionPrompt,
   updateRelevanceConfig,
   updateModelConfig,
+  type ExtractionPromptResponse,
   type ModelConfigResponse,
   type ModelConfigUpdate,
   type RelevanceConfigResponse,
@@ -271,6 +274,15 @@ export default function ConfigPage() {
   const [relevanceSaveError, setRelevanceSaveError] = useState<string | null>(null);
   const [relevanceSaveSuccess, setRelevanceSaveSuccess] = useState<string | null>(null);
   const [relevanceHasConflict, setRelevanceHasConflict] = useState(false);
+  const [extractionPrompt, setExtractionPrompt] = useState('');
+  const [extractionGeneration, setExtractionGeneration] = useState<string | null>(null);
+  const [originalExtraction, setOriginalExtraction] = useState<ExtractionPromptResponse | null>(null);
+  const [extractionLoading, setExtractionLoading] = useState(true);
+  const [extractionSaving, setExtractionSaving] = useState(false);
+  const [extractionLoadError, setExtractionLoadError] = useState<string | null>(null);
+  const [extractionSaveError, setExtractionSaveError] = useState<string | null>(null);
+  const [extractionSaveSuccess, setExtractionSaveSuccess] = useState<string | null>(null);
+  const [extractionHasConflict, setExtractionHasConflict] = useState(false);
 
   const loadModelConfig = useCallback(async () => {
     setLoading(true);
@@ -308,6 +320,41 @@ export default function ConfigPage() {
   useEffect(() => {
     void loadModelConfig();
   }, [loadModelConfig]);
+
+  const loadExtractionPrompt = useCallback(async () => {
+    setExtractionLoading(true);
+    setExtractionLoadError(null);
+    setExtractionSaveError(null);
+    setExtractionSaveSuccess(null);
+    setExtractionHasConflict(false);
+
+    try {
+      const config = await getExtractionPrompt();
+      setExtractionPrompt(config.field_extraction);
+      setExtractionGeneration(config.generation);
+      setOriginalExtraction(config);
+    } catch (error) {
+      setExtractionPrompt('');
+      setExtractionGeneration(null);
+      setOriginalExtraction(null);
+
+      if (axios.isAxiosError(error) && error.response?.status === 503) {
+        setExtractionLoadError('Runtime extraction prompt is currently unavailable or not configured.');
+      } else if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setExtractionLoadError('Your session has expired. Please sign in again.');
+      } else if (axios.isAxiosError(error) && error.response?.status === 403) {
+        setExtractionLoadError('You do not have permission to view the extraction prompt.');
+      } else {
+        setExtractionLoadError('Unable to load the extraction prompt. Please try again.');
+      }
+    } finally {
+      setExtractionLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadExtractionPrompt();
+  }, [loadExtractionPrompt]);
 
   const loadRelevanceConfig = useCallback(async () => {
     setRelevanceLoading(true);
@@ -397,6 +444,71 @@ export default function ConfigPage() {
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const trimmedExtractionPrompt = extractionPrompt.trim();
+  const extractionChangedPrompt =
+    originalExtraction !== null && trimmedExtractionPrompt !== originalExtraction.field_extraction;
+  // Mirrors the API's own rule: a line starting with a CFG comment marker would
+  // be silently swallowed by the parser rather than saved as prompt text.
+  const extractionHasCommentLine = trimmedExtractionPrompt
+    .split('\n')
+    .some((line) => line.trimStart().startsWith('#') || line.trimStart().startsWith(';'));
+  const extractionSaveDisabled =
+    extractionLoading ||
+    extractionSaving ||
+    !extractionGeneration ||
+    !extractionChangedPrompt ||
+    !trimmedExtractionPrompt ||
+    extractionHasCommentLine ||
+    extractionHasConflict;
+
+  const handleExtractionSave = async () => {
+    if (extractionSaveDisabled || !extractionGeneration) {
+      return;
+    }
+
+    setExtractionSaving(true);
+    setExtractionSaveError(null);
+    setExtractionSaveSuccess(null);
+
+    try {
+      const config = await updateExtractionPrompt({
+        generation: extractionGeneration,
+        field_extraction: trimmedExtractionPrompt,
+      });
+      setExtractionPrompt(config.field_extraction);
+      setExtractionGeneration(config.generation);
+      setOriginalExtraction(config);
+      setExtractionHasConflict(false);
+      setExtractionSaveSuccess('Extraction prompt saved successfully.');
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if (status === 409) {
+        setExtractionHasConflict(true);
+        setExtractionSaveError('The configuration was changed by another update. Reload the latest values and try again.');
+      } else if (status === 422) {
+        setExtractionSaveError('The extraction prompt is invalid. Remove any lines starting with # or ; and try again.');
+      } else if (status === 503) {
+        setExtractionSaveError('Runtime configuration is currently unavailable. Your changes have not been discarded.');
+      } else if (status === 401) {
+        setExtractionSaveError('Your session has expired. Please sign in again.');
+      } else if (status === 403) {
+        setExtractionSaveError('You do not have permission to update the extraction prompt.');
+      } else {
+        setExtractionSaveError('Unable to save the extraction prompt. Please try again.');
+      }
+    } finally {
+      setExtractionSaving(false);
+    }
+  };
+
+  const handleExtractionChange = (value: string) => {
+    setExtractionPrompt(value);
+    setExtractionSaveSuccess(null);
+    if (!extractionHasConflict) {
+      setExtractionSaveError(null);
     }
   };
 
@@ -533,22 +645,80 @@ export default function ConfigPage() {
         title="Tender extraction prompt"
         description="System instructions used to extract structured database fields from scraped tender content."
       >
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Backend configuration API not available. The current prompt cannot be loaded or updated here yet, so
-          this preview is intentionally empty.
-        </Alert>
+        {extractionLoading && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" color="text.secondary">
+              Loading configuration...
+            </Typography>
+          </Box>
+        )}
+        {extractionLoadError && (
+          <Alert
+            severity="error"
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => void loadExtractionPrompt()}
+                disabled={extractionLoading}
+              >
+                Reload
+              </Button>
+            }
+            sx={reloadAlertSx}
+          >
+            {extractionLoadError}
+          </Alert>
+        )}
+        {extractionSaveError && (
+          <Alert
+            severity={extractionHasConflict ? 'warning' : 'error'}
+            action={
+              extractionHasConflict ? (
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => void loadExtractionPrompt()}
+                  disabled={extractionLoading}
+                >
+                  Reload
+                </Button>
+              ) : undefined
+            }
+            sx={reloadAlertSx}
+          >
+            {extractionSaveError}
+          </Alert>
+        )}
+        {extractionSaveSuccess && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {extractionSaveSuccess}
+          </Alert>
+        )}
         <TextField
-          label="Extraction prompt preview"
-          placeholder="The current extraction prompt will appear here when the backend API is available."
+          label="Extraction prompt"
+          value={extractionPrompt}
+          onChange={(event) => handleExtractionChange(event.target.value)}
           multiline
           minRows={8}
           fullWidth
-          slotProps={{ input: { readOnly: true } }}
-          helperText="Display only. This page does not read or modify tender_processor.cfg directly."
+          disabled={extractionLoading || extractionSaving || !extractionGeneration}
+          error={extractionHasCommentLine || (!!extractionGeneration && !trimmedExtractionPrompt)}
+          helperText={
+            extractionHasCommentLine
+              ? 'Lines cannot start with # or ; — the config parser treats them as comments and would drop them.'
+              : 'Saved to [system_prompts] field_extraction in the shared tender_processor.cfg. Applies to the next pipeline run.'
+          }
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button variant="contained" disabled sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}>
-            Save prompt
+          <Button
+            variant="contained"
+            onClick={() => void handleExtractionSave()}
+            disabled={extractionSaveDisabled}
+            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+          >
+            {extractionSaving ? 'Saving...' : 'Save prompt'}
           </Button>
         </Box>
       </ConfigurationSection>
