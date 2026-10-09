@@ -11,15 +11,16 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  getExtractionPrompt,
+  getPromptsConfig,
   getRelevanceConfig,
   getModelConfig,
-  updateExtractionPrompt,
+  updatePromptsConfig,
   updateRelevanceConfig,
   updateModelConfig,
-  type ExtractionPromptResponse,
   type ModelConfigResponse,
   type ModelConfigUpdate,
+  type PromptsConfigResponse,
+  type PromptsConfigUpdate,
   type RelevanceConfigResponse,
   type RelevanceConfigUpdate,
 } from '../lib/api';
@@ -91,6 +92,64 @@ function toRelevanceForm(config: RelevanceConfigResponse): RelevanceFormValues {
     relevance_model: config.relevance_model,
     relevance_temperature: String(config.relevance_temperature),
   };
+}
+
+// The three prompt panes all edit one GCS object, which carries a single
+// generation token. They therefore share one load and one generation: saving
+// any pane hands the new generation to all of them, so the others don't go
+// stale and 409 on their next save.
+type PromptField = 'field_extraction' | 'summary' | 'doc_triage' | 'triage_char_limit';
+type PromptsFormValues = Record<PromptField, string>;
+type PromptsFormErrors = Partial<Record<PromptField, string>>;
+type PromptPane = 'extraction' | 'summary' | 'triage';
+type PaneMessages = Partial<Record<PromptPane, string>>;
+
+const EMPTY_PROMPTS_FORM: PromptsFormValues = {
+  field_extraction: '',
+  summary: '',
+  doc_triage: '',
+  triage_char_limit: '',
+};
+
+const PANE_FIELDS: Record<PromptPane, PromptField[]> = {
+  extraction: ['field_extraction'],
+  summary: ['summary'],
+  triage: ['doc_triage', 'triage_char_limit'],
+};
+
+const PANE_LABELS: Record<PromptPane, string> = {
+  extraction: 'Extraction prompt',
+  summary: 'Summary prompt',
+  triage: 'Triage configuration',
+};
+
+function toPromptsForm(config: PromptsConfigResponse): PromptsFormValues {
+  return {
+    field_extraction: config.field_extraction,
+    summary: config.summary,
+    doc_triage: config.doc_triage,
+    triage_char_limit: String(config.triage_char_limit),
+  };
+}
+
+function validatePromptsForm(values: PromptsFormValues): PromptsFormErrors {
+  const errors: PromptsFormErrors = {};
+
+  for (const field of ['field_extraction', 'summary', 'doc_triage'] as const) {
+    if (!values[field].trim()) {
+      errors[field] = 'This field is required.';
+    } else if (values[field].split(/\r?\n/).some((line) => /^[#;]/.test(line.trimStart()))) {
+      // The config parser treats such a line as a comment and would drop it.
+      errors[field] = 'Lines cannot begin with # or ;.';
+    }
+  }
+
+  const charLimit = Number(values.triage_char_limit);
+  if (!values.triage_char_limit.trim() || !Number.isInteger(charLimit) || charLimit <= 0) {
+    errors.triage_char_limit = 'Enter a whole number greater than zero.';
+  }
+
+  return errors;
 }
 
 function validateRelevanceForm(values: RelevanceFormValues): RelevanceFormErrors {
@@ -274,15 +333,15 @@ export default function ConfigPage() {
   const [relevanceSaveError, setRelevanceSaveError] = useState<string | null>(null);
   const [relevanceSaveSuccess, setRelevanceSaveSuccess] = useState<string | null>(null);
   const [relevanceHasConflict, setRelevanceHasConflict] = useState(false);
-  const [extractionPrompt, setExtractionPrompt] = useState('');
-  const [extractionGeneration, setExtractionGeneration] = useState<string | null>(null);
-  const [originalExtraction, setOriginalExtraction] = useState<ExtractionPromptResponse | null>(null);
-  const [extractionLoading, setExtractionLoading] = useState(true);
-  const [extractionSaving, setExtractionSaving] = useState(false);
-  const [extractionLoadError, setExtractionLoadError] = useState<string | null>(null);
-  const [extractionSaveError, setExtractionSaveError] = useState<string | null>(null);
-  const [extractionSaveSuccess, setExtractionSaveSuccess] = useState<string | null>(null);
-  const [extractionHasConflict, setExtractionHasConflict] = useState(false);
+  const [promptsForm, setPromptsForm] = useState<PromptsFormValues>(EMPTY_PROMPTS_FORM);
+  const [promptsGeneration, setPromptsGeneration] = useState<string | null>(null);
+  const [originalPrompts, setOriginalPrompts] = useState<PromptsConfigResponse | null>(null);
+  const [promptsLoading, setPromptsLoading] = useState(true);
+  const [promptsLoadError, setPromptsLoadError] = useState<string | null>(null);
+  const [savingPane, setSavingPane] = useState<PromptPane | null>(null);
+  const [paneError, setPaneError] = useState<PaneMessages>({});
+  const [paneSuccess, setPaneSuccess] = useState<PaneMessages>({});
+  const [conflictPane, setConflictPane] = useState<PromptPane | null>(null);
 
   const loadModelConfig = useCallback(async () => {
     setLoading(true);
@@ -321,40 +380,40 @@ export default function ConfigPage() {
     void loadModelConfig();
   }, [loadModelConfig]);
 
-  const loadExtractionPrompt = useCallback(async () => {
-    setExtractionLoading(true);
-    setExtractionLoadError(null);
-    setExtractionSaveError(null);
-    setExtractionSaveSuccess(null);
-    setExtractionHasConflict(false);
+  const loadPromptsConfig = useCallback(async () => {
+    setPromptsLoading(true);
+    setPromptsLoadError(null);
+    setPaneError({});
+    setPaneSuccess({});
+    setConflictPane(null);
 
     try {
-      const config = await getExtractionPrompt();
-      setExtractionPrompt(config.field_extraction);
-      setExtractionGeneration(config.generation);
-      setOriginalExtraction(config);
+      const config = await getPromptsConfig();
+      setPromptsForm(toPromptsForm(config));
+      setPromptsGeneration(config.generation);
+      setOriginalPrompts(config);
     } catch (error) {
-      setExtractionPrompt('');
-      setExtractionGeneration(null);
-      setOriginalExtraction(null);
+      setPromptsForm(EMPTY_PROMPTS_FORM);
+      setPromptsGeneration(null);
+      setOriginalPrompts(null);
 
       if (axios.isAxiosError(error) && error.response?.status === 503) {
-        setExtractionLoadError('Runtime extraction prompt is currently unavailable or not configured.');
+        setPromptsLoadError('Runtime prompt configuration is currently unavailable or not configured.');
       } else if (axios.isAxiosError(error) && error.response?.status === 401) {
-        setExtractionLoadError('Your session has expired. Please sign in again.');
+        setPromptsLoadError('Your session has expired. Please sign in again.');
       } else if (axios.isAxiosError(error) && error.response?.status === 403) {
-        setExtractionLoadError('You do not have permission to view the extraction prompt.');
+        setPromptsLoadError('You do not have permission to view prompt configuration.');
       } else {
-        setExtractionLoadError('Unable to load the extraction prompt. Please try again.');
+        setPromptsLoadError('Unable to load the prompt configuration. Please try again.');
       }
     } finally {
-      setExtractionLoading(false);
+      setPromptsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void loadExtractionPrompt();
-  }, [loadExtractionPrompt]);
+    void loadPromptsConfig();
+  }, [loadPromptsConfig]);
 
   const loadRelevanceConfig = useCallback(async () => {
     setRelevanceLoading(true);
@@ -447,70 +506,150 @@ export default function ConfigPage() {
     }
   };
 
-  const trimmedExtractionPrompt = extractionPrompt.trim();
-  const extractionChangedPrompt =
-    originalExtraction !== null && trimmedExtractionPrompt !== originalExtraction.field_extraction;
-  // Mirrors the API's own rule: a line starting with a CFG comment marker would
-  // be silently swallowed by the parser rather than saved as prompt text.
-  const extractionHasCommentLine = trimmedExtractionPrompt
-    .split('\n')
-    .some((line) => line.trimStart().startsWith('#') || line.trimStart().startsWith(';'));
-  const extractionSaveDisabled =
-    extractionLoading ||
-    extractionSaving ||
-    !extractionGeneration ||
-    !extractionChangedPrompt ||
-    !trimmedExtractionPrompt ||
-    extractionHasCommentLine ||
-    extractionHasConflict;
+  const promptFieldErrors = validatePromptsForm(promptsForm);
+  const paneHasError = (pane: PromptPane) =>
+    PANE_FIELDS[pane].some((field) => promptFieldErrors[field] !== undefined);
+  const paneHasChanges = (pane: PromptPane) =>
+    originalPrompts !== null &&
+    PANE_FIELDS[pane].some(
+      (field) => promptsForm[field].trim() !== String(originalPrompts[field]),
+    );
+  const paneSaveDisabled = (pane: PromptPane) =>
+    promptsLoading ||
+    savingPane !== null ||
+    !promptsGeneration ||
+    !paneHasChanges(pane) ||
+    paneHasError(pane) ||
+    conflictPane !== null;
 
-  const handleExtractionSave = async () => {
-    if (extractionSaveDisabled || !extractionGeneration) {
+  const handlePromptChange = (field: PromptField, value: string) => {
+    setPromptsForm((current) => ({ ...current, [field]: value }));
+    setPaneSuccess({});
+    if (conflictPane === null) {
+      setPaneError({});
+    }
+  };
+
+  const handlePaneSave = async (pane: PromptPane) => {
+    if (paneSaveDisabled(pane) || !promptsGeneration) {
       return;
     }
 
-    setExtractionSaving(true);
-    setExtractionSaveError(null);
-    setExtractionSaveSuccess(null);
+    const update: PromptsConfigUpdate = { generation: promptsGeneration };
+    for (const field of PANE_FIELDS[pane]) {
+      if (field === 'triage_char_limit') {
+        update.triage_char_limit = Number(promptsForm.triage_char_limit.trim());
+      } else {
+        update[field] = promptsForm[field].trim();
+      }
+    }
+
+    setSavingPane(pane);
+    setPaneError({});
+    setPaneSuccess({});
 
     try {
-      const config = await updateExtractionPrompt({
-        generation: extractionGeneration,
-        field_extraction: trimmedExtractionPrompt,
-      });
-      setExtractionPrompt(config.field_extraction);
-      setExtractionGeneration(config.generation);
-      setOriginalExtraction(config);
-      setExtractionHasConflict(false);
-      setExtractionSaveSuccess('Extraction prompt saved successfully.');
+      const config = await updatePromptsConfig(update);
+      // The whole file shares one generation, so every pane takes the new one:
+      // without this the other panes would 409 on their next save.
+      setPromptsForm(toPromptsForm(config));
+      setPromptsGeneration(config.generation);
+      setOriginalPrompts(config);
+      setConflictPane(null);
+      setPaneSuccess({ [pane]: `${PANE_LABELS[pane]} saved successfully.` });
     } catch (error) {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      let message: string;
       if (status === 409) {
-        setExtractionHasConflict(true);
-        setExtractionSaveError('The configuration was changed by another update. Reload the latest values and try again.');
+        setConflictPane(pane);
+        message = 'The configuration was changed by another update. Reload the latest values and try again.';
       } else if (status === 422) {
-        setExtractionSaveError('The extraction prompt is invalid. Remove any lines starting with # or ; and try again.');
+        message = 'That value is invalid. Prompts cannot be empty or contain lines starting with # or ;.';
       } else if (status === 503) {
-        setExtractionSaveError('Runtime configuration is currently unavailable. Your changes have not been discarded.');
+        message = 'Runtime configuration is currently unavailable. Your changes have not been discarded.';
       } else if (status === 401) {
-        setExtractionSaveError('Your session has expired. Please sign in again.');
+        message = 'Your session has expired. Please sign in again.';
       } else if (status === 403) {
-        setExtractionSaveError('You do not have permission to update the extraction prompt.');
+        message = 'You do not have permission to update prompt configuration.';
       } else {
-        setExtractionSaveError('Unable to save the extraction prompt. Please try again.');
+        message = `Unable to save the ${PANE_LABELS[pane].toLowerCase()}. Please try again.`;
       }
+      setPaneError({ [pane]: message });
     } finally {
-      setExtractionSaving(false);
+      setSavingPane(null);
     }
   };
 
-  const handleExtractionChange = (value: string) => {
-    setExtractionPrompt(value);
-    setExtractionSaveSuccess(null);
-    if (!extractionHasConflict) {
-      setExtractionSaveError(null);
-    }
-  };
+  const renderPaneAlerts = (pane: PromptPane) => (
+    <>
+      {promptsLoading && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <CircularProgress size={20} />
+          <Typography variant="body2" color="text.secondary">
+            Loading configuration...
+          </Typography>
+        </Box>
+      )}
+      {promptsLoadError && (
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => void loadPromptsConfig()}
+              disabled={promptsLoading}
+            >
+              Reload
+            </Button>
+          }
+          sx={reloadAlertSx}
+        >
+          {promptsLoadError}
+        </Alert>
+      )}
+      {paneError[pane] && (
+        <Alert
+          severity={conflictPane === pane ? 'warning' : 'error'}
+          action={
+            conflictPane === pane ? (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => void loadPromptsConfig()}
+                disabled={promptsLoading}
+              >
+                Reload
+              </Button>
+            ) : undefined
+          }
+          sx={reloadAlertSx}
+        >
+          {paneError[pane]}
+        </Alert>
+      )}
+      {paneSuccess[pane] && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {paneSuccess[pane]}
+        </Alert>
+      )}
+    </>
+  );
+
+  const renderPaneSave = (pane: PromptPane) => (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+      <Button
+        variant="contained"
+        onClick={() => void handlePaneSave(pane)}
+        disabled={paneSaveDisabled(pane)}
+        sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+      >
+        {savingPane === pane ? 'Saving...' : 'Save prompt'}
+      </Button>
+    </Box>
+  );
+
+  const promptFieldDisabled = promptsLoading || savingPane !== null || !promptsGeneration;
 
   const handleModelChange = (setter: (value: string) => void, value: string) => {
     setter(value);
@@ -645,82 +784,80 @@ export default function ConfigPage() {
         title="Tender extraction prompt"
         description="System instructions used to extract structured database fields from scraped tender content."
       >
-        {extractionLoading && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <CircularProgress size={20} />
-            <Typography variant="body2" color="text.secondary">
-              Loading configuration...
-            </Typography>
-          </Box>
-        )}
-        {extractionLoadError && (
-          <Alert
-            severity="error"
-            action={
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => void loadExtractionPrompt()}
-                disabled={extractionLoading}
-              >
-                Reload
-              </Button>
-            }
-            sx={reloadAlertSx}
-          >
-            {extractionLoadError}
-          </Alert>
-        )}
-        {extractionSaveError && (
-          <Alert
-            severity={extractionHasConflict ? 'warning' : 'error'}
-            action={
-              extractionHasConflict ? (
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={() => void loadExtractionPrompt()}
-                  disabled={extractionLoading}
-                >
-                  Reload
-                </Button>
-              ) : undefined
-            }
-            sx={reloadAlertSx}
-          >
-            {extractionSaveError}
-          </Alert>
-        )}
-        {extractionSaveSuccess && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {extractionSaveSuccess}
-          </Alert>
-        )}
+        {renderPaneAlerts('extraction')}
         <TextField
           label="Extraction prompt"
-          value={extractionPrompt}
-          onChange={(event) => handleExtractionChange(event.target.value)}
+          value={promptsForm.field_extraction}
+          onChange={(event) => handlePromptChange('field_extraction', event.target.value)}
           multiline
           minRows={8}
           fullWidth
-          disabled={extractionLoading || extractionSaving || !extractionGeneration}
-          error={extractionHasCommentLine || (!!extractionGeneration && !trimmedExtractionPrompt)}
+          disabled={promptFieldDisabled}
+          error={promptFieldErrors.field_extraction !== undefined}
           helperText={
-            extractionHasCommentLine
-              ? 'Lines cannot start with # or ; — the config parser treats them as comments and would drop them.'
-              : 'Saved to [system_prompts] field_extraction in the shared tender_processor.cfg. Applies to the next pipeline run.'
+            promptFieldErrors.field_extraction
+            ?? 'Saved to [system_prompts] field_extraction. Applies to the next pipeline run.'
           }
         />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button
-            variant="contained"
-            onClick={() => void handleExtractionSave()}
-            disabled={extractionSaveDisabled}
-            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
-          >
-            {extractionSaving ? 'Saving...' : 'Save prompt'}
-          </Button>
-        </Box>
+        {renderPaneSave('extraction')}
+      </ConfigurationSection>
+
+      <ConfigurationSection
+        title="Tender summary prompt"
+        description="System instructions used to generate each tender's headline and description."
+      >
+        {renderPaneAlerts('summary')}
+        <TextField
+          label="Summary prompt"
+          value={promptsForm.summary}
+          onChange={(event) => handlePromptChange('summary', event.target.value)}
+          multiline
+          minRows={8}
+          fullWidth
+          disabled={promptFieldDisabled}
+          error={promptFieldErrors.summary !== undefined}
+          helperText={
+            promptFieldErrors.summary
+            ?? 'Saved to [system_prompts] summary. Applies to the next pipeline run.'
+          }
+        />
+        {renderPaneSave('summary')}
+      </ConfigurationSection>
+
+      <ConfigurationSection
+        title="Document triage"
+        description="Decides which attachments are read at all. Documents dropped here are never seen by the extraction or summary steps."
+      >
+        {renderPaneAlerts('triage')}
+        <TextField
+          label="Triage prompt"
+          value={promptsForm.doc_triage}
+          onChange={(event) => handlePromptChange('doc_triage', event.target.value)}
+          multiline
+          minRows={8}
+          fullWidth
+          disabled={promptFieldDisabled}
+          error={promptFieldErrors.doc_triage !== undefined}
+          helperText={
+            promptFieldErrors.doc_triage
+            ?? 'Saved to [system_prompts] doc_triage. Applies to the next pipeline run.'
+          }
+        />
+        <TextField
+          label="Triage character limit"
+          value={promptsForm.triage_char_limit}
+          onChange={(event) => handlePromptChange('triage_char_limit', event.target.value)}
+          type="number"
+          fullWidth
+          sx={{ mt: 2 }}
+          disabled={promptFieldDisabled}
+          error={promptFieldErrors.triage_char_limit !== undefined}
+          helperText={
+            promptFieldErrors.triage_char_limit
+            ?? 'How many characters of each document the triage step reads before deciding. Saved to [models] triage_char_limit.'
+          }
+        />
+        {renderPaneSave('triage')}
       </ConfigurationSection>
 
       <ConfigurationSection
