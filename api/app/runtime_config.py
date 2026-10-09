@@ -39,7 +39,8 @@ _RELEVANCE_SCORING_KEYS = (
     "max_work_types",
 )
 _RELEVANCE_MODEL_KEYS = ("relevance_model", "relevance_temperature")
-_SYSTEM_PROMPT_KEYS = ("field_extraction",)
+_SYSTEM_PROMPT_KEYS = ("field_extraction", "summary", "doc_triage")
+_PROMPT_MODEL_KEYS = ("triage_char_limit",)
 _OPTION_RE = re.compile(
     r"^(?P<key>[A-Za-z][A-Za-z0-9_]*)(?P<separator>\s*=\s*)"
     r"(?P<value>[^\r\n]*?)(?P<ending>\r?\n)?$"
@@ -93,8 +94,11 @@ class RuntimeRelevanceConfig:
 
 
 @dataclass(frozen=True)
-class RuntimeExtractionPromptConfig:
+class RuntimePromptsConfig:
     field_extraction: str
+    summary: str
+    doc_triage: str
+    triage_char_limit: int
     generation: str
 
 
@@ -339,30 +343,54 @@ def get_relevance_config() -> RuntimeRelevanceConfig:
     return _relevance_config(_parse_relevance(stored.text), stored.generation)
 
 
-def _parse_extraction_prompt(text: str) -> str:
+def _parse_prompts(text: str) -> dict[str, str | int]:
     try:
         parser = configparser.ConfigParser(interpolation=None, strict=True)
         parser.read_string(text)
     except configparser.Error as exc:
         raise RuntimeConfigMalformed("runtime configuration is malformed") from exc
 
-    if not parser.has_section("system_prompts"):
-        raise RuntimeConfigMalformed("runtime configuration has no [system_prompts] section")
-    if not parser.has_option("system_prompts", "field_extraction"):
-        raise RuntimeConfigMalformed("runtime configuration has no system_prompts.field_extraction")
+    for section in ("system_prompts", "models"):
+        if not parser.has_section(section):
+            raise RuntimeConfigMalformed(f"runtime configuration has no [{section}] section")
 
-    value = parser.get("system_prompts", "field_extraction").strip()
-    if not value:
-        raise RuntimeConfigMalformed("runtime configuration has an empty system_prompts.field_extraction")
-    return value
+    values: dict[str, str | int] = {}
+    for key in _SYSTEM_PROMPT_KEYS:
+        if not parser.has_option("system_prompts", key):
+            raise RuntimeConfigMalformed(f"runtime configuration has no system_prompts.{key}")
+        value = parser.get("system_prompts", key).strip()
+        if not value:
+            raise RuntimeConfigMalformed(f"runtime configuration has an empty system_prompts.{key}")
+        values[key] = value
+
+    if not parser.has_option("models", "triage_char_limit"):
+        raise RuntimeConfigMalformed("runtime configuration has no models.triage_char_limit")
+    try:
+        char_limit = parser.getint("models", "triage_char_limit")
+    except (ValueError, configparser.Error) as exc:
+        raise RuntimeConfigMalformed(
+            "runtime configuration has an invalid models.triage_char_limit"
+        ) from exc
+    if char_limit <= 0:
+        raise RuntimeConfigMalformed("models.triage_char_limit must be greater than zero")
+    values["triage_char_limit"] = char_limit
+
+    return values
 
 
-def get_extraction_prompt() -> RuntimeExtractionPromptConfig:
-    _, stored = _download_current()
-    return RuntimeExtractionPromptConfig(
-        field_extraction=_parse_extraction_prompt(stored.text),
-        generation=stored.generation,
+def _prompts_config(values: dict[str, str | int], generation: str) -> RuntimePromptsConfig:
+    return RuntimePromptsConfig(
+        field_extraction=str(values["field_extraction"]),
+        summary=str(values["summary"]),
+        doc_triage=str(values["doc_triage"]),
+        triage_char_limit=int(values["triage_char_limit"]),
+        generation=generation,
     )
+
+
+def get_prompts_config() -> RuntimePromptsConfig:
+    _, stored = _download_current()
+    return _prompts_config(_parse_prompts(stored.text), stored.generation)
 
 
 def _replace_models(text: str, updates: dict[str, str]) -> str:
@@ -401,6 +429,7 @@ def _replace_config_values(text: str, updates: dict[str, str]) -> str:
         **{key: "relevance_scoring" for key in _RELEVANCE_SCORING_KEYS},
         **{key: "models" for key in _RELEVANCE_MODEL_KEYS},
         **{key: "system_prompts" for key in _SYSTEM_PROMPT_KEYS},
+        **{key: "models" for key in _PROMPT_MODEL_KEYS},
     }
     lines = text.splitlines(keepends=True)
     replacement_counts = {key: 0 for key in updates}
@@ -582,20 +611,30 @@ def update_relevance_config(
     return _relevance_config(updated_values, str(new_generation))
 
 
-def update_extraction_prompt(
+def update_prompts_config(
     *,
     expected_generation: str,
-    field_extraction: str,
-) -> RuntimeExtractionPromptConfig:
+    field_extraction: str | None = None,
+    summary: str | None = None,
+    doc_triage: str | None = None,
+    triage_char_limit: int | None = None,
+) -> RuntimePromptsConfig:
     blob, stored = _download_current(precondition_is_conflict=True)
     if stored.generation != expected_generation:
         raise RuntimeConfigConflict("runtime model configuration has changed; reload and try again")
-    _parse_extraction_prompt(stored.text)
+    _parse_prompts(stored.text)
 
-    updated_text = _replace_config_values(stored.text, {"field_extraction": field_extraction})
+    raw_updates = {
+        "field_extraction": field_extraction,
+        "summary": summary,
+        "doc_triage": doc_triage,
+        "triage_char_limit": triage_char_limit,
+    }
+    updates = {key: str(value) for key, value in raw_updates.items() if value is not None}
+    updated_text = _replace_config_values(stored.text, updates)
     try:
-        updated_value = _parse_extraction_prompt(updated_text)
-        # The prompt shares the file with everything else, so a write that
+        updated_values = _parse_prompts(updated_text)
+        # These prompts share the file with everything else, so a write that
         # corrupted another section must not be published either.
         _parse_models(updated_text)
         _parse_relevance(updated_text)
@@ -622,7 +661,4 @@ def update_extraction_prompt(
     new_generation = blob.generation
     if new_generation is None:
         raise RuntimeConfigUnavailable("saved runtime configuration has no generation")
-    return RuntimeExtractionPromptConfig(
-        field_extraction=updated_value,
-        generation=str(new_generation),
-    )
+    return _prompts_config(updated_values, str(new_generation))
