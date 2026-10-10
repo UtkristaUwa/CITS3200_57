@@ -99,6 +99,10 @@ class RuntimeRelevanceConfig:
 class RuntimeTaxonomies:
     focus_areas: dict[str, str]
     work_types: dict[str, str]
+    generation: str
+
+
+@dataclass(frozen=True)
 class RuntimePromptsConfig:
     field_extraction: str
     summary: str
