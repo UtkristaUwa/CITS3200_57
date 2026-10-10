@@ -760,8 +760,21 @@ def reprocess_all():
         summariser = _load_summariser()
         determine_relevance = _load_determine_relevance()
 
+        # 0 = every tender. Cap it for a smoke test without touching the job
+        # definition, the same way SCRAPE_LIMIT_CLOUD works:
+        #   gcloud run jobs execute tender-batch-job --region australia-southeast1 \
+        #     --update-env-vars PIPELINE_MODE=reprocess,REPROCESS_LIMIT=2 --wait
+        try:
+            limit = max(0, int(os.environ.get("REPROCESS_LIMIT", "0")))
+        except ValueError:
+            limit = 0
+        limit_clause = f" LIMIT {limit}" if limit else ""
+
         count_job = bq_client.query(f"SELECT COUNT(*) AS n FROM `{TENDERS_TABLE}`")
         total = next(iter(count_job.result())).n
+        if limit:
+            total = min(total, limit)
+            logger.warning(f"REPROCESS_LIMIT={limit}: only the first {total} tender(s) will run")
         _stage(1, 1, f"REPROCESS {total} tender(s) already in BigQuery")
 
         # Streamed a few rows at a time, never collected into a list: each row
@@ -769,7 +782,7 @@ def reprocess_all():
         # the table would exhaust the job exactly like an unfreed attachment.
         select_cols = ", ".join(ALL_COLUMNS)
         rows = bq_client.query(
-            f"SELECT {select_cols} FROM `{TENDERS_TABLE}`"
+            f"SELECT {select_cols} FROM `{TENDERS_TABLE}`{limit_clause}"
         ).result(page_size=5)
 
         counts = {"reprocessed": 0, "skipped": 0, "failed": 0}
