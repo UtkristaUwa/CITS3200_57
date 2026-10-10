@@ -19,7 +19,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import type { TenderDocument } from '../lib/api';
-import { getDocumentBlob, getTenderDocumentsZip } from '../lib/api';
+import { getDocumentBlob, getTenderDocumentsZip, ZipDownloadError } from '../lib/api';
 
 const BRAND_ORANGE = '#FF7C00';
 
@@ -271,25 +271,37 @@ function archiveFileName(tenderId: string, tenderReference?: string | null): str
   return `${base.slice(0, 100) || 'tender'}-documents.zip`;
 }
 
-function DownloadAllButton({ tenderId, fileName }: { tenderId: string; fileName: string }) {
+function DownloadAllButton({
+  tenderId,
+  fileName,
+  onError,
+}: {
+  tenderId: string;
+  fileName: string;
+  onError: (message: string | null) => void;
+}) {
   const [downloading, setDownloading] = useState(false);
   const [failed, setFailed] = useState(false);
 
   async function handleClick() {
     setFailed(false);
+    onError(null);
     setDownloading(true);
     try {
+      // Only a complete archive gets saved: getTenderDocumentsZip throws on
+      // an error status and on a stream that was cut off part-way.
       saveBlob(await getTenderDocumentsZip(tenderId), fileName);
     } catch (err) {
       console.error('Download all failed:', err);
       setFailed(true);
+      onError(err instanceof ZipDownloadError ? err.message : "Couldn't download the documents. Please try again.");
     } finally {
       setDownloading(false);
     }
   }
 
   return (
-    <Tooltip title={failed ? "Couldn't download the documents. Try again." : 'Download every document as one .zip file'}>
+    <Tooltip title={failed ? 'Try downloading all documents again' : 'Download every document as one .zip file'}>
       <Button
         variant="outlined"
         size="small"
@@ -315,6 +327,7 @@ export function TenderDocuments({
   tenderReference?: string | null;
 }) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('default');
+  const [zipError, setZipError] = useState<string | null>(null);
 
   const entries = useMemo<DocumentEntry[]>(
     () =>
@@ -353,7 +366,11 @@ export function TenderDocuments({
 
         {entries.length > 1 && (
           <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-            <DownloadAllButton tenderId={tenderId} fileName={archiveFileName(tenderId, tenderReference)} />
+            <DownloadAllButton
+              tenderId={tenderId}
+              fileName={archiveFileName(tenderId, tenderReference)}
+              onError={setZipError}
+            />
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel id={sortLabelId}>Sort by</InputLabel>
               <Select
@@ -373,6 +390,12 @@ export function TenderDocuments({
           </Box>
         )}
       </Box>
+
+      {zipError && (
+        <Typography role="alert" variant="body2" color="error" sx={{ mb: 1 }}>
+          {zipError}
+        </Typography>
+      )}
 
       {entries.length === 0 ? (
         <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
