@@ -23,6 +23,7 @@ _EXPECTED_TENDER_FIELDS = {
     "value_currency": None,
     "value_notes": None,
     "location": None,
+    "location_states": None,
     "embedding": None,
     "description": None,
     "summary_headline": None,
@@ -67,6 +68,7 @@ CONTENT_FIELDS = [
     "value_currency",
     "value_notes",
     "location",
+    "location_states",
     "description",
     "summary_headline",
     "focus_areas",
@@ -99,6 +101,7 @@ ALL_COLUMNS = [
     "value_currency",
     "value_notes",
     "location",
+    "location_states",
     "description",
     "summary_headline",
     "focus_areas",
@@ -158,6 +161,9 @@ def _content_view(record: dict) -> dict:
     view["documents"] = sorted(
         (_document_content_key(d) for d in documents), key=lambda k: (k[0] or "", k[1] or "")
     )
+    # Same reasoning for the state list: order carries no meaning, and a missing
+    # list means the same thing as an empty one.
+    view["location_states"] = sorted(record.get("location_states") or [])
     return view
 
 
@@ -316,6 +322,8 @@ def upsert_tender(client: bigquery.Client, record: dict) -> dict:
     record = _with_defaults(record)
     record["documents"] = _prepare_documents(record.get("documents"))
     record.setdefault("raw_extra", None)
+    # location_states is REPEATED, and a BigQuery array is empty rather than null.
+    record["location_states"] = record.get("location_states") or []
     new_hash = compute_content_hash(record)
 
     existing = _find_existing(client, record)

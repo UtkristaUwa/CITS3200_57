@@ -39,6 +39,8 @@ _RELEVANCE_SCORING_KEYS = (
     "max_work_types",
 )
 _RELEVANCE_MODEL_KEYS = ("relevance_model", "relevance_temperature")
+_SYSTEM_PROMPT_KEYS = ("field_extraction", "summary", "doc_triage")
+_PROMPT_MODEL_KEYS = ("triage_char_limit",)
 _OPTION_RE = re.compile(
     r"^(?P<key>[A-Za-z][A-Za-z0-9_]*)(?P<separator>\s*=\s*)"
     r"(?P<value>[^\r\n]*?)(?P<ending>\r?\n)?$"
@@ -97,6 +99,11 @@ class RuntimeRelevanceConfig:
 class RuntimeTaxonomies:
     focus_areas: dict[str, str]
     work_types: dict[str, str]
+class RuntimePromptsConfig:
+    field_extraction: str
+    summary: str
+    doc_triage: str
+    triage_char_limit: int
     generation: str
 
 
@@ -359,6 +366,56 @@ def get_taxonomy_labels() -> RuntimeTaxonomies:
     )
 
 
+def _parse_prompts(text: str) -> dict[str, str | int]:
+    try:
+        parser = configparser.ConfigParser(interpolation=None, strict=True)
+        parser.read_string(text)
+    except configparser.Error as exc:
+        raise RuntimeConfigMalformed("runtime configuration is malformed") from exc
+
+    for section in ("system_prompts", "models"):
+        if not parser.has_section(section):
+            raise RuntimeConfigMalformed(f"runtime configuration has no [{section}] section")
+
+    values: dict[str, str | int] = {}
+    for key in _SYSTEM_PROMPT_KEYS:
+        if not parser.has_option("system_prompts", key):
+            raise RuntimeConfigMalformed(f"runtime configuration has no system_prompts.{key}")
+        value = parser.get("system_prompts", key).strip()
+        if not value:
+            raise RuntimeConfigMalformed(f"runtime configuration has an empty system_prompts.{key}")
+        values[key] = value
+
+    if not parser.has_option("models", "triage_char_limit"):
+        raise RuntimeConfigMalformed("runtime configuration has no models.triage_char_limit")
+    try:
+        char_limit = parser.getint("models", "triage_char_limit")
+    except (ValueError, configparser.Error) as exc:
+        raise RuntimeConfigMalformed(
+            "runtime configuration has an invalid models.triage_char_limit"
+        ) from exc
+    if char_limit <= 0:
+        raise RuntimeConfigMalformed("models.triage_char_limit must be greater than zero")
+    values["triage_char_limit"] = char_limit
+
+    return values
+
+
+def _prompts_config(values: dict[str, str | int], generation: str) -> RuntimePromptsConfig:
+    return RuntimePromptsConfig(
+        field_extraction=str(values["field_extraction"]),
+        summary=str(values["summary"]),
+        doc_triage=str(values["doc_triage"]),
+        triage_char_limit=int(values["triage_char_limit"]),
+        generation=generation,
+    )
+
+
+def get_prompts_config() -> RuntimePromptsConfig:
+    _, stored = _download_current()
+    return _prompts_config(_parse_prompts(stored.text), stored.generation)
+
+
 def _replace_models(text: str, updates: dict[str, str]) -> str:
     lines = text.splitlines(keepends=True)
     in_models = False
@@ -389,11 +446,13 @@ def _replace_models(text: str, updates: dict[str, str]) -> str:
     return "".join(updated_lines)
 
 
-def _replace_relevance_values(text: str, updates: dict[str, str]) -> str:
+def _replace_config_values(text: str, updates: dict[str, str]) -> str:
     sections = {
         **{key: "relevance_prompts" for key in _RELEVANCE_PROMPT_KEYS},
         **{key: "relevance_scoring" for key in _RELEVANCE_SCORING_KEYS},
         **{key: "models" for key in _RELEVANCE_MODEL_KEYS},
+        **{key: "system_prompts" for key in _SYSTEM_PROMPT_KEYS},
+        **{key: "models" for key in _PROMPT_MODEL_KEYS},
     }
     lines = text.splitlines(keepends=True)
     replacement_counts = {key: 0 for key in updates}
@@ -453,7 +512,7 @@ def _replace_relevance_values(text: str, updates: dict[str, str]) -> str:
         index += 1
 
     if any(count != 1 for count in replacement_counts.values()):
-        raise RuntimeConfigMalformed("approved relevance keys could not be updated unambiguously")
+        raise RuntimeConfigMalformed("approved configuration keys could not be updated unambiguously")
     return "".join(updated_lines)
 
 
@@ -546,7 +605,7 @@ def update_relevance_config(
         "relevance_temperature": relevance_temperature,
     }
     updates = {key: str(value) for key, value in raw_updates.items() if value is not None}
-    updated_text = _replace_relevance_values(stored.text, updates)
+    updated_text = _replace_config_values(stored.text, updates)
     try:
         updated_values = _parse_relevance(updated_text)
     except RuntimeConfigMalformed as exc:
@@ -573,3 +632,56 @@ def update_relevance_config(
     if new_generation is None:
         raise RuntimeConfigUnavailable("saved runtime configuration has no generation")
     return _relevance_config(updated_values, str(new_generation))
+
+
+def update_prompts_config(
+    *,
+    expected_generation: str,
+    field_extraction: str | None = None,
+    summary: str | None = None,
+    doc_triage: str | None = None,
+    triage_char_limit: int | None = None,
+) -> RuntimePromptsConfig:
+    blob, stored = _download_current(precondition_is_conflict=True)
+    if stored.generation != expected_generation:
+        raise RuntimeConfigConflict("runtime model configuration has changed; reload and try again")
+    _parse_prompts(stored.text)
+
+    raw_updates = {
+        "field_extraction": field_extraction,
+        "summary": summary,
+        "doc_triage": doc_triage,
+        "triage_char_limit": triage_char_limit,
+    }
+    updates = {key: str(value) for key, value in raw_updates.items() if value is not None}
+    updated_text = _replace_config_values(stored.text, updates)
+    try:
+        updated_values = _parse_prompts(updated_text)
+        # These prompts share the file with everything else, so a write that
+        # corrupted another section must not be published either.
+        _parse_models(updated_text)
+        _parse_relevance(updated_text)
+    except RuntimeConfigMalformed as exc:
+        raise RuntimeConfigInvalidUpdate(str(exc)) from exc
+
+    try:
+        blob.upload_from_string(
+            updated_text.encode("utf-8"),
+            content_type="text/plain; charset=utf-8",
+            if_generation_match=int(expected_generation),
+        )
+    except google_exceptions.PreconditionFailed as exc:
+        raise RuntimeConfigConflict(
+            "runtime model configuration has changed; reload and try again"
+        ) from exc
+    except (
+        google_exceptions.GoogleAPIError,
+        google_auth_exceptions.GoogleAuthError,
+        requests_exceptions.RequestException,
+    ) as exc:
+        raise RuntimeConfigUnavailable("runtime model configuration could not be saved") from exc
+
+    new_generation = blob.generation
+    if new_generation is None:
+        raise RuntimeConfigUnavailable("saved runtime configuration has no generation")
+    return _prompts_config(updated_values, str(new_generation))
