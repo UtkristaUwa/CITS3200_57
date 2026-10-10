@@ -235,9 +235,16 @@ def download_all_documents(
     """Every stored attachment of one tender, as a single zip.
 
     The document list comes from BigQuery rather than the caller, so the
-    archive only ever holds files that belong to that tender. Documents that
-    were never uploaded (no storage_uri) or have since gone from the bucket
-    are left out; if that leaves nothing, it's a 404 rather than an empty zip.
+    archive only ever holds files that belong to that tender. Everything that
+    can fail is checked before the first byte is sent, while a real status
+    code is still possible:
+
+    * no such tender → 404
+    * no stored attachments → 404, before any Cloud Storage client exists
+    * Cloud Storage unreachable or not listable → 503
+    * an attachment BigQuery lists but the bucket doesn't hold → 404 naming it
+
+    A failure after streaming has started is handled in stream_zip().
     """
     if settings.use_mock_data:
         tender = next((row for row in _MOCK_TENDERS if row["tender_id"] == tender_id), None)
@@ -246,41 +253,48 @@ def download_all_documents(
     if tender is None:
         raise HTTPException(status_code=404, detail="Tender not found")
 
-    wanted: list[tuple[dict, str, str]] = []
+    # Documents without a storage_uri (the scraped page text, unprocessed
+    # extractions) are pipeline files, not attachments; repeats are one file.
+    wanted: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str]] = set()
     for doc in tender.get("documents") or []:
         location = parse_storage_uri(doc.get("storage_uri"))
         if location is None or location in seen:
             continue
         seen.add(location)
-        wanted.append((doc, *location))
+        bucket_name, object_path = location
+        wanted.append((entry_name(doc, object_path), bucket_name, object_path))
 
-    # One listing per folder (normally just the tender's own folder) instead
-    # of one metadata request per file. Listed blobs already carry the size and
-    # timestamp the zip headers need, and anything listed in BigQuery but gone
-    # from the bucket simply isn't found.
-    storage = get_storage_client()
-    stored: dict[tuple[str, str], object] = {}
-    for bucket_name, folder in {(b, p.rpartition("/")[0]) for _, b, p in wanted}:
-        try:
-            for blob in storage.list_blobs(bucket_name, prefix=f"{folder}/" if folder else None):
-                stored[(bucket_name, blob.name)] = blob
-        except Exception:
-            logger.warning("Could not list gs://%s/%s/ for tender %s", bucket_name, folder, tender_id)
-
-    located = [
-        (entry_name(doc, object_path), stored[(bucket_name, object_path)])
-        for doc, bucket_name, object_path in wanted
-        if (bucket_name, object_path) in stored
-    ]
-
-    if not located:
+    if not wanted:
         raise HTTPException(status_code=404, detail="No stored documents for this tender")
 
-    names = dedupe_names(name for name, _ in located)
-    entries = [ArchiveEntry(name, blob) for name, (_, blob) in zip(names, located)]
+    # One listing per folder (normally just the tender's own folder) instead
+    # of one metadata request per file. Listed blobs carry the size and
+    # timestamp the zip headers need, and a listing proves each object exists
+    # under the same service account that will read it.
+    stored: dict[tuple[str, str], object] = {}
+    try:
+        storage = get_storage_client()
+        for bucket_name, folder in {(b, p.rpartition("/")[0]) for _, b, p in wanted}:
+            for blob in storage.list_blobs(bucket_name, prefix=f"{folder}/" if folder else None):
+                stored[(bucket_name, blob.name)] = blob
+    except Exception:
+        logger.exception("Could not list stored documents for tender %s", tender_id)
+        raise HTTPException(
+            status_code=503,
+            detail="Document storage is unavailable right now. Please try again.",
+        )
+
+    missing = [name for name, b, p in wanted if (b, p) not in stored]
+    if missing:
+        logger.error("Tender %s: %d document(s) missing from storage: %s", tender_id, len(missing), missing)
+        shown = ", ".join(missing[:5]) + (f" and {len(missing) - 5} more" if len(missing) > 5 else "")
+        raise HTTPException(status_code=404, detail=f"Missing from document storage: {shown}")
+
+    names = dedupe_names(name for name, _, _ in wanted)
+    entries = [ArchiveEntry(name, stored[(b, p)]) for name, (_, b, p) in zip(names, wanted)]
     return StreamingResponse(
-        stream_zip(entries),
+        stream_zip(entries, tender_id=tender_id),
         media_type="application/zip",
         headers={"Content-Disposition": f'attachment; filename="{archive_filename(tender)}"'},
     )

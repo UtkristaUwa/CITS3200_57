@@ -9,11 +9,14 @@ roughly one chunk plus zlib's window, whatever the tender's size.
 """
 
 import io
+import logging
 import re
 import zipfile
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import PurePosixPath
+
+logger = logging.getLogger(__name__)
 
 ALLOWED_BUCKET_PREFIX = "tenderai-"
 
@@ -117,7 +120,26 @@ def _timestamp(blob) -> tuple[int, int, int, int, int, int]:
     return updated.timetuple()[:6]
 
 
-def stream_zip(entries: list[ArchiveEntry], chunk_size: int = CHUNK_SIZE) -> Iterator[bytes]:
+class ArchiveStreamError(RuntimeError):
+    """An attachment failed to read after the response had already started."""
+
+
+def stream_zip(
+    entries: list[ArchiveEntry],
+    chunk_size: int = CHUNK_SIZE,
+    tender_id: str = "",
+) -> Iterator[bytes]:
+    """Yield the zip archive of `entries` piece by piece.
+
+    Failure after the first byte: by then the 200 and its headers have been
+    sent, so the status can't change. Rather than quietly finishing a zip
+    with a file left out, or adding an error entry the person may never
+    notice, the stream is aborted: the error is logged with the tender and
+    file, and the exception propagates so the server drops the connection
+    without the chunked-encoding terminator. Browsers and HTTP clients report
+    that as a failed download, the archive never gets its central directory,
+    and the frontend shows its retry state instead of saving a broken file.
+    """
     sink = _Sink()
     with zipfile.ZipFile(sink, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=COMPRESS_LEVEL) as zf:
         for entry in entries:
@@ -126,11 +148,19 @@ def stream_zip(entries: list[ArchiveEntry], chunk_size: int = CHUNK_SIZE) -> Ite
             # Known up front so ZipFile picks ZIP64 headers for any file that
             # needs them; it can't go back and change its mind on a stream.
             info.file_size = entry.blob.size or 0
-            with zf.open(info, "w") as dest, entry.blob.open("rb", chunk_size=chunk_size) as src:
-                while chunk := src.read(chunk_size):
-                    dest.write(chunk)
-                    if data := sink.drain():
-                        yield data
+            try:
+                with zf.open(info, "w") as dest, entry.blob.open("rb", chunk_size=chunk_size) as src:
+                    while chunk := src.read(chunk_size):
+                        dest.write(chunk)
+                        if data := sink.drain():
+                            yield data
+            except Exception as exc:
+                logger.exception(
+                    "Aborting zip for tender %s: failed while streaming %r", tender_id, entry.name
+                )
+                raise ArchiveStreamError(
+                    f"failed while streaming {entry.name!r} for tender {tender_id}"
+                ) from exc
             if data := sink.drain():
                 yield data
     # Closing the ZipFile writes the central directory.
