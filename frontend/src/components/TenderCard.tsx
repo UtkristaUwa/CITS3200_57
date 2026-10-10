@@ -274,7 +274,11 @@ import {
             >
               {tender.description ?? 'No description extracted for this tender.'}
             </Typography>
-            <TenderDocuments documents={tender.documents} />
+            <TenderDocuments
+              documents={tender.documents}
+              tenderId={tender.tender_id}
+              tenderReference={tender.source_reference_id}
+            />
           </Box>
         </Collapse>
 

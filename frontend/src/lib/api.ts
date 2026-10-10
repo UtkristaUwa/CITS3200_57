@@ -262,6 +262,56 @@ export async function getDocumentBlob(storageUrl: string, filename: string): Pro
   return data;
 }
 
+/** Thrown by getTenderDocumentsZip with a message that can be shown as-is. */
+export class ZipDownloadError extends Error {}
+
+const ZIP_INTERRUPTED = 'The download was interrupted before it finished. Please try again.';
+
+// A zip ends with its end-of-central-directory record: 22 bytes starting
+// "PK\x05\x06" when, as with the API's archives, there is no comment. When a
+// file fails mid-way the API aborts the stream instead of finishing it, so a
+// body without that record is a truncated download, never a zip to save.
+async function isCompleteZip(blob: Blob): Promise<boolean> {
+  if (blob.size < 22) return false;
+  const tail = new Uint8Array(await blob.slice(blob.size - 22, blob.size - 18).arrayBuffer());
+  return tail[0] === 0x50 && tail[1] === 0x4b && tail[2] === 0x05 && tail[3] === 0x06;
+}
+
+// Error bodies arrive as a Blob because of responseType: 'blob'; the API's
+// `detail` says what went wrong (e.g. which file is missing from storage).
+async function zipErrorMessage(err: unknown): Promise<string> {
+  if (!axios.isAxiosError(err) || !err.response) return ZIP_INTERRUPTED;
+  const body: unknown = err.response.data;
+  if (body instanceof Blob) {
+    try {
+      const detail: unknown = JSON.parse(await body.text())?.detail;
+      if (typeof detail === 'string' && detail) return detail;
+    } catch {
+      // Not JSON: fall through to the generic message.
+    }
+  }
+  return `The documents couldn't be downloaded (error ${err.response.status}). Please try again.`;
+}
+
+/**
+ * GET /tenders/{id}/documents/zip — every stored attachment of one tender as a
+ * single zip, built server-side from the tender's own document list. Resolves
+ * only with a complete archive; anything else throws ZipDownloadError.
+ */
+export async function getTenderDocumentsZip(tenderId: string): Promise<Blob> {
+  let data: Blob;
+  try {
+    ({ data } = await http.get<Blob>(
+      `${API_BASE_URL}/tenders/${encodeURIComponent(tenderId)}/documents/zip`,
+      { responseType: 'blob' },
+    ));
+  } catch (err) {
+    throw new ZipDownloadError(await zipErrorMessage(err), { cause: err });
+  }
+  if (!(await isCompleteZip(data))) throw new ZipDownloadError(ZIP_INTERRUPTED);
+  return data;
+}
+
 export function getLocations(): Promise<string[]> {
   if (cachedLocations) return Promise.resolve([...cachedLocations]);
   if (locationsRequestPromise) return locationsRequestPromise;

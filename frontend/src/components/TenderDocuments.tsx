@@ -9,6 +9,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -18,7 +19,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import type { TenderDocument } from '../lib/api';
-import { getDocumentBlob } from '../lib/api';
+import { getDocumentBlob, getTenderDocumentsZip, ZipDownloadError } from '../lib/api';
 
 const BRAND_ORANGE = '#FF7C00';
 
@@ -70,7 +71,10 @@ function canViewInline(doc: TenderDocument, ext: string): boolean {
 }
 
 async function triggerDownload(url: string, fileName: string): Promise<void> {
-  const blob = await getDocumentBlob(url, fileName);
+  saveBlob(await getDocumentBlob(url, fileName), fileName);
+}
+
+function saveBlob(blob: Blob, fileName: string): void {
   const objectUrl = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = objectUrl;
@@ -261,8 +265,69 @@ function DocumentRow({ entry }: { entry: DocumentEntry }) {
   );
 }
 
-export function TenderDocuments({ documents }: { documents: TenderDocument[] }) {
+// Mirrors archive_filename() in api/app/document_zip.py.
+function archiveFileName(tenderId: string, tenderReference?: string | null): string {
+  const base = (tenderReference || tenderId).replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^[._]+|[._]+$/g, '');
+  return `${base.slice(0, 100) || 'tender'}-documents.zip`;
+}
+
+function DownloadAllButton({
+  tenderId,
+  fileName,
+  onError,
+}: {
+  tenderId: string;
+  fileName: string;
+  onError: (message: string | null) => void;
+}) {
+  const [downloading, setDownloading] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  async function handleClick() {
+    setFailed(false);
+    onError(null);
+    setDownloading(true);
+    try {
+      // Only a complete archive gets saved: getTenderDocumentsZip throws on
+      // an error status and on a stream that was cut off part-way.
+      saveBlob(await getTenderDocumentsZip(tenderId), fileName);
+    } catch (err) {
+      console.error('Download all failed:', err);
+      setFailed(true);
+      onError(err instanceof ZipDownloadError ? err.message : "Couldn't download the documents. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  return (
+    <Tooltip title={failed ? 'Try downloading all documents again' : 'Download every document as one .zip file'}>
+      <Button
+        variant="outlined"
+        size="small"
+        color={failed ? 'error' : 'primary'}
+        onClick={handleClick}
+        disabled={downloading}
+        startIcon={downloading ? <CircularProgress size={14} color="inherit" /> : <DownloadIcon />}
+        sx={{ minHeight: 40, textTransform: 'none', whiteSpace: 'nowrap' }}
+      >
+        {downloading ? 'Preparing zip…' : failed ? 'Retry download all' : 'Download all'}
+      </Button>
+    </Tooltip>
+  );
+}
+
+export function TenderDocuments({
+  documents,
+  tenderId,
+  tenderReference,
+}: {
+  documents: TenderDocument[];
+  tenderId: string;
+  tenderReference?: string | null;
+}) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('default');
+  const [zipError, setZipError] = useState<string | null>(null);
 
   const entries = useMemo<DocumentEntry[]>(
     () =>
@@ -300,24 +365,37 @@ export function TenderDocuments({ documents }: { documents: TenderDocument[] }) 
         </Typography>
 
         {entries.length > 1 && (
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel id={sortLabelId}>Sort by</InputLabel>
-            <Select
-              labelId={sortLabelId}
-              value={sortOrder}
-              label="Sort by"
-              onChange={e => setSortOrder(e.target.value as SortOrder)}
-              sx={{ fontSize: '0.875rem' }}
-            >
-              {SORT_OPTIONS.map(opt => (
-                <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.875rem' }}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+            <DownloadAllButton
+              tenderId={tenderId}
+              fileName={archiveFileName(tenderId, tenderReference)}
+              onError={setZipError}
+            />
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel id={sortLabelId}>Sort by</InputLabel>
+              <Select
+                labelId={sortLabelId}
+                value={sortOrder}
+                label="Sort by"
+                onChange={e => setSortOrder(e.target.value as SortOrder)}
+                sx={{ fontSize: '0.875rem' }}
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.875rem' }}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         )}
       </Box>
+
+      {zipError && (
+        <Typography role="alert" variant="body2" color="error" sx={{ mb: 1 }}>
+          {zipError}
+        </Typography>
+      )}
 
       {entries.length === 0 ? (
         <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
