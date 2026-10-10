@@ -116,7 +116,19 @@ PACKAGE_BUTTON = "input[name='PopUpMaster$masterMain$btnGo']"
 WAIT_TIMEOUT = 30            # seconds for a page's table or form to appear
 FILTER_WAIT_SECONDS = 10     # seconds for the search box to narrow the list
 RELOAD_SECONDS = 3           # pause after clicking Follow, which reloads the page
-DOWNLOAD_WAIT_SECONDS = 180  # a large package can take a while to build
+FOLLOW_CHECKS = 6            # times to look for "Unfollow" after clicking Follow
+FOLLOW_CHECK_PAUSE = 5       # seconds between those looks
+# A package can take minutes to build, and the Download click does not return
+# until the portal starts to answer. Chrome's own driver gives up on a click
+# after 120s, so a slow package used to fail even though it would have arrived.
+# The file has to start arriving within DOWNLOAD_WAIT_SECONDS of the click
+# returning; once it has, it gets until it stalls or the hard maximum.
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("QLD_DOWNLOAD_WAIT_SECONDS", "240"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("QLD_DOWNLOAD_STALL_SECONDS", "300"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("QLD_DOWNLOAD_HARD_MAX_SECONDS", "900"))
+FIND_ATTEMPTS = 2            # times to search the list for a tender before calling it absent
+DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "2"))
+DOWNLOAD_POLL_SECONDS = 1.0
 
 # A session that lapses mid-run is replaced by signing in again, this many
 # times at most.
@@ -374,6 +386,11 @@ def parse_row(html: str, number: str) -> dict | None:
     }
 
 
+def is_timeout_error(exc: BaseException) -> bool:
+    """True for a timeout from the browser driver (ReadTimeoutError, TimeoutException, ...)."""
+    return isinstance(exc, TimeoutError) or "timeout" in type(exc).__name__.lower()
+
+
 class VendorPanelSession:
     """
     One SeleniumBase Chrome signed in to VendorPanel for the whole run. Use as
@@ -449,47 +466,85 @@ class VendorPanelSession:
 
     def find_row(self, number: str) -> dict | None:
         """Search the Public Tenders list for VP<number> and read its row (None if absent)."""
-        if not self._on_list:
-            self._open_list()
-        self.sb.type(SEARCH_BOX, f"VP{number}")
-        try:
-            self.sb.wait_for_element(ROW_SELECTOR.format(number=number), timeout=FILTER_WAIT_SECONDS)
-        except Exception:
-            return None
-        return parse_row(self.sb.get_page_source(), number)
+        for attempt in range(1, FIND_ATTEMPTS + 1):
+            if not self._on_list:
+                self._open_list()
+            self.sb.type(SEARCH_BOX, f"VP{number}")
+            try:
+                self.sb.wait_for_element(ROW_SELECTOR.format(number=number), timeout=FILTER_WAIT_SECONDS)
+            except Exception:
+                # The filter sometimes does not narrow in time; reload and look once more.
+                self._on_list = False
+                continue
+            return parse_row(self.sb.get_page_source(), number)
+        return None
 
     def follow(self, number: str) -> bool:
-        """Click the row's Follow toggle, reload, and confirm the row now says Unfollow."""
-        self.sb.click(f"{ROW_SELECTOR.format(number=number)} {FOLLOW_LINK}")
-        time.sleep(RELOAD_SECONDS)
-        self._on_list = False
-        row = self.find_row(number)
-        return bool(row and row["followed"])
+        """
+        Click the row's Follow toggle, then look for the row to say Unfollow.
+
+        The portal reloads after the click and can be slow, so it is checked a
+        few times rather than once. If the row still offers Follow after the
+        second look, Follow is clicked once more. That is safe: an already-
+        followed row has an Unfollow link instead, which FOLLOW_LINK never matches.
+        """
+        follow_click = f"{ROW_SELECTOR.format(number=number)} {FOLLOW_LINK}"
+        self.sb.click(follow_click)
+        clicked_again = False
+        for check in range(FOLLOW_CHECKS):
+            time.sleep(RELOAD_SECONDS if check == 0 else FOLLOW_CHECK_PAUSE)
+            self._on_list = False
+            row = self.find_row(number)
+            if row and row["followed"]:
+                return True
+            if row and row["can_follow"] and not clicked_again and check >= 1:
+                clicked_again = True
+                log.info("       VP%s still shows Follow; clicking it once more", number)
+                try:
+                    self.sb.click(follow_click)
+                except Exception as e:
+                    log.warning("       second Follow click on VP%s failed: %s", number, e)
+        return False
 
     def download_package(self, number: str, folder: str) -> str:
         """
         Open the tender's package page, click Download, and move the zip that
         lands in SeleniumBase's downloads folder into `folder`. Returns its path.
+
+        If the click does not return in time (the driver's 120s limit), the
+        download may still be happening, so the folder is watched anyway. If no
+        file arrives, the page is opened and clicked once more (DOWNLOAD_ATTEMPTS
+        tries in all) before giving up.
         """
-        self._on_list = False
-        self.sb.open(VP_PACKAGE_URL.format(number=number))
-        try:
-            self.sb.wait_for_element(PACKAGE_BUTTON, timeout=WAIT_TIMEOUT)
-        except Exception:
-            if not is_signed_in(self.sb.get_page_source()) and self.sb.is_element_present(LOGIN_USER):
-                raise SessionLapsedError("VendorPanel is showing its sign-in page")
-            raise common.StructureChangedError(f"no Download button ({PACKAGE_BUTTON}) on the package page")
         os.makedirs(self._downloads_dir, exist_ok=True)
+        # Taken once, so a file from an earlier try that arrives late still counts.
         before = set(os.listdir(self._downloads_dir))
-        self.sb.click(PACKAGE_BUTTON)
-        for _ in range(DOWNLOAD_WAIT_SECONDS):
-            new = [f for f in set(os.listdir(self._downloads_dir)) - before
-                   if not f.endswith(".crdownload")]
-            if new:
-                target = os.path.join(folder, new[0])
-                shutil.move(os.path.join(self._downloads_dir, new[0]), target)
+        for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
+            self._on_list = False
+            self.sb.open(VP_PACKAGE_URL.format(number=number))
+            try:
+                self.sb.wait_for_element(PACKAGE_BUTTON, timeout=WAIT_TIMEOUT)
+            except Exception:
+                if not is_signed_in(self.sb.get_page_source()) and self.sb.is_element_present(LOGIN_USER):
+                    raise SessionLapsedError("VendorPanel is showing its sign-in page")
+                raise common.StructureChangedError(f"no Download button ({PACKAGE_BUTTON}) on the package page")
+            try:
+                self.sb.click(PACKAGE_BUTTON)
+            except Exception as e:
+                if not is_timeout_error(e):
+                    raise
+                log.warning("       documents: the Download click for VP%s did not return (%s); "
+                            "watching for the file anyway", number, type(e).__name__)
+            name = common.wait_for_download(
+                self._downloads_dir, before, DOWNLOAD_WAIT_SECONDS,
+                poll=DOWNLOAD_POLL_SECONDS, stall_seconds=DOWNLOAD_STALL_SECONDS,
+                hard_max=DOWNLOAD_HARD_MAX_SECONDS)
+            if name:
+                target = os.path.join(folder, name)
+                shutil.move(os.path.join(self._downloads_dir, name), target)
                 return target
-            time.sleep(1)
+            log.warning("       documents: no package for VP%s after %ds (try %d of %d)",
+                        number, DOWNLOAD_WAIT_SECONDS, attempt, DOWNLOAD_ATTEMPTS)
         raise TimeoutError(f"the package download for VP{number} did not finish")
 
 
