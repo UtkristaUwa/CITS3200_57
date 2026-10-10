@@ -42,6 +42,10 @@ LOGIN_ERROR_TEXT = "Invalid username/password combination"
 GET_ATTEMPTS = 3
 WAIT_TIMEOUT = 30
 
+# How long to wait for ACT to finish building and sending a tender's document
+# zip after the Download button is clicked. 60s was too short for big packages.
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("ACT_DOWNLOAD_WAIT_SECONDS", "180"))
+
 
 class BrowserSession:
     """
@@ -173,7 +177,7 @@ class BrowserSession:
         os.makedirs(self._sb_downloads_dir, exist_ok=True)
         before = set(os.listdir(self._sb_downloads_dir))
         self.sb.click("#downloadButton")
-        for _ in range(60):
+        for _ in range(DOWNLOAD_WAIT_SECONDS):
             new_files = set(os.listdir(self._sb_downloads_dir)) - before
             real_files = [f for f in new_files if not f.endswith(".crdownload")]
             if real_files:
@@ -182,4 +186,4 @@ class BrowserSession:
                 os.replace(src, dst)
                 return dst
             time.sleep(1)
-        raise TimeoutError("Download did not complete within 60 seconds")
+        raise TimeoutError(f"Download did not complete within {DOWNLOAD_WAIT_SECONDS} seconds")

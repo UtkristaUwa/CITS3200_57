@@ -194,8 +194,11 @@ def _element_text(element):
 def _table_to_text(table):
     """Render one table's cells as readable, tab-separated rows."""
     lines = []
-    for row in table.rows:
-        cells = [_element_text(cell._tc) for cell in row.cells]
+    # Walk each row's own <w:tc> cells. python-docx's row.cells rebuilds the
+    # whole table grid for every row (quadratic on big tables) and raises
+    # IndexError on irregular merged cells.
+    for tr in table._tbl.tr_lst:
+        cells = [_element_text(tc) for tc in tr.tc_lst]
         if any(cell.strip() for cell in cells):  # skip fully-empty rows
             lines.append("\t".join(cells))
     return "\n".join(lines)
@@ -256,6 +259,39 @@ def extract_docx(file_path: str) -> str:
         return "\n".join(part for part in parts if part.strip())
     except Exception as e:
         raise ExtractionError(f"DOCX extraction failed on {file_path}: {e}") from e
+
+
+# A Word file's main text part is never legitimately this large.
+_MAX_DOCX_XML_BYTES = 200 * 1024 * 1024
+
+
+def extract_docx_body_text(file_path: str) -> str:
+    """
+    Last-resort DOCX text: read the body straight out of the file's zip, one
+    line per paragraph, without python-docx. Used when the full extraction
+    fails or runs out of time (a package python-docx refuses to open, a table
+    that makes it crawl). Table cell text comes out as ordinary lines, and
+    headers and footers are left out.
+    """
+    import zipfile
+    from lxml import etree
+
+    ns = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    try:
+        with zipfile.ZipFile(file_path) as archive:
+            if archive.getinfo("word/document.xml").file_size > _MAX_DOCX_XML_BYTES:
+                raise ValueError("document.xml is implausibly large")
+            xml = archive.read("word/document.xml")
+        parser = etree.XMLParser(resolve_entities=False, no_network=True)
+        root = etree.fromstring(xml, parser)
+        lines = []
+        for paragraph in root.iter(ns + "p"):
+            text = "".join(t.text or "" for t in paragraph.iter(ns + "t"))
+            if text.strip():
+                lines.append(text)
+        return "\n".join(lines)
+    except Exception as e:
+        raise ExtractionError(f"DOCX body-text extraction failed on {file_path}: {e}") from e
 
 def extract_xlsx(file_path: str) -> str:
     """
@@ -420,6 +456,28 @@ def run_extractor(extractor, path: str, timeout: float | None = None) -> str:
     return payload
 
 
+def extract_with_fallback(extractor, path: str, timeout: float | None = None) -> str:
+    """
+    run_extractor, plus one more try for Word files: if the full extraction
+    fails or times out, fall back to the body text read straight from the
+    file. The tender keeps that text (tables and headers may be missing), and
+    the loss is logged. Any other file type, or a file the fallback can't read
+    either, raises the original error.
+    """
+    try:
+        return run_extractor(extractor, path, timeout)
+    except ExtractionError as first_error:
+        if not path.lower().endswith(".docx") or extractor is extract_docx_body_text:
+            raise
+        try:
+            text = run_extractor(extract_docx_body_text, path, timeout)
+        except ExtractionError:
+            raise first_error from None
+        logger.warning("full extraction failed for %s (%s); kept its body text only",
+                       os.path.basename(path), first_error)
+        return text
+
+
 def extract_attachment_text(folder: str, file_name: str) -> bool:
     """
     Write <file_name>.txt next to a saved attachment, when we have an extractor
@@ -431,12 +489,14 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
         return True
     logger.info(f"extracting text from {file_name}")
     try:
-        text = run_extractor(extractor, os.path.join(folder, file_name))
+        path = os.path.join(folder, file_name)
+        text = extract_with_fallback(extractor, path)
         save_extracted_text(folder, file_name, text)
         return True
     except ExtractionError as e:
+        size = os.path.getsize(path) if os.path.exists(path) else "?"
         print(f"EXTRACTION FAILED: {e}")
-        logger.warning(f"text extraction failed for {file_name}: {e}")
+        logger.warning(f"text extraction failed for {file_name} ({size} bytes): {e}")
         return False
 
 # A request that times out is made again, this many attempts in all, waiting a
@@ -544,6 +604,13 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                     while chunk := source.read(1024 * 1024):
                         target.write(chunk)
             saved_name = os.path.basename(path)
+            if os.path.getsize(path) == 0:
+                # An empty file in the package is a download that went wrong,
+                # not a document: drop it and report the tender as partial.
+                os.remove(path)
+                logger.warning(f"package held an empty file ({saved_name}); not stored")
+                any_failed = True
+                continue
             attachments.append({
                 "file_name": saved_name,
                 "content_type": None,

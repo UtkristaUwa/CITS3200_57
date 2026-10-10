@@ -144,7 +144,10 @@ def login(client) -> bool:
     """
     username, password = credentials()
     headers = {k: v for k, v in HEADERS.items() if k != "X-Requested-With"}  # not an AJAX call
-    response = client.get(LOGIN_URL, headers=headers, timeout=30.0)
+    # Only this harmless page fetch is retried on a timeout. The sign-in POST
+    # below is never repeated: a second attempt risks locking the account.
+    response = common.request_with_retries(
+        client, "get", LOGIN_URL, headers=headers, timeout=30.0)
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
