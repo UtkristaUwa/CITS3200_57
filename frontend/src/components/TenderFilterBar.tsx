@@ -9,14 +9,18 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Tooltip,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getLocations } from '../lib/api';
 
 export interface TenderFilterBarProps {
   searchQuery: string;
   setSearchQuery: (val: string) => void;
+  advancedSearch: boolean;
+  setAdvancedSearch: (val: boolean) => void;
   showFilters: boolean;
   setShowFilters: (val: boolean) => void;
   jurisdiction: string;
@@ -97,6 +101,39 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             },
           }}
         />
+        <Tooltip title="Toggle AI Semantic Search. When active, matches meaning and concepts (slower). When off, uses fast keyword search.">
+          <Button
+            variant={props.advancedSearch ? 'contained' : 'outlined'}
+            startIcon={<AutoAwesomeIcon />}
+            onClick={() => props.setAdvancedSearch(!props.advancedSearch)}
+            sx={{
+              flexShrink: 0,
+              minHeight: { xs: 44, sm: 36 },
+              textTransform: 'none',
+              fontWeight: props.advancedSearch ? 600 : 500,
+              ...(props.advancedSearch
+                ? {
+                    background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                    color: '#fff',
+                    borderColor: 'transparent',
+                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.35)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #6d28d9 0%, #4338ca 100%)',
+                    },
+                  }
+                : {
+                    color: 'text.secondary',
+                    borderColor: 'divider',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                    },
+                  }),
+            }}
+          >
+            Advanced
+          </Button>
+        </Tooltip>
         <Button
           variant={props.showFilters ? 'contained' : 'outlined'}
           startIcon={<FilterListIcon />}

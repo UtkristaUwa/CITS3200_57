@@ -115,6 +115,23 @@ import {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
               {isNew && <Chip label="New" color="primary" size="small" />}
+              {tender.distance != null && (
+                <Tooltip title={`AI semantic match distance: ${tender.distance.toFixed(3)} (lower distance is closer match)`}>
+                  <Chip
+                    icon={<AutoAwesomeIcon sx={{ fontSize: '13px !important', color: '#7c3aed !important' }} />}
+                    label="AI Match"
+                    size="small"
+                    sx={{
+                      fontSize: '0.72rem',
+                      height: 24,
+                      fontWeight: 600,
+                      bgcolor: 'rgba(124, 58, 237, 0.1)',
+                      color: '#7c3aed',
+                      border: '1px solid rgba(124, 58, 237, 0.25)',
+                    }}
+                  />
+                </Tooltip>
+              )}
               <Tooltip title="Share tender">
                 <IconButton
                   size="small"

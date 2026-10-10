@@ -202,6 +202,7 @@ export interface GetTendersParams {
   limit?: number;
   offset?: number;
   q?: string;
+  mode?: 'keyword' | 'semantic';
   status?: string;
   category?: string;
   location?: string;
@@ -228,6 +229,7 @@ export async function getTenders(
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
         q: params.q || undefined,
+        mode: params.mode || 'keyword',
         status: params.status || undefined,
         category: params.category || undefined,
         location: params.location || undefined,
