@@ -6,6 +6,11 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
   TextField,
   Typography,
@@ -14,6 +19,7 @@ import {
   getPromptsConfig,
   getRelevanceConfig,
   getModelConfig,
+  startReprocessRun,
   updatePromptsConfig,
   updateRelevanceConfig,
   updateModelConfig,
@@ -344,6 +350,10 @@ export default function ConfigPage() {
   const [paneError, setPaneError] = useState<PaneMessages>({});
   const [paneSuccess, setPaneSuccess] = useState<PaneMessages>({});
   const [conflictPane, setConflictPane] = useState<PromptPane | null>(null);
+  const [reprocessConfirmOpen, setReprocessConfirmOpen] = useState(false);
+  const [reprocessStarting, setReprocessStarting] = useState(false);
+  const [reprocessError, setReprocessError] = useState<string | null>(null);
+  const [reprocessStarted, setReprocessStarted] = useState(false);
 
   const loadModelConfig = useCallback(async () => {
     setLoading(true);
@@ -584,6 +594,33 @@ export default function ConfigPage() {
       setPaneError({ [pane]: message });
     } finally {
       setSavingPane(null);
+    }
+  };
+
+  const handleReprocessConfirm = async () => {
+    setReprocessStarting(true);
+    setReprocessError(null);
+    setReprocessStarted(false);
+
+    try {
+      await startReprocessRun();
+      setReprocessStarted(true);
+      setReprocessConfirmOpen(false);
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if (status === 409) {
+        setReprocessError('A pipeline run is already in progress. Wait for it to finish, then try again.');
+      } else if (status === 503) {
+        setReprocessError('The pipeline job could not be started. Check that the job exists and this service can run it.');
+      } else if (status === 401) {
+        setReprocessError('Your session has expired. Please sign in again.');
+      } else if (status === 403) {
+        setReprocessError('You do not have permission to start a reprocess run.');
+      } else {
+        setReprocessError('Unable to start the reprocess run. Please try again.');
+      }
+    } finally {
+      setReprocessStarting(false);
     }
   };
 
@@ -1179,6 +1216,73 @@ export default function ConfigPage() {
           </Button>
         </Box>
       </ConfigurationSection>
+
+      <ConfigurationSection
+        title="Reprocess existing tenders"
+        description="Re-runs the AI layer over every tender already in the database using the prompts saved above. Nothing is scraped."
+      >
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          This re-summarises and re-scores every stored tender, so it takes a long time and
+          costs money. Scraped details such as titles, dates and contacts are left untouched;
+          only the summary, relevance scores and search embedding are rewritten.
+        </Alert>
+        {reprocessError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {reprocessError}
+          </Alert>
+        )}
+        {reprocessStarted && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            Reprocess run started. It continues in the background — you can close this page.
+          </Alert>
+        )}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => {
+              setReprocessError(null);
+              setReprocessStarted(false);
+              setReprocessConfirmOpen(true);
+            }}
+            disabled={reprocessStarting}
+            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+          >
+            Reprocess all tenders
+          </Button>
+        </Box>
+      </ConfigurationSection>
+
+      <Dialog
+        open={reprocessConfirmOpen}
+        onClose={() => !reprocessStarting && setReprocessConfirmOpen(false)}
+        aria-labelledby="reprocess-confirm-title"
+      >
+        <DialogTitle id="reprocess-confirm-title">Reprocess every tender?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Every tender in the database will be re-summarised and re-scored with the currently
+            saved prompts. This can take a long time and incurs AI costs for each tender.
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 2 }}>
+            Titles, dates, values and contacts are not changed. The run happens in the
+            background, so you do not need to stay on this page.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setReprocessConfirmOpen(false)} disabled={reprocessStarting}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => void handleReprocessConfirm()}
+            disabled={reprocessStarting}
+          >
+            {reprocessStarting ? 'Starting...' : 'Yes, reprocess everything'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

@@ -87,6 +87,12 @@ def _validate_relevance_text(value: object) -> object:
     return value
 
 
+class ReprocessRunResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    execution: str
+
+
 PROMPT_TEXT_FIELDS = ("field_extraction", "summary", "doc_triage")
 PROMPT_UPDATE_FIELDS = PROMPT_TEXT_FIELDS + ("triage_char_limit",)
 

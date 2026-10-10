@@ -129,6 +129,17 @@ export interface PromptsConfigUpdate {
   generation: string;
 }
 
+export interface ReprocessRunResponse {
+  execution: string;
+}
+
+export async function startReprocessRun(): Promise<ReprocessRunResponse> {
+  const { data } = await http.post<ReprocessRunResponse>(
+    `${API_BASE_URL}/admin/pipeline/reprocess`,
+  );
+  return data;
+}
+
 export async function getPromptsConfig(): Promise<PromptsConfigResponse> {
   const { data } = await http.get<PromptsConfigResponse>(`${API_BASE_URL}/admin/config/prompts`);
   return data;

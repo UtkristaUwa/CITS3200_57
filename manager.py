@@ -23,7 +23,8 @@ from document_scraper.main import process_tenders as run_doc_scraper
 from error_scrapers import common, reporting
 from processing.runtime_config import prepare_runtime_config
 from email.message import EmailMessage
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from decimal import Decimal
 from google.cloud import storage
 
 #MIGHT NOT NEED THIS ONE, BUT SOMETHING BROKE WHEN I REMOVED IT SO ITS HERE
@@ -120,7 +121,7 @@ def publish_health_status_to_gcs(
 import attachment_store
 
 # Import the BigQuery upload function
-from ingestion.bigquery_client import get_client, upsert_tender, TENDERS_TABLE
+from ingestion.bigquery_client import ALL_COLUMNS, get_client, upsert_tender, TENDERS_TABLE
 #for ved embedding in tables
 from google import genai
 from google.cloud import bigquery
@@ -222,6 +223,21 @@ def _load_determine_relevance():
     from processing.relevance_determination import determine_relevance
 
     return determine_relevance
+
+
+def _load_summariser():
+    """Import the summarisation half of tender_processor, for reprocess runs.
+
+    Same ordering rule as _load_process_tender: the runtime CFG must already be
+    prepared, because tender_processor loads it during import.
+    """
+    from processing.tender_processor import (
+        build_tender_context,
+        gather_relevant_documents,
+        summarise_tender,
+    )
+
+    return gather_relevant_documents, build_tender_context, summarise_tender
 
 
 def _site_code(result):
@@ -593,6 +609,189 @@ def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determin
         return sum(results)
 
 
+# ==============================================================================
+# Reprocess-only run
+#
+# Re-applies the AI layer to tenders already in BigQuery, without scraping
+# anything. Triggered from the admin config page after a prompt change, via
+# PIPELINE_MODE=reprocess on a job execution.
+#
+# It deliberately writes back ONLY the AI-derived fields. The scraped landing
+# page text is never persisted (attachment_store uploads attachments only, and
+# _merge_document_records drops page text), so re-extracting title/dates/
+# contacts here would read them out of attachments that mostly don't contain
+# them and overwrite good values with nulls.
+# ==============================================================================
+
+def _json_safe_value(value):
+    """BigQuery hands back DATE/TIMESTAMP/NUMERIC as date/datetime/Decimal.
+    Convert them to what the scrape path would have produced, so the row can be
+    re-uploaded and hashes the same way a freshly scraped one does."""
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, Decimal):
+        return float(value)
+    if isinstance(value, list):
+        return [_json_safe_value(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _json_safe_value(v) for k, v in value.items()}
+    return value
+
+
+def _row_to_record(row) -> dict:
+    record = {key: _json_safe_value(value) for key, value in dict(row).items()}
+    if record.get("documents"):
+        record["documents"] = [
+            {k: _json_safe_value(v) for k, v in dict(doc).items()}
+            for doc in record["documents"]
+        ]
+    return record
+
+
+def _write_documents(record: dict, directory: str) -> int:
+    """Lay the stored extracted_text back out as the .txt files the processing
+    stage expects, so triage and summarisation see exactly what they saw on the
+    original run."""
+    written = 0
+    for index, doc in enumerate(record.get("documents") or []):
+        text = doc.get("extracted_text")
+        if not text or not text.strip():
+            continue
+        stem = os.path.splitext(os.path.basename(doc.get("file_name") or ""))[0]
+        safe = "".join(c for c in stem if c.isalnum() or c in " ._-").strip() or "doc"
+        # Index-prefixed because two stored documents can reduce to the same
+        # name ("Report.pdf" and "Report.docx"), and the second would otherwise
+        # overwrite the first and silently drop a document from the context.
+        with open(os.path.join(directory, f"{index:03d}_{safe}.txt"), "w", encoding="utf-8") as f:
+            f.write(text)
+        written += 1
+    return written
+
+
+def _reprocess_one(position, total, record, temp_dir, summariser, determine_relevance):
+    """Re-run the AI layer for one stored tender and write back only those fields."""
+    gather_relevant_documents, build_tender_context, summarise_tender = summariser
+    tender_ref = record.get("source_reference_id") or record.get("tender_id")
+    logger.info(f"---- reprocess {position}/{total}: {tender_ref} ----")
+
+    # upsert_tender finds the row to replace by (source_id, source_reference_id)
+    # or (source_id, source_url). A row that matches neither would be INSERTED
+    # under a new tender_id, duplicating the tender we just read -- so bail out
+    # before spending anything on the AI calls.
+    if not record.get("source_id") or not (
+        record.get("source_reference_id") or record.get("source_url")
+    ):
+        logger.warning(f"{tender_ref}: no stable identity to match on, skipping")
+        return "skipped"
+
+    tender_dir = os.path.join(temp_dir, "reprocess")
+    shutil.rmtree(tender_dir, ignore_errors=True)
+    os.makedirs(tender_dir, exist_ok=True)
+
+    if _write_documents(record, tender_dir) == 0:
+        # Nothing stored to work from. Overwriting the summary with whatever the
+        # model makes of an empty prompt would be worse than leaving it alone.
+        logger.warning(f"{tender_ref}: no stored document text, skipping")
+        return "skipped"
+
+    try:
+        relevant = gather_relevant_documents(tender_dir)
+        summary = summarise_tender(build_tender_context(relevant))
+        record["description"] = summary.description
+        record["summary_headline"] = summary.headline
+    except Exception as e:
+        logger.error(f"{tender_ref}: summarisation failed: {e}")
+        return "failed"
+
+    try:
+        record = determine_relevance(record)
+    except Exception as e:
+        logger.error(f"{tender_ref}: relevance determination failed: {e}")
+
+    title = record.get("title") or ""
+    try:
+        record["embedding"] = generate_embedding(
+            f"Title: {title}. Summary: {record.get('description') or ''}".strip()
+        )
+    except Exception as e:
+        # The summary is already paid for; keep the stored embedding rather than
+        # throwing the whole tender away. Search stays on the old vector until
+        # the next run.
+        logger.warning(f"{tender_ref}: embedding failed, keeping the existing one: {e}")
+
+    try:
+        result = upsert_tender(bq_client, record)
+    except Exception as e:
+        logger.error(f"{tender_ref}: BigQuery upsert failed: {e}")
+        return "failed"
+
+    if result.get("action") == "inserted":
+        # The identity guard above should make this impossible. If it happens,
+        # a duplicate row now exists and someone needs to look.
+        logger.error(
+            f"{tender_ref}: reprocess INSERTED a new row (id={result['tender_id']}) "
+            "instead of updating -- this is a duplicate, investigate"
+        )
+
+    logger.info(
+        f"{tender_ref}: {result['action']} (fit={record.get('fit')}, "
+        f"focus_areas={record.get('focus_areas')})"
+    )
+    return "reprocessed"
+
+
+def reprocess_all():
+    """Re-apply the AI layer to every tender already in BigQuery."""
+    logger.info("Starting REPROCESS run (no scraping)")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Same contract as the scrape path: select the runtime CFG before
+        # importing anything that reads it at import time.
+        runtime = prepare_runtime_config(temp_dir)
+        if runtime.active:
+            logger.info(f"Runtime tender processor configuration active: {runtime.path}")
+        else:
+            logger.warning(
+                f"Using repository tender processor configuration fallback: {runtime.reason}"
+            )
+
+        summariser = _load_summariser()
+        determine_relevance = _load_determine_relevance()
+
+        count_job = bq_client.query(f"SELECT COUNT(*) AS n FROM `{TENDERS_TABLE}`")
+        total = next(iter(count_job.result())).n
+        _stage(1, 1, f"REPROCESS {total} tender(s) already in BigQuery")
+
+        # Streamed a few rows at a time, never collected into a list: each row
+        # carries the full extracted text of every attachment, so materialising
+        # the table would exhaust the job exactly like an unfreed attachment.
+        select_cols = ", ".join(ALL_COLUMNS)
+        rows = bq_client.query(
+            f"SELECT {select_cols} FROM `{TENDERS_TABLE}`"
+        ).result(page_size=5)
+
+        counts = {"reprocessed": 0, "skipped": 0, "failed": 0}
+        for position, row in enumerate(rows, start=1):
+            try:
+                outcome = _reprocess_one(
+                    position, total, _row_to_record(row), temp_dir,
+                    summariser, determine_relevance,
+                )
+            except Exception as e:
+                logger.error(f"Unexpected failure reprocessing row {position}: {e}")
+                outcome = "failed"
+            counts[outcome] += 1
+            _free_memory()
+
+    logger.info(
+        f"Reprocess finished: {counts['reprocessed']} reprocessed, "
+        f"{counts['skipped']} skipped (no stored text), {counts['failed']} failed"
+    )
+    return counts
+
+
 def _free_memory():
     """
     Give back what the portal just finished with: collect garbage, then ask
@@ -606,6 +805,13 @@ def _free_memory():
         pass  # not glibc (macOS, musl): nothing more to do
 
 def main():
+    # Reprocess-only run, triggered from the admin config page. Set as an
+    # execution override, so the scheduled daily run is unaffected.
+    if os.environ.get("PIPELINE_MODE", "").strip().lower() == "reprocess" \
+            or "--reprocess" in sys.argv[1:]:
+        reprocess_all()
+        return
+
     if "--local" in sys.argv[1:]:
         os.makedirs(LOCAL_OUTPUT_DIR, exist_ok=True)
         _stage(1, 1, f"LOCAL RUN: scrape only, {SCRAPE_LIMIT_LOCAL} tender(s) per site "
