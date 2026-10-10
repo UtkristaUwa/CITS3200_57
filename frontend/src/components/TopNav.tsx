@@ -170,14 +170,25 @@ export default function TopNav() {
           )}
           {user && (
             <Tooltip title="Tender card view settings">
-              <IconButton
+              <Button
                 color="inherit"
                 aria-label="Open tender card view settings"
                 onClick={handleViewSettingsOpen}
-                sx={{ minWidth: 44, minHeight: 44 }}
+                startIcon={<SettingsOutlinedIcon />}
+                sx={{
+                  minWidth: { sm: 44, md: 'auto' },
+                  minHeight: 44,
+                  px: { sm: 1.25, md: 2 },
+                  whiteSpace: 'nowrap',
+                  '& .MuiButton-startIcon': {
+                    margin: { sm: 0, md: '0 8px 0 -4px' },
+                  },
+                }}
               >
-                <SettingsOutlinedIcon />
-              </IconButton>
+                <Box component="span" sx={{ display: { sm: 'none', md: 'inline' } }}>
+                  View Settings
+                </Box>
+              </Button>
             </Tooltip>
           )}
           <Button color="inherit" onClick={() => void signOut(auth)}>
