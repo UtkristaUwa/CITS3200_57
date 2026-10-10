@@ -24,7 +24,7 @@ import time
 
 from seleniumbase import SB
 
-from error_scrapers import reporting
+from error_scrapers import common, reporting
 
 log = reporting.site_logger("TENDERS_ACT")
 
@@ -42,9 +42,14 @@ LOGIN_ERROR_TEXT = "Invalid username/password combination"
 GET_ATTEMPTS = 3
 WAIT_TIMEOUT = 30
 
-# How long to wait for ACT to finish building and sending a tender's document
-# zip after the Download button is clicked. 60s was too short for big packages.
+# ACT builds each tender's document zip on request; 60s was too short for big
+# packages. The download has to start within DOWNLOAD_WAIT_SECONDS. Once a partial file is
+# there it is given until it stalls (no change for DOWNLOAD_STALL_SECONDS) or
+# DOWNLOAD_HARD_MAX_SECONDS in all: the large packages (33 documents) are slow,
+# not broken, and used to be abandoned at 60s.
 DOWNLOAD_WAIT_SECONDS = int(os.environ.get("ACT_DOWNLOAD_WAIT_SECONDS", "180"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("ACT_DOWNLOAD_STALL_SECONDS", "300"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("ACT_DOWNLOAD_HARD_MAX_SECONDS", "900"))
 
 
 class BrowserSession:
@@ -177,13 +182,14 @@ class BrowserSession:
         os.makedirs(self._sb_downloads_dir, exist_ok=True)
         before = set(os.listdir(self._sb_downloads_dir))
         self.sb.click("#downloadButton")
-        for _ in range(DOWNLOAD_WAIT_SECONDS):
-            new_files = set(os.listdir(self._sb_downloads_dir)) - before
-            real_files = [f for f in new_files if not f.endswith(".crdownload")]
-            if real_files:
-                src = os.path.join(self._sb_downloads_dir, real_files[0])
-                dst = os.path.join(self.download_dir, real_files[0])
-                os.replace(src, dst)
-                return dst
-            time.sleep(1)
-        raise TimeoutError(f"Download did not complete within {DOWNLOAD_WAIT_SECONDS} seconds")
+        name = common.wait_for_download(
+            self._sb_downloads_dir, before, DOWNLOAD_WAIT_SECONDS,
+            stall_seconds=DOWNLOAD_STALL_SECONDS, hard_max=DOWNLOAD_HARD_MAX_SECONDS)
+        if name:
+            src = os.path.join(self._sb_downloads_dir, name)
+            dst = os.path.join(self.download_dir, name)
+            os.replace(src, dst)
+            return dst
+        raise TimeoutError(
+            f"Download did not complete (nothing started within {DOWNLOAD_WAIT_SECONDS}s, "
+            f"or it stalled for {DOWNLOAD_STALL_SECONDS}s, or took over {DOWNLOAD_HARD_MAX_SECONDS}s)")

@@ -144,6 +144,14 @@ class StructureChangedError(Exception):
 class ExtractionError(Exception):
     """Raised when a PDF/DOCX file can't be read for text."""
 
+
+class EmptySourceFileError(ExtractionError):
+    """
+    Raised when a PDF has nothing in it at all (PyMuPDF: "cannot open empty
+    document" / "Cannot open empty file"). The portal itself is serving a blank
+    file, so there is no text to get and nothing for us to fix.
+    """
+
 #This is our pdf extraction code
 def extract_pdf(file_path: str) -> str:
     try:
@@ -153,6 +161,8 @@ def extract_pdf(file_path: str) -> str:
                 text += page.get_text("text") + "\n"
         return text
     except Exception as e:
+        if "empty" in str(e).lower():
+            raise EmptySourceFileError(f"PDF extraction failed on {file_path}: {e}") from e
         raise ExtractionError(f"PDF extraction failed on {file_path}: {e}") from e
 
 def _iter_block_items(parent):
@@ -452,6 +462,9 @@ def run_extractor(extractor, path: str, timeout: float | None = None) -> str:
         proc.join()
         parent_conn.close()
     if status == "error":
+        # The type name travels in the message, because only text crosses the process boundary.
+        if payload.startswith("EmptySourceFileError:"):
+            raise EmptySourceFileError(payload)
         raise ExtractionError(payload)
     return payload
 
@@ -466,6 +479,10 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
     """
     try:
         return run_extractor(extractor, path, timeout)
+    except EmptySourceFileError as e:
+        logger.warning("%s is empty at the source (%s); stored without text",
+                       os.path.basename(path), e)
+        return ""
     except ExtractionError as first_error:
         if not path.lower().endswith(".docx") or extractor is extract_docx_body_text:
             raise
@@ -566,6 +583,60 @@ def download_attachment(client, url: str, folder: str, file_name: str,
         "size_bytes": os.path.getsize(raw_path),
     }
     return attachment, extract_attachment_text(folder, saved_name)
+
+def wait_for_download(downloads_dir: str, before, max_wait: float,
+                      poll: float = 1.0, stall_seconds: float = 300.0,
+                      hard_max: float = 900.0) -> str | None:
+    """
+    Wait for the browser to finish saving one new file into `downloads_dir`.
+
+    `before` is the set of file names that were already there. Returns the new
+    file's name, or None if nothing finished.
+
+    Two stages. First, the download has to *start*: some new file, finished or
+    in progress, must show up within `max_wait` seconds. Chrome writes an
+    in-progress download as "<name>.crdownload". Once one exists the portal has
+    answered, so it is given time: the wait continues until the file finishes,
+    giving up only if the partial file has not changed in `stall_seconds`, or
+    `hard_max` seconds have passed in all. A big package is slow, not broken,
+    and a partial file that is still alive is not abandoned.
+    """
+    before = set(before)
+    started = time.monotonic()
+    last_change = started
+    seen_sizes: dict[str, int] = {}
+    seen_partial = False
+    vanished_polls = 0
+    while True:
+        new = set(os.listdir(downloads_dir)) - before
+        finished = sorted(name for name in new if not name.endswith(".crdownload"))
+        if finished:
+            return finished[0]
+        now = time.monotonic()
+        partials = sorted(new)
+        if partials:
+            seen_partial = True
+            vanished_polls = 0
+            for name in partials:
+                try:
+                    size = os.path.getsize(os.path.join(downloads_dir, name))
+                except OSError:
+                    continue
+                if seen_sizes.get(name) != size:
+                    seen_sizes[name] = size
+                    last_change = now
+            if now - last_change > stall_seconds or now - started > hard_max:
+                return None
+        else:
+            if seen_partial:
+                # An in-progress file disappeared without a finished one: cancelled.
+                vanished_polls += 1
+                if vanished_polls >= 3:
+                    return None
+            elif now - started > max_wait:
+                return None
+        time.sleep(poll)
+
 
 MAX_ZIP_DEPTH = 5
 

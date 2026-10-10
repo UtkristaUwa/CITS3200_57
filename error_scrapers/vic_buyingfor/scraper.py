@@ -77,6 +77,13 @@ BROWSER_ATTEMPTS = 3
 # Site-level codes worth another attempt with a fresh browser when nothing was
 # scraped. If every attempt is blocked the run is reported as SITE_BOT_BLOCKED
 # and nothing is worked around.
+# The download has to start within DOWNLOAD_WAIT_SECONDS; once a partial file
+# exists it gets until it stalls or the hard maximum. Not retried: another
+# request to a Cloudflare-fronted site risks a block.
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("VIC_DOWNLOAD_WAIT_SECONDS", "180"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("VIC_DOWNLOAD_STALL_SECONDS", "300"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("VIC_DOWNLOAD_HARD_MAX_SECONDS", "900"))
+
 RETRYABLE_CODES = (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED)
 
 # The document form on the "Download Now" page: a checkbox per document
@@ -407,14 +414,13 @@ class BrowserSession:
         os.makedirs(self._downloads_dir, exist_ok=True)
         before = set(os.listdir(self._downloads_dir))
         self.sb.click("#downloadButton")
-        for _ in range(120):
-            new = [f for f in set(os.listdir(self._downloads_dir)) - before
-                   if not f.endswith(".crdownload")]
-            if new:
-                target = os.path.join(folder, new[0])
-                shutil.move(os.path.join(self._downloads_dir, new[0]), target)
-                return target
-            time.sleep(1)
+        name = common.wait_for_download(
+            self._downloads_dir, before, DOWNLOAD_WAIT_SECONDS,
+            stall_seconds=DOWNLOAD_STALL_SECONDS, hard_max=DOWNLOAD_HARD_MAX_SECONDS)
+        if name:
+            target = os.path.join(folder, name)
+            shutil.move(os.path.join(self._downloads_dir, name), target)
+            return target
         raise TimeoutError(f"Document download from {download_docs_url} did not finish")
 
 
