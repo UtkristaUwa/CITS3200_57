@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app import runtime_config
 from app.auth import require_admin
 from app.models import (
+    PromptsConfigResponse,
+    PromptsConfigUpdate,
     ModelConfigResponse,
     ModelConfigUpdate,
     RelevanceConfigResponse,
@@ -56,6 +58,31 @@ def patch_models(
         )
     except runtime_config.RuntimeConfigError as exc:
         _raise_http_error(exc)
+
+
+@router.get("/prompts", response_model=PromptsConfigResponse)
+def get_prompts(_admin: dict = Depends(require_admin)) -> PromptsConfigResponse:
+    try:
+        config = runtime_config.get_prompts_config()
+    except runtime_config.RuntimeConfigError as exc:
+        _raise_http_error(exc)
+    return PromptsConfigResponse(**config.__dict__)
+
+
+@router.patch("/prompts", response_model=PromptsConfigResponse)
+def patch_prompts(
+    update: PromptsConfigUpdate,
+    _admin: dict = Depends(require_admin),
+) -> PromptsConfigResponse:
+    try:
+        values = update.model_dump(exclude={"generation"}, exclude_none=True)
+        config = runtime_config.update_prompts_config(
+            expected_generation=update.generation,
+            **values,
+        )
+    except runtime_config.RuntimeConfigError as exc:
+        _raise_http_error(exc)
+    return PromptsConfigResponse(**config.__dict__)
 
 
 @router.get("/relevance", response_model=RelevanceConfigResponse)

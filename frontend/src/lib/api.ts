@@ -113,6 +113,37 @@ export interface RelevanceConfigUpdate {
   generation: string;
 }
 
+export interface PromptsConfigResponse {
+  field_extraction: string;
+  summary: string;
+  doc_triage: string;
+  triage_char_limit: number;
+  generation: string;
+}
+
+export interface PromptsConfigUpdate {
+  field_extraction?: string;
+  summary?: string;
+  doc_triage?: string;
+  triage_char_limit?: number;
+  generation: string;
+}
+
+export async function getPromptsConfig(): Promise<PromptsConfigResponse> {
+  const { data } = await http.get<PromptsConfigResponse>(`${API_BASE_URL}/admin/config/prompts`);
+  return data;
+}
+
+export async function updatePromptsConfig(
+  update: PromptsConfigUpdate,
+): Promise<PromptsConfigResponse> {
+  const { data } = await http.patch<PromptsConfigResponse>(
+    `${API_BASE_URL}/admin/config/prompts`,
+    update,
+  );
+  return data;
+}
+
 export async function getRelevanceConfig(): Promise<RelevanceConfigResponse> {
   const { data } = await http.get<RelevanceConfigResponse>(`${API_BASE_URL}/admin/config/relevance`);
   return data;
