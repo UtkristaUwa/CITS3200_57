@@ -134,7 +134,11 @@ logger = logging.getLogger("Manager")
 # httpx logs every request at INFO, which buries the [SITE] lines and prints
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-SCRAPE_LIMIT_CLOUD = 0
+# 0 = no cap, which is what the daily run wants. Override it per execution for
+# a smoke test, without touching the job definition or this file:
+#   gcloud run jobs execute tender-batch-job --region australia-southeast1 \
+#     --update-env-vars SCRAPE_LIMIT_CLOUD=1 --wait
+SCRAPE_LIMIT_CLOUD = int(os.environ.get("SCRAPE_LIMIT_CLOUD", "0"))
 SCRAPE_LIMIT_LOCAL = 2
 LOCAL_OUTPUT_DIR = "tenders_data"
 

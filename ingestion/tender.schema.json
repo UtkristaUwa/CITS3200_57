@@ -43,7 +43,20 @@
     "value_amount": { "type": ["number", "null"] },
     "value_currency": { "type": ["string", "null"] },
     "value_notes": { "type": ["string", "null"] },
-    "location": { "type": ["string", "null"] },
+    "location": {
+      "type": ["string", "null"],
+      "description": "Where the work happens, verbatim from the source — anything from a state abbreviation to a street address. Display field; filter on location_states instead."
+    },
+    "location_states": {
+      "type": "array",
+      "default": [],
+      "description": "Filterable form of location: every state the work covers, or [\"NATIONAL\"] on its own for whole-of-country scope. Resolved by the pipeline from the location's postcode where there is one. Empty when the source doesn't support an answer, which is deliberate — a guessed state hides the tender behind the wrong filter.",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL"]
+      }
+    },
     "description": {
       "type": ["string", "null"],
       "description": "Plain text only — no HTML/markdown."

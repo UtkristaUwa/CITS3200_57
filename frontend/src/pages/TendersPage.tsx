@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Container, CircularProgress, Alert } from '@mui/material';
-import { getTenders, type Tender } from '../lib/api';
+import { getTenders, isRequestCancelled, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard } from '../components/TenderCard';
 import TenderFilterBar from '../components/TenderFilterBar';
@@ -38,33 +38,38 @@ export default function TendersPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     
     getTenders({ 
       limit: 50,
-      q: filterProps.searchQuery || undefined,
+      q: filterProps.debouncedSearchQuery || undefined,
       status: filterProps.status || undefined,
-      category: filterProps.category || undefined,
       location: filterProps.jurisdiction || undefined,
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
-    })
+    }, controller.signal)
       .then((data) => {
         if (!cancelled) setTenders(data);
       })
       .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load tenders.');
+        if (!cancelled && !isRequestCancelled(err)) {
+          setError(err instanceof Error ? err.message : 'Failed to load tenders.');
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
       
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [
-    filterProps.searchQuery, filterProps.status, filterProps.category, 
-    filterProps.jurisdiction, filterProps.year, filterProps.minDate,
+    filterProps.debouncedSearchQuery, filterProps.status, filterProps.jurisdiction,
+    filterProps.year, filterProps.minDate,
     filterProps.maxDate
   ]);
 
