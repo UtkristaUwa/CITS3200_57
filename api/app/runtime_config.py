@@ -45,7 +45,9 @@ _OPTION_RE = re.compile(
     r"^(?P<key>[A-Za-z][A-Za-z0-9_]*)(?P<separator>\s*=\s*)"
     r"(?P<value>[^\r\n]*?)(?P<ending>\r?\n)?$"
 )
-_TAG_DEFINITION = re.compile(r"^([a-z][a-z0-9_]*)\s*\|\s*\S")
+_TAG_DEFINITION = re.compile(
+    r"^(?P<tag_id>[a-z][a-z0-9_]*)\s*\|\s*(?P<label>\S.*)$"
+)
 
 
 class RuntimeConfigError(Exception):
@@ -94,6 +96,13 @@ class RuntimeRelevanceConfig:
 
 
 @dataclass(frozen=True)
+class RuntimeTaxonomies:
+    focus_areas: dict[str, str]
+    work_types: dict[str, str]
+    generation: str
+
+
+@dataclass(frozen=True)
 class RuntimePromptsConfig:
     field_extraction: str
     summary: str
@@ -111,10 +120,18 @@ class _StoredConfig:
 
 def _taxonomy_tag_ids(value: str) -> list[str]:
     return [
-        match.group(1)
+        match.group("tag_id")
         for line in value.splitlines()
         if (match := _TAG_DEFINITION.match(line.strip()))
     ]
+
+
+def _taxonomy_labels(value: str) -> dict[str, str]:
+    return {
+        match.group("tag_id"): match.group("label")
+        for line in value.splitlines()
+        if (match := _TAG_DEFINITION.match(line.strip()))
+    }
 
 
 @lru_cache
@@ -341,6 +358,16 @@ def _relevance_config(values: dict[str, str | float | int], generation: str) -> 
 def get_relevance_config() -> RuntimeRelevanceConfig:
     _, stored = _download_current()
     return _relevance_config(_parse_relevance(stored.text), stored.generation)
+
+
+def get_taxonomy_labels() -> RuntimeTaxonomies:
+    _, stored = _download_current()
+    values = _parse_relevance(stored.text)
+    return RuntimeTaxonomies(
+        focus_areas=_taxonomy_labels(str(values["focus_areas"])),
+        work_types=_taxonomy_labels(str(values["work_types"])),
+        generation=stored.generation,
+    )
 
 
 def _parse_prompts(text: str) -> dict[str, str | int]:
