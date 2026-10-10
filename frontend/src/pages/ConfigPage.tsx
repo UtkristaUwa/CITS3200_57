@@ -316,7 +316,11 @@ function ConfigurationSection({
 export default function ConfigPage() {
   const [triageModel, setTriageModel] = useState('');
   const [extractionModel, setExtractionModel] = useState('');
-  const [generation, setGeneration] = useState<string | null>(null);
+  // Every section on this page edits ONE object in GCS, which carries one
+  // generation. Tracking a generation per section meant saving any section
+  // left the others holding a stale one, so their next save 409'd until the
+  // page was reloaded. Each load and each successful save refreshes this.
+  const [configGeneration, setConfigGeneration] = useState<string | null>(null);
   const [originalValues, setOriginalValues] = useState<ModelConfigResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -325,7 +329,6 @@ export default function ConfigPage() {
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [hasConflict, setHasConflict] = useState(false);
   const [relevanceForm, setRelevanceForm] = useState<RelevanceFormValues>(EMPTY_RELEVANCE_FORM);
-  const [relevanceGeneration, setRelevanceGeneration] = useState<string | null>(null);
   const [originalRelevance, setOriginalRelevance] = useState<RelevanceConfigResponse | null>(null);
   const [relevanceLoading, setRelevanceLoading] = useState(true);
   const [relevanceSaving, setRelevanceSaving] = useState(false);
@@ -334,7 +337,6 @@ export default function ConfigPage() {
   const [relevanceSaveSuccess, setRelevanceSaveSuccess] = useState<string | null>(null);
   const [relevanceHasConflict, setRelevanceHasConflict] = useState(false);
   const [promptsForm, setPromptsForm] = useState<PromptsFormValues>(EMPTY_PROMPTS_FORM);
-  const [promptsGeneration, setPromptsGeneration] = useState<string | null>(null);
   const [originalPrompts, setOriginalPrompts] = useState<PromptsConfigResponse | null>(null);
   const [promptsLoading, setPromptsLoading] = useState(true);
   const [promptsLoadError, setPromptsLoadError] = useState<string | null>(null);
@@ -354,12 +356,11 @@ export default function ConfigPage() {
       const config = await getModelConfig();
       setTriageModel(config.triage_model);
       setExtractionModel(config.extraction_model);
-      setGeneration(config.generation);
+      setConfigGeneration(config.generation);
       setOriginalValues(config);
     } catch (error) {
       setTriageModel('');
       setExtractionModel('');
-      setGeneration(null);
       setOriginalValues(null);
 
       if (axios.isAxiosError(error) && error.response?.status === 503) {
@@ -390,11 +391,10 @@ export default function ConfigPage() {
     try {
       const config = await getPromptsConfig();
       setPromptsForm(toPromptsForm(config));
-      setPromptsGeneration(config.generation);
+      setConfigGeneration(config.generation);
       setOriginalPrompts(config);
     } catch (error) {
       setPromptsForm(EMPTY_PROMPTS_FORM);
-      setPromptsGeneration(null);
       setOriginalPrompts(null);
 
       if (axios.isAxiosError(error) && error.response?.status === 503) {
@@ -425,11 +425,10 @@ export default function ConfigPage() {
     try {
       const config = await getRelevanceConfig();
       setRelevanceForm(toRelevanceForm(config));
-      setRelevanceGeneration(config.generation);
+      setConfigGeneration(config.generation);
       setOriginalRelevance(config);
     } catch (error) {
       setRelevanceForm(EMPTY_RELEVANCE_FORM);
-      setRelevanceGeneration(null);
       setOriginalRelevance(null);
 
       if (axios.isAxiosError(error) && error.response?.status === 503) {
@@ -458,14 +457,14 @@ export default function ConfigPage() {
   const hasChanges = triageChanged || extractionChanged;
   const hasBlankModel = !trimmedTriageModel || !trimmedExtractionModel;
   const saveDisabled =
-    loading || saving || !generation || !hasChanges || hasBlankModel || hasConflict;
+    loading || saving || !configGeneration || !hasChanges || hasBlankModel || hasConflict;
 
   const handleSave = async () => {
-    if (saveDisabled || !generation) {
+    if (saveDisabled || !configGeneration) {
       return;
     }
 
-    const update: ModelConfigUpdate = { generation };
+    const update: ModelConfigUpdate = { generation: configGeneration };
     if (triageChanged) {
       update.triage_model = trimmedTriageModel;
     }
@@ -481,7 +480,7 @@ export default function ConfigPage() {
       const config = await updateModelConfig(update);
       setTriageModel(config.triage_model);
       setExtractionModel(config.extraction_model);
-      setGeneration(config.generation);
+      setConfigGeneration(config.generation);
       setOriginalValues(config);
       setHasConflict(false);
       setSaveSuccess('Model configuration saved successfully.');
@@ -517,7 +516,7 @@ export default function ConfigPage() {
   const paneSaveDisabled = (pane: PromptPane) =>
     promptsLoading ||
     savingPane !== null ||
-    !promptsGeneration ||
+    !configGeneration ||
     !paneHasChanges(pane) ||
     paneHasError(pane) ||
     conflictPane !== null;
@@ -531,11 +530,11 @@ export default function ConfigPage() {
   };
 
   const handlePaneSave = async (pane: PromptPane) => {
-    if (paneSaveDisabled(pane) || !promptsGeneration) {
+    if (paneSaveDisabled(pane) || !configGeneration) {
       return;
     }
 
-    const update: PromptsConfigUpdate = { generation: promptsGeneration };
+    const update: PromptsConfigUpdate = { generation: configGeneration };
     for (const field of PANE_FIELDS[pane]) {
       if (field === 'triage_char_limit') {
         update.triage_char_limit = Number(promptsForm.triage_char_limit.trim());
@@ -550,10 +549,18 @@ export default function ConfigPage() {
 
     try {
       const config = await updatePromptsConfig(update);
-      // The whole file shares one generation, so every pane takes the new one:
-      // without this the other panes would 409 on their next save.
-      setPromptsForm(toPromptsForm(config));
-      setPromptsGeneration(config.generation);
+      // Only the saved pane snaps to the server's value. Rewriting the whole
+      // form here would discard whatever the user had typed into the other
+      // panes but not yet saved.
+      const saved = toPromptsForm(config);
+      setPromptsForm((current) => {
+        const next = { ...current };
+        for (const field of PANE_FIELDS[pane]) {
+          next[field] = saved[field];
+        }
+        return next;
+      });
+      setConfigGeneration(config.generation);
       setOriginalPrompts(config);
       setConflictPane(null);
       setPaneSuccess({ [pane]: `${PANE_LABELS[pane]} saved successfully.` });
@@ -649,7 +656,7 @@ export default function ConfigPage() {
     </Box>
   );
 
-  const promptFieldDisabled = promptsLoading || savingPane !== null || !promptsGeneration;
+  const promptFieldDisabled = promptsLoading || savingPane !== null || !configGeneration;
 
   const handleModelChange = (setter: (value: string) => void, value: string) => {
     setter(value);
@@ -661,7 +668,7 @@ export default function ConfigPage() {
 
   const relevanceErrors = validateRelevanceForm(relevanceForm);
   const displayedRelevanceErrors: RelevanceFormErrors =
-    !relevanceLoading && relevanceGeneration ? relevanceErrors : {};
+    !relevanceLoading && configGeneration ? relevanceErrors : {};
   const normalisedRelevance = normaliseRelevanceForm(relevanceForm);
   const relevanceHasChanges = originalRelevance !== null && RELEVANCE_FIELDS.some(
     (field) => normalisedRelevance[field] !== originalRelevance[field],
@@ -669,7 +676,7 @@ export default function ConfigPage() {
   const relevanceSaveDisabled =
     relevanceLoading
     || relevanceSaving
-    || !relevanceGeneration
+    || !configGeneration
     || !relevanceHasChanges
     || Object.keys(relevanceErrors).length > 0
     || relevanceHasConflict;
@@ -683,11 +690,11 @@ export default function ConfigPage() {
   };
 
   const handleRelevanceSave = async () => {
-    if (relevanceSaveDisabled || !relevanceGeneration || !originalRelevance) {
+    if (relevanceSaveDisabled || !configGeneration || !originalRelevance) {
       return;
     }
 
-    const update: RelevanceConfigUpdate = { generation: relevanceGeneration };
+    const update: RelevanceConfigUpdate = { generation: configGeneration };
     if (normalisedRelevance.classification_thoughts !== originalRelevance.classification_thoughts) {
       update.classification_thoughts = normalisedRelevance.classification_thoughts;
     }
@@ -735,7 +742,7 @@ export default function ConfigPage() {
     try {
       const config = await updateRelevanceConfig(update);
       setRelevanceForm(toRelevanceForm(config));
-      setRelevanceGeneration(config.generation);
+      setConfigGeneration(config.generation);
       setOriginalRelevance(config);
       setRelevanceHasConflict(false);
       setRelevanceSaveSuccess('Relevance configuration saved successfully.');
@@ -910,8 +917,8 @@ export default function ConfigPage() {
           value={triageModel}
           onChange={(event) => handleModelChange(setTriageModel, event.target.value)}
           fullWidth
-          disabled={loading || saving || !generation}
-          error={!loading && !!generation && !trimmedTriageModel}
+          disabled={loading || saving || !configGeneration}
+          error={!loading && !!configGeneration && !trimmedTriageModel}
           helperText="Used to decide which tender documents should continue to AI processing."
           sx={{ mb: 2 }}
         />
@@ -920,8 +927,8 @@ export default function ConfigPage() {
           value={extractionModel}
           onChange={(event) => handleModelChange(setExtractionModel, event.target.value)}
           fullWidth
-          disabled={loading || saving || !generation}
-          error={!loading && !!generation && !trimmedExtractionModel}
+          disabled={loading || saving || !configGeneration}
+          error={!loading && !!configGeneration && !trimmedExtractionModel}
           helperText="Used for tender summarisation and structured field extraction."
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
@@ -1002,7 +1009,7 @@ export default function ConfigPage() {
           multiline
           minRows={6}
           fullWidth
-          disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+          disabled={relevanceLoading || relevanceSaving || !configGeneration}
           error={!!displayedRelevanceErrors.classification_thoughts}
           helperText={displayedRelevanceErrors.classification_thoughts ?? 'Guidance used when assigning relevance tags.'}
           sx={{ mb: 2 }}
@@ -1014,7 +1021,7 @@ export default function ConfigPage() {
           multiline
           minRows={10}
           fullWidth
-          disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+          disabled={relevanceLoading || relevanceSaving || !configGeneration}
           error={!!displayedRelevanceErrors.focus_areas}
           helperText={displayedRelevanceErrors.focus_areas ?? 'Define tags using the format: tag_id | Label.'}
           sx={{ mb: 2 }}
@@ -1026,7 +1033,7 @@ export default function ConfigPage() {
           multiline
           minRows={10}
           fullWidth
-          disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+          disabled={relevanceLoading || relevanceSaving || !configGeneration}
           error={!!displayedRelevanceErrors.work_types}
           helperText={displayedRelevanceErrors.work_types ?? 'Define tags using the format: tag_id | Label.'}
           sx={{ mb: 2 }}
@@ -1038,7 +1045,7 @@ export default function ConfigPage() {
           multiline
           minRows={6}
           fullWidth
-          disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+          disabled={relevanceLoading || relevanceSaving || !configGeneration}
           error={!!displayedRelevanceErrors.out_of_scope}
           helperText={displayedRelevanceErrors.out_of_scope ?? 'Main deliverables that should be treated as out of scope.'}
           sx={{ mb: 3 }}
@@ -1060,7 +1067,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.focus_area_weight}
             onChange={(event) => handleRelevanceChange('focus_area_weight', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.focus_area_weight}
             helperText={displayedRelevanceErrors.focus_area_weight ?? 'Value from 0 to 1.'}
             slotProps={{ htmlInput: { step: 'any' } }}
@@ -1070,7 +1077,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.work_type_weight}
             onChange={(event) => handleRelevanceChange('work_type_weight', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.work_type_weight}
             helperText={displayedRelevanceErrors.work_type_weight ?? 'Value from 0 to 1; weights must total 1.'}
             slotProps={{ htmlInput: { step: 'any' } }}
@@ -1080,7 +1087,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.recency_weight}
             onChange={(event) => handleRelevanceChange('recency_weight', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.recency_weight}
             helperText={displayedRelevanceErrors.recency_weight ?? 'Score adjustment reserved for recency.'}
             slotProps={{ htmlInput: { step: 'any' } }}
@@ -1090,7 +1097,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.recency_horizon_days}
             onChange={(event) => handleRelevanceChange('recency_horizon_days', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.recency_horizon_days}
             helperText={displayedRelevanceErrors.recency_horizon_days ?? 'Positive whole number of days.'}
             slotProps={{ htmlInput: { step: 1 } }}
@@ -1100,7 +1107,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.out_of_scope_fit_cap}
             onChange={(event) => handleRelevanceChange('out_of_scope_fit_cap', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.out_of_scope_fit_cap}
             helperText={displayedRelevanceErrors.out_of_scope_fit_cap ?? 'Whole number from 0 to 100.'}
             slotProps={{ htmlInput: { step: 1 } }}
@@ -1110,7 +1117,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.max_focus_areas}
             onChange={(event) => handleRelevanceChange('max_focus_areas', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.max_focus_areas}
             helperText={displayedRelevanceErrors.max_focus_areas ?? 'Maximum focus-area tags retained.'}
             slotProps={{ htmlInput: { step: 1 } }}
@@ -1120,7 +1127,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.max_work_types}
             onChange={(event) => handleRelevanceChange('max_work_types', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.max_work_types}
             helperText={displayedRelevanceErrors.max_work_types ?? 'Maximum work-type tags retained.'}
             slotProps={{ htmlInput: { step: 1 } }}
@@ -1142,7 +1149,7 @@ export default function ConfigPage() {
             label="Relevance model"
             value={relevanceForm.relevance_model}
             onChange={(event) => handleRelevanceChange('relevance_model', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.relevance_model}
             helperText={displayedRelevanceErrors.relevance_model ?? 'Model used for relevance classification.'}
           />
@@ -1151,7 +1158,7 @@ export default function ConfigPage() {
             type="number"
             value={relevanceForm.relevance_temperature}
             onChange={(event) => handleRelevanceChange('relevance_temperature', event.target.value)}
-            disabled={relevanceLoading || relevanceSaving || !relevanceGeneration}
+            disabled={relevanceLoading || relevanceSaving || !configGeneration}
             error={!!displayedRelevanceErrors.relevance_temperature}
             helperText={displayedRelevanceErrors.relevance_temperature ?? 'Value of 0 or greater.'}
             slotProps={{ htmlInput: { step: 'any' } }}
