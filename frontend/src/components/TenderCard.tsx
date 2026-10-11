@@ -27,6 +27,10 @@ import {
   } from '../lib/tenderPreferences';
   import { TenderDocuments } from './TenderDocuments';
   import { ShareTenderDialog } from './ShareTenderDialog';
+import {
+  MOBILE_SEARCH_TOP_NAV_HEIGHT_PX,
+  STICKY_TOP_NAV_HEIGHT_CSS_VAR,
+} from './TopNav';
 
   const BRAND_COLORS = {
     blue: '#2D3AF1',
@@ -375,7 +379,9 @@ import {
                 display: 'flex',
                 justifyContent: 'flex-end',
                 position: { xs: 'sticky', sm: 'static' },
-                top: { xs: 78 },
+                top: {
+                  xs: `calc(var(${STICKY_TOP_NAV_HEIGHT_CSS_VAR}, ${MOBILE_SEARCH_TOP_NAV_HEIGHT_PX}px) + 8px)`,
+                },
                 zIndex: { xs: 5 },
                 pointerEvents: { xs: 'none', sm: 'auto' },
                 px: { xs: 1.5, sm: 2 },

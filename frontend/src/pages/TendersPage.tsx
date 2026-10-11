@@ -4,7 +4,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getTenders, isRequestCancelled, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard } from '../components/TenderCard';
-import TenderFilterBar from '../components/TenderFilterBar';
+import { TenderFilterPanel, TenderSearchControls } from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
 import { useAuth } from '../lib/AuthContext';
@@ -127,11 +127,12 @@ export default function TendersPage() {
   const isDataLoading = loading || !filterProps.filtersReady || !tenderVisitReady;
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
-      <TopNav />
-      <Container maxWidth="md">
-        
-        <TenderFilterBar {...filterProps} />
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6, overflowAnchor: 'none' }}>
+      <TopNav
+        searchControls={<TenderSearchControls {...filterProps} />}
+        filterPanel={<TenderFilterPanel {...filterProps} />}
+      />
+      <Container maxWidth="md" sx={{ pt: 3 }}>
 
         {isDataLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
