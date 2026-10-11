@@ -228,7 +228,7 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
                 with open(tmp_path, "wb") as f:
                     f.write(content)
                 try:
-                    page_text = common.extract_pdf(tmp_path)
+                    page_text = common.extract_with_fallback(common.extract_pdf, tmp_path)
                 except common.ExtractionError:
                     page_text = ""
                     any_failed = True
@@ -241,7 +241,7 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
             extractor = extractors.get(extension)
             if extractor is not None:
                 try:
-                    text = extractor(raw_path)
+                    text = common.extract_with_fallback(extractor, raw_path)
                     common.save_extracted_text(output_dir, file_name, text)
                 except common.ExtractionError:
                     any_failed = True

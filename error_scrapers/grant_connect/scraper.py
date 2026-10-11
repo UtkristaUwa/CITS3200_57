@@ -293,7 +293,9 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
             continue
 
         try:
-            common.save_extracted_text(output_dir, saved_name, extractor(raw_path))
+            log.info("       extracting text from %s", saved_name)
+            common.save_extracted_text(
+                output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
         except common.ExtractionError as e:
             log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
             any_failed = True

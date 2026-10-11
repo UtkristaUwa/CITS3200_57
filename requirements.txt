@@ -1,7 +1,7 @@
 beautifulsoup4
 httpx
-pymupdf
-python-docx
+PyMuPDF==1.23.8
+python-docx==1.1.0
 google-cloud-bigquery
 google-genai
 pydantic

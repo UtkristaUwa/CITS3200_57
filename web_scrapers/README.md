@@ -19,8 +19,7 @@ tenders_data/
     Addendum 1.pdf
 ```
 
-The `.txt` file is always named after its directory, which is what
-`document_scraper/main.py` looks for when it appends extracted attachment text.
+The `.txt` file is always named after its directory.
 
 `tender.json` matches [`ingestion/sample_tender.json`](../ingestion/sample_tender.json)
 and validates against [`ingestion/tender.schema.json`](../ingestion/tender.schema.json),
