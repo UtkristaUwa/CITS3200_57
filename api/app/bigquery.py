@@ -29,6 +29,8 @@ ALL_COLUMNS = [
     "location",
     "description",
     "summary_headline",
+    "focus_areas",
+    "work_types",
     "contact_name",
     "contact_email",
     "contact_phone",

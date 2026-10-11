@@ -26,6 +26,16 @@ import {
     orange: '#FF7C00',
   } as const;
 
+  const TAG_CHIP_SX = {
+    maxWidth: '100%',
+    height: 'auto',
+    '& .MuiChip-label': {
+      py: 0.5,
+      whiteSpace: 'normal',
+      overflowWrap: 'anywhere',
+    },
+  } as const;
+
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
     const parsed = new Date(value);
@@ -79,6 +89,8 @@ import {
   }) {
     const detailsId = useId();
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
+    const focusAreas = Array.isArray(tender.focus_areas) ? tender.focus_areas : [];
+    const workTypes = Array.isArray(tender.work_types) ? tender.work_types : [];
 
     return (
       <Card
@@ -98,7 +110,7 @@ import {
           <Box
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
+              flexDirection: { xs: focusAreas.length > 0 ? 'row' : 'column', sm: 'row' },
               justifyContent: 'space-between',
               alignItems: 'flex-start',
               gap: { xs: 1, sm: 0 },
@@ -106,13 +118,36 @@ import {
               mb: 1.5,
             }}
           >
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 0.75,
+                flex: 1,
+                minWidth: 0,
+                width: { xs: focusAreas.length > 0 ? 'auto' : '100%', sm: 'auto' },
+              }}
             >
-              {tender.title || 'Untitled tender'}
-            </Typography>
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+              >
+                {tender.title || 'Untitled tender'}
+              </Typography>
+              {focusAreas.length > 0 && (
+                <Box
+                  role="group"
+                  aria-label="Focus Areas"
+                  sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 0.75, minWidth: 0 }}
+                >
+                  {focusAreas.map((focusArea) => (
+                    <Chip key={focusArea.id} label={focusArea.label} size="small" sx={TAG_CHIP_SX} />
+                  ))}
+                </Box>
+              )}
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
               {isNew && <Chip label="New" color="primary" size="small" />}
               <Tooltip title="Share tender">
@@ -248,10 +283,35 @@ import {
           )}
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
-              <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
-              <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
-              <Typography variant="body2"><strong>Location:</strong> {tender.location ?? 'Not specified'}</Typography>
-              <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 1 } }}>
+                <strong>Monetary Value:</strong> {formatMoney(tender)}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 1 } }}>
+                <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 2 } }}>
+                <strong>Location:</strong> {tender.location ?? 'Not specified'}
+              </Typography>
+              {workTypes.length > 0 && (
+                <Box
+                  component="section"
+                  aria-label="Work Types"
+                  sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 2 }, minWidth: 0 }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>Work Types</Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0 }}>
+                    {workTypes.map((workType) => (
+                      <Chip key={workType.id} label={workType.label} size="small" sx={TAG_CHIP_SX} />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 3 } }}>
+                <strong>Status:</strong> {tender.status ?? 'Active'}
+              </Typography>
+              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 3 } }}>
+                <strong>Category:</strong> {tender.category ?? 'Not specified'}
+              </Typography>
             </Box>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>AI Summary</Typography>

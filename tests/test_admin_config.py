@@ -467,6 +467,95 @@ def test_repository_tender_processor_cfg_is_compatible():
     assert relevance["work_type_weight"] == 0.4
 
 
+def test_taxonomy_labels_parse_ids_labels_and_ignore_description_lines():
+    taxonomy = """FACET A: FOCUS AREA
+first_nations | First Nations
+Description containing spaces, punctuation, commas, and & symbols.
+health_wellbeing | Health and wellbeing
+policy_program_design | Policy and program design (co-design, review & research)
+"""
+
+    assert runtime_config._taxonomy_labels(taxonomy) == {
+        "first_nations": "First Nations",
+        "health_wellbeing": "Health and wellbeing",
+        "policy_program_design": "Policy and program design (co-design, review & research)",
+    }
+
+
+def test_get_taxonomy_labels_uses_one_snapshot_and_keeps_taxonomies_separate(monkeypatch):
+    text = CFG.replace(
+        "    housing | Housing",
+        "    shared_tag | Focus area label",
+    ).replace(
+        "    evaluation | Evaluation",
+        "    shared_tag | Work type label",
+    )
+    stored = runtime_config._StoredConfig(
+        text=text,
+        models={
+            "triage_model": "gemini-triage-old",
+            "extraction_model": "gemini-extraction-old",
+        },
+        generation="73",
+    )
+    downloads = 0
+
+    def download_current():
+        nonlocal downloads
+        downloads += 1
+        return object(), stored
+
+    monkeypatch.setattr(runtime_config, "_download_current", download_current)
+
+    taxonomies = runtime_config.get_taxonomy_labels()
+
+    assert downloads == 1
+    assert taxonomies == runtime_config.RuntimeTaxonomies(
+        focus_areas={"shared_tag": "Focus area label"},
+        work_types={"shared_tag": "Work type label"},
+        generation="73",
+    )
+
+
+@pytest.mark.parametrize(
+    ("original", "replacement", "message"),
+    [
+        (
+            "    housing | Housing",
+            "    housing | Housing\n    housing | Duplicate housing",
+            "duplicate tag IDs",
+        ),
+        (
+            "    evaluation | Evaluation",
+            "    Not a tag definition",
+            "no valid tag definitions",
+        ),
+    ],
+)
+def test_get_taxonomy_labels_preserves_existing_taxonomy_validation(
+    monkeypatch,
+    original,
+    replacement,
+    message,
+):
+    stored = runtime_config._StoredConfig(
+        text=CFG.replace(original, replacement),
+        models={
+            "triage_model": "gemini-triage-old",
+            "extraction_model": "gemini-extraction-old",
+        },
+        generation="41",
+    )
+    monkeypatch.setattr(
+        runtime_config,
+        "_download_current",
+        lambda: (object(), stored),
+    )
+
+    with pytest.raises(runtime_config.RuntimeConfigMalformed, match=message):
+        runtime_config.get_taxonomy_labels()
+
+
 def test_crlf_is_preserved(client, blob):
     original = CFG.replace("\n", "\r\n")
     blob.content = original.encode("utf-8")
