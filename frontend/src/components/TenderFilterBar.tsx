@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   TextField,
@@ -17,6 +17,11 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getLocations } from '../lib/api';
 import type { DefaultTenderStatus } from '../lib/tenderPreferences';
+import {
+  DESKTOP_TOP_NAV_HEIGHT_PX,
+  MOBILE_SEARCH_TOP_NAV_HEIGHT_PX,
+  MOBILE_TENDER_CARD_CLEARANCE_PX,
+} from './TopNav';
 
 export interface TenderFilterBarProps {
   searchQuery: string;
@@ -44,7 +49,109 @@ export interface TenderFilterBarProps {
   handleResetFilters: () => void;
 }
 
-export default function TenderFilterBar(props: TenderFilterBarProps) {
+export function TenderSearchControls(props: TenderFilterBarProps) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+        alignItems: 'center',
+        minWidth: 0,
+        width: '100%',
+        '& .MuiInputBase-root': { minHeight: 44 },
+      }}
+    >
+      <TextField
+        fullWidth
+        variant="outlined"
+        size="small"
+        placeholder="Search tenders..."
+        value={props.searchQuery}
+        onChange={(e) => props.setSearchQuery(e.target.value)}
+        sx={{ minWidth: 0 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="primary" />
+              </InputAdornment>
+            ),
+          },
+          htmlInput: { 'aria-label': 'Search tenders' },
+        }}
+      />
+      <Tooltip title="Toggle AI Semantic Search. When active, matches meaning and concepts (slower). When off, uses fast keyword search.">
+        <Button
+          aria-label="Toggle AI Semantic Search"
+          aria-pressed={props.advancedSearch}
+          variant={props.advancedSearch ? 'contained' : 'outlined'}
+          startIcon={<AutoAwesomeIcon />}
+          onClick={() => props.setAdvancedSearch(!props.advancedSearch)}
+          sx={{
+            flexShrink: 0,
+            minWidth: { xs: 44, lg: 'auto' },
+            width: { xs: 44, lg: 'auto' },
+            height: 44,
+            px: { xs: 0, lg: 2 },
+            textTransform: 'none',
+            fontWeight: props.advancedSearch ? 600 : 500,
+            '& .MuiButton-startIcon': {
+              m: { xs: 0, lg: '0 8px 0 -4px' },
+            },
+            ...(props.advancedSearch
+              ? {
+                  background: 'linear-gradient(135deg, #2D3AF1 0%, #6E78F7 100%)',
+                  color: '#fff',
+                  borderColor: 'transparent',
+                  boxShadow: '0 2px 8px rgba(45, 58, 241, 0.35)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #232EC2 0%, #5C67ED 100%)',
+                  },
+                }
+              : {
+                  color: 'text.secondary',
+                  borderColor: 'divider',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    color: 'primary.main',
+                  },
+                }),
+          }}
+        >
+          <Box component="span" sx={{ display: { xs: 'none', lg: 'inline' } }}>
+            Advanced
+          </Box>
+        </Button>
+      </Tooltip>
+      <Tooltip title={props.showFilters ? 'Hide filters' : 'Show filters'}>
+        <Button
+          aria-label={props.showFilters ? 'Hide tender filters' : 'Show tender filters'}
+          aria-expanded={props.showFilters}
+          aria-controls="tender-filter-panel"
+          variant={props.showFilters ? 'contained' : 'outlined'}
+          startIcon={<FilterListIcon />}
+          onClick={() => props.setShowFilters(!props.showFilters)}
+          sx={{
+            flexShrink: 0,
+            minWidth: { xs: 44, lg: 'auto' },
+            width: { xs: 44, lg: 'auto' },
+            height: 44,
+            px: { xs: 0, lg: 2 },
+            '& .MuiButton-startIcon': {
+              m: { xs: 0, lg: '0 8px 0 -4px' },
+            },
+          }}
+        >
+          <Box component="span" sx={{ display: { xs: 'none', lg: 'inline' } }}>
+            Filters
+          </Box>
+        </Button>
+      </Tooltip>
+    </Box>
+  );
+}
+
+export function TenderFilterPanel(props: TenderFilterBarProps) {
   const [availableLocations, setAvailableLocations] = useState<string[]>([]);
   const locationOptions = props.jurisdiction
     && !availableLocations.includes(props.jurisdiction)
@@ -60,121 +167,41 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
   }, []);
 
   return (
-    <Box
-      sx={{
-        display: { xs: 'contents', sm: 'block' },
-        position: { sm: 'sticky' },
-        top: { sm: 12 },
-        zIndex: 10,
-        mb: { sm: 2 },
-        p: { sm: 1.5 },
-        bgcolor: 'background.paper',
-        borderRadius: 2,
-        border: '1px solid',
-        borderColor: 'secondary.main',
-        boxShadow: (theme) => theme.palette.mode === 'light'
-          ? '0 3px 10px rgba(36,45,50,0.08)'
-          : '0 3px 10px rgba(0,0,0,0.24)',
-      }}
-    >
+    <Collapse id="tender-filter-panel" in={props.showFilters} sx={{ width: '100%' }}>
       <Box
         sx={{
-          display: 'flex',
-          gap: 1,
-          alignItems: 'stretch',
-          position: { xs: 'sticky', sm: 'static' },
-          top: { xs: 8 },
-          zIndex: { xs: 10 },
-          mb: { xs: props.showFilters ? 0 : 2, sm: 0 },
-          p: { xs: 1, sm: 0 },
-          bgcolor: { xs: 'background.paper', sm: 'transparent' },
-          borderRadius: { xs: 2, sm: 0 },
-          border: { xs: '1px solid', sm: 'none' },
-          borderColor: { xs: 'secondary.main' },
-          boxShadow: (theme) => ({
-            xs: theme.palette.mode === 'light'
-              ? '0 3px 10px rgba(36,45,50,0.08)'
-              : '0 3px 10px rgba(0,0,0,0.24)',
-            sm: 'none',
-          }),
-          '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
+          boxSizing: 'border-box',
+          width: '100%',
+          maxHeight: {
+            xs: `calc(100dvh - ${MOBILE_SEARCH_TOP_NAV_HEIGHT_PX + MOBILE_TENDER_CARD_CLEARANCE_PX}px)`,
+            sm: `calc(100dvh - ${MOBILE_SEARCH_TOP_NAV_HEIGHT_PX}px)`,
+            md: `calc(100dvh - ${DESKTOP_TOP_NAV_HEIGHT_PX}px)`,
+          },
+          overflowY: 'auto',
+          overscrollBehaviorY: 'contain',
+          WebkitOverflowScrolling: 'touch',
+          px: { xs: 1, sm: 2 },
+          pb: 1,
         }}
       >
-        <TextField
-          fullWidth
-          variant="outlined"
-          size="small"
-          placeholder="Search tenders..."
-          value={props.searchQuery}
-          onChange={(e) => props.setSearchQuery(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="primary" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-        <Tooltip title="Toggle AI Semantic Search. When active, matches meaning and concepts (slower). When off, uses fast keyword search.">
-          <Button
-            variant={props.advancedSearch ? 'contained' : 'outlined'}
-            startIcon={<AutoAwesomeIcon />}
-            onClick={() => props.setAdvancedSearch(!props.advancedSearch)}
-            sx={{
-              flexShrink: 0,
-              minHeight: { xs: 44, sm: 36 },
-              textTransform: 'none',
-              fontWeight: props.advancedSearch ? 600 : 500,
-              ...(props.advancedSearch
-                ? {
-                    background: 'linear-gradient(135deg, #2D3AF1 0%, #6E78F7 100%)',
-                    color: '#fff',
-                    borderColor: 'transparent',
-                    boxShadow: '0 2px 8px rgba(45, 58, 241, 0.35)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #232EC2 0%, #5C67ED 100%)',
-                    },
-                  }
-                : {
-                    color: 'text.secondary',
-                    borderColor: 'divider',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                    },
-                  }),
-            }}
-          >
-            Advanced
-          </Button>
-        </Tooltip>
-        <Button
-          variant={props.showFilters ? 'contained' : 'outlined'}
-          startIcon={<FilterListIcon />}
-          onClick={() => props.setShowFilters(!props.showFilters)}
-          sx={{ flexShrink: 0, minHeight: { xs: 44, sm: 36 } }}
-        >
-          Filters
-        </Button>
-      </Box>
-
-      <Collapse in={props.showFilters}>
         <Box
+          role="region"
+          aria-label="Tender filters"
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 1.5,
-            mt: { xs: 1, sm: 1.5 },
-            mb: { xs: 2, sm: 0 },
-            p: { xs: 1, sm: 0 },
-            pt: 1.5,
-            bgcolor: { xs: 'background.paper', sm: 'transparent' },
-            border: { xs: '1px solid', sm: 'none' },
-            borderTop: '1px solid',
+            width: '100%',
+            maxWidth: (theme) => theme.breakpoints.values.md,
+            mx: 'auto',
+            p: { xs: 1.5, sm: 2 },
+            bgcolor: 'background.paper',
+            border: '1px solid',
             borderColor: 'secondary.main',
-            borderRadius: { xs: 2, sm: 0 },
+            borderRadius: 2,
+            boxShadow: (theme) => theme.palette.mode === 'light'
+              ? '0 3px 10px rgba(36,45,50,0.08)'
+              : '0 3px 10px rgba(0,0,0,0.24)',
             '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
           }}
         >
@@ -290,7 +317,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             </Button>
           </Box>
         </Box>
-      </Collapse>
-    </Box>
+      </Box>
+    </Collapse>
   );
 }

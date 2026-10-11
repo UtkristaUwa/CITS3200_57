@@ -3,7 +3,7 @@ import { Box, Container, CircularProgress, Alert, Typography } from '@mui/materi
 import { getTenders, isRequestCancelled, type Tender } from '../lib/api';
 import TopNav from '../components/TopNav';
 import { TenderCard } from '../components/TenderCard';
-import TenderFilterBar from '../components/TenderFilterBar';
+import { TenderFilterPanel, TenderSearchControls } from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
 
@@ -67,9 +67,12 @@ export default function FavoritesPage() {
   const isDataLoading = loading || !filterProps.filtersReady || loadingFavorites;
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
-      <TopNav />
-      <Container maxWidth="md">
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6, overflowAnchor: 'none' }}>
+      <TopNav
+        searchControls={<TenderSearchControls {...filterProps} />}
+        filterPanel={<TenderFilterPanel {...filterProps} />}
+      />
+      <Container maxWidth="md" sx={{ pt: 2 }}>
 
       <Box sx={{ mt: 2, mb: 4, textAlign: 'left' }}>
           <Typography
@@ -85,9 +88,6 @@ export default function FavoritesPage() {
             Manage and track your bookmarked tender opportunities.
           </Typography>
         </Box>
-        
-        <TenderFilterBar {...filterProps} />
-
         {isDataLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
         )}
