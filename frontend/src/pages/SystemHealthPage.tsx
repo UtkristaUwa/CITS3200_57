@@ -13,6 +13,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography
 } from '@mui/material';
 import { getScraperHealth, type ScraperHealthRecord } from '../lib/api';
@@ -151,12 +152,41 @@ export default function SystemHealthPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {row.last_run
-                        ? new Date(row.last_run).toLocaleString('en-AU', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short',
-                          })
-                        : 'N/A'}
+                      {row.last_run ? (
+                        <Box>
+                          <Tooltip
+                            title={
+                              row.last_successful_run
+                                ? `Last successful run: ${new Date(row.last_successful_run).toLocaleDateString('en-AU', { dateStyle: 'medium' })}`
+                                : 'No successful run recorded'
+                            }
+                            arrow
+                          >
+                            <Typography variant="body2" component="span" sx={{ display: 'block' }}>
+                              {new Date(row.last_run).toLocaleString('en-AU', {
+                                dateStyle: 'medium',
+                                timeStyle: 'short',
+                              })}
+                            </Typography>
+                          </Tooltip>
+                          {row.status !== 'Success' && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ display: 'block', mt: 0.25 }}
+                            >
+                              Last success:{' '}
+                              {row.last_successful_run
+                                ? new Date(row.last_successful_run).toLocaleDateString('en-AU', {
+                                    dateStyle: 'medium',
+                                  })
+                                : 'Never'}
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : (
+                        'N/A'
+                      )}
                     </TableCell>
                     <TableCell>
                       <Chip
