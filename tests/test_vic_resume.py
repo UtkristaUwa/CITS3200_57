@@ -66,10 +66,10 @@ def test_nothing_known_keeps_listing_order():
     assert vic.order_for_resume(entries, None) == (entries, 3)
 
 
-def test_block_after_some_tenders_is_partial_when_resuming(site):
+def test_block_after_some_tenders_is_a_success_when_resuming(site):
     site["state"]["block_after"] = 2
     code, tenders = vic._scrape_site(known_urls=set(), resume=True)
-    assert code == common.TENDER_PARTIAL
+    assert code == common.SITE_SUCCESS  # the intended flow: tomorrow carries on
     assert len(tenders) == 2
 
 
@@ -92,7 +92,7 @@ def test_resume_scrapes_the_new_tenders_first(site):
     known = {entries[0]["url"], entries[1]["url"], entries[2]["url"]}
     site["state"]["block_after"] = 2  # only room for two before the block
     code, _ = vic._scrape_site(known_urls=known, resume=True)
-    assert code == common.TENDER_PARTIAL
+    assert code == common.SITE_SUCCESS
     assert site["scraped"] == [entries[3]["url"], entries[4]["url"]]
 
 
@@ -105,7 +105,7 @@ def test_no_block_is_a_clean_run(site):
 def test_retry_wrapper_passes_resume_through(site):
     site["state"]["block_after"] = 1
     code, tenders = vic._scrape_with_retries(known_urls=set(), resume=True)
-    assert code == common.TENDER_PARTIAL and len(tenders) == 1
+    assert code == common.SITE_SUCCESS and len(tenders) == 1
 
 
 def test_manager_hands_vic_the_stored_urls():
@@ -115,3 +115,16 @@ def test_manager_hands_vic_the_stored_urls():
     source = (pathlib.Path(__file__).parent.parent / "manager.py").read_text(encoding="utf-8")
     sources = re.search(r"CRAWL_RESUME_SOURCES\s*=\s*\{([^}]*)\}", source).group(1)
     assert '"vic_buyingfor"' in sources
+
+
+def test_a_block_with_an_incomplete_tender_is_still_partial(site, monkeypatch):
+    def scrape_opportunity(session, entry, output_dir):
+        if len(site["scraped"]) >= 2:
+            raise vic.BotBlockedError("challenge")
+        site["scraped"].append(entry["url"])
+        code = common.TENDER_PARTIAL if len(site["scraped"]) == 1 else common.SITE_SUCCESS
+        return code, {"tender_id": entry["url"], "documents_gated": False}
+
+    monkeypatch.setattr(vic, "scrape_opportunity", scrape_opportunity)
+    code, _ = vic._scrape_site(known_urls=set(), resume=True)
+    assert code == common.TENDER_PARTIAL

@@ -42,7 +42,7 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 log = reporting.site_logger("QLD_QTENDERS")
 
@@ -667,7 +667,9 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
                 log.info("retry pass: %s followed this time", reference)
             else:
                 log.warning("retry pass: %s still could not be followed", reference)
+                run_notes.note_reason(run_notes.PORTAL)
             codes[reference] = code
+            run_notes.note_tender(reference, code)  # replaces the first pass's verdict
     finally:
         vendorpanel.filter_wait = previous_wait
     log.info("retry pass: %d of %d tender(s) followed this time", recovered, len(todo))
@@ -734,6 +736,7 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
             if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
                 raise  # the site says slow down: stop the run, don't keep downloading
             log.warning("       download FAILED: %s: %s", document["url"], e)
+            run_notes.note_reason(run_notes.DOWNLOAD, document["file_name"])
             any_failed = True
             continue
         result["attachments"].append(attachment)
@@ -747,10 +750,13 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
     result["documents_gated"] = advertised > len(detail["documents"])
     if result["documents_gated"] and vendorpanel is not None:
         code = fetch_documents(vendorpanel, result, advertised)
+        if code != common.SITE_SUCCESS:
+            run_notes.note_reason(run_notes.PORTAL)
         return (common.TENDER_PARTIAL if any_failed else code), result
     if result["documents_gated"]:
         log.warning("       documents: %d advertised, %d linked -- the rest need a "
                     "VendorPanel supplier login", advertised, len(detail["documents"]))
+        run_notes.note_reason(run_notes.PORTAL)
     else:
         reporting.documents_line(log, len(result["attachments"]), advertised)
     if any_failed or result["documents_gated"]:

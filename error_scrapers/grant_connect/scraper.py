@@ -22,7 +22,7 @@ import re
 import httpx
 from bs4 import BeautifulSoup
  
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -275,6 +275,7 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         except Exception as exc:
             log.warning("       download FAILED  %s  (%s: %s)",
                         document["file_name"], type(exc).__name__, exc)
+            run_notes.note_reason(run_notes.DOWNLOAD, document["file_name"])
             any_failed = True
             continue
 
@@ -298,6 +299,7 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
                 output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
         except common.ExtractionError as e:
             log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
+            run_notes.note_reason(run_notes.UNREADABLE, saved_name)
             any_failed = True
 
     code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS

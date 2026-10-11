@@ -30,7 +30,7 @@ import zipfile
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common, crawl_state, reporting
+from error_scrapers import common, crawl_state, reporting, run_notes
 from error_scrapers.buy_nsw import crawl
 
 log = reporting.site_logger("BUYNSW")
@@ -305,6 +305,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         except Exception as exc:
             log.warning("       package download/extract FAILED  %s  (%s: %s)",
                         package_url, type(exc).__name__, exc)
+            run_notes.note_reason(run_notes.DOWNLOAD, "document package")
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
                 "source_url": url, **fields,
@@ -430,7 +431,9 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             log.warning("verdict: stopped early, buy.nsw's WAF answered 202 -- %d new tender(s) "
                         "scraped, %d already stored; next run resumes at listing page %d",
                         len(res.tenders), res.skipped, res.next_page)
-            return common.TENDER_PARTIAL, res.tenders
+            # Stopping here is the intended flow (the next run resumes at the
+            # cursor), so it is a success unless a tender itself was incomplete.
+            return (common.TENDER_PARTIAL if codes else common.SITE_SUCCESS), res.tenders
         return (common.TENDER_PARTIAL if codes else common.SITE_SUCCESS), res.tenders
 
     except httpx.HTTPStatusError as exc:

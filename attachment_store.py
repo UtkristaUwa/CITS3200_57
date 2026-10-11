@@ -21,6 +21,8 @@ import mimetypes
 import os
 from datetime import datetime, timezone
 
+from error_scrapers import run_notes
+
 logger = logging.getLogger("AttachmentStore")
 
 # The bucket lives in australia-southeast1, alongside BigQuery and the job.
@@ -137,6 +139,7 @@ def upload_attachment(local_path, source_id, tender_ref, bucket=None, content_ty
             f"Skipping {file_name}: {size_bytes / 1024 / 1024:.0f}MB exceeds the "
             f"{MAX_ATTACHMENT_MB}MB limit"
         )
+        run_notes.note_late(tender_ref, run_notes.SIZE, file_name)
         return None
 
     if content_type is None or content_type.lower() in _GENERIC_CONTENT_TYPES:
@@ -169,6 +172,7 @@ def upload_attachment(local_path, source_id, tender_ref, bucket=None, content_ty
                 logger.info(f"Already stored, skipping upload: {file_name}")
     except Exception as e:
         logger.error(f"Upload failed for {file_name}: {e}")
+        run_notes.note_late(tender_ref, run_notes.NOT_STORED, file_name)
         return None
 
     return {

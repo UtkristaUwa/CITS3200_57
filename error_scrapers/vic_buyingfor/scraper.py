@@ -38,7 +38,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -466,6 +466,7 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
         log.warning("       documents: %d advertised, 0 downloaded -- %s", len(documents),
                     "not signed in" if tender["documents_gated"]
                     else "signed in but the page offers no download link")
+        run_notes.note_reason(run_notes.PORTAL)
         return common.TENDER_PARTIAL, tender
 
     zip_path = None
@@ -476,6 +477,7 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
         raise  # a Cloudflare challenge ends the run -- it is not a per-tender failure
     except Exception as e:
         log.warning("       document download FAILED for %s: %s", tender_code, e)
+        run_notes.note_reason(run_notes.DOWNLOAD)
         return common.TENDER_PARTIAL, tender
     finally:
         if zip_path and os.path.exists(zip_path):
@@ -544,15 +546,17 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
     SITE_LOGIN_FAILED, but the page text is still scraped.
 
     With resume=True a Cloudflare block after at least one tender was scraped
-    is TENDER_PARTIAL, not a failure: what was scraped is kept and the next run
-    carries on with the tenders not stored yet. A block before anything was
-    scraped is still SITE_BOT_BLOCKED.
+    is not a failure: what was scraped is kept and the next run carries on with
+    the tenders not stored yet. It is a success (TENDER_PARTIAL only if a
+    tender itself was incomplete). A block before anything was scraped is still
+    SITE_BOT_BLOCKED.
     """
     username, password = credentials()
     # Say plainly whether the secrets reached this process. Values are never logged.
     log.info("login: VIC_USERNAME %s, VIC_PASSWORD %s",
              "set" if username else "MISSING", "set" if password else "MISSING")
     tenders: list[dict] = []
+    tender_codes: set[int] = set()
     logged_in = False
     login_failed = False
     try:
@@ -574,6 +578,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 entries, new_count = order_for_resume(entries, known_urls)
                 log.info("resume: %d new tender(s) first, then %d already stored",
                          new_count, len(entries) - new_count)
+            run_notes.note_total(len(entries))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
             all_codes = []
@@ -613,7 +618,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         if resume and tenders:
             log.warning("Cloudflare stopped the run after %d tender(s) -- kept; the next run "
                         "carries on with the tenders not stored yet", len(tenders))
-            return common.TENDER_PARTIAL, tenders
+            # The intended flow, so a success unless a tender itself was incomplete.
+            return common.site_code_from(tender_codes), tenders
         log.error("Cloudflare challenge did not clear -- stopping the run")
         return common.SITE_BOT_BLOCKED, tenders
     except common.StructureChangedError as exc:

@@ -19,7 +19,7 @@ from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfo
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 from processing.runtime_config import prepare_runtime_config
 from email.message import EmailMessage
 from datetime import datetime, timezone
@@ -46,13 +46,13 @@ ERROR_DESCRIPTIONS = {
     ),
     common.SITE_RATE_LIMITED: "Site rate limited or temporarily blocked access.",
     common.TENDER_PARTIAL: (
-        "Partial tender information gathered; requires manual verification."
+        "Some tenders are incomplete; see the run logs for which."
     ),
 }
 # Map status codes to Frontend Table attributes (Status chip text and MUI color)
 STATUS_DISPLAY = {
     common.SITE_SUCCESS: ("Success", "success"),
-    common.TENDER_PARTIAL: ("Failed to download", "warning"),
+    common.TENDER_PARTIAL: ("Partial", "warning"),
     common.SITE_TOTAL_FAILURE: ("Error", "error"),
     common.SITE_LOGIN_FAILED: ("Error", "error"),
     common.SITE_BOT_BLOCKED: ("Error", "error"),
@@ -396,6 +396,9 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
 
     # 1. human-readable message, 2. table status text, 3. MUI chip color
     explanation, label, chip_color = explain_code(code)
+    label, chip_color, explanation = run_notes.describe(
+        code, scraped_count, run_notes.snapshot(), explanation, label, chip_color
+    )
 
     failure = None
     if code in FAILURE_CODES:
@@ -418,6 +421,20 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
         for folder_name in _folders_in(temp_dir) - before
     }
     return manifest, failure, health_record, summary_row
+
+
+def _refresh_health(health_record, summary_row):
+    """
+    Re-word a scraper's health row once its tenders have been stored. The store
+    stage can find problems the scrape could not see (a file over the size
+    limit, a file that would not upload), and they count as incomplete tenders.
+    """
+    _site, code, count, _seconds = summary_row
+    explanation, label, color = explain_code(code)
+    label, color, message = run_notes.describe(
+        code, count, run_notes.snapshot(), explanation, label, color
+    )
+    return {**health_record, "status": label, "status_color": color, "message": message}
 
 
 def run_scrapers(temp_dir, limit, publish=True):
@@ -672,6 +689,10 @@ def main():
                     failures.append(
                         (source_id, f"{errors} tender(s) hit an unexpected error while processing")
                     )
+                health_records[-1] = _refresh_health(health_records[-1], summary_rows[-1])
+                publish_health_status_to_gcs(
+                    health_records, bucket_name="tenderai-dev-documents"
+                )
             finally:
                 for folder_name in tender_folders:
                     shutil.rmtree(os.path.join(temp_dir, folder_name), ignore_errors=True)

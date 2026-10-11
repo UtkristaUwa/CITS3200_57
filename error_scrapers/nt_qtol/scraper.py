@@ -38,7 +38,7 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -410,11 +410,13 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
             raise  # the site says slow down: stop the run, don't keep downloading
         log.warning("       download FAILED: %s: %s", download_url, e)
+        run_notes.note_reason(run_notes.DOWNLOAD)
         return common.TENDER_PARTIAL, tender
 
     if tender["documents_gated"]:
         log.warning("       documents: QTOL sent a web page instead of the zip -- not signed in, "
                     "or the account has no registered business attached")
+        run_notes.note_reason(run_notes.PORTAL)
     else:
         reporting.documents_line(log, len(tender["attachments"]))
     return code, tender

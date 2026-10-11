@@ -18,6 +18,8 @@ from docx.text.paragraph import Paragraph
 from openpyxl import load_workbook
 import httpx
 
+from error_scrapers import run_notes
+
 #Error status codes for failures
 #Scraping was a total success
 SITE_SUCCESS = 0
@@ -603,11 +605,13 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
         logger.warning("%s is password protected; dropped it (not stored) -- "
                        "tender %s is reported as partial", file_name,
                        os.path.basename(os.path.normpath(folder)))
+        run_notes.note_reason(run_notes.LOCKED, file_name)
         return False
     except ExtractionError as e:
         size = os.path.getsize(path) if os.path.exists(path) else "?"
         print(f"EXTRACTION FAILED: {e}")
         logger.warning(f"text extraction failed for {file_name} ({size} bytes): {e}")
+        run_notes.note_reason(run_notes.UNREADABLE, file_name)
         return False
 
 # A request that times out is made again, this many attempts in all, waiting a
@@ -778,6 +782,7 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                 # not a document: drop it and report the tender as partial.
                 os.remove(path)
                 logger.warning(f"package held an empty file ({saved_name}); not stored")
+                run_notes.note_reason(run_notes.EMPTY, saved_name)
                 any_failed = True
                 continue
             size = os.path.getsize(path)

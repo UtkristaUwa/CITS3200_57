@@ -33,7 +33,7 @@ from urllib.parse import parse_qs, unquote, urljoin, urlparse
 import httpx
 from bs4 import BeautifulSoup
 
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -345,6 +345,7 @@ def process_documents(client, documents: list[dict], folder: str) -> tuple[int, 
             if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
                 raise  # the site says slow down: stop the run, don't keep downloading
             log.warning("       download FAILED: %s: %s", document["url"], e)
+            run_notes.note_reason(run_notes.DOWNLOAD, document["file_name"])
             any_failed = True
             continue
         attachments.append(attachment)
@@ -403,6 +404,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     if "/login" in str(doc_response.url).lower() or is_login_page(doc_response.text):
         tender["documents_gated"] = True
         log.warning("       documents: behind the login, not downloaded")
+        run_notes.note_reason(run_notes.PORTAL)
         return common.TENDER_PARTIAL, tender
 
     documents = parse_documents(doc_response.text)
