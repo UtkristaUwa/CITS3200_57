@@ -1031,5 +1031,3 @@ Not: ordinary grant administration. A request to supply or manage capital is bor
 | Out-of-scope fit cap | `2` | 0 to 100 |
 | Max focus areas | `3` | Maximum focus-area tags retained |
 | Max work types | `2` | Maximum work-type tags retained |
-
-> **Note:** Saved relevance settings affect future tender processing and do not automatically re-score existing tenders. Use the "Reprocess all tenders" button on the admin page to re-run AI over existing tenders with updated prompts.
