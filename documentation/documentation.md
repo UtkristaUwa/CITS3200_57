@@ -85,6 +85,16 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
   - [Relevance ranking](#relevance-ranking)
   - [Payload optimisation](#payload-optimisation)
   - [Frontend UX enhancements](#frontend-ux-enhancements-1)
+- [16. Admin Page – AI Configuration Reference](#16-admin-page--ai-configuration-reference)
+  - [Tender extraction prompt](#tender-extraction-prompt)
+  - [Tender summary prompt](#tender-summary-prompt)
+  - [Document triage prompt](#document-triage-prompt)
+  - [LLM models](#llm-models)
+  - [Relevance classification guidance](#relevance-classification-guidance)
+  - [Focus-area taxonomy (Facet A)](#focus-area-taxonomy-facet-a)
+  - [Work-type taxonomy (Facet B)](#work-type-taxonomy-facet-b)
+  - [Out-of-scope list](#out-of-scope-list)
+  - [Relevance scoring weights](#relevance-scoring-weights)
 
 ## 1. Overview
 
@@ -753,3 +763,273 @@ Tie-break: `first_seen_at DESC` (newest tenders first).
 - **Debounced search.** 300 ms debounce buffer on the search input to eliminate spamming API requests while typing.
 - **Auto-fallback banner.** A dismissible notification informs the user when falling back from AI semantic search to keyword search.
 - **Zero-results guidance.** Helpful prompt cards advise users on search query formatting if no tenders match.
+
+## 16. Admin Page – AI Configuration Reference
+
+This section is a backup of every prompt, taxonomy and scoring parameter configured on the **Admin → Reference / config** page (`/admin/config`). If a prompt is accidentally deleted or overwritten, copy it back from here. All prompts are saved to the `tender_processor.cfg` config file and take effect on the next pipeline run.
+
+### Tender extraction prompt
+
+Saved to `[system_prompts] field_extraction`.
+
+```
+You are extracting structured data
+from raw scraped text documents of an Australian government tender (landing page
+and any relevant attachments) for insertion into a database.
+
+Rules:
+- Every field must come directly from the source material. Never infer,
+  estimate, or calculate a value that isn't explicitly stated - this
+  matters most for the value fields and the dates. If it's not there,
+  leave it None.
+- title/category/status/source_id/source_reference_id/source_url normally live on
+  the tender's landing page / notice header, but pull them from wherever
+  they appear.
+- source_reference_id: The tender's own reference number / ATM ID / code (e.g. '26-0084', 'AST-1824').
+- source_id: The name/ref of the portal which the tender came from (e.g. "austender", "grantconnect", "buynsw", "wa-tenders").
+- source_url: The exact URL from which the tender was scraped, usually found at the top of the tender page or notice. If no direct URL is stated, return None.
+- Location: leave location exactly as the source words it, however vague or
+  specific that is. Alongside it, fill location_postcode and location_states so
+  the location can be filtered on:
+  - location_postcode: the postcode of the place the work happens, read off
+    the location text. Never the postcode of the lodgment address, the
+    agency's own office, or a contact.
+  - location_states: every state or territory the work actually covers, so
+    list all of them when a tender spans several, and use NATIONAL on its
+    own when it covers the whole country. Only include a state the source
+    states outright - an explicit state token like 'WA' or 'Western
+    Australia', or an explicitly national scope. If the location is a bare
+    suburb or town name with no state and no postcode, return an empty
+    list. Do not work the state out from your own knowledge of Australian
+    geography: place names repeat across states, and a wrong state is worse
+    than no state.
+- Contact info: Extract contact_name, contact_email, and contact_phone under enquiry/contact sections.
+- Lodgment: lodgment_address is where/how to actually submit a response (e.g. portal name/URL, email, physical address).
+- Addenda, amendments and clarifications override the original notice. Where
+  documents disagree on a field - most often closing_date, value or scope -
+  take the value from the latest addendum.
+  - Work out which addendum is latest from what the documents say about
+    themselves: the addendum number, or the date it was issued. Never infer it
+    from a filename, or from the order the documents appear in this prompt -
+    they are supplied in alphabetical order, which says nothing about age.
+    If the addenda genuinely can't be ordered, use the original notice's value
+    and say so in value_notes when the conflict is about value.
+- Distinguish "not stated anywhere" (-> None) from "explicitly stated as
+  not yet available" (-> record that statement). Both are different from
+  guessing, and both are useful, just not the same thing.
+- Dates: normalise to ISO 8601. Include time and timezone offset for
+  closing_date only if the source actually gives them.
+- Value: only fill value_amount when there's one clean figure. Ranges,
+  estimates, and qualifiers go in value_notes instead, and value_amount
+  stays None in that case.
+- Tags: only ever choose from the provided list. If nothing fits well,
+  return an empty list rather than forcing a loose match.
+```
+
+### Tender summary prompt
+
+Saved to `[system_prompts] summary`.
+
+```
+You are a procurement analyst summarising Australian
+government tender notices for a business development team
+deciding which tenders to pursue.
+
+Rules:
+- Base your summary ONLY on the raw source documents provided. Never invent
+  contract values, dates, or scope details that aren't present.
+- Government tender notices are full of repeated legal boilerplate.
+  Do not summarise the boilerplate itself — extract the substance underneath it.
+- Focus on what's actually being procured, scope of work, key dates, eligibility,
+  mandatory requirements, contract value/term, and anything unusual.
+- If two documents repeat the same information, say it once.
+- Addenda, amendments and clarifications override the original notice.
+  Summarise the tender as it now stands, not as it was first advertised, and
+  call out any change a bidder would care about (extended closing date,
+  changed scope, revised value) as a change.
+- Write for someone skimming a list of tenders. Be concrete: names, numbers,
+  quantities, locations.
+```
+
+### Document triage prompt
+
+Saved to `[system_prompts] doc_triage`. Triage character limit: **6000** (saved to `[models] triage_char_limit`).
+
+```
+You are triaging documents from an Australian government tender package.
+Your job is to decide whether this document contains useful content for understanding the tender, extracting key metadata (agency, dates, contact info, reference IDs, value, location, etc.), or evaluating scope and requirements.
+
+Mark relevant=True for:
+- Tender landing pages and overview notices (always relevant)
+- Statement of Requirements / Scope of Works / Approach to Market
+- Addenda, clarifications, and Q&A documents
+- Evaluation criteria, conditions of participation, specifications with substantive scope
+
+Mark relevant=False for:
+- Blank response form templates
+- Standard legal contract boilerplate with no custom terms (e.g. generic Commonwealth Contracting Suite terms)
+- Pure technical drawing tables, part-number lists, or low-level CAD schedules with no high-level scope context
+```
+
+### LLM models
+
+| Setting | Value |
+|---|---|
+| Document triage model | `gemini-2.5-flash` |
+| Extraction / summarisation model | `gemini-2.5-flash` |
+| Relevance model | `gemini-2.5-flash` |
+| Relevance temperature | `0.1` |
+
+### Relevance classification guidance
+
+```
+HOW TO CLASSIFY
+
+- Use everything available: title, description and the document analysis where it
+  exists. Judge by what is being bought (scope and deliverables), not the title.
+- Lean inclusive. SVA would rather review a borderline opportunity than miss a
+  relevant one. When unsure, tag it, score it low and say why.
+- Do not tag on a keyword alone, the buyer's identity, or a passing mention of a
+  cohort.
+- Assign every focus area that is a material part of the scope (usually 1, maximum
+  3) and the work type of each main deliverable (usually 1, maximum 2).
+- Score each tag 1-5: 5 means the tag is the substance of the opportunity, 3 means
+  it is a real but secondary part of the scope, 1 means it is barely present but
+  worth flagging.
+- Buyers include any Commonwealth, state or local government body, not-for-profit,
+  Aboriginal community-controlled organisation (ACCO), social enterprise,
+  philanthropic funder, peak body, university or corporate community program.
+- Set out_of_scope to true only when the main deliverable is on the OUT OF SCOPE
+  list below, whatever the keywords suggest. A minor out-of-scope component
+  alongside genuine advisory work is not out of scope.
+- reason: 1-2 sentences pointing to the text that drove the decision.
+```
+
+### Focus-area taxonomy (Facet A)
+
+```
+charities_social_sector | Charities and social sector
+Effectiveness, sustainability, funding or capacity of charities, not-for-profits, social enterprises, philanthropy or the community services system across issue areas.
+Signals: sector sustainability; not-for-profit capacity building; full cost funding; peak body strategy; philanthropic practice; place-based collaboration; community services reform; volunteering.
+Not: a charity buying routine ICT or facilities. A named issue goes to its own tag.
+
+disability | Disability
+Outcomes, inclusion, choice or service systems for people with disability, including the NDIS and disability housing.
+Signals: NDIS; disability inclusion; participant outcomes; SIL; SDA; psychosocial disability; autism; carers; disability workforce.
+Not: delivering disability supports or clinical services.
+
+early_years | Early years
+Children's development, care and family supports from pregnancy to school entry, including early childhood education and care.
+Signals: ECEC; early childhood development; preschool or kindergarten access; child and family hubs; school readiness; maternal and child health; early intervention; parenting and family support.
+Not: school-age learning (use education).
+
+education | Education
+School-age learning, engagement, wellbeing and educational equity, school system improvement and transitions through education.
+Signals: attendance; student engagement; educational disadvantage; school improvement; flexible or alternative learning; retention; student wellbeing; tertiary access and participation.
+Not: ECEC (use early_years); job pathways (use employment); supply of equipment.
+
+employment | Employment
+Access to jobs, vocational pathways, workforce participation and sustained employment for people facing barriers.
+Signals: employment pathways; youth employment; transition to work; inclusive recruitment; employer engagement; supported employment; social procurement; vocational pathways.
+Not: filling the buyer's own vacancies; delivering a training course.
+
+family_domestic_violence | Family and domestic violence
+Prevention of, response to and recovery from family, domestic and sexual violence, including victim-survivor outcomes and the service system.
+Signals: DFV; family, domestic and sexual violence; victim-survivor; perpetrator intervention; coercive control; specialist services; crisis accommodation; child protection interface.
+Not: general homelessness with no violence objective.
+
+first_nations | First Nations
+Work directed at Aboriginal and Torres Strait Islander peoples' self-determined priorities, ACCOs, outcomes or relationships with systems.
+Signals: Closing the Gap; Priority Reforms; ACCO; community-controlled; self-determination; shared decision-making; Indigenous data sovereignty; caring for Country; First Nations economic development.
+Not: an acknowledgement of Country, a standard cultural safety clause or an Indigenous procurement preference alone.
+
+health_wellbeing | Health and wellbeing
+Access to, and the design, commissioning or evaluation of, health, mental health, alcohol and other drug (AOD) and wellbeing systems (non-clinical work).
+Signals: primary health care; PHN commissioning; mental health and wellbeing; AOD; suicide prevention; community health; health equity; social determinants of health.
+Not: clinical treatment, diagnosis or clinical staffing.
+
+housing_homelessness | Housing and homelessness
+Housing insecurity, homelessness prevention, social and affordable housing access, tenancy outcomes and the systems behind them.
+Signals: National Agreement on Social Housing and Homelessness; social housing; affordable housing; Housing First; homelessness prevention; tenancy sustainment; rough sleeping; housing strategy.
+Not: construction, repairs, property management or leasing.
+
+justice | Justice
+Access to justice, justice system outcomes, diversion, rehabilitation and the interface between legal and social services.
+Signals: justice reinvestment; youth justice; diversion; recidivism; community corrections; post-release support; legal assistance sector; National Access to Justice Partnership.
+Not: legal advice, representation or litigation.
+
+ai_data_digital | AI, data and digital
+Strategy, governance, capability or evaluation of AI, data or digital change in a social purpose setting, where that change is itself an objective.
+Signals: responsible AI; AI governance or readiness; digital inclusion; data governance; data sharing; digital capability; digital transformation strategy; technology-enabled service redesign.
+Not: ICT implementation, software builds, infrastructure, licences or managed services; using data only as a method.
+```
+
+### Work-type taxonomy (Facet B)
+
+```
+strategy_growth_scaling | Strategy, growth and scaling
+Strategic direction, priorities, business plans, growth options or a case for scaling.
+Signals: strategic plan; strategy refresh; growth or scaling strategy; business case; options appraisal; roadmap; investment case.
+
+operating_model_effectiveness | Operating model and effectiveness
+Governance, structure, roles, processes, service or workforce model and organisational capacity.
+Signals: organisational review; governance review; operating model; workforce model; process redesign; capability review; financial sustainability review.
+
+mergers_partnerships | Mergers and partnerships
+Assessing or designing mergers, alliances, joint ventures, consortia or cross-organisation partnerships.
+Signals: merger feasibility; partnership model; alliance design; consortium design; collaboration agreement; integration planning; collective impact.
+
+evaluation_outcomes | Evaluation and outcomes
+Evaluating whether something works, or designing its theory of change, outcomes framework, indicators and learning approach.
+Signals: program evaluation; M&E or MEL framework; theory of change; program logic; outcomes framework; impact measurement; developmental evaluation; process or outcome evaluation.
+
+policy_program_design | Policy and program design
+Research, review or co-design of a policy, program, service model, commissioning approach or funding design, including research and engagement that inform these.
+Signals: policy review; program or service design; co-design; lived experience engagement; commissioning strategy; funding model; evidence review; system reform.
+
+social_value_sroi | Social value and SROI
+Mapping, valuing or reporting social outcomes, including SROI and social cost-benefit analysis.
+Signals: SROI; social value assessment; impact valuation; cost-benefit analysis; economic and social impact; social value report.
+
+data_analytics | Data and analytics
+Analysis, modelling or decision support where the analytical product is the main deliverable.
+Signals: needs assessment; demand modelling; scenario or forecast modelling; cost modelling; geospatial analysis; dashboard design; data linkage.
+Not: building or hosting a production data platform.
+
+corporate_social_performance | Corporate social performance
+Advice to corporates on social impact strategy, community investment and measurable social outcomes.
+Signals: social impact strategy; community investment framework; shared value; social licence; corporate foundation strategy; community program review.
+Not: marketing or reputation management alone.
+
+social_finance | Social finance and investment
+Designing or advising on impact investment, outcomes-based funding or social finance mechanisms.
+Signals: social impact bond; outcomes-based contract; payment by outcomes; impact investment strategy; blended finance; investment readiness; social finance feasibility; outcomes fund.
+Not: ordinary grant administration. A request to supply or manage capital is borderline rather than out of scope - tag it and score it low.
+```
+
+### Out-of-scope list
+
+`out_of_scope = true` when the main deliverable is one of the following, whatever the keywords suggest:
+
+- Construction, refurbishment or maintenance of buildings, including social housing
+- Frontline service delivery or case management
+- Clinical or allied health services
+- Supply of goods, equipment, vehicles or consumables
+- Facilities, cleaning, catering or security
+- Property acquisition, leasing, tenancy or property management
+- Recruitment or labour hire
+- Financial audit, bookkeeping or tax
+
+### Relevance scoring weights
+
+| Parameter | Value | Notes |
+|---|---|---|
+| Focus area weight | `0.6` | 0 to 1 |
+| Work type weight | `0.4` | 0 to 1; weights must total 1 |
+| Recency weight | `8` | Score adjustment reserved for recency |
+| Recency horizon days | `120` | Positive whole number |
+| Out-of-scope fit cap | `2` | 0 to 100 |
+| Max focus areas | `3` | Maximum focus-area tags retained |
+| Max work types | `2` | Maximum work-type tags retained |
+
+> **Note:** Saved relevance settings affect future tender processing and do not automatically re-score existing tenders. Use the "Reprocess all tenders" button on the admin page to re-run AI over existing tenders with updated prompts.
