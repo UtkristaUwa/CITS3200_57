@@ -19,6 +19,7 @@ import {
   getPromptsConfig,
   getRelevanceConfig,
   getModelConfig,
+  getReprocessStatus,
   startReprocessRun,
   updatePromptsConfig,
   updateRelevanceConfig,
@@ -28,6 +29,7 @@ import {
   type PromptsConfigResponse,
   type PromptsConfigUpdate,
   type RelevanceConfigResponse,
+  type ReprocessStatus,
   type RelevanceConfigUpdate,
 } from '../lib/api';
 
@@ -353,7 +355,10 @@ export default function ConfigPage() {
   const [reprocessConfirmOpen, setReprocessConfirmOpen] = useState(false);
   const [reprocessStarting, setReprocessStarting] = useState(false);
   const [reprocessError, setReprocessError] = useState<string | null>(null);
-  const [reprocessStarted, setReprocessStarted] = useState(false);
+  const [reprocessStatus, setReprocessStatus] = useState<ReprocessStatus | null>(null);
+  // Set once this admin has acknowledged a finished run, so the result panel
+  // doesn't reappear on every poll.
+  const [reprocessDismissed, setReprocessDismissed] = useState(false);
 
   const loadModelConfig = useCallback(async () => {
     setLoading(true);
@@ -597,14 +602,57 @@ export default function ConfigPage() {
     }
   };
 
+  const reprocessRunning = reprocessStatus?.running === true;
+  const reprocessFinished = reprocessStatus?.running === false
+    && reprocessStatus?.state === 'finished';
+
+  // Polls while a run is live, and once on mount so a refresh (or a different
+  // admin's browser) picks up a run that is already going. Stops once the run
+  // ends, so an idle admin page isn't hitting the API forever.
+  useEffect(() => {
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const status = await getReprocessStatus();
+        if (!cancelled) {
+          setReprocessStatus(status);
+          if (status.running) {
+            setReprocessDismissed(false);
+          }
+        }
+      } catch {
+        // A failed poll says nothing about the run; leave the last state up.
+      }
+    };
+
+    void poll();
+    if (!reprocessRunning) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const timer = window.setInterval(() => void poll(), 5000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [reprocessRunning]);
+
   const handleReprocessConfirm = async () => {
     setReprocessStarting(true);
     setReprocessError(null);
-    setReprocessStarted(false);
 
     try {
       await startReprocessRun();
-      setReprocessStarted(true);
+      setReprocessDismissed(false);
+      // Locks the button now; the next poll replaces this with real counts.
+      setReprocessStatus({
+        running: true, state: 'running', processed: null, total: null,
+        reprocessed: null, skipped: null, failed: null,
+        started_at: null, updated_at: null,
+      });
       setReprocessConfirmOpen(false);
     } catch (error) {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
@@ -1232,26 +1280,69 @@ export default function ConfigPage() {
             {reprocessError}
           </Alert>
         )}
-        {reprocessStarted && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            Reprocess run started. It continues in the background — you can close this page.
+        {reprocessFinished && !reprocessDismissed && (
+          <Alert
+            severity={(reprocessStatus?.failed ?? 0) > 0 ? 'warning' : 'success'}
+            action={
+              <Button color="inherit" size="small" onClick={() => setReprocessDismissed(true)}>
+                Dismiss
+              </Button>
+            }
+            sx={reloadAlertSx}
+          >
+            {`Reprocess finished: ${reprocessStatus?.reprocessed ?? 0} reprocessed, `
+              + `${reprocessStatus?.skipped ?? 0} skipped, ${reprocessStatus?.failed ?? 0} failed.`}
           </Alert>
         )}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => {
-              setReprocessError(null);
-              setReprocessStarted(false);
-              setReprocessConfirmOpen(true);
+
+        {reprocessRunning ? (
+          // Replaces the button outright rather than disabling it: there is no
+          // button to press twice, and it says so for every admin, not just
+          // the one who started it.
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              p: 2,
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'warning.main',
+              bgcolor: (theme) => (theme.palette.mode === 'light'
+                ? 'rgba(237, 108, 2, 0.06)'
+                : 'rgba(237, 108, 2, 0.12)'),
             }}
-            disabled={reprocessStarting}
-            sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+            role="status"
+            aria-live="polite"
           >
-            Reprocess all tenders
-          </Button>
-        </Box>
+            <CircularProgress size={22} color="warning" />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                {reprocessStatus?.total
+                  ? `REPROCESSING: tender ${reprocessStatus.processed ?? 0} of ${reprocessStatus.total}`
+                  : 'REPROCESSING'}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Runs in the background — you can leave this page.
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => {
+                setReprocessError(null);
+                setReprocessConfirmOpen(true);
+              }}
+              disabled={reprocessStarting}
+              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: { xs: 44, sm: 36 } }}
+            >
+              Reprocess all tenders
+            </Button>
+          </Box>
+        )}
       </ConfigurationSection>
 
       <Dialog

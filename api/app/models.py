@@ -97,6 +97,28 @@ class DisplaySettings(BaseModel):
     show_irrelevant: bool = False
 
 
+class ReprocessStatus(BaseModel):
+    """Live state of a reprocess run.
+
+    `running` comes from Cloud Run, which is authoritative: a job that crashed
+    leaves its progress file saying "running" forever, and the admin page must
+    not stay locked because of that. The counts come from the progress file and
+    are absent until the run writes its first one.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    running: bool
+    state: str | None = None
+    processed: int | None = None
+    total: int | None = None
+    reprocessed: int | None = None
+    skipped: int | None = None
+    failed: int | None = None
+    started_at: str | None = None
+    updated_at: str | None = None
+
+
 class ReprocessRunResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

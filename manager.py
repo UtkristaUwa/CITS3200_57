@@ -695,6 +695,33 @@ def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determin
 # them and overwrite good values with nulls.
 # ==============================================================================
 
+REPROCESS_PROGRESS_OBJECT = os.environ.get(
+    "REPROCESS_PROGRESS_OBJECT", "reprocess_progress.json"
+)
+
+
+def publish_reprocess_progress(payload: dict, bucket_name: str = "tenderai-dev-documents"):
+    """Publish the reprocess run's progress for the admin page to poll.
+
+    Same bucket and approach as publish_health_status_to_gcs: the API already
+    reads small JSON blobs from here, so this needs no new storage or access.
+
+    Never raises. A reprocess run that is working must not be abandoned because
+    the progress file could not be written -- the admin page falls back to the
+    live Cloud Run execution state, so the worst case is a run that shows as
+    "in progress" with no counts.
+    """
+    try:
+        blob = storage.Client().bucket(bucket_name).blob(REPROCESS_PROGRESS_OBJECT)
+        blob.cache_control = "no-store"
+        blob.upload_from_string(
+            data=json.dumps({**payload, "updated_at": datetime.now(timezone.utc).isoformat()}),
+            content_type="application/json",
+        )
+    except Exception as e:
+        logger.warning(f"Could not publish reprocess progress: {e}")
+
+
 def _json_safe_value(value):
     """BigQuery hands back DATE/TIMESTAMP/NUMERIC as date/datetime/Decimal.
     Convert them to what the scrape path would have produced, so the row can be
@@ -857,7 +884,15 @@ def reprocess_all():
             f"SELECT {select_cols} FROM `{TENDERS_TABLE}`{limit_clause}"
         ).result(page_size=5)
 
+        started_at = datetime.now(timezone.utc).isoformat()
         counts = {"reprocessed": 0, "skipped": 0, "failed": 0}
+        # Published before the first tender so the admin page shows the run as
+        # live immediately, rather than only once one has finished.
+        publish_reprocess_progress({
+            "state": "running", "processed": 0, "total": total,
+            "started_at": started_at, **counts,
+        })
+
         for position, row in enumerate(rows, start=1):
             try:
                 outcome = _reprocess_one(
@@ -868,8 +903,16 @@ def reprocess_all():
                 logger.error(f"Unexpected failure reprocessing row {position}: {e}")
                 outcome = "failed"
             counts[outcome] += 1
+            publish_reprocess_progress({
+                "state": "running", "processed": position, "total": total,
+                "started_at": started_at, **counts,
+            })
             _free_memory()
 
+    publish_reprocess_progress({
+        "state": "finished", "processed": sum(counts.values()), "total": total,
+        "started_at": started_at, **counts,
+    })
     logger.info(
         f"Reprocess finished: {counts['reprocessed']} reprocessed, "
         f"{counts['skipped']} skipped (no stored text), {counts['failed']} failed"
