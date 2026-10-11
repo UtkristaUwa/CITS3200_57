@@ -262,6 +262,7 @@ export interface GetTendersParams {
   status?: string;
   category?: string;
   location?: string;
+  states?: string[];
   year?: string;
   min_value?: number;
   max_value?: number;
@@ -282,6 +283,10 @@ export async function getTenders(
   try {
     const { data } = await http.get<Tender[]>(url, {
       signal,
+      // Axios defaults to states[]=WA&states[]=NT; FastAPI reads a repeated
+      // parameter as states=WA&states=NT and would silently ignore the
+      // bracketed form, leaving the filter with no effect.
+      paramsSerializer: { indexes: null },
       params: {
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
@@ -290,6 +295,7 @@ export async function getTenders(
         status: params.status || undefined,
         category: params.category || undefined,
         location: params.location || undefined,
+        states: params.states?.length ? params.states : undefined,
         year: params.year || undefined,
         min_value: params.min_value ?? undefined,
         max_value: params.max_value ?? undefined,

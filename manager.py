@@ -688,11 +688,15 @@ def _process_tenders(temp_dir, tender_folders, scraped, process_tender, determin
 # anything. Triggered from the admin config page after a prompt change, via
 # PIPELINE_MODE=reprocess on a job execution.
 #
-# It deliberately writes back ONLY the AI-derived fields. The scraped landing
-# page text is never persisted (attachment_store uploads attachments only, and
-# _merge_document_records drops page text), so re-extracting title/dates/
-# contacts here would read them out of attachments that mostly don't contain
-# them and overwrite good values with nulls.
+# It deliberately writes back only the AI-derived fields, plus location_states.
+# The scraped landing page text is never persisted (attachment_store uploads
+# attachments only, and _merge_document_records drops page text), so
+# re-extracting title/dates/contacts here would read them out of attachments
+# that mostly don't contain them and overwrite good values with nulls.
+#
+# location_states is the exception because it needs no model and no page: the
+# stored `location` string names its states, so it can be re-derived offline
+# and unioned into whatever is already there.
 # ==============================================================================
 
 REPROCESS_PROGRESS_OBJECT = os.environ.get(
@@ -808,6 +812,18 @@ def _reprocess_one(position, total, record, temp_dir, summariser, determine_rele
         record = determine_relevance(record)
     except Exception as e:
         logger.error(f"{tender_ref}: relevance determination failed: {e}")
+
+    # location_states is not an AI field, but it can be re-derived here without
+    # the landing page: the stored location text names the states outright.
+    # Unioned, never replaced, so a value the extractor got from page text we no
+    # longer have can only ever gain states, not lose them.
+    from processing.tender_processor import resolve_location_states, states_from_location_text
+
+    derived = states_from_location_text(record.get("location"))
+    if derived:
+        record["location_states"] = resolve_location_states(
+            None, list(record.get("location_states") or []) + derived
+        )
 
     title = record.get("title") or ""
     try:

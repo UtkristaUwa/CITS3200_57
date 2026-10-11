@@ -37,6 +37,8 @@ router = APIRouter()
 StatusFilter = Literal["open", "closed", "awarded", "unknown"]
 CategoryFilter = Literal["tender", "rfq", "eoi", "grant"]
 SearchMode = Literal["keyword", "semantic"]
+# Mirrors ALLOWED_LOCATION_STATES in processing/tender_processor.py.
+StateFilter = Literal["WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL"]
 
 # Fixture data for USE_MOCK_DATA=true, shaped like ingestion/sample_tender.json
 # plus the bookkeeping fields upsert_tender() would normally compute.
@@ -250,6 +252,10 @@ def get_tenders(
         default="keyword",
         description="Search mode: 'keyword' (fast token search) or 'semantic' (AI vector search)",
     ),
+    states: list[StateFilter] | None = Query(
+        default=None,
+        description="Filter to tenders in any of these states. Repeat the parameter.",
+    ),
     include_irrelevant: bool = Query(
         default=False,
         description="Admins only: also return tenders below the fit threshold.",
@@ -278,6 +284,7 @@ def get_tenders(
         location=location, min_value=min_value, max_value=max_value, 
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
         mode=mode, min_fit=min_fit,
+        states=list(states) if states else None,
     )
     if not rows:
         return []

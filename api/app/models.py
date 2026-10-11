@@ -270,6 +270,7 @@ class TenderOut(BaseModel):
     value_notes: str | None = None
 
     location: str | None = None
+    location_states: list[str] = Field(default_factory=list)
     description: str | None = None
     summary_headline: str | None = None
     fit: int | None = None
