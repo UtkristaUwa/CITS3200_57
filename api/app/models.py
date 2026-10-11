@@ -335,3 +335,8 @@ class ScraperHealthRecord(BaseModel):
     status: str = "Unknown"
     status_color: str = "default"
     message: str = ""
+
+
+class SourceOut(BaseModel):
+    source_id: str
+    name: str

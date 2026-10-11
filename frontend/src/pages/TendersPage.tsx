@@ -10,6 +10,8 @@ import { useFavorites } from '../lib/FavoritesContext';
 import { useAuth } from '../lib/AuthContext';
 import { useDisplaySettings } from '../lib/DisplaySettingsContext';
 
+import { parseSortOption } from '../lib/tenderSort';
+
 function isTenderNew(
   tender: Tender,
   previousTenderVisit: number | null,
@@ -53,17 +55,27 @@ export default function TendersPage() {
     setWarning(null);
     
     const mode = filterProps.advancedSearch ? 'semantic' : 'keyword';
+    const { sort_by, sort_dir } = parseSortOption(filterProps.sortBy);
 
-    getTenders({ 
+    const baseParams = {
       limit: 50,
       q: filterProps.debouncedSearchQuery || undefined,
-      mode,
       status: filterProps.status || undefined,
       states: filterProps.states.length ? filterProps.states : undefined,
+      source_id: filterProps.sourceId || undefined,
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
+      published_after: filterProps.publishedAfter || undefined,
+      published_before: filterProps.publishedBefore || undefined,
+      sort_by,
+      sort_dir,
       include_irrelevant: displaySettings.show_irrelevant,
+    };
+
+    getTenders({ 
+      ...baseParams,
+      mode,
     }, controller.signal)
       .then((data) => {
         if (!cancelled) setTenders(data);
@@ -75,15 +87,8 @@ export default function TendersPage() {
           setWarning('AI Semantic Search encountered an issue. Displaying fast keyword search results instead.');
           try {
             const fallbackData = await getTenders({
-              limit: 50,
-              include_irrelevant: displaySettings.show_irrelevant,
-              q: filterProps.debouncedSearchQuery || undefined,
+              ...baseParams,
               mode: 'keyword',
-              status: filterProps.status || undefined,
-              states: filterProps.states.length ? filterProps.states : undefined,
-              year: filterProps.year || undefined,
-              closing_after: filterProps.minDate || undefined,
-              closing_before: filterProps.maxDate || undefined,
             }, controller.signal);
             if (!cancelled) setTenders(fallbackData);
           } catch (fallbackErr: unknown) {
@@ -108,22 +113,22 @@ export default function TendersPage() {
     filterProps.filtersReady,
     filterProps.debouncedSearchQuery,
     filterProps.advancedSearch,
+    filterProps.sortBy,
     filterProps.status,
     filterProps.states,
+    filterProps.sourceId,
     filterProps.year,
     filterProps.minDate,
     filterProps.maxDate,
+    filterProps.publishedAfter,
+    filterProps.publishedBefore,
     // The toggle changes the query the API runs, so flipping it has to refetch
     // rather than just re-render what is already loaded.
     displaySettings.show_irrelevant,
   ]);
 
-  // No fit filtering here: the API applies it in SQL from include_irrelevant,
-  // so every page comes back full. Filtering after paging is what left a
-  // 50-row page showing about five cards.
-  const sortedTenders = [...tenders].sort(
-    (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
-  );
+  // Strict sort: preserve server-ordered tenders without pinning favorites to the top
+  const sortedTenders = tenders;
   const isDataLoading = loading || !filterProps.filtersReady || !tenderVisitReady;
 
   return (

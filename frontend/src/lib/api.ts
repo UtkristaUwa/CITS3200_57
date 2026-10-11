@@ -261,6 +261,7 @@ export interface GetTendersParams {
   mode?: 'keyword' | 'semantic';
   status?: string;
   category?: string;
+  source_id?: string;
   location?: string;
   states?: string[];
   year?: string;
@@ -268,6 +269,10 @@ export interface GetTendersParams {
   max_value?: number;
   closing_after?: string;
   closing_before?: string;
+  published_after?: string;
+  published_before?: string;
+  sort_by?: string;
+  sort_dir?: 'asc' | 'desc';
   include_irrelevant?: boolean;
 }
 
@@ -294,6 +299,7 @@ export async function getTenders(
         mode: params.mode || 'keyword',
         status: params.status || undefined,
         category: params.category || undefined,
+        source_id: params.source_id || undefined,
         location: params.location || undefined,
         states: params.states?.length ? params.states : undefined,
         year: params.year || undefined,
@@ -302,6 +308,10 @@ export async function getTenders(
         include_irrelevant: params.include_irrelevant || undefined,
         closing_after: params.closing_after || undefined,
         closing_before: params.closing_before || undefined,
+        published_after: params.published_after || undefined,
+        published_before: params.published_before || undefined,
+        sort_by: params.sort_by || undefined,
+        sort_dir: params.sort_dir || undefined,
       },
     });
     return data;
@@ -318,6 +328,27 @@ export async function getTenders(
     const detail = axios.isAxiosError(err) ? err.message : 'unknown error';
     throw new Error(`Couldn't load tenders from ${url} (${detail}). Is the API running?`);
   }
+}
+
+export interface TenderSource {
+  source_id: string;
+  name: string;
+}
+
+let cachedSources: Promise<TenderSource[]> | null = null;
+
+export async function getSources(): Promise<TenderSource[]> {
+  if (cachedSources) return cachedSources;
+  cachedSources = (async () => {
+    try {
+      const { data } = await http.get<TenderSource[]>(`${API_BASE_URL}/sources`);
+      return data;
+    } catch {
+      cachedSources = null;
+      return [];
+    }
+  })();
+  return cachedSources;
 }
 
 export async function getDocumentBlob(storageUrl: string, filename: string): Promise<Blob> {
