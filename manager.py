@@ -15,6 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from error_scrapers.austender.scraper import run_scraper as run_austender
 from error_scrapers.nt_qtol.scraper import run_scraper as run_nt_qtol
 from error_scrapers.qld_qtenders.scraper import run_scraper as run_qld_qtenders
+from error_scrapers.eTender.scraper import run_scraper as run_qbuild_etender
 from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfor
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
@@ -68,6 +69,7 @@ PORTAL_URL_MAP = {
     "austender": "https://www.tenders.gov.au",
     "nt_qtol": "https://tendersonline.nt.gov.au",
     "qld_qtenders": "https://qtenders.hpw.qld.gov.au",
+    "qbuild_etender": "https://etender.hpw.qld.gov.au",
     "vic_buyingfor": "https://www.tenders.vic.gov.au",
 }
 def explain_code(code: int | None) -> tuple[str, str, str]:
@@ -151,6 +153,7 @@ SCRAPERS = [
     ("austender", run_austender),
     ("nt_qtol", run_nt_qtol),
     ("qld_qtenders", run_qld_qtenders),
+    ("qbuild_etender", run_qbuild_etender),
     ("vic_buyingfor", run_vic_buyingfor),
 ]
 
