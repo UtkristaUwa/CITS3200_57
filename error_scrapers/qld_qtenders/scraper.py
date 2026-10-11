@@ -130,6 +130,14 @@ FIND_ATTEMPTS = 2            # times to search the list for a tender before call
 DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "2"))
 DOWNLOAD_POLL_SECONDS = 1.0
 
+# After the main loop, tenders whose documents could not be reached (typically
+# the search never narrowed to their row) get one more go with a fresh list and
+# a more patient search. The pass stops after RETRY_PASS_MAX_SECONDS so it can
+# never stretch the nightly run without bound.
+RETRY_PASS_MAX_SECONDS = int(os.environ.get("QLD_RETRY_PASS_MAX_SECONDS", "3600"))
+RETRY_FILTER_WAIT_SECONDS = int(os.environ.get("QLD_RETRY_FILTER_WAIT_SECONDS", "25"))
+RETRY_PAUSE_SECONDS = 3
+
 # A session that lapses mid-run is replaced by signing in again, this many
 # times at most.
 MAX_RELOGINS = 3
@@ -403,6 +411,9 @@ class VendorPanelSession:
         self._sb_cm = None
         self.sb = None
         self._on_list = False
+        # How long find_row waits for the search to narrow to the tender's row.
+        # The retry pass raises it temporarily.
+        self.filter_wait = FILTER_WAIT_SECONDS
 
     def __enter__(self):
         from seleniumbase import SB
@@ -471,7 +482,7 @@ class VendorPanelSession:
                 self._open_list()
             self.sb.type(SEARCH_BOX, f"VP{number}")
             try:
-                self.sb.wait_for_element(ROW_SELECTOR.format(number=number), timeout=FILTER_WAIT_SECONDS)
+                self.sb.wait_for_element(ROW_SELECTOR.format(number=number), timeout=self.filter_wait)
             except Exception:
                 # The filter sometimes does not narrow in time; reload and look once more.
                 self._on_list = False
@@ -601,6 +612,68 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
     return common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
 
 
+def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
+                     max_seconds: float = None, sleep=time.sleep,
+                     clock=time.monotonic) -> dict[str, int]:
+    """
+    Second pass, run once after every tender has had its first go: try again for
+    each tender that has documents but is still not followed. The usual cause is
+    the search not narrowing to the tender's row in time, which a fresh list and
+    a more patient search often gets past (as doing it by hand does).
+
+    `relogin` is called if the session lapses; it returns True when signed in
+    again. Returns {tender_id: status code} for every tender it tried, so the
+    caller can replace the codes from the first pass.
+    """
+    if max_seconds is None:
+        max_seconds = RETRY_PASS_MAX_SECONDS
+    # "Gated" means the tender's public page advertises more documents than it
+    # links, so the rest can only come through VendorPanel and the tender has to
+    # be followed. A tender whose documents are all linked never needs following.
+    todo = [r for r in results
+            if r.get("documents_advertised", 0) > 0 and r.get("documents_gated") and not r["followed"]]
+    if not todo:
+        return {}
+
+    log.info("retry pass: %d tender(s) with VendorPanel-only documents are not followed yet -- trying them again",
+             len(todo))
+    codes: dict[str, int] = {}
+    recovered = 0
+    started = clock()
+    previous_wait = vendorpanel.filter_wait
+    vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
+    try:
+        for result in todo:
+            if clock() - started > max_seconds:
+                log.warning("retry pass: out of time (%ds) -- leaving the rest as they are", max_seconds)
+                break
+            reference = result["tender_id"]
+            advertised = result["documents_advertised"]
+            vendorpanel._on_list = False  # open the list afresh, not the page the last search left
+            sleep(RETRY_PAUSE_SECONDS)
+            result["session_lapsed"] = False
+            code = fetch_documents(vendorpanel, result, advertised)
+            if result["session_lapsed"] and relogin is not None and relogin():
+                result["session_lapsed"] = False
+                code = fetch_documents(vendorpanel, result, advertised)
+            if result["session_lapsed"]:
+                log.warning("retry pass: the VendorPanel session lapsed and could not be "
+                            "restored -- stopping")
+                break
+            if result["followed"]:
+                recovered += 1
+                if result.get("public_download_failed"):
+                    code = common.TENDER_PARTIAL  # a directly linked document failed earlier
+                log.info("retry pass: %s followed this time", reference)
+            else:
+                log.warning("retry pass: %s still could not be followed", reference)
+            codes[reference] = code
+    finally:
+        vendorpanel.filter_wait = previous_wait
+    log.info("retry pass: %d of %d tender(s) followed this time", recovered, len(todo))
+    return codes
+
+
 # ---------------------------------------------------------------------------
 # Per-tender and full-run orchestration
 # ---------------------------------------------------------------------------
@@ -668,6 +741,9 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
 
     advertised = detail["documents_advertised"]
     result["documents_advertised"] = advertised
+    # Remembered so the retry pass does not turn this tender into a clean
+    # success when one of its directly linked documents failed.
+    result["public_download_failed"] = any_failed
     result["documents_gated"] = advertised > len(detail["documents"])
     if result["documents_gated"] and vendorpanel is not None:
         code = fetch_documents(vendorpanel, result, advertised)
@@ -729,6 +805,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
             all_codes = []
+            code_index = {}  # tender reference -> its position in all_codes
             relogins = 0
             for index, tender in enumerate(tenders, start=1):
                 reference = tender.get("vpReference")
@@ -749,6 +826,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                         results.append(result)
                     tender_codes.add(code)
                     all_codes.append(code)
+                    code_index[reference] = len(all_codes) - 1
                     reporting.tender_line(log, index, len(tenders), reference, code)
                 except httpx.HTTPStatusError as exc:
                     blocked = blocked_code(exc)
@@ -764,6 +842,22 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
                 time.sleep(PAUSE_SECONDS)
+
+            if vendorpanel is not None and logged_in:
+                def relogin() -> bool:
+                    nonlocal relogins, logged_in
+                    if relogins >= MAX_RELOGINS:
+                        return False
+                    relogins += 1
+                    log.warning("       VendorPanel session lapsed -- signing in again (%d/%d)",
+                                relogins, MAX_RELOGINS)
+                    logged_in = vendorpanel.login()
+                    return logged_in
+
+                for reference, code in retry_unfollowed(vendorpanel, results, relogin).items():
+                    if reference in code_index:
+                        all_codes[code_index[reference]] = code
+                tender_codes = set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
 
             if have_credentials:
                 needing = [r for r in results if r["documents_advertised"] > 0]
