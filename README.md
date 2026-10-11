@@ -35,7 +35,19 @@ TenderAI will:
 - Let users see why an opportunity was matched, review source docs, and accept/reject with feedback
 - Provide an admin interface to manage sources, profiles, keywords, thresholds and system status
 
-CITS3200_57/
+
+
+# How TenderAI Works
+
+TenderAI is built from three flows that share one BigQuery database and one Cloud Storage bucket:
+
+1. **The daily pipeline** finds new tenders, reads them with AI and saves them.
+2. **The user flow** lets SVA staff sign in, search, filter, favourite and download tenders.
+3. **The admin flow** lets admins manage users, check scraper health and tune the AI.
+
+> The diagrams use Mermaid, which GitHub renders automatically.
+
+```CITS3200_57/
 ├── .github/
 │   └── workflows/
 │       ├── deploy-backend.yml
@@ -134,19 +146,7 @@ CITS3200_57/
 ├── .gitignore
 ├── LICENSE
 └── README.md
-
-
-# How TenderAI Works
-
-TenderAI is built from three flows that share one BigQuery database and one Cloud Storage bucket:
-
-1. **The daily pipeline** finds new tenders, reads them with AI and saves them.
-2. **The user flow** lets SVA staff sign in, search, filter, favourite and download tenders.
-3. **The admin flow** lets admins manage users, check scraper health and tune the AI.
-
-> The diagrams use Mermaid, which GitHub renders automatically.
-
----
+```
 
 ## The big picture
 
