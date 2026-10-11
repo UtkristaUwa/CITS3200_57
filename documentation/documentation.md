@@ -8,7 +8,7 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
 
 | Name                     | GitHub           | Student ID  |
 |--------------------------|------------------|-------------|
-| Utkrista Sen             | UtkristaUwa,     | 24145884    |   
+| Utkrista Sen             | UtkristaUwa      | 24145884    |
 | Sepehr Moghani Pilehroud | sepehrmoghani    | 23642415    |
 | Jinghao Hu               | jinghao163       | 24183532    |
 | Lucan McDonald           | PiesOnTues       | 24214099    |
@@ -76,12 +76,23 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
   - [API (http://localhost:8000, docs at /docs)](#api-httplocalhost8000-docs-at-docs)
   - [Pipeline](#pipeline)
 - [14. Testing](#14-testing)
+- [15. Fast Keyword Search & Query Syntax](#15-fast-keyword-search--query-syntax)
+  - [Overview](#search-overview)
+  - [Search query syntax](#search-query-syntax)
+  - [Supported field scopes](#supported-field-scopes)
+  - [API changes](#api-changes)
+  - [Query parser architecture](#query-parser-architecture)
+  - [Relevance ranking](#relevance-ranking)
+  - [Payload optimisation](#payload-optimisation)
+  - [Frontend UX enhancements](#frontend-ux-enhancements-1)
 
 ## 1. Overview
 
 TenderAI is a UWA CITS3200 project (Group 57) built for Social Ventures Australia. SVA works across consulting, social impact investing and sector development. Relevant tenders and grants are spread over many government portals, and staff can’t watch them all.
 
 Every morning TenderAI scrapes the portals, reads each tender and its attachments, uses Gemini to summarise and saves it to BigQuery. SVA staff sign in to a web app to to check the tenders, rather then going through 20+ portals they can check TenderAI
+
+**What the brief asks for** ([README](https://github.com/UtkristaUwa/CITS3200_57/blob/main/README.md)): monitor configurable sources, extract key information, remove duplicates, match tenders to SVA’s interest areas, store them centrally, notify staff through Microsoft Teams, explain why a tender matched, collect accept/reject feedback, and give admins a console for sources, profiles and system status.
 
 Client contact at SVA: Ramon.
 
@@ -376,7 +387,8 @@ An append-only history, one row per detected change (not per scan): `snapshot_id
 | Parameter                         | Filter                                            |
 |-----------------------------------|---------------------------------------------------|
 | `limit`, `offset`                 | Paging; limit 1 to 200, default 50                |
-| `q`                               | Keyword in title or description, case-insensitive |
+| `q`                               | Search query; supports the advanced syntax described in [section 15](#15-fast-keyword-search--query-syntax) |
+| `mode`                            | `"keyword"` (default) or `"semantic"`; keyword runs parameterised BigQuery SQL, semantic generates Vertex AI embeddings and runs `VECTOR_SEARCH` |
 | `status`                          | Exactly `open`, `closed`, `awarded` or `unknown`  |
 | `category`                        | Exactly `tender`, `rfq`, `eoi` or `grant`         |
 | `source_id`                       | Exact portal                                      |
@@ -483,7 +495,7 @@ Deploy with `firebase deploy --only firestore:rules`. Until the rules are deploy
 ### Components
 
 - **TenderCard** shows one tender: title, AI summary, reference ID, closing date, agency, favourite star, New label, View More/Less and documents. It makes no API or Firestore calls; everything comes in as props, and the parent page decides `isNew` and which card is expanded.
-- **TenderFilterBar** is the search and filter UI: keyword, jurisdiction, year, category, status, closing date and min/max value. The values live in the parent page through `useTenderFilters()`. The bar calls `GET /locations` itself to fill the jurisdiction list. There’s no Search button or debounce, so each keystroke can send a new `/tenders` request.
+- **TenderFilterBar** is the search and filter UI: keyword (with an Advanced toggle for AI semantic search), jurisdiction, year, category, status, closing date and min/max value. The values live in the parent page through `useTenderFilters()`. The bar calls `GET /locations` itself to fill the jurisdiction list. Search input is debounced at 300 ms. When semantic search is selected but Vertex AI is unavailable, the UI automatically falls back to keyword search and shows a dismissible banner.
 - **TenderDocuments** lists attachments and downloads them through `/documents/download`, with a spinner while downloading and “No documents available” when empty.
 - **TopNav** holds Tenders, Favorites, the Admin link (admins only), the light/dark toggle, logout, and desktop and mobile menus. Hiding the Admin link is cosmetic; the route guard is what blocks access.
 - **AdminLayout** is the shared frame for the admin pages: TopNav, admin navigation and a router `<Outlet />`. It doesn’t check admin status itself.
@@ -664,3 +676,80 @@ Tests run by hand; there is no CI test job on pull requests.
 | Cloud Functions | [tests/functions/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests/functions)             | `npm install && npm test` | `setUserAdmin` rules, including no self-demotion                                                                                       |
 
 Offline tests need no network or passwords. The saved HTML pages in `tests/fixtures/` and each `test_cases/` folder are real portal pages; when a portal changes, save fresh copies and update the tests.
+
+## 15. Fast Keyword Search & Query Syntax
+
+### Overview
+
+Fast Keyword Search is the default search engine for TenderAI. An **Advanced** toggle in the search bar switches to AI Semantic Search (Vertex AI embeddings).
+
+Why keyword search is the default:
+
+- **Speed.** Queries execute directly in BigQuery standard SQL with no AI API overhead, returning results in milliseconds.
+- **Reliability.** If Vertex AI embeddings experience network delays or quota limits, the UI automatically falls back to keyword search and alerts the user, so tender discovery is never interrupted.
+- **Precision.** Users get exact syntax control (field targeting, exclusions, exact phrases) that vector embeddings cannot guarantee.
+
+### Search query syntax
+
+Users can type plain search terms or use Google/Lucene-style syntax in the search bar:
+
+| Feature | Syntax | Behaviour / Example |
+|---|---|---|
+| **Implicit AND** | `word1 word2` | Requires all words to be present in the tender. *Example:* `civil road` |
+| **Explicit OR** | `termA OR termB` | Matches records containing either term (uppercase `OR`). *Example:* `solar OR wind` |
+| **Negation (exclusion)** | `-term` or `NOT term` | Excludes tenders mentioning that term. *Example:* `construction -bridge` or `health NOT dental` |
+| **Exact phrases** | `"..."` or `'...'` | Matches the exact contiguous phrase without splitting. *Example:* `"social housing"` |
+| **Field scoping** | `prefix:term` | Limits the match to a specific tender field. *Example:* `agency:transport` or `title:"road work"` |
+| **Wildcards** | `term*` or `*term` | Matches prefixes or suffixes (`*` maps to wildcard). *Example:* `electr*` (matches electrical, electronic) |
+
+### Supported field scopes
+
+| Prefix | Field |
+|---|---|
+| `title:` | Tender title |
+| `agency:` or `issuing_agency:` | Sponsoring department or agency |
+| `id:` or `ref:` | ATM / source reference identifier |
+| `desc:` or `description:` | Detailed tender description |
+| `summary:` or `headline:` | AI-generated summary headline |
+| `location:` or `state:` | Geographic location (e.g. `location:WA`) |
+| `source:` | Procurement portal ID (e.g. `source:austender`) |
+
+### API changes
+
+`GET /tenders` accepts a new query parameter:
+
+| Parameter | Values | Default | Behaviour |
+|---|---|---|---|
+| `mode` | `"keyword"` \| `"semantic"` | `"keyword"` | `keyword` executes parameterised BigQuery SQL `LIKE` queries parsed by `api/app/query_parser.py`. `semantic` generates query embeddings via Vertex AI (`text-embedding-004`) and executes BigQuery `VECTOR_SEARCH`. |
+
+### Query parser architecture
+
+[api/app/query_parser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/api/app/query_parser.py) turns a user query string into a parameterised BigQuery `WHERE` clause.
+
+- **SQL injection prevention.** All search terms are extracted into bound `ScalarQueryParameter` instances (`@kw_0`, `@kw_1`, etc.).
+- **Wildcard escaping.** Literal `%`, `_` and `\` characters are escaped (`\%`, `\_`, `\\`) so user input cannot accidentally trigger database-wide match-all queries.
+- **Three-valued logic safety.** Negation filters wrap nullable text columns in `COALESCE(LOWER(column), '')` to prevent SQL `NULL` traps from dropping valid tenders.
+
+### Relevance ranking
+
+Search results are prioritised using a five-tier scoring algorithm before sorting by date:
+
+| Rank | Condition |
+|---|---|
+| 0 | Full query / exact phrase match in `title` or `source_reference_id` |
+| 1 | All query keywords match in `title` or `source_reference_id` |
+| 2 | Any query keyword matches in `title` or `source_reference_id` |
+| 3 | Any query keyword matches in `summary_headline` |
+| 4 | Matched only in `description` or `issuing_agency` |
+
+Tie-break: `first_seen_at DESC` (newest tenders first).
+
+### Payload optimisation
+
+`documents.extracted_text` is stripped from list search projections (`CAST(NULL AS STRING)`), reducing BigQuery network payload sizes by roughly 98 %. Document text remains fully available on the document detail view (`GET /tenders/{id}/documents`).
+
+### Frontend UX enhancements
+
+- **Debounced search.** 300 ms debounce buffer on the search input to eliminate spamming API requests while typing.
+- **Auto-fallback banner.** A dismissible notification informs the user when falling back from AI semantic search to keyword search.
+- **Zero-results guidance.** Helpful prompt cards advise users on search query formatting if no tenders match.
