@@ -208,12 +208,15 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             }}
           >
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
-              <InputLabel id="tender-states-label">States</InputLabel>
+              {/* displayEmpty keeps "All" visible with nothing selected, but
+                  MUI only shrinks the label when there IS a value -- without
+                  shrink/notched the label renders on top of "All". */}
+              <InputLabel id="tender-states-label" shrink>States</InputLabel>
               <Select
                 multiple
                 labelId="tender-states-label"
                 value={props.states}
-                input={<OutlinedInput label="States" />}
+                input={<OutlinedInput label="States" notched />}
                 onChange={(event) => {
                   const value = event.target.value;
                   props.setStates(typeof value === 'string' ? value.split(',') : value);
