@@ -78,6 +78,7 @@ def _get_tenders(**updates) -> list[TenderOut]:
         # tenders. Default to an admin so existing cases see the unfiltered
         # behaviour they were written against.
         "states": None,
+        "focus_areas": None,
         "include_irrelevant": True,
         "user": {"uid": "admin-1", "isAdmin": True},
     }
@@ -857,3 +858,51 @@ def test_location_states_is_returned_on_each_tender():
     assert output.location_states == ["NSW", "VIC"]
     # legacy rows predate the column
     assert tenders._tender_outputs([_row()])[0].location_states == []
+
+
+def test_focus_areas_filter_is_passed_through_and_matches_selected(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(tenders, "list_tenders",
+                        lambda client, **kwargs: (captured.update(kwargs), [])[1])
+    monkeypatch.setattr(tenders, "get_client", lambda: object())
+    monkeypatch.setattr(tenders.settings, "use_mock_data", False)
+
+    _get_tenders(focus_areas=["disability", "justice"])
+    assert captured["focus_areas"] == ["disability", "justice"]
+
+    captured.clear()
+    _get_tenders(focus_areas=None)
+    assert captured["focus_areas"] is None
+
+
+def test_focus_areas_filter_builds_json_predicate():
+    seen = {}
+
+    class FakeJob:
+        def result(self):
+            return []
+
+    class FakeClient:
+        def query(self, sql, job_config=None):
+            seen["sql"] = sql
+            seen["params"] = {p.name: p.values for p in job_config.query_parameters
+                              if hasattr(p, "values")}
+            return FakeJob()
+
+    bigquery_module.list_tenders(FakeClient(), limit=10, offset=0, focus_areas=["disability", "justice"])
+    assert "UNNEST(@focus_areas) fa" in seen["sql"]
+    assert "focus_areas IS NOT NULL" in seen["sql"]
+    assert "focus_areas[fa] IS NOT NULL" in seen["sql"]
+    assert seen["params"]["focus_areas"] == ["disability", "justice"]
+
+
+def test_get_focus_areas_endpoint(api_client):
+    response = api_client.get("/focus-areas")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 11
+    ids = [item["id"] for item in data]
+    assert "disability" in ids
+    assert "justice" in ids
+    assert "early_years" in ids

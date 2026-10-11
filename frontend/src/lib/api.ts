@@ -7,6 +7,23 @@ const TENDERS_ENDPOINT_URL = import.meta.env.VITE_TENDERS_ENDPOINT_URL ?? `${API
 let cachedLocations: string[] | null = null;
 let locationsRequestPromise: Promise<string[]> | null = null;
 
+export const DEFAULT_FOCUS_AREAS: TenderTag[] = [
+  { id: 'charities_social_sector', label: 'Charities and social sector' },
+  { id: 'disability', label: 'Disability' },
+  { id: 'early_years', label: 'Early years' },
+  { id: 'education', label: 'Education' },
+  { id: 'employment', label: 'Employment' },
+  { id: 'family_domestic_violence', label: 'Family and domestic violence' },
+  { id: 'first_nations', label: 'First Nations' },
+  { id: 'health_wellbeing', label: 'Health and wellbeing' },
+  { id: 'housing_homelessness', label: 'Housing and homelessness' },
+  { id: 'justice', label: 'Justice' },
+  { id: 'ai_data_digital', label: 'AI, data and digital' },
+];
+
+let cachedFocusAreas: TenderTag[] | null = null;
+let focusAreasRequestPromise: Promise<TenderTag[]> | null = null;
+
 // Every endpoint except /health sits behind app/auth.py's current_user
 // dependency, which wants the caller's Firebase ID token. Attaching it here
 // rather than at each call site means a new endpoint is authenticated by
@@ -265,6 +282,7 @@ export interface GetTendersParams {
   source_id?: string;
   location?: string;
   states?: string[];
+  focus_areas?: string[];
   year?: string;
   min_value?: number;
   max_value?: number;
@@ -303,6 +321,7 @@ export async function getTenders(
         source_id: params.source_id || undefined,
         location: params.location || undefined,
         states: params.states?.length ? params.states : undefined,
+        focus_areas: params.focus_areas?.length ? params.focus_areas : undefined,
         year: params.year || undefined,
         min_value: params.min_value ?? undefined,
         max_value: params.max_value ?? undefined,
@@ -444,5 +463,26 @@ export interface ScraperHealthRecord {
 export async function getScraperHealth(): Promise<ScraperHealthRecord[]> {
   const { data } = await http.get<ScraperHealthRecord[]>(`${API_BASE_URL}/health/scrapers`);
   return data;
+}
+
+export function getFocusAreas(): Promise<TenderTag[]> {
+  if (cachedFocusAreas) return Promise.resolve([...cachedFocusAreas]);
+  if (focusAreasRequestPromise) return focusAreasRequestPromise;
+
+  const url = `${API_BASE_URL}/focus-areas`;
+  focusAreasRequestPromise = http.get<TenderTag[]>(url)
+    .then(({ data }) => {
+      cachedFocusAreas = Array.isArray(data) && data.length > 0 ? [...data] : [...DEFAULT_FOCUS_AREAS];
+      return [...cachedFocusAreas];
+    })
+    .catch((err: unknown) => {
+      console.warn(`Failed to load focus areas from ${url}, using default taxonomy`, err);
+      return [...DEFAULT_FOCUS_AREAS];
+    })
+    .finally(() => {
+      focusAreasRequestPromise = null;
+    });
+
+  return focusAreasRequestPromise;
 }
 
