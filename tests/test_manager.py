@@ -466,3 +466,36 @@ def test_freeing_memory_is_harmless_where_glibc_is_missing(monkeypatch):
     monkeypatch.setattr(ctypes, "CDLL", no_libc)
 
     manager._free_memory()  # must not raise
+
+
+def test_a_problem_found_while_storing_shows_in_the_health_row_and_the_run_summary(pipeline, monkeypatch):
+    """A scraper that returned success is shown as Partial everywhere once a file would not store."""
+    from error_scrapers import run_notes
+
+    published = []
+    summaries = []
+    monkeypatch.setattr(manager, "publish_health_status_to_gcs",
+                        lambda records, bucket_name: published.append([dict(r) for r in records]))
+    monkeypatch.setattr(manager.reporting, "log_run_summary",
+                        lambda rows, logger: summaries.append(list(rows)))
+
+    def store(path, **kw):
+        run_notes.note_late(os.path.basename(path), run_notes.SIZE, "big.zip")
+        return []
+    monkeypatch.setattr(manager.attachment_store, "upload_tender_attachments", store)
+    monkeypatch.setattr(manager, "SCRAPERS", [("first", pipeline["make_scraper"]("first", ["A1"]))])
+
+    assert _run_main() == 0
+
+    assert published[0][0]["status"] == "Success"      # right after the scrape
+    assert published[-1][0]["status"] == "Partial"     # once storing found the problem
+    assert "A1: file over the size limit not stored (big.zip)" in published[-1][0]["message"]
+    assert summaries[-1][0][1] == common.TENDER_PARTIAL  # the log table agrees
+
+
+def test_the_run_summary_leaves_failures_and_clean_runs_alone():
+    ok = ("SITE", common.SITE_SUCCESS, 3, 1.0)
+    assert manager._refresh_summary_row({"status": "Success"}, ok) == ok
+    failed = ("SITE", common.SITE_BOT_BLOCKED, 0, 1.0)
+    assert manager._refresh_summary_row({"status": "Partial"}, failed) == failed
+    assert manager._refresh_summary_row({"status": "Partial"}, ok) == ("SITE", common.TENDER_PARTIAL, 3, 1.0)

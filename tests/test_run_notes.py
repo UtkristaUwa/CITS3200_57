@@ -140,3 +140,39 @@ class _NullLog:
         pass
 
     error = info = warning
+
+
+# --- which tender is it? ------------------------------------------------------
+
+def test_a_tender_that_raised_after_its_id_was_known_is_filed_under_the_id(tmp_path):
+    common.tender_dir("GO8232", str(tmp_path))  # the scraper has just read the ID
+    reporting.tender_failed(_NullLog(), 1, 3, "https://www.grants.gov.au/Go/Show?GoUuid=abc-123",
+                            ValueError("boom"))
+    message = describe(PARTIAL, 3)[2]
+    assert "GO8232: error while scraping the tender (ValueError)" in message
+    assert "http" not in message and "abc-123" not in message
+
+
+def test_a_tender_that_raised_before_its_id_was_known_is_named_by_the_end_of_its_address():
+    reporting.tender_failed(_NullLog(), 1, 3, "https://www.grants.gov.au/Go/Show?GoUuid=abc-123",
+                            ValueError("boom"))
+    reporting.tender_failed(_NullLog(), 2, 3, "https://tendersonline.nt.gov.au/Tender/Details/T25-1527",
+                            ValueError("boom"))
+    message = describe(PARTIAL, 3)[2]
+    assert "abc-123: error while scraping" in message
+    assert "T25-1527: error while scraping" in message
+    assert "http" not in message
+
+
+def test_the_id_of_one_tender_is_not_used_for_the_next(tmp_path):
+    common.tender_dir("GO1", str(tmp_path))
+    run_notes.note_tender("GO1", OK)  # finished fine
+    reporting.tender_failed(_NullLog(), 2, 3, "https://x.gov.au/Tender/Details/T9", ValueError("boom"))
+    message = describe(PARTIAL, 2)[2]
+    assert "T9: error while scraping" in message and "GO1" not in message
+
+
+def test_a_page_address_used_as_a_tender_name_is_shortened():
+    run_notes.note_reason(run_notes.PORTAL)
+    run_notes.note_tender("https://www.tenders.act.gov.au/tender/view/4242", PARTIAL)
+    assert "4242: documents could not be opened on the portal" in describe(PARTIAL, 1)[2]

@@ -53,6 +53,7 @@ class ScrapeResult(NamedTuple):
 #This function is specifically for returning the folder path for a tender, and creating one if there isn't one.
 #All of a tenders output, the page html, attachments, and extracted attachement text lives here and is named after the tender ID
 def tender_dir(tender_id: str, base_dir: str = "tenders_data") -> str:
+    run_notes.note_current(tender_id)  # if this tender fails, say which one
     path = os.path.join(base_dir, sanitise_filename(tender_id))
     os.makedirs(path, exist_ok=True)
     return path

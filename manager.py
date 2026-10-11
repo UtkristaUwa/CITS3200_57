@@ -437,6 +437,18 @@ def _refresh_health(health_record, summary_row):
     return {**health_record, "status": label, "status_color": color, "message": message}
 
 
+def _refresh_summary_row(health_record, summary_row):
+    """
+    Keep the end-of-run table in step with the health row. A scraper that
+    returned success is shown as partial once storing its tenders found an
+    incomplete one; failure codes are left as they are.
+    """
+    site, code, count, seconds = summary_row
+    if code == common.SITE_SUCCESS and health_record.get("status") == "Partial":
+        return (site, common.TENDER_PARTIAL, count, seconds)
+    return summary_row
+
+
 def run_scrapers(temp_dir, limit, publish=True):
     """
     Run every configured scraper into temp_dir, one after another.
@@ -690,6 +702,7 @@ def main():
                         (source_id, f"{errors} tender(s) hit an unexpected error while processing")
                     )
                 health_records[-1] = _refresh_health(health_records[-1], summary_rows[-1])
+                summary_rows[-1] = _refresh_summary_row(health_records[-1], summary_rows[-1])
                 publish_health_status_to_gcs(
                     health_records, bucket_name="tenderai-dev-documents"
                 )

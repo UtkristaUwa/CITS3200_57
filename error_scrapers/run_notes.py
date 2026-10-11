@@ -22,6 +22,7 @@ No third-party imports, so attachment_store.py can use it too.
 import re
 import threading
 from collections import Counter
+from urllib.parse import urlsplit
 
 SITE_SUCCESS = 0
 TENDER_PARTIAL = 6
@@ -43,21 +44,50 @@ _lock = threading.RLock()
 _partials: dict[str, list[tuple[str, str | None]]] = {}
 _pending: list[tuple[str, str | None]] = []
 _total: int | None = None
+_current: str | None = None  # the tender being scraped right now, once its ID is known
+
+
+def _short_url(url: str) -> str:
+    """A page address cut down to the part that tells tenders apart."""
+    parts = urlsplit(url)
+    if parts.query:
+        return parts.query.split("=")[-1].split("&")[-1][:40]
+    segments = [segment for segment in parts.path.split("/") if segment]
+    return (segments[-1] if segments else parts.netloc)[:40]
 
 
 def _key(ref) -> str:
-    """Same folder-safe form the pipeline uses, so stage 1 and stage 2 agree."""
-    name = str(ref).replace("/", "_").replace("\\", "_")
+    """
+    Same folder-safe form the pipeline uses, so stage 1 and stage 2 agree. A
+    page address (a scraper that never learned the tender's ID) is cut down to
+    its last part so the message stays readable.
+    """
+    text = str(ref)
+    if text.lower().startswith(("http://", "https://")):
+        text = _short_url(text)
+    name = text.replace("/", "_").replace("\\", "_")
     return re.sub(r'[<>:"|?*\x00-\x1f]', "_", name).strip() or "unknown"
 
 
 def reset() -> None:
     """Start of a scraper's run."""
-    global _total
+    global _total, _current
     with _lock:
         _partials.clear()
         _pending.clear()
         _total = None
+        _current = None
+
+
+def note_current(ref) -> None:
+    """
+    The scraper has just learned the ID of the tender it is working on
+    (common.tender_dir calls this). If the tender then raises, the error is
+    filed under this ID instead of the page address.
+    """
+    global _current
+    with _lock:
+        _current = _key(ref)
 
 
 def note_reason(category: str, detail: str | None = None) -> None:
@@ -80,6 +110,7 @@ def note_tender(ref, code: int) -> None:
     the last one; anything else clears them (and un-flags the tender if an
     earlier attempt had flagged it, as the QLD retry pass can).
     """
+    global _current
     key = _key(ref)
     with _lock:
         if code == TENDER_PARTIAL:
@@ -88,14 +119,17 @@ def note_tender(ref, code: int) -> None:
         else:
             _partials.pop(key, None)
         _pending.clear()
+        _current = None
 
 
 def note_tender_error(ref, exc: Exception) -> None:
-    """A tender raised and was skipped."""
-    key = _key(ref)
+    """A tender raised and was skipped. Filed under its ID if the scraper got that far."""
+    global _current
     with _lock:
+        key = _current or _key(ref)
         _partials[key] = [(SCRAPE_ERROR, type(exc).__name__)]
         _pending.clear()
+        _current = None
 
 
 def note_late(ref, category: str, detail: str | None = None) -> None:

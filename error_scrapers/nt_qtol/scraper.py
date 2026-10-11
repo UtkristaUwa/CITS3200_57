@@ -410,7 +410,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
             raise  # the site says slow down: stop the run, don't keep downloading
         log.warning("       download FAILED: %s: %s", download_url, e)
-        run_notes.note_reason(run_notes.DOWNLOAD)
+        run_notes.note_reason(run_notes.DOWNLOAD, "document package")
         return common.TENDER_PARTIAL, tender
 
     if tender["documents_gated"]:

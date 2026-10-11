@@ -477,7 +477,7 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
         raise  # a Cloudflare challenge ends the run -- it is not a per-tender failure
     except Exception as e:
         log.warning("       document download FAILED for %s: %s", tender_code, e)
-        run_notes.note_reason(run_notes.DOWNLOAD)
+        run_notes.note_reason(run_notes.DOWNLOAD, "document package")
         return common.TENDER_PARTIAL, tender
     finally:
         if zip_path and os.path.exists(zip_path):
