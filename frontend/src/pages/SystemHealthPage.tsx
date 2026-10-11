@@ -156,9 +156,11 @@ export default function SystemHealthPage() {
                         <Box>
                           <Tooltip
                             title={
-                              row.last_successful_run
-                                ? `Last successful run: ${new Date(row.last_successful_run).toLocaleDateString('en-AU', { dateStyle: 'medium' })}`
-                                : 'No successful run recorded'
+                              row.status === 'Success'
+                                ? 'Last run was successful'
+                                : row.last_successful_run
+                                  ? `Last successful run: ${new Date(row.last_successful_run).toLocaleDateString('en-AU', { dateStyle: 'medium' })}`
+                                  : 'No successful run recorded'
                             }
                             arrow
                           >
