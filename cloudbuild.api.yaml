@@ -1,0 +1,47 @@
+# Builds and deploys the API service (api/) to Cloud Run.
+#
+# Run by a trigger on pushes to main, filtered to api/** — see
+# documentation/owner_transefer.md. The pipeline job has had automatic deploys
+# since day one via cloudbuild.yaml; the API did not, so merged API changes sat
+# undeployed and looked like front-end bugs. This closes that gap.
+#
+# The image is tagged with the commit SHA and deployed by that tag, so a
+# revision can always be traced back to the commit it came from.
+#
+# To deploy by hand instead (no merge needed):
+#   cd api && gcloud run deploy tenderai-api --source . \
+#     --region australia-southeast1 --env-vars-file env.yaml
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/tender-jobs/api:$SHORT_SHA'
+      - '-t'
+      - 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/tender-jobs/api:latest'
+      - 'api'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/tender-jobs/api']
+
+  # --env-vars-file REPLACES the service's entire environment, so env.yaml must
+  # carry every variable the API needs, RUNTIME_CONFIG_BUCKET/OBJECT included.
+  # Anything set by hand in the console is wiped by this step.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'tenderai-api'
+      - '--image'
+      - 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/tender-jobs/api:$SHORT_SHA'
+      - '--region'
+      - 'australia-southeast1'
+      - '--env-vars-file'
+      - 'api/env.yaml'
+
+# Required when a build runs as a user-specified service account, as the
+# triggers in this project do: without it Cloud Build rejects the build.
+options:
+  logging: CLOUD_LOGGING_ONLY
