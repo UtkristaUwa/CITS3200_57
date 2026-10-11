@@ -1,13 +1,15 @@
-import { useState, type MouseEvent } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Switch, styled } from '@mui/material';
+import { useLayoutEffect, useState, type MouseEvent } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Switch, Tooltip, styled } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { useColorMode } from '../lib/ThemeContext';
+import { TenderCardViewSettings } from './TenderCardViewSettings';
 
 const BRAND_COLORS = {
   blue: '#2D3AF1',
@@ -67,9 +69,15 @@ function ModeToggle() {
 }
 
 export default function TopNav() {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const location = useLocation();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    setMenuAnchor(null);
+    setViewSettingsOpen(false);
+  }, [user?.uid]);
 
   const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMenuAnchor(event.currentTarget);
@@ -79,14 +87,24 @@ export default function TopNav() {
     setMenuAnchor(null);
   };
 
+  const handleViewSettingsOpen = () => {
+    handleMenuClose();
+    setViewSettingsOpen(true);
+  };
+
+  const handleViewSettingsClose = () => {
+    setViewSettingsOpen(false);
+  };
+
   const handleLogout = () => {
     handleMenuClose();
     void signOut(auth);
   };
 
   return (
-    <AppBar position="static" color="default" sx={{ mb: 3 }}>
-      <Toolbar>
+    <>
+      <AppBar position="static" color="default" sx={{ mb: 3 }}>
+        <Toolbar>
         <Typography
           variant="h6"
           component={RouterLink}
@@ -150,6 +168,29 @@ export default function TopNav() {
               Admin
             </Button>
           )}
+          {user && (
+            <Tooltip title="Tender card view settings">
+              <Button
+                color="inherit"
+                aria-label="Open tender card view settings"
+                onClick={handleViewSettingsOpen}
+                startIcon={<SettingsOutlinedIcon />}
+                sx={{
+                  minWidth: { sm: 44, md: 'auto' },
+                  minHeight: 44,
+                  px: { sm: 1.25, md: 2 },
+                  whiteSpace: 'nowrap',
+                  '& .MuiButton-startIcon': {
+                    margin: { sm: 0, md: '0 8px 0 -4px' },
+                  },
+                }}
+              >
+                <Box component="span" sx={{ display: { sm: 'none', md: 'inline' } }}>
+                  View Settings
+                </Box>
+              </Button>
+            </Tooltip>
+          )}
           <Button color="inherit" onClick={() => void signOut(auth)}>
             Logout
           </Button>
@@ -202,9 +243,19 @@ export default function TopNav() {
               Admin
             </MenuItem>
           )}
+          {user && (
+            <MenuItem onClick={handleViewSettingsOpen}>View settings</MenuItem>
+          )}
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
-      </Toolbar>
-    </AppBar>
+        </Toolbar>
+      </AppBar>
+      {user && (
+        <TenderCardViewSettings
+          open={viewSettingsOpen}
+          onClose={handleViewSettingsClose}
+        />
+      )}
+    </>
   );
 }

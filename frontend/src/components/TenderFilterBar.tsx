@@ -10,11 +10,13 @@ import {
   Select,
   MenuItem,
   Tooltip,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { getLocations } from '../lib/api';
+import type { DefaultTenderStatus } from '../lib/tenderPreferences';
 
 export interface TenderFilterBarProps {
   searchQuery: string;
@@ -27,17 +29,31 @@ export interface TenderFilterBarProps {
   setJurisdiction: (val: string) => void;
   year: string;
   setYear: (val: string) => void;
-  status: string;
-  setStatus: (val: string) => void;
+  status: DefaultTenderStatus;
+  setStatus: (val: DefaultTenderStatus) => void;
   minDate: string;
   setMinDate: (val: string) => void;
   maxDate: string;
   setMaxDate: (val: string) => void;
+  filtersReady: boolean;
+  defaultFiltersSaving: boolean;
+  defaultFiltersLoadError: string | null;
+  defaultFiltersSaveError: string | null;
+  defaultFiltersSaved: boolean;
+  handleSaveDefaultFilters: () => Promise<void>;
   handleResetFilters: () => void;
 }
 
 export default function TenderFilterBar(props: TenderFilterBarProps) {
   const [availableLocations, setAvailableLocations] = useState<string[]>([]);
+  const locationOptions = props.jurisdiction
+    && !availableLocations.includes(props.jurisdiction)
+    ? [props.jurisdiction, ...availableLocations]
+    : availableLocations;
+  const standardYears = ['2026', '2025', '2024'];
+  const yearOptions = props.year && !standardYears.includes(props.year)
+    ? [props.year, ...standardYears]
+    : standardYears;
 
   useEffect(() => {
     getLocations().then(setAvailableLocations);
@@ -173,7 +189,7 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               <InputLabel>Jurisdiction</InputLabel>
               <Select value={props.jurisdiction} label="Jurisdiction" onChange={(e) => props.setJurisdiction(e.target.value)}>
                 <MenuItem value=""><em>All</em></MenuItem>
-                {availableLocations.map((loc) => (
+                {locationOptions.map((loc) => (
                   <MenuItem key={loc} value={loc}>{loc}</MenuItem>
                 ))}
               </Select>
@@ -183,15 +199,19 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               <InputLabel>Year</InputLabel>
               <Select value={props.year} label="Year" onChange={(e) => props.setYear(e.target.value)}>
                 <MenuItem value=""><em>All Time</em></MenuItem>
-                <MenuItem value="2026">2026</MenuItem>
-                <MenuItem value="2025">2025</MenuItem>
-                <MenuItem value="2024">2024</MenuItem>
+                {yearOptions.map((year) => (
+                  <MenuItem key={year} value={year}>{year}</MenuItem>
+                ))}
               </Select>
             </FormControl>
 
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Status</InputLabel>
-              <Select value={props.status} label="Status" onChange={(e) => props.setStatus(e.target.value)}>
+              <Select
+                value={props.status}
+                label="Status"
+                onChange={(e) => props.setStatus(e.target.value as DefaultTenderStatus)}
+              >
                 <MenuItem value=""><em>All</em></MenuItem>
                 <MenuItem value="open">Open</MenuItem>
                 <MenuItem value="closed">Closed</MenuItem>
@@ -230,7 +250,41 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
             />
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+          {props.defaultFiltersLoadError && (
+            <Alert severity="warning">
+              {props.defaultFiltersLoadError}
+            </Alert>
+          )}
+          {props.defaultFiltersSaveError && (
+            <Alert severity="error">
+              {props.defaultFiltersSaveError}
+            </Alert>
+          )}
+          {props.defaultFiltersSaved && (
+            <Alert severity="success">
+              Current filters saved as your default.
+            </Alert>
+          )}
+
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'stretch', sm: 'center' },
+              gap: 1,
+              mt: 1,
+            }}
+          >
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => void props.handleSaveDefaultFilters()}
+              disabled={!props.filtersReady || props.defaultFiltersSaving}
+              sx={{ minHeight: { xs: 44, sm: 30 } }}
+            >
+              {props.defaultFiltersSaving ? 'Saving...' : 'Save as Default'}
+            </Button>
             <Button size="small" color="primary" onClick={props.handleResetFilters} sx={{ minHeight: { xs: 44, sm: 30 } }}>
               Clear All Filters
             </Button>
