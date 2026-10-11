@@ -57,6 +57,8 @@ DETAIL_LINK_SELECTOR = "a.tenderRowTitle"
 # structure has changed -- the structure-changed fixture renames exactly
 # this id.
 FIELD_SECTION_SELECTOR = "#opportunityGeneral"
+#The content area of a details page (leaves out the site menu in the full page text)
+PAGE_CONTENT_SELECTOR = "main"
 
 # Every attachment in the "Specification Documents" block.
 SPEC_DOC_SELECTOR = "#specsList li.specDoc"
@@ -451,6 +453,7 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
     folder = common.tender_dir(tender_code, output_dir)
     documents = parse_documents(html)
     common.save_page_text(folder, tender_code, format_detail_text(fields, entry, documents))
+    common.append_full_page_text(folder, tender_code, html, PAGE_CONTENT_SELECTOR)
     common.add_source_url(folder, tender_code, url)
 
     tender = {

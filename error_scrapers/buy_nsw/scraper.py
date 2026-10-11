@@ -57,6 +57,8 @@ DETAIL_LINK_SELECTOR = "a[href*='/prcOpportunity/']"
 # is the exact class the structure-changed fixture renames to simulate
 # that.
 FIELD_ROW_SELECTOR = ".nsw-table-row"
+#The content area of a details page (leaves out the site menu in the full page text)
+PAGE_CONTENT_SELECTOR = "#main-content"
 
 PACKAGE_TIMEOUT_SECONDS = 120.0   # one opportunity's whole document package
 
@@ -313,6 +315,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
                 client, "get", package_url, headers=HEADERS, timeout=PACKAGE_TIMEOUT_SECONDS)
             pkg_response.raise_for_status()
             result = extract_package(pkg_response.content, folder, opportunity_id)
+            common.append_full_page_text(folder, opportunity_id, response.text, PAGE_CONTENT_SELECTOR)
             common.add_source_url(folder, opportunity_id, url)
             attachments = result["attachments"]
             reporting.documents_line(log, len(attachments))
@@ -328,6 +331,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             run_notes.note_reason(run_notes.DOWNLOAD, f"document package, {type(exc).__name__}")
             # Keep what the page itself told us, as for a tender with no files.
             common.save_page_text(folder, opportunity_id, format_detail_text(fields))
+            common.append_full_page_text(folder, opportunity_id, response.text, PAGE_CONTENT_SELECTOR)
             common.add_source_url(folder, opportunity_id, url)
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
@@ -338,6 +342,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
         # attached" opportunity) -- save the fields we already have as
         # the tender's own page text instead.
         common.save_page_text(folder, opportunity_id, format_detail_text(fields))
+        common.append_full_page_text(folder, opportunity_id, response.text, PAGE_CONTENT_SELECTOR)
         common.add_source_url(folder, opportunity_id, url)
         reporting.documents_line(log, 0)
 

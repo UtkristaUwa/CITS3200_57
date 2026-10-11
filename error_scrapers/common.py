@@ -75,6 +75,118 @@ def save_page_text(folder: str, tender_id: str, text: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 
+#-----
+#Safety net for the page text: the scrapers only save the fields they have selectors for, so
+#anything else on the details page (a site visit block, special instructions, a new section the
+#portal adds) would never reach the AI. This keeps every visible line of the page as well.
+#-----
+
+FULL_PAGE_HEADER = "FULL PAGE TEXT (everything visible on the details page)"
+FULL_PAGE_MAX_CHARS = 200_000
+
+#Tags whose contents are never page text
+_NOT_TEXT_TAGS = {"script", "style", "noscript", "head", "template", "svg", "iframe", "nav", "footer", "select", "option"}
+#Tags that start a new line
+_BLOCK_TAGS = {
+    "address", "article", "aside", "blockquote", "body", "dd", "details", "div", "dl", "dt",
+    "fieldset", "figcaption", "figure", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header",
+    "hr", "legend", "li", "main", "ol", "p", "pre", "section", "summary", "table", "tbody",
+    "tfoot", "thead", "ul", "caption",
+}
+
+
+def visible_page_text(html: str, within: str | None = None) -> str:
+    """All the visible text on a page, one line per block. Table rows stay on one line
+    ('Label: value' for a two cell row, 'a | b | c' for wider ones). Scripts, styles, menus and
+    footers are dropped; hidden panels are kept, since a portal can hide real content in a tab.
+    `within` is a CSS selector for the page's content area (e.g. 'main'), which leaves out the
+    site's menus and login panel; if it matches nothing the whole page is used."""
+    from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
+    import html as html_lib
+
+    def lines_of(root) -> list[str]:
+        lines: list[str] = []
+        buf: list[str] = []
+
+        def flush():
+            text = " ".join("".join(buf).split())
+            buf.clear()
+            if text and (not lines or lines[-1] != text):
+                lines.append(text)
+
+        def visit(node):
+            if isinstance(node, (Comment, Doctype)):
+                return
+            if isinstance(node, NavigableString):
+                buf.append(str(node))
+                return
+            name = node.name
+            if name in _NOT_TEXT_TAGS:
+                return
+            if name == "br":
+                flush()
+                return
+            if name == "tr":
+                flush()
+                cells = [" ".join(lines_of(cell)) for cell in node.find_all(["td", "th"], recursive=False)]
+                cells = [cell for cell in cells if cell]
+                if len(cells) == 2:
+                    lines.append(f"{cells[0].rstrip(':')}: {cells[1]}")
+                elif cells:
+                    lines.append(" | ".join(cells))
+                return
+            if name == "textarea":
+                flush()
+                text = html_lib.unescape(node.get_text())
+                if "<" in text:
+                    text = "\n".join(lines_of(BeautifulSoup(text, "html.parser")))
+                lines.extend(line.strip() for line in text.splitlines() if line.strip())
+                return
+            if name == "input":
+                if node.get("type", "text") == "text" and node.get("value") and (
+                        node.has_attr("readonly") or node.has_attr("disabled")):
+                    buf.append(" " + node["value"] + " ")
+                return
+            block = name in _BLOCK_TAGS
+            if block:
+                flush()
+            for child in node.children:
+                visit(child)
+            if block:
+                flush()
+
+        visit(root)
+        flush()
+        return lines
+
+    soup = BeautifulSoup(html or "", "html.parser")
+    root = (soup.select_one(within) if within else None) or soup
+    try:
+        lines = lines_of(root)
+    except RecursionError:
+        lines = [line for line in root.get_text("\n", strip=True).splitlines() if line.strip()]
+    text = "\n".join(lines)
+    if len(text) > FULL_PAGE_MAX_CHARS:
+        text = text[:FULL_PAGE_MAX_CHARS] + "\n[page text cut at the size limit]"
+    return text
+
+
+def append_full_page_text(folder: str, tender_id: str, html: str, within: str | None = None) -> None:
+    """Add the whole visible page to the tender's __tender__ text file, under a FULL PAGE TEXT
+    heading, after whatever the scraper already wrote there (the file is created if it is not
+    there yet). It never raises: the fields are already saved, and this is the extra."""
+    try:
+        text = visible_page_text(html, within)
+        if not text:
+            return
+        path = os.path.join(folder, f"__tender__{sanitise_filename(tender_id)}.txt")
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(f"\n{'=' * 80}\n{FULL_PAGE_HEADER}\n{'=' * 80}\n{text}\n")
+    except Exception as exc:  # noqa: BLE001 - the safety net must never fail a tender
+        logging.getLogger(__name__).warning("full page text not saved for %s (%s: %s)",
+                                            tender_id, type(exc).__name__, exc)
+
+
 SOURCE_URL_PATTERN = re.compile(r"Detail URL:\s*(https?://\S+)")
 
 

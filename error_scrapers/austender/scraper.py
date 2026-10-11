@@ -62,6 +62,8 @@ DETAIL_LINK_SELECTOR = "a[href*='/Atm/Show/']"
 # structure has changed -- the structure-changed fixture renames exactly this
 # class to simulate that.
 FIELD_SELECTOR = "div.list-desc"
+#The content area of a details page (leaves out the site menu and login panel in the full page text)
+PAGE_CONTENT_SELECTOR = "main"
 
 # The "ATM Documents" button on a detail page.
 DOCUMENTS_PAGE_SELECTOR = "a[href*='/Atm/ViewDocuments/']"
@@ -383,6 +385,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     atm_id = fields["atm_id"]
     folder = common.tender_dir(atm_id, output_dir)
     common.save_page_text(folder, atm_id, format_detail_text(fields, url))
+    common.append_full_page_text(folder, atm_id, response.text, PAGE_CONTENT_SELECTOR)
     common.add_source_url(folder, atm_id, url)
 
     tender = {
