@@ -26,7 +26,21 @@ from app.document_zip import (
     parse_storage_uri,
     stream_zip,
 )
-from app.models import SourceOut, TenderOut
+from app.models import SourceOut, TenderOut, TenderTagOut
+
+DEFAULT_FOCUS_AREAS: dict[str, str] = {
+    "charities_social_sector": "Charities and social sector",
+    "disability": "Disability",
+    "early_years": "Early years",
+    "education": "Education",
+    "employment": "Employment",
+    "family_domestic_violence": "Family and domestic violence",
+    "first_nations": "First Nations",
+    "health_wellbeing": "Health and wellbeing",
+    "housing_homelessness": "Housing and homelessness",
+    "justice": "Justice",
+    "ai_data_digital": "AI, data and digital",
+}
 
 _ALLOWED_BUCKET_PREFIX = "tenderai-"
 logger = logging.getLogger(__name__)
@@ -171,6 +185,19 @@ def _tender_outputs(
     return outputs
 
 
+def _get_row_focus_area_ids(raw: object) -> set[str]:
+    if isinstance(raw, list):
+        ids: set[str] = set()
+        for item in raw:
+            if isinstance(item, dict) and "id" in item:
+                ids.add(str(item["id"]))
+            elif isinstance(item, str):
+                ids.add(item)
+        return ids
+    scores = _parse_classification_scores(raw)
+    return set(scores.keys())
+
+
 def _matches_mock(
     row: dict,
     status: str | None,
@@ -182,7 +209,9 @@ def _matches_mock(
     closing_before: date | None,
     closing_after: date | None,
     year: str | None,
-    q: str | None
+    q: str | None,
+    states: list[str] | None = None,
+    focus_areas: list[str] | None = None,
 ) -> bool:
     if status and row.get("status") != status:
         return False
@@ -243,6 +272,17 @@ def _matches_mock(
         haystack = f"{row.get('title') or ''} {row.get('source_reference_id') or ''} {row.get('description') or ''} {row.get('summary_headline') or ''} {row.get('issuing_agency') or ''}".lower()
         if not all(token in haystack for token in tokens):
             return False
+
+    if states:
+        tender_states = row.get("location_states") or []
+        if "NATIONAL" not in tender_states and not any(s in tender_states for s in states):
+            return False
+
+    if focus_areas:
+        tender_fa_ids = _get_row_focus_area_ids(row.get("focus_areas"))
+        if not any(fa in tender_fa_ids for fa in focus_areas):
+            return False
+
     return True
 
 
@@ -306,6 +346,10 @@ def get_tenders(
         default=None,
         description="Filter to tenders in any of these states. Repeat the parameter.",
     ),
+    focus_areas: list[str] | None = Query(
+        default=None,
+        description="Filter to tenders having any of these focus area IDs. Repeat the parameter.",
+    ),
     include_irrelevant: bool = Query(
         default=False,
         description="Admins only: also return tenders below the fit threshold.",
@@ -323,7 +367,15 @@ def get_tenders(
         else settings.min_visible_fit
     )
     if settings.use_mock_data:
-        matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
+        matches = [
+            row for row in _MOCK_TENDERS
+            if _matches_mock(
+                row, status, category, source_id, location, min_value, max_value,
+                closing_before, closing_after, year, q,
+                states=list(states) if states else None,
+                focus_areas=list(focus_areas) if focus_areas else None,
+            )
+        ]
         matches = _sort_mock_tenders(matches, sort_by, sort_dir)
         page = matches[offset : offset + limit]
         return _tender_outputs(page)
@@ -338,6 +390,7 @@ def get_tenders(
         year=year, q=q,
         mode=mode, min_fit=min_fit,
         states=list(states) if states else None,
+        focus_areas=list(focus_areas) if focus_areas else None,
         sort_by=sort_by, sort_dir=sort_dir,
     )
     if not rows:
@@ -464,3 +517,17 @@ def list_locations() -> list[str]:
     
     client = get_client()
     return get_locations(client)
+
+
+@router.get("/focus-areas", response_model=list[TenderTagOut])
+def get_focus_areas_endpoint() -> list[TenderTagOut]:
+    """
+    Return all distinct focus areas available for filtering tenders.
+    """
+    try:
+        taxonomies = runtime_config.get_taxonomy_labels()
+        areas = taxonomies.focus_areas if taxonomies and taxonomies.focus_areas else DEFAULT_FOCUS_AREAS
+    except Exception:
+        areas = DEFAULT_FOCUS_AREAS
+
+    return [TenderTagOut(id=tag_id, label=label) for tag_id, label in areas.items()]

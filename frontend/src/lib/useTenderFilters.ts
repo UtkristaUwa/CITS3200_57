@@ -37,6 +37,7 @@ export function useTenderFilters() {
   const [jurisdiction, setJurisdiction] = useState('');
   // Session-only: not part of tenderPreferences, so no schema or rules change.
   const [states, setStates] = useState<string[]>([]);
+  const [focusAreas, setFocusAreas] = useState<string[]>([]);
   const [sourceId, setSourceId] = useState('');
   const [publishedAfter, setPublishedAfter] = useState('');
   const [publishedBefore, setPublishedBefore] = useState('');
@@ -160,6 +161,7 @@ export function useTenderFilters() {
     setDebouncedSearchQuery('');
     setJurisdiction('');
     setStates([]);
+    setFocusAreas([]);
     setSourceId('');
     setStatus('');
     setYear('');
@@ -260,6 +262,7 @@ export function useTenderFilters() {
     showFilters, setShowFilters,
     sortBy, setSortBy,
     states, setStates,
+    focusAreas, setFocusAreas,
     sourceId, setSourceId,
     jurisdiction, setJurisdiction: setSavedJurisdiction,
     status, setStatus: setSavedStatus,
