@@ -78,11 +78,105 @@ class TenderFields(BaseModel):
     value_currency: Optional[str] = Field(default=None)
     value_notes: Optional[str] = Field(default=None)
     location: Optional[str] = Field(default=None)
+    location_postcode: Optional[str] = Field(default=None)
+    location_states: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     contact_name: Optional[str] = Field(default=None)
     contact_email: Optional[str] = Field(default=None)
     contact_phone: Optional[str] = Field(default=None)
     lodgment_address: Optional[str] = Field(default=None)
+
+
+# ==============================================================================
+# Location Normalisation
+#
+# `location` is kept exactly as the source words it. location_states is the
+# filterable version, resolved here rather than trusted from the model: an
+# Australian address almost always carries its postcode, and a postcode maps to
+# a state deterministically, whereas a bare suburb name does not (Richmond,
+# Brighton, Kingston and Newtown all exist in several states).
+#
+# It is a list because plenty of tenders genuinely cover several states.
+# ==============================================================================
+
+# NATIONAL describes a scope rather than a point on the map, and stands alone.
+ALLOWED_LOCATION_STATES: set[str] = {
+    "WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL",
+}
+
+_POSTCODE_PATTERN = re.compile(r"^\d{4}$")
+
+# (low, high, state) in precedence order. A None state marks a range that cannot
+# be attributed to a state - external territories, and the 0872 remote block
+# that straddles the NT/SA/WA borders - so those fall through to None rather
+# than being quietly filed under the nearest mainland state.
+_POSTCODE_RANGES: list[tuple[int, int, Optional[str]]] = [
+    (200, 299, "ACT"),
+    (800, 871, "NT"),
+    (872, 872, None),
+    (873, 999, "NT"),
+    (1000, 1999, "NSW"),
+    (2000, 2599, "NSW"),
+    (2600, 2618, "ACT"),
+    (2619, 2898, "NSW"),
+    (2899, 2899, None),
+    (2900, 2920, "ACT"),
+    (2921, 2999, "NSW"),
+    (3000, 3999, "VIC"),
+    (4000, 4999, "QLD"),
+    (5000, 5999, "SA"),
+    (6000, 6797, "WA"),
+    (6798, 6799, None),
+    (6800, 6999, "WA"),
+    (7000, 7999, "TAS"),
+    (8000, 8999, "VIC"),
+    (9000, 9999, "QLD"),
+]
+
+
+def state_from_postcode(postcode: Optional[str]) -> Optional[str]:
+    """The state/territory a 4-digit Australian postcode belongs to, or None if
+    the postcode is unusable or isn't attributable to one state."""
+    if not postcode:
+        return None
+    digits = str(postcode).strip()
+    if not _POSTCODE_PATTERN.match(digits):
+        return None
+
+    code = int(digits)
+    for low, high, state in _POSTCODE_RANGES:
+        if low <= code <= high:
+            return state
+    return None
+
+
+def resolve_location_states(
+    postcode: Optional[str], model_states: Optional[list[str]]
+) -> list[str]:
+    """
+    Decide the filterable states for a tender. A postcode outranks the model on a
+    single-state answer, since the model guessing a state from a suburb name is
+    exactly what goes wrong, but it can't overrule an explicitly multi-state
+    scope - it only joins it. Anything the model can't back up is dropped rather
+    than guessed: an empty list beats a wrong state that hides the tender behind
+    the wrong filter.
+    """
+    claimed = {
+        state
+        for state in ((s or "").strip().upper() for s in model_states or [])
+        if state in ALLOWED_LOCATION_STATES
+    }
+
+    # Whole-of-country already covers every state, so it stands on its own.
+    if "NATIONAL" in claimed:
+        return ["NATIONAL"]
+
+    postcode_state = state_from_postcode(postcode)
+    if postcode_state is None:
+        return sorted(claimed)
+    if len(claimed) <= 1:
+        return [postcode_state]
+    return sorted(claimed | {postcode_state})
 
 
 # ==============================================================================
@@ -214,12 +308,15 @@ def load_config(config_path: Optional[str] = None):
 
         # Update TenderFields schema
         tags_str = ", ".join(TAG_TAXONOMY)
+        states_str = ", ".join(sorted(ALLOWED_LOCATION_STATES))
         for field_name in TenderFields.model_fields.keys():
             cfg_key = f"field_{field_name}"
             if cfg_key in descriptions:
                 desc = descriptions[cfg_key]
                 if "{tags}" in desc:
                     desc = desc.format(tags=tags_str)
+                if "{states}" in desc:
+                    desc = desc.format(states=states_str)
                 TenderFields.model_fields[field_name].description = desc
         TenderFields.model_rebuild(force=True)
 
@@ -481,6 +578,7 @@ def extract_tender_fields(raw_context: str | None) -> TenderFields:
     fields: TenderFields = response.parsed
     # Filter tags to only allowed taxonomy
     fields.tags = [t for t in fields.tags if t in TAG_TAXONOMY]
+    fields.location_states = resolve_location_states(fields.location_postcode, fields.location_states)
     return fields
 
 
@@ -562,6 +660,7 @@ def process_tender(documents_dir: str) -> dict:
         "value_currency": fields.value_currency,
         "value_notes": fields.value_notes,
         "location": fields.location,
+        "location_states": fields.location_states,
         "description": summary.description,
         "summary_headline": summary.headline,
         "contact_name": fields.contact_name,

@@ -65,8 +65,7 @@ One directory per tender — never one file per website:
     Addendum 1.docx
 ```
 
-The `.txt` is always named after its directory, which is what
-`document_scraper/main.py` looks for. `tender.json` validates against
+The `.txt` is always named after its directory. `tender.json` validates against
 `ingestion/tender.schema.json`, and its `raw_extra.scrape` block records what
 the schema does not model: how many documents the page advertised, how many
 came down, and whether the portal demanded a login. That is how a consumer

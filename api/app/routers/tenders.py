@@ -1,14 +1,33 @@
-from typing import Literal
+import json
+import logging
+import math
 from datetime import date
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Path, Query
 from fastapi.responses import StreamingResponse
 
-from app.bigquery import get_client, get_storage_client, list_tenders, get_locations
+from app import runtime_config
+from app.bigquery import (
+    get_client,
+    get_locations,
+    get_storage_client,
+    get_tender_documents,
+    list_tenders,
+)
 from app.config import settings
+from app.document_zip import (
+    ArchiveEntry,
+    archive_filename,
+    dedupe_names,
+    entry_name,
+    parse_storage_uri,
+    stream_zip,
+)
 from app.models import TenderOut
 
 _ALLOWED_BUCKET_PREFIX = "tenderai-"
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -91,6 +110,60 @@ _MOCK_TENDERS = [
         "raw_extra": None,
     },
 ]
+
+
+def _parse_classification_scores(value: object) -> dict[str, int | float]:
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (json.JSONDecodeError, TypeError, RecursionError):
+            return {}
+
+    if not isinstance(value, dict):
+        return {}
+
+    scores: dict[str, int | float] = {}
+    for tag_id, score in value.items():
+        if not isinstance(tag_id, str) or not tag_id:
+            continue
+        if isinstance(score, bool) or not isinstance(score, (int, float)):
+            continue
+        if not 1 <= score <= 5 or not math.isfinite(score):
+            continue
+        scores[tag_id] = score
+    return scores
+
+
+def _classification_tags(value: object, labels: dict[str, str]) -> list[dict[str, str]]:
+    scores = _parse_classification_scores(value)
+    ordered = sorted(
+        ((tag_id, score) for tag_id, score in scores.items() if tag_id in labels),
+        key=lambda item: (-item[1], item[0]),
+    )
+    return [{"id": tag_id, "label": labels[tag_id]} for tag_id, _score in ordered]
+
+
+def _tender_outputs(
+    rows: list[dict],
+    taxonomies: runtime_config.RuntimeTaxonomies | None = None,
+) -> list[TenderOut]:
+    focus_area_labels = taxonomies.focus_areas if taxonomies else {}
+    work_type_labels = taxonomies.work_types if taxonomies else {}
+    outputs: list[TenderOut] = []
+
+    for row in rows:
+        values = dict(row)
+        values["focus_areas"] = _classification_tags(
+            values.get("focus_areas"),
+            focus_area_labels,
+        )
+        values["work_types"] = _classification_tags(
+            values.get("work_types"),
+            work_type_labels,
+        )
+        outputs.append(TenderOut(**values))
+
+    return outputs
 
 
 def _matches_mock(
@@ -180,7 +253,7 @@ def get_tenders(
     if settings.use_mock_data:
         matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
         page = matches[offset : offset + limit]
-        return [TenderOut(**row) for row in page]
+        return _tender_outputs(page)
 
     client = get_client()
     rows = list_tenders(
@@ -190,7 +263,17 @@ def get_tenders(
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
         mode=mode,
     )
-    return [TenderOut(**row) for row in rows]
+    if not rows:
+        return []
+
+    try:
+        taxonomies = runtime_config.get_taxonomy_labels()
+    except runtime_config.RuntimeConfigError:
+        logger.warning("Runtime taxonomy unavailable; returning empty tender classifications")
+        taxonomies = None
+    return _tender_outputs(rows, taxonomies)
+
+
 @router.get("/documents/download")
 def download_document(
     storage_url: str = Query(..., description="HTTPS GCS URL from a TenderDocument"),
@@ -220,6 +303,78 @@ def download_document(
         iter([data]),
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{safe_name}"'},
+    )
+
+
+@router.get("/tenders/{tender_id}/documents/zip")
+def download_all_documents(
+    tender_id: str = Path(..., pattern=r"^[A-Za-z0-9._-]{1,128}$"),
+) -> StreamingResponse:
+    """Every stored attachment of one tender, as a single zip.
+
+    The document list comes from BigQuery rather than the caller, so the
+    archive only ever holds files that belong to that tender. Everything that
+    can fail is checked before the first byte is sent, while a real status
+    code is still possible:
+
+    * no such tender → 404
+    * no stored attachments → 404, before any Cloud Storage client exists
+    * Cloud Storage unreachable or not listable → 503
+    * an attachment BigQuery lists but the bucket doesn't hold → 404 naming it
+
+    A failure after streaming has started is handled in stream_zip().
+    """
+    if settings.use_mock_data:
+        tender = next((row for row in _MOCK_TENDERS if row["tender_id"] == tender_id), None)
+    else:
+        tender = get_tender_documents(get_client(), tender_id)
+    if tender is None:
+        raise HTTPException(status_code=404, detail="Tender not found")
+
+    # Documents without a storage_uri (the scraped page text, unprocessed
+    # extractions) are pipeline files, not attachments; repeats are one file.
+    wanted: list[tuple[str, str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for doc in tender.get("documents") or []:
+        location = parse_storage_uri(doc.get("storage_uri"))
+        if location is None or location in seen:
+            continue
+        seen.add(location)
+        bucket_name, object_path = location
+        wanted.append((entry_name(doc, object_path), bucket_name, object_path))
+
+    if not wanted:
+        raise HTTPException(status_code=404, detail="No stored documents for this tender")
+
+    # One listing per folder (normally just the tender's own folder) instead
+    # of one metadata request per file. Listed blobs carry the size and
+    # timestamp the zip headers need, and a listing proves each object exists
+    # under the same service account that will read it.
+    stored: dict[tuple[str, str], object] = {}
+    try:
+        storage = get_storage_client()
+        for bucket_name, folder in {(b, p.rpartition("/")[0]) for _, b, p in wanted}:
+            for blob in storage.list_blobs(bucket_name, prefix=f"{folder}/" if folder else None):
+                stored[(bucket_name, blob.name)] = blob
+    except Exception:
+        logger.exception("Could not list stored documents for tender %s", tender_id)
+        raise HTTPException(
+            status_code=503,
+            detail="Document storage is unavailable right now. Please try again.",
+        )
+
+    missing = [name for name, b, p in wanted if (b, p) not in stored]
+    if missing:
+        logger.error("Tender %s: %d document(s) missing from storage: %s", tender_id, len(missing), missing)
+        shown = ", ".join(missing[:5]) + (f" and {len(missing) - 5} more" if len(missing) > 5 else "")
+        raise HTTPException(status_code=404, detail=f"Missing from document storage: {shown}")
+
+    names = dedupe_names(name for name, _, _ in wanted)
+    entries = [ArchiveEntry(name, stored[(b, p)]) for name, (_, b, p) in zip(names, wanted)]
+    return StreamingResponse(
+        stream_zip(entries, tender_id=tender_id),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{archive_filename(tender)}"'},
     )
 
 

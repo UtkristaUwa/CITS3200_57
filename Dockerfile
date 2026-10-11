@@ -43,12 +43,10 @@ ENV HOME=/tmp
 COPY requirements.txt ./requirements.txt
 COPY ingestion/requirements.txt ./ingestion/requirements.txt
 COPY web_scrapers/requirements.txt ./web_scrapers/requirements.txt
-COPY document_scraper/requirements.txt ./document_scraper/requirements.txt
 RUN pip install --no-cache-dir \
         -r requirements.txt \
         -r ingestion/requirements.txt \
-        -r web_scrapers/requirements.txt \
-        -r document_scraper/requirements.txt
+        -r web_scrapers/requirements.txt
 
 # Bake in the browser drivers SeleniumBase would otherwise download from Google
 # at run time (a network dependency, and extra seconds on every browser portal).
@@ -61,7 +59,6 @@ RUN (sbase get chromedriver && sbase get uc_driver) \
 COPY ingestion/ ./ingestion/
 COPY web_scrapers/ ./web_scrapers/
 COPY error_scrapers/ ./error_scrapers/
-COPY document_scraper/ ./document_scraper/
 COPY processing/ ./processing/
 COPY attachment_store.py ./attachment_store.py
 COPY manager.py ./manager.py

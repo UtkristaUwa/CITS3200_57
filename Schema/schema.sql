@@ -49,7 +49,11 @@ CREATE TABLE IF NOT EXISTS `tenderai-dev.TenderAI.tenders` (
   value_currency        STRING,
   value_notes           STRING,                -- e.g. "not disclosed", "$50k-$100k range"
 
-  location              STRING,                -- jurisdiction / region the work applies to
+  location              STRING,                -- jurisdiction / region the work applies to, verbatim from the source
+  location_states       ARRAY<STRING>,         -- filterable form of the above: WA | NSW | VIC | QLD | SA | TAS | ACT | NT, or NATIONAL alone.
+                                               -- Repeated because a tender can cover several states. Resolved from the location's
+                                               -- postcode where there is one (see tender_processor.resolve_location_states); empty
+                                               -- when the source doesn't support an answer.
   description           STRING,                -- raw extracted description text
   summary_headline      STRING,                -- AI-generated one-line headline for the tender
 

@@ -87,6 +87,41 @@ def _validate_relevance_text(value: object) -> object:
     return value
 
 
+PROMPT_TEXT_FIELDS = ("field_extraction", "summary", "doc_triage")
+PROMPT_UPDATE_FIELDS = PROMPT_TEXT_FIELDS + ("triage_char_limit",)
+
+
+class PromptsConfigResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_extraction: str
+    summary: str
+    doc_triage: str
+    triage_char_limit: int
+    generation: str
+
+
+class PromptsConfigUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_extraction: str | None = None
+    summary: str | None = None
+    doc_triage: str | None = None
+    triage_char_limit: int | None = Field(default=None, gt=0)
+    generation: str = Field(min_length=1, pattern=r"^[0-9]+$")
+
+    @field_validator(*PROMPT_TEXT_FIELDS, mode="before")
+    @classmethod
+    def validate_prompt_text(cls, value: object) -> object:
+        return _validate_relevance_text(value)
+
+    @model_validator(mode="after")
+    def require_prompt_update(self):
+        if all(getattr(self, field) is None for field in PROMPT_UPDATE_FIELDS):
+            raise ValueError("at least one prompt field must be supplied")
+        return self
+
+
 class RelevanceConfigResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -171,6 +206,13 @@ class DocumentOut(BaseModel):
         return data
 
 
+class TenderTagOut(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    label: str
+
+
 class TenderOut(BaseModel):
     tender_id: str
     source_reference_id: str | None = None
@@ -192,6 +234,8 @@ class TenderOut(BaseModel):
     location: str | None = None
     description: str | None = None
     summary_headline: str | None = None
+    focus_areas: list[TenderTagOut] = Field(default_factory=list)
+    work_types: list[TenderTagOut] = Field(default_factory=list)
 
     contact_name: str | None = None
     contact_email: str | None = None
@@ -250,4 +294,3 @@ class ScraperHealthRecord(BaseModel):
     status: str = "Unknown"
     status_color: str = "default"
     message: str = ""
-

@@ -50,8 +50,7 @@ def test_a_genuine_txt_attachment_is_paired_with_its_own_content():
 
 
 def test_a_spreadsheet_is_paired_with_its_full_name_txt():
-    # document_scraper only writes <base>.txt for PDF/DOCX, so a spreadsheet's
-    # text lives in the scraper's <file name>.txt and used to be dropped.
+    # A spreadsheet's text lives in the scraper's <file name>.txt.
     attachments = [{"file_name": "Breakdown.xlsx", "storage_uri": "gs://b/Breakdown.xlsx"}]
     txt_documents = [{"file_name": "Breakdown.xlsx.txt", "extracted_text": "sheet text"}]
 
@@ -302,7 +301,6 @@ def pipeline(monkeypatch):
     monkeypatch.setenv("PIPELINE_WORKERS", "1")
     monkeypatch.setattr(manager, "_load_process_tender", lambda d: fake_process)
     monkeypatch.setattr(manager, "_load_determine_relevance", lambda: (lambda tender: tender))
-    monkeypatch.setattr(manager, "run_doc_scraper", lambda d: None)
     monkeypatch.setattr(manager.attachment_store, "upload_tender_attachments",
                         lambda path, **kw: [])
     monkeypatch.setattr(manager, "upsert_tender",
