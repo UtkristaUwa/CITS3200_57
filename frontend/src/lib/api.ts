@@ -378,6 +378,7 @@ export interface ScraperHealthRecord {
   website: string;
   url: string;
   last_run: string;
+  last_successful_run?: string | null;
   status: string;
   status_color: 'success' | 'error' | 'warning' | 'default';
   message: string;

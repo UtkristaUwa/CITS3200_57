@@ -82,6 +82,33 @@ def explain_code(code: int | None) -> tuple[str, str, str]:
   label, chip_color = STATUS_DISPLAY.get(code, ("Unknown", "default"))
   return desc, label, chip_color
 
+def _load_previous_health_records(
+    bucket_name: str = "tenderai-dev-documents",
+) -> dict[str, str | None]:
+  """Loads existing scraper_health.json from Cloud Storage into a lookup map:
+
+  {website_name_lowercase: last_successful_run_timestamp}.
+  """
+  try:
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob("scraper_health.json")
+    if not blob.exists():
+      return {}
+    content = blob.download_as_text()
+    records = json.loads(content)
+    if not isinstance(records, list):
+      return {}
+    result = {}
+    for r in records:
+      if isinstance(r, dict) and "website" in r:
+        site = str(r["website"]).strip().lower()
+        result[site] = r.get("last_successful_run")
+    return result
+  except Exception as e:
+    logger.warning(f"Could not load previous health state from GCS: {e}")
+    return {}
+
 def publish_health_status_to_gcs(
     health_records: list[dict], bucket_name: str = "tenderai-dev-documents"
 ):
@@ -368,7 +395,7 @@ def _kill_stray_browsers(proc_root="/proc", kill=os.kill):
     return killed
 
 
-def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
+def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso, prev_success=None):
     """
     Run one scraper into temp_dir.
 
@@ -398,6 +425,7 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
             "website": source_id.upper(),
             "url": PORTAL_URL_MAP.get(source_id, "N/A"),
             "last_run": now_iso,
+            "last_successful_run": prev_success,
             "status": "Error",
             "status_color": "error",
             "message": f"Unhandled exception: {e}",
@@ -423,10 +451,15 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
     elif code == common.TENDER_PARTIAL:
         logger.warning(f"Scraper '{source_id}' returned partial data (code {code})")
 
+    last_success = (
+        now_iso if (code == common.SITE_SUCCESS and label == "Success") else prev_success
+    )
+
     health_record = {
         "website": source_id.upper(),
         "url": PORTAL_URL_MAP.get(source_id, "N/A"),
         "last_run": now_iso,
+        "last_successful_run": last_success,
         "status": label,
         "status_color": chip_color,
         "message": explanation,
@@ -439,7 +472,7 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso):
     return manifest, failure, health_record, summary_row
 
 
-def _refresh_health(health_record, summary_row):
+def _refresh_health(health_record, summary_row, prev_success=None):
     """
     Re-word a scraper's health row once its tenders have been stored. The store
     stage can find problems the scrape could not see (a file over the size
@@ -450,7 +483,16 @@ def _refresh_health(health_record, summary_row):
     label, color, message = run_notes.describe(
         code, count, run_notes.snapshot(), explanation, label, color
     )
-    return {**health_record, "status": label, "status_color": color, "message": message}
+    last_success = health_record.get("last_successful_run")
+    if label != "Success" and prev_success is not None:
+        last_success = prev_success
+    return {
+        **health_record,
+        "status": label,
+        "status_color": color,
+        "message": message,
+        "last_successful_run": last_success,
+    }
 
 
 def _refresh_summary_row(health_record, summary_row):
@@ -481,10 +523,12 @@ def run_scrapers(temp_dir, limit, publish=True):
     health_records = []
     summary_rows = []
     now_iso = datetime.now(timezone.utc).isoformat()
+    previous_health = _load_previous_health_records() if publish else {}
 
     for source_id, scrape in SCRAPERS:
+        prev_success = previous_health.get(source_id.lower())
         part, failure, health_record, summary_row = _scrape_one(
-            source_id, scrape, temp_dir, limit, publish, now_iso
+            source_id, scrape, temp_dir, limit, publish, now_iso, prev_success=prev_success
         )
         manifest.update(part)
         if failure:
@@ -867,6 +911,7 @@ def main():
     summary_rows = []
     total_tenders = 0
     now_iso = datetime.now(timezone.utc).isoformat()
+    previous_health = _load_previous_health_records()
 
     # Spin up a temporary ephemeral directory in container memory
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -884,11 +929,12 @@ def main():
         # portal instead of every portal at once -- and the portals already
         # finished are in BigQuery if a later one dies.
         for source_id, scrape in SCRAPERS:
+            prev_success = previous_health.get(source_id.lower())
             # 1. Run the web scraper. It downloads the tender page text and
             # attachments into temp_dir.
             _stage(1, 3, f"SCRAPE {source_id}")
             scraped, failure, health_record, summary_row = _scrape_one(
-                source_id, scrape, temp_dir, SCRAPE_LIMIT_CLOUD, True, now_iso
+                source_id, scrape, temp_dir, SCRAPE_LIMIT_CLOUD, True, now_iso, prev_success=prev_success
             )
             _kill_stray_browsers()
             if failure:
@@ -920,7 +966,9 @@ def main():
                     failures.append(
                         (source_id, f"{errors} tender(s) hit an unexpected error while processing")
                     )
-                health_records[-1] = _refresh_health(health_records[-1], summary_rows[-1])
+                health_records[-1] = _refresh_health(
+                    health_records[-1], summary_rows[-1], prev_success=prev_success
+                )
                 summary_rows[-1] = _refresh_summary_row(health_records[-1], summary_rows[-1])
                 publish_health_status_to_gcs(
                     health_records, bucket_name="tenderai-dev-documents"

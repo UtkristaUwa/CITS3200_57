@@ -308,6 +308,7 @@ class ScraperHealthRecord(BaseModel):
     website: str
     url: str = ""
     last_run: str = ""
+    last_successful_run: str | None = None
     status: str = "Unknown"
     status_color: str = "default"
     message: str = ""
