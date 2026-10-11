@@ -236,6 +236,7 @@ export interface Tender {
   value_currency: string | null;
   value_notes: string | null;
   location: string | null;
+  location_states: string[];
   description: string | null;
   summary_headline: string | null;
   fit: number | null;

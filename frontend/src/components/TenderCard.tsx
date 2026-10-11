@@ -206,7 +206,15 @@ import {
       ),
       location: (placement) => (
         <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Location:</strong> {tender.location ?? 'Not specified'}
+          {/* The normalised states, which are what the filter matches on. The
+              verbatim location is a wall of regions on some tenders ("Brisbane,
+              Central West, Darling Downs, ..."), so it is only shown when no
+              states were resolved -- otherwise the card says nothing at all
+              for the ~15% that have none. */}
+          <strong>Location:</strong>{' '}
+          {tender.location_states?.length
+            ? tender.location_states.join(', ')
+            : tender.location ?? 'Not specified'}
         </Typography>
       ),
       status: (placement) => (
@@ -498,7 +506,7 @@ import {
                 borderRadius: 1,
               }}
             >
-              {JSON.stringify(tender)}
+              {JSON.stringify(tender, null, 2)}
             </Box>
           </Box>
         )}

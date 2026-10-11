@@ -5,7 +5,7 @@ import TopNav from '../components/TopNav';
 const NAV_ITEMS = [
   { label: 'User management', path: '/admin/users' },
   { label: 'System / ingestion health', path: '/admin/health' },
-  { label: 'Reference / config', path: '/admin/config' },
+  { label: 'Edit Config', path: '/admin/config' },
   { label: 'Display settings', path: '/admin/display' },
 ];
 
