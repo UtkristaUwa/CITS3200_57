@@ -129,6 +129,17 @@ export interface PromptsConfigUpdate {
   generation: string;
 }
 
+export interface ReprocessRunResponse {
+  execution: string;
+}
+
+export async function startReprocessRun(): Promise<ReprocessRunResponse> {
+  const { data } = await http.post<ReprocessRunResponse>(
+    `${API_BASE_URL}/admin/pipeline/reprocess`,
+  );
+  return data;
+}
+
 export async function getPromptsConfig(): Promise<PromptsConfigResponse> {
   const { data } = await http.get<PromptsConfigResponse>(`${API_BASE_URL}/admin/config/prompts`);
   return data;
@@ -209,6 +220,7 @@ export interface GetTendersParams {
   limit?: number;
   offset?: number;
   q?: string;
+  mode?: 'keyword' | 'semantic';
   status?: string;
   category?: string;
   location?: string;
@@ -235,6 +247,7 @@ export async function getTenders(
         limit: params.limit ?? 50,
         offset: params.offset ?? 0,
         q: params.q || undefined,
+        mode: params.mode || 'keyword',
         status: params.status || undefined,
         category: params.category || undefined,
         location: params.location || undefined,

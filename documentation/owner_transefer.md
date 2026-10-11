@@ -216,7 +216,15 @@ Firebase console → project **tenderai-dev** → **Authentication**.
 6. On the [Actions](https://github.com/UtkristaUwa/CITS3200_57/actions) tab, wait for **Deploy to Firebase Hosting on merge** to show a green tick (a few minutes). A red cross means the website was not updated.
 7. Test on the live site, [tenderai-dev-f0283.firebaseapp.com](https://tenderai-dev-f0283.firebaseapp.com), after a hard refresh (Ctrl+Shift+R). Not on the pull request's preview link: preview addresses are not approved for sign-in.
 
-> **Redeploying the API:** only needed if an `api/env.yaml` setting changes. `gcloud run deploy --env-vars-file env.yaml` replaces every setting on the service with the file's contents, so the file must also carry `RUNTIME_CONFIG_BUCKET` and `RUNTIME_CONFIG_OBJECT`. If it doesn't, the redeploy removes them and the **Reference / config** page stops loading.
+> **Redeploying the API:** merging a change under `api/` deploys it automatically, via the `deploy-api` Cloud Build trigger (`cloudbuild.api.yaml`). Watch it in [Cloud Build history](https://console.cloud.google.com/cloud-build/builds?project=tenderai-dev); a few minutes after the merge the change is live.
+>
+> If that trigger is ever removed, the API must be redeployed **by hand for every code change under `api/`, not only for settings changes** — otherwise the merged code never reaches users and looks like a front-end bug. To check what is actually deployed, open `https://tenderai-api-170228060686.australia-southeast1.run.app/openapi.json` and look for the route you expect; a `404` on a route that exists in `main` means the service is behind. The manual command is:
+>
+> ```bash
+> cd api && gcloud run deploy tenderai-api --source . --region australia-southeast1 --env-vars-file env.yaml
+> ```
+>
+> Either way, `--env-vars-file env.yaml` replaces every setting on the service with the file's contents, so the file must also carry `RUNTIME_CONFIG_BUCKET` and `RUNTIME_CONFIG_OBJECT`. If it doesn't, the deploy removes them and the **Reference / config** page stops loading.
 
 ### F4 — Test plan
 

@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     runtime_config_bucket: str = ""
     runtime_config_object: str = ""
 
+    # Cloud Run job the admin reprocess button starts. Defaults match the
+    # deployed job; override per environment if it is ever renamed.
+    pipeline_job_name: str = "tender-batch-job"
+    pipeline_job_region: str = "australia-southeast1"
+
     # Scraper health diagnostics storage
     scraper_health_bucket: str = "tenderai-dev-documents"
     scraper_health_object: str = "scraper_health.json"
