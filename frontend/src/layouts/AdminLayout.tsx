@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { label: 'User management', path: '/admin/users' },
   { label: 'System / ingestion health', path: '/admin/health' },
   { label: 'Reference / config', path: '/admin/config' },
+  { label: 'Display settings', path: '/admin/display' },
 ];
 
 export default function AdminLayout() {

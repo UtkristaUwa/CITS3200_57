@@ -8,6 +8,7 @@ import TenderFilterBar from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
 import { useAuth } from '../lib/AuthContext';
+import { useDisplaySettings } from '../lib/DisplaySettingsContext';
 
 function isTenderNew(
   tender: Tender,
@@ -33,6 +34,7 @@ export default function TendersPage() {
 
   const { favorites, toggleFavorite } = useFavorites();
   const { previousTenderVisit, firstTenderVisit, tenderVisitReady } = useAuth();
+  const { settings: displaySettings } = useDisplaySettings();
   const toggleExpand = (tenderId: string) =>
     setExpandedId((prev) => (prev === tenderId ? null : tenderId));
   
@@ -61,6 +63,7 @@ export default function TendersPage() {
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
+      include_irrelevant: displaySettings.show_irrelevant,
     }, controller.signal)
       .then((data) => {
         if (!cancelled) setTenders(data);
@@ -73,6 +76,7 @@ export default function TendersPage() {
           try {
             const fallbackData = await getTenders({
               limit: 50,
+              include_irrelevant: displaySettings.show_irrelevant,
               q: filterProps.debouncedSearchQuery || undefined,
               mode: 'keyword',
               status: filterProps.status || undefined,
@@ -109,8 +113,14 @@ export default function TendersPage() {
     filterProps.year,
     filterProps.minDate,
     filterProps.maxDate,
+    // The toggle changes the query the API runs, so flipping it has to refetch
+    // rather than just re-render what is already loaded.
+    displaySettings.show_irrelevant,
   ]);
 
+  // No fit filtering here: the API applies it in SQL from include_irrelevant,
+  // so every page comes back full. Filtering after paging is what left a
+  // 50-row page showing about five cards.
   const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );

@@ -70,6 +70,11 @@ def _get_tenders(**updates) -> list[TenderOut]:
         "closing_after": None,
         "year": None,
         "q": None,
+        # The route now reads the caller to decide whether to hide low-fit
+        # tenders. Default to an admin so existing cases see the unfiltered
+        # behaviour they were written against.
+        "include_irrelevant": True,
+        "user": {"uid": "admin-1", "isAdmin": True},
     }
     params.update(updates)
     return tenders.get_tenders(**params)
@@ -366,6 +371,9 @@ def test_get_tenders_route_serializes_public_tags_and_preserves_existing_fields(
         "year": "2026",
         "q": "evaluation",
         "mode": "keyword",
+        # authenticated_client signs in as a non-admin, so the low-fit filter
+        # is applied in SQL rather than left to the browser.
+        "min_fit": 40,
     }
 
     body = response.json()[0]
@@ -749,3 +757,50 @@ def test_keyword_query_syntax_operators_and_scoping():
     assert param_dict["kw_5"] == "electr%"
     assert rows[0]["tender_id"] == "sql-syntax"
 
+
+
+def test_non_admin_requests_are_filtered_by_fit(monkeypatch):
+    """Staff must not receive tenders below the fit threshold at all: filtering
+    in SQL also keeps every page full, which matters because only ~17% of
+    stored tenders clear the bar."""
+    captured = {}
+
+    def fake_list_tenders(client, **kwargs):
+        captured.update(kwargs)
+        return []
+
+    monkeypatch.setattr(tenders, "list_tenders", fake_list_tenders)
+    monkeypatch.setattr(tenders, "get_client", lambda: object())
+    monkeypatch.setattr(tenders.settings, "use_mock_data", False)
+
+    _get_tenders(user={"uid": "staff-1", "isAdmin": False})
+    assert captured["min_fit"] == tenders.settings.min_visible_fit
+
+    captured.clear()
+    _get_tenders(user={"uid": "admin-1", "isAdmin": True}, include_irrelevant=True)
+    assert captured["min_fit"] is None, "an admin opting in gets the unfiltered query"
+
+    captured.clear()
+    _get_tenders(user={"uid": "admin-1", "isAdmin": True}, include_irrelevant=False)
+    assert captured["min_fit"] == tenders.settings.min_visible_fit, (
+        "an admin with the toggle off must be filtered in SQL too, or a 50-row "
+        "page comes back with about five cards on it"
+    )
+
+    captured.clear()
+    _get_tenders(user={"uid": "staff-1", "isAdmin": False}, include_irrelevant=True)
+    assert captured["min_fit"] == tenders.settings.min_visible_fit, (
+        "the flag must never loosen the filter for a non-admin"
+    )
+
+
+def test_missing_admin_flag_is_treated_as_staff(monkeypatch):
+    """A profile with no isAdmin key must fail closed, not open."""
+    captured = {}
+    monkeypatch.setattr(tenders, "list_tenders",
+                        lambda client, **kwargs: (captured.update(kwargs), [])[1])
+    monkeypatch.setattr(tenders, "get_client", lambda: object())
+    monkeypatch.setattr(tenders.settings, "use_mock_data", False)
+
+    _get_tenders(user={"uid": "nobody"}, include_irrelevant=True)
+    assert captured["min_fit"] == tenders.settings.min_visible_fit

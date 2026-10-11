@@ -129,6 +129,24 @@ export interface PromptsConfigUpdate {
   generation: string;
 }
 
+export interface DisplaySettings {
+  show_json: boolean;
+  show_irrelevant: boolean;
+}
+
+export async function getDisplaySettings(): Promise<DisplaySettings> {
+  const { data } = await http.get<DisplaySettings>(`${API_BASE_URL}/admin/settings/display`);
+  return data;
+}
+
+export async function updateDisplaySettings(update: DisplaySettings): Promise<DisplaySettings> {
+  const { data } = await http.patch<DisplaySettings>(
+    `${API_BASE_URL}/admin/settings/display`,
+    update,
+  );
+  return data;
+}
+
 export interface ReprocessRunResponse {
   execution: string;
 }
@@ -201,6 +219,7 @@ export interface Tender {
   location: string | null;
   description: string | null;
   summary_headline: string | null;
+  fit: number | null;
   focus_areas?: TenderTag[] | null;
   work_types?: TenderTag[] | null;
   contact_name: string | null;
@@ -229,6 +248,7 @@ export interface GetTendersParams {
   max_value?: number;
   closing_after?: string;
   closing_before?: string;
+  include_irrelevant?: boolean;
 }
 
 export function isRequestCancelled(error: unknown): boolean {
@@ -254,6 +274,7 @@ export async function getTenders(
         year: params.year || undefined,
         min_value: params.min_value ?? undefined,
         max_value: params.max_value ?? undefined,
+        include_irrelevant: params.include_irrelevant || undefined,
         closing_after: params.closing_after || undefined,
         closing_before: params.closing_before || undefined,
       },
