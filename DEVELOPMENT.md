@@ -27,7 +27,7 @@ Runs at `http://localhost:5173`.
 Copy `frontend/.env.example` to `frontend/.env.local` (not committed):
 ```
 VITE_API_BASE_URL=http://localhost:8000
-VITE_ENTRA_TENANT_ID=<Directory (tenant) ID — see docs/SSO_SETUP.md>
+VITE_ENTRA_TENANT_ID=<Directory (tenant) ID — see documentation/SSO_SETUP.md>
 ```
 
 ### Sign-in locally
@@ -35,7 +35,7 @@ Two sign-in methods, both ending at a Firebase ID token that the API verifies:
 
 - **Microsoft (Entra ID SSO)** — the button on the login page. Needs the app
   registration and the Firebase provider config from
-  [docs/SSO_SETUP.md](docs/SSO_SETUP.md). `localhost` is already an authorized
+  [documentation/SSO_SETUP.md](documentation/SSO_SETUP.md). `localhost` is already an authorized
   domain in Firebase Auth.
 - **Email + password** — invite-only. An admin invites you from `/admin/users`,
   which emails a link to set your own password.
@@ -107,6 +107,6 @@ project touched).
   (`functions/src/index.ts`) — fine for testing, broken for a real invite.
 - The `get-tenders` Cloud Run service has no token check and was deployed with
   invoker IAM disabled. Only `tenderai-api` is covered by `api/app/auth.py`.
-- The Entra client secret expires — diarise the date from docs/SSO_SETUP.md.
+- The Entra client secret expires — diarise the date from documentation/SSO_SETUP.md.
 - `ai/` folder not yet scaffolded
 
