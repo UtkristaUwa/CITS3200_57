@@ -387,9 +387,6 @@ import {
                 </Box>
               )}
               {showExpandedStatus && renderConfigurableField('status', 'expanded')}
-              <Typography variant="body2">
-                <strong>Category:</strong> {tender.category ?? 'Not specified'}
-              </Typography>
             </Box>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>AI Summary</Typography>
