@@ -506,7 +506,7 @@ import {
                 borderRadius: 1,
               }}
             >
-              {JSON.stringify(tender)}
+              {JSON.stringify(tender, null, 2)}
             </Box>
           </Box>
         )}
