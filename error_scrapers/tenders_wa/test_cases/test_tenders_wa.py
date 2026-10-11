@@ -217,6 +217,47 @@ def test_the_advertised_documents_and_download_link_are_found():
     assert fields["download_url"] == DOWNLOAD_URL
 
 
+def test_a_fixture_page_with_no_extra_sections_has_none():
+    fields, _ = scraper.parse_detail(_detail(), DETAIL_URL)
+    assert fields["sections"] == {}  # no stray control text from Responses, no repeats of parsed fields
+
+
+def test_special_response_instructions_inside_responses_are_kept_without_the_submit_controls():
+    html = _detail().replace(
+        "You must be logged in to submit a response.",
+        "You must be logged in to submit a response.</td></tr><tr><td><strong>Special Response Instructions</strong><br>"
+        "Expressions of Interest can be emailed to someone@health.wa.gov.au")
+    fields, _ = scraper.parse_detail(html, DETAIL_URL)
+    text = fields["sections"]["Responses"]
+    assert "Special Response Instructions" in text and "someone@health.wa.gov.au" in text
+    assert "logged in" not in text and "Closes" not in text and "Click here to submit" not in text
+
+
+SITE_VISIT = (
+    '<table class="subtitle" style="width:100%"><tr><th class="h2">Site Visit</th></tr></table>'
+    '<div><p>A site visit will be held at Hakea Prison on 19 Oct, 2026 8:00 AM.</p>'
+    '<table><tr><td>Date</td><td>19 October 2026</td></tr><tr><td>Time</td><td>8:00am</td></tr>'
+    '<tr><td>Location</td><td>Hakea Prison<br>Nicholson Road Canning Vale WA</td></tr></table></div>'
+)
+
+
+def test_a_site_visit_section_is_kept_with_its_table_rows_on_one_line_each():
+    html = _detail().replace("<hr>", SITE_VISIT + "<hr>", 1)
+    fields, _ = scraper.parse_detail(html, DETAIL_URL)
+    text = fields["sections"]["Site Visit"]
+    assert "A site visit will be held at Hakea Prison" in text
+    assert "Date: 19 October 2026" in text and "Time: 8:00am" in text
+    assert "Location: Hakea Prison | Nicholson Road Canning Vale WA" in text or "Hakea Prison" in text
+    assert "Downloaded documents may require" not in text  # stops at the viewer-links footer
+
+
+def test_extra_sections_reach_the_page_text_file():
+    html = _detail().replace("<hr>", SITE_VISIT + "<hr>", 1)
+    fields, _ = scraper.parse_detail(html, DETAIL_URL)
+    text = scraper.format_detail_text(fields, DETAIL_URL)
+    assert "SITE VISIT:" in text and "Date: 19 October 2026" in text
+
+
 def test_site_structure_change_when_the_title_block_is_missing():
     fields, code = scraper.parse_detail(_structure_changed(), DETAIL_URL)
     assert code == common.SITE_STRUCTURE_CHANGE

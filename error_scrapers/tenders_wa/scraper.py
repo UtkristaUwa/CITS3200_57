@@ -219,6 +219,75 @@ def _documents(soup) -> list[str]:
     return names
 
 
+# Sections the parser already reads into their own fields.
+HANDLED_SECTIONS = {"contacts", "description", "specification documents"}
+# Lines on the page that are controls, not information.
+CONTROL_LINE = re.compile(r"submit (an electronic|a) response|must be logged in|^help icon$", re.I)
+
+
+def _is_section_start(element) -> bool:
+    if getattr(element, "name", None) is None:
+        return False
+    return (element.name == "hr" or element.get("id") == "Document Viewer Links"
+            or element.find(class_="h2") is not None or "h2" in (element.get("class") or []))
+
+
+def _section_lines(elements) -> list[str]:
+    """The readable lines of some page elements: table rows kept on one line,
+    and any HTML escaped inside a <textarea> unwrapped to text."""
+    lines = []
+    for element in elements:
+        copy = BeautifulSoup(str(element), "html.parser")
+        for tag in copy(["script", "style"]):
+            tag.decompose()
+        for box in copy.find_all("textarea"):
+            box.replace_with(BeautifulSoup(box.get_text(), "html.parser").get_text("\n", strip=True))
+        for row in copy.find_all("tr"):
+            if row.find("table"):
+                continue
+            cells = [_clean(c.get_text(" ", strip=True)) for c in row.find_all(["td", "th"], recursive=False)]
+            cells = [c for c in cells if c]
+            if len(cells) >= 2:
+                row.replace_with(copy.new_string(("%s: %s" % (cells[0], " | ".join(cells[1:]))) + "\n"))
+        lines += [_clean(line) for line in copy.get_text("\n", strip=True).split("\n")]
+    return [line for line in lines if line]
+
+
+def _other_sections(soup) -> dict:
+    """
+    Every titled section of the page that has no field of its own (Site Visit,
+    the Responses instructions...): {heading: text}. A section is a heading
+    (class h2) with the table holding it and whatever follows it up to the next
+    heading.
+    """
+    pcontent = soup.select_one("div.pcontent")
+    if pcontent is None:
+        return {}
+    containers = []
+    for heading in pcontent.select(".h2"):
+        table = heading.find_parent("table") or heading
+        if table not in containers:
+            containers.append(table)
+
+    sections = {}
+    for index, table in enumerate(containers):
+        if index == 0:  # the title block
+            continue
+        heading = _clean(table.select_one(".h2").get_text(" ", strip=True))
+        if not heading or heading.lower() in HANDLED_SECTIONS:
+            continue
+        elements = [table]
+        for sibling in table.find_next_siblings():
+            if _is_section_start(sibling):
+                break
+            elements.append(sibling)
+        lines = [line for line in _section_lines(elements)
+                 if line != heading and not line.startswith("Closes ") and not CONTROL_LINE.search(line)]
+        if lines:
+            sections[heading] = "\n".join(lines)
+    return sections
+
+
 def parse_detail(html: str, url: str = BASE_URL) -> tuple[dict, int]:
     """
     Pull a tender's own fields off its detail page.
@@ -259,6 +328,7 @@ def parse_detail(html: str, url: str = BASE_URL) -> tuple[dict, int]:
         "contacts": _contacts(soup),
         "description": _description(soup),
         "documents": _documents(soup),
+        "sections": _other_sections(soup),
         "download_url": urljoin(url, link["href"]) if link and link.get("href") else None,
     }
     for label, value in labelled.items():
@@ -276,7 +346,7 @@ def format_detail_text(fields: dict, url: str) -> str:
         "",
     ]
     for key, value in fields.items():
-        if key in ("description", "download_url", "title") or not value:
+        if key in ("description", "download_url", "title", "sections") or not value:
             continue
         if isinstance(value, list):
             lines.append(f"{key}:")
@@ -285,6 +355,8 @@ def format_detail_text(fields: dict, url: str) -> str:
             lines.append(f"{key}: {value}")
     if fields.get("description"):
         lines += ["", "DESCRIPTION:", "-" * 40, fields["description"]]
+    for heading, text in (fields.get("sections") or {}).items():
+        lines += ["", f"{heading.upper()}:", "-" * 40, text]
     lines += ["", "=" * 80, ""]
     return "\n".join(lines)
 
