@@ -1,0 +1,784 @@
+
+
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+	
+<html lang="en">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124171283-1"></script>
+	<script>
+	  	window.dataLayer = window.dataLayer || [];
+	  	function gtag(){
+	  		dataLayer.push(arguments);
+	  	}
+	  	gtag('js', new Date());
+	  	gtag('config', 'UA-124171283-1');
+	</script>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">     <meta charset="utf-8">
+
+	<!-- Graceful IE degradation from: https://www.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/ -->
+    <!--[if IE]>
+      <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--[if lt IE 9]>
+    <script src="https://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->	
+	
+	<META name="DC.COVERAGE" content="Western Australia">
+	<META name="DC.CREATOR" content="Department of Treasury and Finance">
+	<META name="DC.MODIFIED" content="2015-04-21">
+		
+	<META name="DC.DESCRIPTION" content="Tenders WA is a tenders bulletin board and is the central source of information on Western Australian public sector requests and awarded contracts.">
+	<META name="DC.IDENTIFIER" content="http://www.tenders.wa.gov.au/"> 	<META name="DC.LANGUAGE" content="EN">
+	<META name="WA.POSTCODE" content="6000">
+	<META name="DC.PUBLISHER" content="Department of Treasury and Finance">
+	<META name="DC.TITLE" content="Tenders WA">
+	<META name="DC.SUBJECT" content="Tenders WA; bidding; information; tender information; bulletin board; publications; procurement; contracts; Western Australian Government; contract information; tenders; bidding opportunities; Western Australia; procurement information; news and publications;"> 	<META NAME="ROBOTS" CONTENT="NOARCHIVE">
+	<META NAME="GOOGLEBOT" CONTENT="NOARCHIVE">
+	
+	<link href='//fonts.googleapis.com/css?family=Roboto:100,200,300,300italic,400,400italic,500,500italic' rel='stylesheet' type='text/css'>
+	
+	<link href="/watenders/res/fonts/heebo/heebo-v12-latin-regular.woff" as="font" type="font/woff" crossorigin>		
+	
+	<!-- Font Awesome icons font -->
+	<link href="/watenders/res/fonts/font-awesome-4.7.0/css/font-awesome.min.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<script>
+		const allowedUploadFileExtensions = "7z,asc,bmp,cpg,css,csv,dbf,doc,docm,docx,dot,dotx,drd,drd,dwg,gif,gmz,gz,heic,jpeg,jpg,kml,las,mov,mp3,mp4,mpg,mpp,msg,mts,obr,pdf,pgp,png,potx,ppsx,ppt,pptm,pptx,prj,pts,pub,rar,rtf,rvt,sbn,sbx,shp,txt,vsd,xls,xlsx,z,zip".split(',');
+
+		var nonce = "CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F";
+		var baseUrl = "/watenders"; 
+		var overLibConfigActions = ", WIDTH, 300, OFFSETX, 10, TEXTFONTCLASS, 'OVERLIB_ACTION', HAUTO, VAUTO, AUTOSTATUS, FGCOLOR, '', BGCOLOR, '', TEXTCOLOR, '#000000', BORDER, 1, SNAPX, 6, SNAPY, 6, TEXTFONT, 'Heebo', CAPCOLOR, '#000000', CAPTIONFONT, 'Heebo'";
+		var overLibConfigTip = ", OFFSETX, 10, TEXTFONTCLASS, 'OVERLIB_ACTION', HAUTO, VAUTO, AUTOSTATUS, FGCOLOR, '', BGCOLOR, '', TEXTCOLOR, '#000000', BORDER, 1, SNAPX, 6, SNAPY, 6, TEXTFONT, 'Heebo', CAPCOLOR, '#000000', CAPTIONFONT, 'Heebo'";
+		var overLibConfigActionsMenu = ", OFFSETX, 10, TEXTCOLOR, '#000000', TEXTFONTCLASS, 'OVERLIB_ACTION', LEFT, VAUTO, FGCOLOR, '',BGCOLOR, '', TEXTCOLOR, '#000000', BORDER, 1, OFFSETY, -7, STICKY";
+		var helpPopupMaxHeightPx = 160;
+	</script>
+
+	<title>Tenders WA | Download for Tender Documents</title>
+	
+	<link href="/watenders/res/img/favicon.ico" rel="icon" type="image/ico"> 
+	<link href="/watenders/res/css/modal.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/dropzone/custom.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/dropzone/dropzone.min.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/jquery-ui.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/popup/popup.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/anytime.5.1.0.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css"> 
+
+	<link href="/watenders/res/css/html5.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css"> 	<link href="/watenders/res/css/testCSS.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/newMain.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/inputRadio.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/tenders-ui.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+	<link href="/watenders/res/css/tenders-menubar.css?v=6.0.3_1_1_1_1" rel="stylesheet" type="text/css">
+
+	<script src="/watenders/res/javascript/jquery-3.7.1.min.js"></script>
+	<script src="/watenders/res/javascript/jquery-ui-1.14.1.min.js"></script>
+	<script src="/watenders/res/javascript/moment.2.29.4.min.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/jquery.menubar.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/jquery.cookie.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/jquery.tablesorter.min.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/popup/popup.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/dropzone/dropzone.min.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/browserdetect.js?v=6.0.3_1_1_1_1"></script> 
+	<script src="/watenders/res/javascript/styleswitcher.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/anytime.5.1.0.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/sortableTable/sortable.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/ckeditor4.22.1/ckeditor.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/HtmlSanitizer.min.js?v=6.0.3_1_1_1_1"></script>
+
+	<script src="/watenders/res/javascript/tenderswa_dialogs.js?v=6.0.3_1_1_1_1"></script> 
+	<script src="/watenders/res/javascript/browserValidate.js?v=6.0.3_1_1_1_1"></script> 
+	<script src="/watenders/res/javascript/tenderswa.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/utils.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/tenderswa_clock.js?v=6.0.3_1_1_1_1"></script>
+    <script src="/watenders/res/javascript/overlib.js?v=6.0.3_1_1_1_1"></script>
+	<script src="/watenders/res/javascript/overlibUtils.js?v=6.0.3_1_1_1_1"></script>
+
+	<script>		
+		function checkForFrame(){	
+			
+			if (self == top) {
+				//alert('i am top');
+				document.documentElement.style.display = 'block';
+			} else {
+				//alert('i wasnt top');
+				top.location = self.location;
+			}
+		}
+		
+        /**
+        * Sets the overlib tooltip for the supplied jQuery element.
+        * @param el jQuery element
+        * @param text tootip text
+        * @param width width of the tooltip; default 200px
+        */
+        function setTooltip(el, text, width) {
+            width =  width || 200;
+            el.attr("title", "");
+            el.mouseover(() => overlib(text, WIDTH, width , OFFSETX, 10, TEXTFONTCLASS, 'OVERLIB_ACTION', HAUTO, VAUTO, AUTOSTATUS, FGCOLOR, '', BGCOLOR, '', TEXTCOLOR, '#000000', BORDER, 1, SNAPX, 6, SNAPY, 6, TEXTFONT, 'Heebo', CAPCOLOR, '#000000', CAPTIONFONT, 'Heebo')); 
+            el.mouseout(() => nd()); 
+        }
+
+        // custom loading CKEDITOR config to prevenet caching
+        CKEDITOR.config.customConfig = "/watenders/res/ckeditor4.22.1/config.js?v=6.0.3_1_1_1_1";
+
+        financeName = "Department of Treasury and Finance";
+        procurementEmail = "procurementsystems@dtf.wa.gov.au";
+        procurementPhone = "+61 (08) 6551 2020";
+        procurementTeam = "Procurement Business Systems";
+    </script>
+	
+
+	<script>
+		jQuery(document).ready(function() {
+			initClocks("/watenders");
+		});
+	</script>
+	
+
+
+<script>
+	var ckHelp = "Miscellaneous/Description Tool Bar Help.docx";
+	var ckHelpUrl = "/watenders/library/download.action?path=Miscellaneous%2FDescription+Tool+Bar+Help.docx&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F";
+</script>
+<script src="/watenders/res/javascript/jscript.js?v=6.0.3_1_1_1_1"></script> 
+
+ 		<script src="/watenders/res/javascript/ga.js"></script>
+		
+</head>
+
+
+
+
+
+<body onLoad="doOnLoad()" onUnload="doOnUnload();" onResize="resizeContentFiller()"> 
+
+<script>
+	var sesionCreateTime = 1791722564179;
+</script>
+
+<script src="/watenders/res/javascript/userLogin.js?v=6.0.3_1_1_1_1"></script>
+<script src="/watenders/res/javascript/header.js?v=6.0.3_1_1_1_1"></script>
+<script src="/watenders/res/javascript/Mini/spin.min.js"></script>
+<script src="/watenders/res/javascript/page-load-spinner.js?v=6.0.3_1_1_1_1"></script>
+<script src="/watenders/res/javascript/copyTender.js?v=6.0.3_1_1_1_1"></script>
+
+<div id="dlg-no-cookie" style="display: none; background-color:  #f9e79f; text-align: center; font-size: 14px; padding: 10px;" title="Disabled Cookies">
+	<div>
+		This site uses cookies to create a secure and effective website for our customers.<br>
+		To use Tenders WA effectively please enable cookies on your browser.<br>
+		Further information on Tenders WA Conditions of Use can be found <a style="font-weight: 500; text-decoration: underline;" href="/watenders/about.vm">here</a>.
+	</div>
+</div>
+
+<span id="top"> </span> <div id="accessibilitycontainer" class="clearfix">
+    <ul id="skiplist">
+        <li><a id="skipmenu" href="javascript:$('#nav-menu').focus()">Skip to menu</a></li>
+		<li><a id="skipcontent" href="#hcontent">Skip to content</a></li>
+			<li><a id="skiplogin" href="javascript:userLogin.show();">Skip to login</a></li>
+		<li><a href='/watenders/tender/search/tender-search.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&amp;action=display-advanced-tender-search' title="Search for Tenders">Skip to tender search</a></li>
+		<li><a href='/watenders/contract/list.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&amp;action=contract-search&amp;from=search' title="Search for Contracts">Skip to contract search</a></li>
+		<li><a id="skipfooter" href="#footer">Skip to footer</a></li>
+    </ul>
+</div>
+
+<script>
+			spin();		
+</script>
+
+<div id="overDiv" style="position:absolute; z-index:1000;" ></div>
+
+
+<div id="nestedTruncatedOverDiv" style="left:-1000px; top: -1000px; display: none;">
+	Click on the <img src="/watenders/res/images/icons/help.png" alt="Help Icon" class="BORDERLESS" /> hyperlink for more... &nbsp;
+</div>
+
+<div id="primary-email-dlg">
+	<div class="hdr">
+		<p>Select your primary email address for the authentication token to be sent to.</p>
+	</div>
+	<table class="list nospace email-tbl">
+		<thead>
+			<tr>
+				<th>Primary</th>
+				<th>Email</th>
+			</tr>
+		</thead>
+		<tbody>
+					</tbody>
+	</table>
+</div>
+	
+
+<div id="login-dlg">
+	<div class="hdr">
+		<img src="/watenders/res/images/wabadge-text-white.png" alt="Government of Western Australia State Coat of Arms">
+		<div title="Close">
+		    <a href="javascript:void(0);" onclick="userLogin.closeDlg()" title="Close login dialog">
+		    	<i class="fa fa-times" aria-hidden="true"></i>
+		    </a>
+		</div>
+	</div>
+	<div class="cont-hdr">Login</div>
+	<form method="post" id="loginform" name="loginform" action="/watenders/login.action?action=login&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">
+		<input type="hidden" name="lfReferrer">
+		<input type="hidden" name="lfCurrentPage">
+		<input type="hidden" name="tenderDisplayId" value="">
+		<input type="hidden" name="submitResponse" value="">
+		<div class="cont">
+			<div class="cont-login">
+				<div class="cont-fld">
+					<label for="login-user">User Name</label><br>
+					<input type="text" id="login-user" name="username" placeholder="Your user name" maxlength="100">
+					<br>
+					<label for="login-pass" style="margin-top: 10px;">Password</label><br>
+					<input type="password" id="login-pass" name="password" placeholder="Your password" maxlength="50">
+				</div>
+				<div class="cont-foot" style="text-align: center;">
+					<div style="height: 50px;">
+						<div class="error-msg" aria-live="assertive"></div>
+						<!--
+						<input type="checkbox" value="true" id="login-remember" />
+						<label for="login-remember" style="position: relative; margin: -30px; vertical-align: sub;">Remember me on this device</label>
+						-->
+					</div>
+					<div class="pad">
+						<input type="submit" id="login-btn" value="Login" onclick="userLogin.login()" disabled>
+					</div>
+					<div class="pad">
+						Forgotten <a href="/watenders/retrievePassword.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">User ID</a> or <a href="/watenders/retrievePassword.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Password</a>?
+						<br>
+						New Business? <a href="/watenders/business/create.action?type=respondent&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Register now!</a>
+					</div>
+				</div>
+			</div>
+			<div class="cont-mfa">
+				<div class="cont-fld">
+					<div>
+						<p>Enter the token sent to your registered email address into the Token field below then press the Verify button.</p>
+
+<p>If you did not receive the email in your inbox, check your Junk or Spam folder.</p>
+
+<p>The token is valid for 10 minutes only.</p>
+
+<p>For assistance, contact Procurement Business Systems on &#43;61 8 6551 2020.</p>
+					</div>
+					<label for="login-user">Token</label><br>
+					<input type="text" id="mfa-token" name="mfaToken" placeholder="" maxlength="20">
+				</div>
+				<div class="cont-foot" style="text-align: center;">
+					<div style="height: 30px;">
+						<div class="error-msg" aria-live="assertive"></div>
+					</div>
+					<div class="pad">
+						<input type="button" id="mfa-btn" value="Verify" onclick="userLogin.confirmToken()">&nbsp;
+						<input type="button" id="mfa-resend-btn" value="Resend" onclick="userLogin.resendToken()">&nbsp;
+						<input type="button" id="mfa-cancel-btn" value="Cancel" onclick="userLogin.setLoginPage()">
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+
+<script src="/watenders/res/javascript/helpViewEdit.js?v=6.0.3_1_1_1_1"></script>
+<script>
+    var canEditHelp =  false; 
+</script>
+<style>
+    #dochelp td.label {
+        width: 0;
+    }
+    #dochelp .view, #dochelp .edit {
+        padding: 20px;
+    }
+</style>
+<div id="dochelp" style="display: none;">
+    <div class="view">
+    </div>
+
+    <div class="edit">
+        <table class="nospace">
+            <tr class="top">
+	<td class="label" >
+		Path 
+	</td>
+                <td class="path"></td>
+            </tr>
+            <tr class="top">
+	<td class="label" >
+		Title 
+	</td>
+                <td>
+                    <input type="text" class="title" size="60" maxlength="128">
+                </td>
+            </tr>
+            <tr class="top">
+	<td class="label" >
+		Summary 
+	</td>
+                <td>
+	<div id="ck-info-helpSummary">
+		<span class="NEWS_DATE middle">Press Alt + 0 while editing to view editor accessibility instructions</span>
+	</div>
+	<textarea name="helpSummary" id="helpSummary"></textarea>
+                </td>
+            </tr>
+            <tr class="top">
+	<td class="label" >
+		Content 
+	</td>
+                <td>
+	<div id="ck-info-helpContent">
+		<span class="NEWS_DATE middle">Press Alt + 0 while editing to view editor accessibility instructions</span>
+	</div>
+	<textarea name="helpContent" id="helpContent"></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="divCreateDraftDlg" style="display: none; padding: 20px 40px;">
+    <div style="border-bottom: 1px solid var(--color-underline); margin-bottom: 10px;">
+        <p>Enter the Request No. in the field below for the new request, then click Create</p>
+    </div>
+    <table style="margin-top: 10px;">
+        <tr>
+            <td>Request No. </td>
+            <td>
+                <input type="text" name="reqno" style="width: 200px;" maxlength="20">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="padding-top: 10px;">
+                <label><input type="checkbox" value="true" class="import"> Import specification documents from this tender</label>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="padding-top: 10px;">
+                <label><input type="checkbox" value="true" class="open"> Open tender in a new browser tab after saving</label>
+            </td>
+        </tr>
+    </table>
+</div>
+		
+<div id="page-container">
+
+
+	<div id="page-header">
+<table class="mytable">
+<tr>
+<td style="text-align: center">
+<div id="navbar">
+	<div class="user-bar">
+			<span id="login-logout"><a href="javascript: void(0);" onclick="userLogin.show()">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" data-component="AccountCircle" class="user-icon" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle><circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="2"></circle><path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M6 20a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5"></path></svg><span style="padding-left: 5px;">LOGIN</span></a>
+			</span>
+	</div>
+	<div id="logo-bar">
+		<table class="mytable">
+			<tr>
+				<td style="width: 320px;">	
+					<div class="badge">
+						<a href = "/watenders/index.action">
+							<img src="/watenders/res/images/wabadge-text-white.png" alt='Government of Western Australia State Coat of Arms.  Return to the TendersWA homepage.'>
+						</a>
+					</div>
+				</td>
+				<td style="text-align: right; vertical-align: bottom; padding: 0 100px; 10px 0;">
+					<div class="search-box">
+						<div style="margin-right: 10px;">
+							<a class="adv-search" href="/watenders/tender/search/tender-search.action?action=display-advanced-tender-search&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Advanced tender search</a><br>
+							<form method="post" id="bannerTenderSearchForm" action="/watenders/tender/search/tender-search.action?action=search-from-main-page&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&resetdt=1">
+								<div>
+									<input type="text" name="keywords" maxlength="50" placeholder="Search for a tender">
+									<a href="javascript:void(0);" title="Search Tenders" onclick="$(this).closest('form').submit()"><i class="fa fa-search fa-lg" aria-hidden="true"></i></a>
+								</div>
+							</form>
+						</div>
+						<div>
+							<a class="adv-search" href="/watenders/contract/list.action?action=contract-search&from=search&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Advanced contract search</a><br>
+							<form method="post" id="bannerContractSearchForm" action="/watenders/contract/list.action?action=search-from-main-page&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&resetdt=1">
+								<div>
+									<input type="text" name="keywords" maxlength="50" placeholder="Search for a contract">
+									<a href="javascript:void(0);" title="Search Contracts" onclick="$(this).closest('form').submit()"><i class="fa fa-search fa-lg" aria-hidden="true"></i></a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</td>
+				<td style="text-align: right; width: 170px;">
+					<div class="time-box">
+					    <div>
+							<span id=curtime>8:48:57 PM</span><br/>Sun 11 Oct 2026 <br/>Perth, Western Australia<br/>
+					    </div> 
+		<span id="serverTimeMs" style="display:none">1791722937929</span>
+						</div>
+				</td>
+			</tr>
+		</table>
+
+	<div id="sessionExpiring">
+		<div>Your session is about to expire.</div>
+		To continue working click the button below to renew the session.
+		<div id="sessionExpiringBtnDiv">
+			<input id="sessionExpiringBtn" type="button" value="Renew Session" onclick="refreshSession();hideExpiryBox();" />
+			<div id="sessionExpiringMsg"></div>
+        </div>
+    </div>
+				
+	</div>
+</div>
+</td>
+</tr>
+</table>
+	</div>	
+	
+	<table class="mytable">
+		<tr>
+			<td style="padding: 0;">
+				<div id="header-menu">
+<ul id="nav-menu" style="display: none;">
+    <li class="top">
+    	<div>
+    		<a href="/watenders/index.action"><i class="fa fa-home" aria-hidden="true"></i>Home</a>
+    	</div>
+    </li>
+    
+
+
+    
+    <li class="top">
+        <div>Tenders</div>
+        <ul>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-open-tender&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">
+	                Advertised
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-advanced-tender-notice&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Early Tender Advice
+    	            <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-closed-tender&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Closed and Under Evaluation
+    	            <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-awarded-tender&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Results
+    	            <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-new-tenders&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">New This Week
+    	            <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+    	            <a href="/watenders/tender/search/tender-search.action?action=advanced-tender-search-open-tender-dcsp&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Community Services (DCSP Policy)
+        	        <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+                	<a href="/watenders/tender/search/tender-search.action?action=display-advanced-tender-search&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Search
+                	<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+        </ul>
+    </li>
+    
+    <li class="top">
+        <div>Contracts</div>
+        <ul>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/contract/list.action?action=contract-view&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Recently Awarded
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/contract/list.action?action=contract-view-dcsp&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Community Services (DCSP Policy)
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+            	<span>
+	                <a href="/watenders/contract/list.action?action=contract-search&from=search&CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Search
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+        </ul>
+    </li>
+    
+    
+    <li class="top">
+    	<div>Help</div>
+        <ul>
+            <li class="link">
+	        	<span>
+	                <a href="/watenders/library/manage.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Help Guides
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+	        	<span>
+	                <a href="/watenders/faqs/browse.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">FAQ
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+	        	<span>
+	                <a id="linkRequestSupport" href="/watenders/help/requestSupport.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&path=">Request Support
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+            <li class="link">
+	        	<span>
+	                <a href="/watenders/contactus.action">Contact Us
+	                <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    	        </span>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<script>
+	var mb = $("#nav-menu");
+	mb.menubar();
+	mb.show();
+		
+	$(document).ready(() => {
+		// added to prevent the menu from firing beforeunload event twice
+		$("#nav-menu a").on("click", e => {
+			e.stopPropagation();
+		});
+
+		$(document).bind('keyup', function (event) {
+     		var keycode = (event.keyCode ? event.keyCode : event.which);
+     		// Ctrl+M
+     		if (keycode == 77 && event.ctrlKey) { 
+         		mb.focus();
+         	}
+        });
+
+        // add encoded path to the link linkRequestSupport
+        let link = $("#linkRequestSupport");
+        let href = link.attr("href") + encodeURIComponent(location.pathname + location.search);
+        link.attr("href", href);
+     });
+</script>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+		<div id="hcontent" class="hcontent">		<table role="presentation" class="nospace htmlPageTitle" style="width: 100%;">
+		<tr>	
+		  	<td style="width: 100%;">	
+				<h1 class="pageTitle">
+					<span class="pageTitle">Download for Tender Documents</span>
+					<a href="javascript:printDiv('hcontent');" style="float: right; padding-top: 2px;">	<span class="fa-stack fa" title="Print">
+	  <i class="fa fa-print fa-stack-2x fa-lg fa-inverse" ></i>	  
+	</span></a>
+				</h1>
+				<div style="padding: 0 25px;">
+				</div>			
+			</td>
+		</tr>
+	</table>
+			<div class="pcontent">							<!-- all other page content -->
+
+<script>
+	var selected = false;
+	var businessId = -1;
+	var tenderId = -1;
+	var method = "";
+
+	function submitForm(){
+		if ($("[name^=documentRequested]:checked").length == 0) {
+			alertDialog("Tender Documents", "<p>Please select at least one document for download.</p>");
+			return;
+		}
+		disableSpinnerAfterTimeout = true;
+
+			actionSubmit('downloadViaHTML');
+	}
+
+	function toggleSelectAll(checked) {
+		for (var i=0; i<document.form.elements.length; i++) {
+			var element = document.form.elements[i];
+			if (element && element.type == "checkbox") {
+				element.checked = checked;
+			} 	
+		}
+	}
+
+	$(document).ready(() => {
+        isSubmit = false;  // def in jscript
+		$(window).on("beforeunload", (e) => {
+			if (!isSubmit) {
+                sendBeacon("/watenders/rest/manage/tidyup?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&psfId=937907");
+			}
+		});
+	});
+</script>
+
+
+
+<table style="width: 100%; padding: 2px" class="list nospace" id="">
+	<thead>
+		<tr>
+		  <th class="SUMMARY firstTableColumn excludeColumnFromExport" style="display: none;"></th>
+  		  <td class="nowrap SUMMARY excludeColumnFromExport" style="display: none;"></th> 		  <th class="nowrap SUMMARY" style="width: 175px;">Request No. Status & Type</th>
+		  <th class="SUMMARY">Details</th>
+		  <th class="SUMMARY" style="width: 175px;">Date </th>
+		  <th class="SUMMARY center excludeColumnFromExport" style="width: 30px;">&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+
+  
+  
+
+<tr>
+  <td class="nowrap top firstTableColumn" style="display: none;">$agencyName</td>
+  <td class="nowrap top" style="display: none;">Education and Training Services</td>
+    <td  class="left  top">
+  	<b>EOIDFES250526</b><br>
+	<span style="color: #007700" class="tenderState">
+		<b>Current</b>
+	</span><br>
+	Expression of Interest
+  </td>
+  <td class="top">
+	
+		<a href="/watenders/tender/display/tender-details.action?id=70532&amp;action=display-tender-details" >
+			Executive Leadership and Management Program
+		</a>
+	
+			&nbsp;<a href="/watenders/tender/display/tender-details.action?id=70532&amp;action=display-tender-details"><img class="BORDERLESS" src="/watenders/res/images/icons/attachment.png" alt='specification documents' ></a>
+		
+	<span class="SUMMARY_SMALL">
+			
+				<br>Issued by Department of Fire and Emergency Services
+	  	<br>UNSPSC: 
+ Training planning, facilitation and delivery services (100%) 	</span>
+  </td>
+  <td class="nowrap top">
+	<span class="SMALL_GRAY"> closing</span><br><span class="SUMMARY_CLOSINGDATE"> 12 Oct, 2026 2:30 PM </span>
+  </td>
+  <td class="top">
+  </td>
+</tr>
+	</tbody>
+	</table>
+	<br />
+<p>	
+	<b>Download Documents.</b> To download the documents, click on the Download Documents button.  If you do not wish to download all the documents electronically just uncheck the box next to the file name(s) you do not want.
+</p>
+
+<form name="form" method="POST"	action="/watenders/tender/request/request-spec-docs.action?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F&tenderId=70532&method=downloadViaHTML"> 
+	<input type=hidden name="action" value="">
+	<input type=hidden name="psfId" value="937907">
+
+	<table role="presentation" class="nospace">
+		<tr>
+			<td style="vertical-align: top; align: left; padding-right: 20px">
+				<span >Documents:</span>
+			</td>
+			<td>
+	<input type="checkbox" id="selectAll" name="selectAll" value="true"  onclick="toggleSelectAll(this.checked);"/>
+					<label for="selectAll" class="LIST_TITLE">Select/De-Select All</label><br />
+	<input type="checkbox" id="documentRequested[0]" name="documentRequested[0]" value="true"  checked  />
+                            <label for="documentRequested[0]" class="LIST_TITLE">
+                                EOIDFES250526 - Executive Leadership and Management Program.DOCX
+                            </label><br />
+	<input type="checkbox" id="documentRequested[1]" name="documentRequested[1]" value="true"  checked  />
+                            <label for="documentRequested[1]" class="LIST_TITLE">
+                                EOIDFES250526 - Attachment 1 - Proposed Unit Direction and Key Topics.PDF
+                            </label><br />
+	<input type="checkbox" id="documentRequested[2]" name="documentRequested[2]" value="true"  checked  />
+                            <label for="documentRequested[2]" class="LIST_TITLE">
+                                EOIDFES250526 - Attachment 2 - Process Terms and Conditions.DOCX
+                            </label><br />
+	<input type="checkbox" id="documentRequested[3]" name="documentRequested[3]" value="true"  checked  />
+                            <label for="documentRequested[3]" class="LIST_TITLE">
+                                EOIDFES250526 - Addendum 1.DOCX
+                            </label><br />
+			</td>
+		</tr>
+
+		
+		<tr>
+			<td colspan="2">
+				<br>
+					<input id="requestButton" name="requestButton" type=button onclick="submitForm()" value="Download Documents" >
+			</td>
+		</tr>
+	</table>
+</form>
+
+		</div> 		<div id="content-filler"></div>
+		<div id="page-footer" style="display: none;">
+	   		<div class="links">
+				<a href="/watenders/terms-and-conditions.vm">Terms of Use</a>
+				<a href="https://wa.gov.au/" title="This will open a new window" target=_blank>wa.gov.au</a>
+		     	<a href="/watenders/copyright.vm">Copyright</a>	
+		     	<a href="/watenders/disclaimer.vm">Disclaimer</a>		
+		       	<a href="/watenders/privacy.vm">Privacy</a>
+		       	<a href="/watenders/siteMap.vm">Site Map</a>
+		       	<a href="https://www.wa.gov.au/organisation/department-of-finance/procurement" title="This will open a new window" target=_blank>Government Procurement</a>
+				<a href="/watenders/related-sites.vm?CSRFNONCE=8585B1A8455588DBF122E0631BE3A51F">Related Sites</a>
+			</div>
+		</div>
+	</div>	</div>	<script>
+	if (window.history.replaceState) {
+	  	window.history.replaceState(null, null, window.location.href);
+	}
+
+	$(document).ready(() => {
+		let resizeContentTimeout;
+		let delayedResizeContent = (mutations, observer) => {
+			clearTimeout(resizeContentTimeout);
+			resizeContentTimeout = setTimeout(function() {
+				resizeContentFiller();
+			}, 100);
+		}
+
+		// Listen for DOM changes, if no change occurs within 100ms, the footer is repositioned.
+		delayedResizeContent();
+		const mo = new MutationObserver(delayedResizeContent).observe(document.querySelector('#hcontent'), {subtree: true, childList: true});
+	});
+	
+</script>
+
+
+</body>
+</html>

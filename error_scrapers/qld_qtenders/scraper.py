@@ -699,10 +699,11 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
     reference = tender["vpReference"]
     url = tender["tenderPreviewUrl"]
 
-    detail, code, fetch_failed = {}, common.SITE_SUCCESS, False
+    detail, code, fetch_failed, page_html = {}, common.SITE_SUCCESS, False, ""
     try:
         response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
         response.raise_for_status()
+        page_html = response.text
         detail, code = parse_detail(response.text)
     except httpx.HTTPError as e:
         if isinstance(e, httpx.HTTPStatusError) and blocked_code(e) is not None:
@@ -714,6 +715,7 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
 
     folder = common.tender_dir(reference, output_dir)
     common.save_page_text(folder, reference, format_detail_text(tender, detail))
+    common.append_full_page_text(folder, reference, page_html)
     common.add_source_url(folder, reference, url)
 
     result = {

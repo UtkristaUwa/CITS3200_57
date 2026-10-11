@@ -12,6 +12,7 @@ that run against it).
 | Tenders ACT | `tenders_act/` | yes | need `ACT_USERNAME` / `ACT_PASSWORD` |
 | NT QTOL | `nt_qtol/` | no | need `NT_QTOL_COOKIE` (a signed-in session cookie; the account needs a business attached) |
 | QLD QTenders | `qld_qtenders/` | no | need a VendorPanel supplier login, which nothing here supports yet |
+| QBuild eTender | `eTender/` | no | none offered: documents are released only to a contractor who applies, so page text only |
 | Buying for Victoria | `vic_buyingfor/` | yes (Cloudflare) | need `VIC_USERNAME` / `VIC_PASSWORD` |
 
 ## The output standard

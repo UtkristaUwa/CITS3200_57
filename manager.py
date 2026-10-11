@@ -15,10 +15,14 @@ from concurrent.futures import ThreadPoolExecutor
 from error_scrapers.austender.scraper import run_scraper as run_austender
 from error_scrapers.nt_qtol.scraper import run_scraper as run_nt_qtol
 from error_scrapers.qld_qtenders.scraper import run_scraper as run_qld_qtenders
+from error_scrapers.eTender.scraper import run_scraper as run_qbuild_etender
 from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfor
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
+from error_scrapers.tenders_wa.scraper import run_scraper as run_tenders_wa
+from error_scrapers.sa_tenders.scraper import run_scraper as run_sa_tenders
+from error_scrapers.tenders_tas.scraper import run_scraper as run_tenders_tas
 from error_scrapers import common, reporting, run_notes
 from processing.runtime_config import prepare_runtime_config
 from email.message import EmailMessage
@@ -68,8 +72,13 @@ PORTAL_URL_MAP = {
     "austender": "https://www.tenders.gov.au",
     "nt_qtol": "https://tendersonline.nt.gov.au",
     "qld_qtenders": "https://qtenders.hpw.qld.gov.au",
+    "qbuild_etender": "https://etender.hpw.qld.gov.au",
     "vic_buyingfor": "https://www.tenders.vic.gov.au",
+    "tenders_wa": "https://www.tenders.wa.gov.au",
+    "sa_tenders": "https://www.tenders.sa.gov.au",
+    "tenders_tas": "https://www.tenders.tas.gov.au",
 }
+
 def explain_code(code: int | None) -> tuple[str, str, str]:
   """Translates an error status code into:
 
@@ -178,7 +187,12 @@ SCRAPERS = [
     ("austender", run_austender),
     ("nt_qtol", run_nt_qtol),
     ("qld_qtenders", run_qld_qtenders),
+    ("qbuild_etender", run_qbuild_etender),
     ("vic_buyingfor", run_vic_buyingfor),
+    ("tenders_wa", run_tenders_wa),
+    ("sa_tenders", run_sa_tenders),
+    ("tenders_tas", run_tenders_tas),
+
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
@@ -187,7 +201,7 @@ SCRAPERS = [
 # part-way). Their scraper gets the URLs already in BigQuery and carries on where the
 # last run stopped: buy.nsw from a saved listing page, VIC by doing the tenders not
 # stored yet first. Not applied to --local runs.
-CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor"}
+CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor", "sa_tenders"}
 
 UNKNOWN_SOURCE_ID = "unknown"
 

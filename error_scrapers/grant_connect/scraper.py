@@ -48,6 +48,8 @@ HEADERS = {
 # has changed -- this is the same class the structure-changed fixture
 # deliberately renames to "list-fields" to simulate that.
 FIELD_SELECTOR = "div.list-desc"
+#The content area of a details page (leaves out the site menu and login panel in the full page text)
+PAGE_CONTENT_SELECTOR = "main"
  
 # Detail page links, from the public listing.
 DETAIL_LINK_SELECTOR = "a[href*='/Go/Show?GoUuid=']"
@@ -345,6 +347,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     go_id = fields.get("go_id") or "UNKNOWN"
     folder = common.tender_dir(go_id, output_dir)
     common.save_page_text(folder, go_id, format_detail_text(fields))
+    common.append_full_page_text(folder, go_id, response.text, PAGE_CONTENT_SELECTOR)
     common.add_source_url(folder, go_id, url)
 
     documents_url = url.replace("/Go/Show", "/Go/ViewDocuments")

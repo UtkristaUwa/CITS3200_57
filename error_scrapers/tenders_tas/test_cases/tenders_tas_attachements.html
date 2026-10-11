@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Downloadables</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="google-site-verification" content="k1bLaC7oMi-pQ2YvORhGym2NBnNfm1X75IaPliuG3kw" />
+    <link rel="icon" href="/Images/Icon/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/Images/Icon/favicon.ico" type="image/x-icon" />
+
+    <script src="/Scripts/Constants.js"></script>
+
+    <script src="/Scripts/jquery-3.2.1.js" type="text/javascript"></script>
+
+
+
+    <link href="/Content/eTendersStyleSheet.css" rel="stylesheet" type="text/css" />
+
+    
+    <script src="/Scripts/jquery-migrate-3.0.0.js" type="text/javascript"></script>
+
+    <script>
+        /* the following fixes backward compatibility errors after updating to latest jquery libraries
+          */
+
+        // current version of ckeditor still requires this script as of May 2021
+
+        $.browser = {};
+        (function () {
+            $.browser.msie = false;
+            $.browser.version = 0;
+            if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+                $.browser.msie = true;
+                $.browser.version = RegExp.$1;
+            }
+        })();
+        if (!$.curCSS)
+            $.curCSS = $.css;
+        $.zIndex = $.fn.zIndex = function (opt) {
+            var def = { inc: 10, group: "*" };
+            $.extend(def, opt);
+            var zmax = 0;
+            $(def.group).each(function () {
+                var cur = parseInt($(this).css('z-index'));
+                zmax = cur > zmax ? cur : zmax;
+            });
+            if (!this.jquery)
+                return zmax;
+
+            return this.each(function () {
+                zmax += def.inc;
+                $(this).css("z-index", zmax);
+                //reset overlay otherwise it has a higher index than modals
+                $(".ui-widget-overlay").css("z-index", 1000);
+            });
+
+
+        }
+    </script>
+
+    <script src="/Scripts/jquery-ui.custom/jquery-ui-1.12.1.custom.min.js" type="text/javascript"></script>
+    
+
+    <script src="/Scripts/jquery.validate.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type="text/javascript"></script>
+    <script src="/Scripts/globalize.0.1.3/globalize.js" type="text/javascript"></script>
+    <script src="/Scripts/globalize.0.1.3/cultures/globalize.culture.en-AU.js" type="text/javascript"></script>
+    
+
+    
+    
+    <script src="/Scripts/validators/tasmanianRegionValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/endDateGreaterThanStartDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/endDateGreaterThanFirstNonBlankStartDateInListValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/startDateBeforeEndDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstItemNotSelectedInDropdownValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueAfterCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateMonthValueAfterCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueBeforeCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/itemNotSelectedWhenPropertySetValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/otherFieldTextboxRequiredValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredUnlessFieldsetFirstOfListAndAllBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldIsTrueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldIsFalseValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldNotBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsZeroAndSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldNotBlankExceptWhenSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldTrueAndTenderTypeMet.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsBlankAndSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsTrueAndSecondFieldIsBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsTrueExceptWhenSecondFieldIsTrue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldNotRequiredWhenOtherFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherEnumFieldHasCertainAttributes.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldNotRequiredWhenOtherEnumFieldHasCertainAttributes.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateMonthValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedContractDateValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiresATasmanianPrintMediaValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/contractEndDateRequiredConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldCannotHaveCertainValueValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniqueTenderIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniqueAwardedContractIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstValueGreaterThanSecondValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstValueLessThanSecondValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/contractContactDataRequiredConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/IntValueCannotBeNegativeWhenHavingAValueValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenNotAfterGoLiveValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldIsValidUrlValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/passwordValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldEqualsOtherFieldValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/ckeditorDescriptionRequiredValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedTenderContractEndDateFieldRequiredValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/openingTenderBoxRequiresAtLeastOneHigherUserValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedContractRequiresAtLeastOneSupplierValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedTenderRequiresAtLeastOneSupplierWhenNotNPTValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfAdditionalBusinessesSpecialConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfTasmanianBidsValidatorIfAnyTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfTasmanianBidsValidatorIfNoTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfBidsValidatorIfNoTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniquePrequalifierIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/prequalExpiryDateNotInThePastValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/businessUserMustAlreadyExistValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/emailMustMatchBusinessUserEmailValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/configurableTextItemsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/availableMultiUseListSupplierValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/abnFieldValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/userEditCurrentPasswordValidator.js" type="text/javascript"></script>
+
+    
+    <script src="/Scripts/multi-selectlist/jquery.selectlist.js" type="text/javascript"></script>
+    
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.filter.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.etenders.helpers.js" type="text/javascript"></script>
+
+    <script src="/Scripts/jquery.autoResizeTextAreaQ-0.1.js" type="text/javascript"></script>
+
+    <script src="/Scripts/timepicker/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="/Scripts/eTendering-v0.1.js" type="text/javascript"></script>
+    
+    <script src="/ckeditor/ckeditor.js" type="text/javascript"></script>
+    <script src="/ckeditor/adapters/jquery.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="/Scripts/formatCurrency/jquery.formatCurrency-1.4.0.min.js"></script>
+    
+    <script src="/Scripts/tooltip/jquery.tools-v1.2.7.min.js" type="text/javascript"></script>
+    <link rel="Stylesheet" href="/Content/AutoComplete/jquery.autocomplete.css" />
+    <link rel="Stylesheet" href="/Content/multi-selectlist/selectlist.css" />
+    <link href="/Content/jquery-multiselect/jquery.multiselect.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/jquery-multiselect/jquery.multiselect.filter.css" rel="stylesheet" type="text/css" />
+
+    <link href="/Content/themes/redmond/jquery-ui-1.12.1.custom.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="/Content/timepicker/css/timepicker.css" rel="stylesheet" type="text/css" />
+    
+    <link rel="Stylesheet" type="text/css" href="/Content/jqGrid/css/ui.jqgrid.css" title="coffee" media="screen" />
+
+    <script src="/Scripts/jqGrid/i18n/grid.locale-en.js" type="text/javascript"></script>
+    <script src="/Scripts/jqGrid/minified/jquery.jqGrid.min.js" type="text/javascript"></script>
+    
+    
+    <script src="/Scripts/jqGrid/minified/jquery.fmatter.js" type="text/javascript"></script>
+    <script src="/Scripts/jqGrid/minified/jqDnR.js" type="text/javascript"></script>
+    
+
+    <script src="/Scripts/jqGrid/grid.subgrid.js" type="text/javascript"></script>
+
+    
+    <link rel="Stylesheet" type="text/css" href="/Content/jquerydaterangepicker/css/daterangepicker.min.css" title="coffee" media="screen" />
+    
+    <script src="/Scripts/moment.min.js" type="text/javascript"></script>
+    <script src="/Scripts/jquerydaterangepicker/jquery.daterangepicker.min.js" type="text/javascript"></script>
+
+    
+    <script src="/Scripts/af/af_script-v01.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="/Scripts/captcha/captcha.js"></script>
+    
+    <script src="/Scripts/PleaseWait/LoadingSpinner_script-v01.js"></script>
+    <script src="/Scripts/modernizr-2.8.3.js"></script>
+    
+    <script src="/Scripts/jquery.blockUI.js"></script>
+    
+    <script src="/Scripts/jquery.cookie.js"></script>
+
+</head>
+<body >
+    <!-- container gives us a minimum width for the whole page, so nothing will fall off when minimising the page -->
+    <div id="mainContainer">
+        <!-- content -->
+        <div id="wrap_outer">
+            <!-- header -->
+            <div id="TG-header">
+                <div id="TG-logoRow">
+                    <div id="TG-title-wog">
+                        <a href="http://www.tas.gov.au/" id="TG-logo">
+                            <img src="/Images/Logo/etenders_logo_header.jpg" alt="Tasmania Government"
+                                 title="Visit Tasmania Online" width="92" height="75" />
+                        </a> <a href="#" title="Return to the homepage">
+                            <img src="/Images/Logo/etenders_logo_title.gif" alt="Department of Premier and Cabinet - return to homepage"
+                                 title="Return to homepage" width="400" height="83" />
+                        </a>
+                    </div>
+                    <div id="TG-spot">
+                        
+                        
+                    </div>
+                </div>
+                <div class="nn">
+                    <div id="TG-taglineRow">
+                        <a id="TG-tag-home" href="http://www.tas.gov.au/">www.tas.gov.au</a>
+                        <div id="TG-taglineRow-centre">
+                        </div>
+                        <div id="TG-taglineRow-right">
+<a href="/Account/LogOff" id="TG-tag-username">LOGOUT: jwilliamsintern</a>                                |
+<a href="/Account/EditMe"> Edit my details</a>                                |
+                            <a href="/Home/Index" id="TG-tag-homepage">Home</a>
+                            |
+                            <a href="/Home/ContactUs" id="TG-tag-contact">Contact</a>
+                            | <a href="http://www.tas.gov.au/stds/codi.htm">DISCLAIMER</a> 
+                        </div>
+                        <div class="clearfloat">
+                        </div>
+                    </div>
+                    <div id="menucontainer">
+<html lang="en">
+<head>
+    <title>A very basic Superfish menu example</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="/Content/Menu/css/superfish.css"
+          media="screen" />
+    <script type="text/javascript" src="/Scripts/Menu/js/hoverIntent.js"></script>
+    <script type="text/javascript" src="/Scripts/Menu/js/superfish.js"></script>
+    <script type="text/javascript">
+
+        // initialise plugins
+        jQuery(function () {
+            jQuery('ul.sf-menu').superfish();
+        });
+
+    </script>
+</head>
+<body>
+    <ul class="sf-menu">
+            <li>
+                <a href="#">Future Opportunities</a>
+                    <ul>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/IndicativeDate">Indicative Date</a>
+
+    </li>
+    <li>
+            <a href="https://www.purchasing.tas.gov.au/winning-government-business/finding-business/finding-opportunities/future-opportunities" rel="noopener noreferrer" target="_blank">Infrastructure Project Pipeline</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Region">Region</a>
+
+    </li>
+    <li>
+            <a href="#">Withdrawn Anticipated Tenders &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/IndicativeDate">Indicative Date</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Region">Region</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Open for Bids</a>
+                    <ul>
+    <li>
+            <a href="/OpenForBids/List/Public/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Public/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Public/ClosingDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="#">Withdrawn Tenders  &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/ClosingDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Closed for Bids</a>
+                    <ul>
+    <li>
+            <a href="/ClosedForBids/List/Closed/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/Closed/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/Closed/ClosedDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="#">Not Awarded Tenders  &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/ClosedDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Contracts Awarded</a>
+                    <ul>
+    <li>
+            <a href="/ContractAwarded/List/Agency">Agency ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/Category">UNSPSC Category ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/DateAwarded">Date Awarded ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/Recurrent">Recurrent ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/Search">Search Awarded Contracts</a>
+
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Tools &amp; Help</a>
+                    <ul>
+    <li>
+            <a href="/Home/ContactUs">Contact Us</a>
+
+    </li>
+    <li>
+            <a href="/Help/Public">Help Page</a>
+
+    </li>
+    <li>
+            <a href="/Account/Logon">eTenders Login</a>
+
+    </li>
+    <li>
+            <a href="/Account/Register">Register for eTendering</a>
+
+    </li>
+    <li>
+            <a href="/Search/Index">Search</a>
+
+    </li>
+    <li>
+            <a href="/Help/SystemOverview">System Overview</a>
+
+    </li>
+    <li>
+            <a href="/Help/Categories">UNSPSC Categories</a>
+
+    </li>
+                    </ul>
+            </li>
+    </ul>
+</body>
+</html>
+                    </div>
+                    <div id="searchcontainer">
+                        <input type="text" id="txtSearch" aria-labelledby="btnSearch" />
+                        <button class="button" type="button" id="btnSearch" value="Search">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- end header -->
+            <div id="spacer">
+            </div>
+            <div id="wrap_inner">
+                <!-- content -->
+                <div id="content" class="content">
+                    <div id="breadcrumb" class="breadcrumb">
+
+        <a href="/Home/Index" title="Home">Home</a>
+    
+    
+        &gt;
+    
+        <a href="/OpenForBids/Index" title="Open For Bids">Open For Bids</a>
+    
+    
+        &gt;
+    Downloadable Documents
+
+                        </div>
+                    <div id="tempMessage">
+                    </div>
+                    
+<form action="/OpenForBids/Downloadables/6649" method="post"><input name="__RequestVerificationToken" type="hidden" value="tBgyVoduhN7Ahu6tcAin8DNmpuDDNeGLt7s60hf2RZtqxEfOmDkZMLM_zGLgTsn0PnIftFVyicaedb2rHqspGbjdN_0-mPfIR0e9NlzZaGNxVie9HjzLLFrzOXbunXOcM55MXA2" /><input data-val="true" data-val-number="The field TenderId must be a number." data-val-required="The TenderId field is required." id="TenderId" name="TenderId" type="hidden" value="6649" />    <fieldset>
+        <legend>Downloadable Documents</legend>
+        <div class="itemrow firstitemrow">
+            <div class="editor-label">
+                <label for="Agency">Agency</label>
+            </div>
+            <div class="editor-field">
+                <div class="editor-field-list-box"><ul name="Agency"><li>Building Tasmania</li></ul></div>
+                <input id="Agency" name="Agency" type="hidden" value="Building Tasmania" />
+            </div>
+        </div>
+        <div class="itemrow">
+            <div class="editor-label">
+                <label for="Title">Title of Tender</label>
+            </div>
+            <div class="editor-field">
+                <strong><div class="editor-field-list-box"><ul name="Title"><li>Statewide Bridge Joint Rehabilitation Works 2026-27</li></ul></div></strong>
+                <input id="Title" name="Title" type="hidden" value="Statewide Bridge Joint Rehabilitation Works 2026-27" />
+            </div>
+        </div>
+        <div class="itemrow">
+            <div class="editor-label">
+                <label for="UniqueId">Unique Tender ID</label>
+            </div>
+            <div class="editor-field">
+                <div class="editor-field-list-box"><ul name="UniqueId"><li>4317</li></ul></div>
+                <input id="UniqueId" name="UniqueId" type="hidden" value="4317" />
+            </div>
+        </div>
+        <div class="firstitemrow">
+</div>
+    <div class="itemrow">
+        <div class="editor-label">
+<label for="FileViewModel_lblDownloadFile">Download Files</label>        </div>
+        <div class="editor-field">
+            
+
+<img src="/images/icon/filetypes/icon_pdf.gif" alt="image" />
+
+<a href="/Tender/DownloadFile/119017" target="_blank">RFT 4317 - Statewide Bridge Joint Rehabilitation Works 2026-27 - Volume 1.pdf</a><label for="FileViewModel_ListOfFileItems_0__lblFileSize">(1.04 MB)</label><input data-val="true" data-val-number="The field FileId must be a number." data-val-required="The FileId field is required." id="FileViewModel_ListOfFileItems_0__FileId" name="FileViewModel.ListOfFileItems[0].FileId" type="hidden" value="119017" />
+<input id="FileViewModel_ListOfFileItems_0__FileName" name="FileViewModel.ListOfFileItems[0].FileName" type="hidden" value="RFT 4317 - Statewide Bridge Joint Rehabilitation Works 2026-27 - Volume 1.pdf" />
+<input data-val="true" data-val-number="The field Size must be a number." data-val-required="The Size field is required." id="FileViewModel_ListOfFileItems_0__Size" name="FileViewModel.ListOfFileItems[0].Size" type="hidden" value="1092509" />
+
+
+            
+
+        </div>
+    </div>
+    <div class="itemrow">
+        <div class="editor-label">
+                 &nbsp; 
+        </div>
+        <div class="editor-field">
+            
+
+<img src="/images/icon/filetypes/icon_docx.gif" alt="image" />
+
+<a href="/Tender/DownloadFile/119018" target="_blank">RFT 4317 - Volume 1 - Attachment 3 - Tender Form.docx</a><label for="FileViewModel_ListOfFileItems_1__lblFileSize">(0.07 MB)</label><input data-val="true" data-val-number="The field FileId must be a number." data-val-required="The FileId field is required." id="FileViewModel_ListOfFileItems_1__FileId" name="FileViewModel.ListOfFileItems[1].FileId" type="hidden" value="119018" />
+<input id="FileViewModel_ListOfFileItems_1__FileName" name="FileViewModel.ListOfFileItems[1].FileName" type="hidden" value="RFT 4317 - Volume 1 - Attachment 3 - Tender Form.docx" />
+<input data-val="true" data-val-number="The field Size must be a number." data-val-required="The Size field is required." id="FileViewModel_ListOfFileItems_1__Size" name="FileViewModel.ListOfFileItems[1].Size" type="hidden" value="78334" />
+
+
+            
+
+        </div>
+    </div>
+    <div class="itemrow">
+        <div class="editor-label">
+                 &nbsp; 
+        </div>
+        <div class="editor-field">
+            
+
+<img src="/images/icon/filetypes/icon_xlsx.gif" alt="image" />
+
+<a href="/Tender/DownloadFile/119019" target="_blank">RFT 4317 - Volume 1 - Attachment 10 - Schedule of Rates.xlsx</a><label for="FileViewModel_ListOfFileItems_2__lblFileSize">(0.03 MB)</label><input data-val="true" data-val-number="The field FileId must be a number." data-val-required="The FileId field is required." id="FileViewModel_ListOfFileItems_2__FileId" name="FileViewModel.ListOfFileItems[2].FileId" type="hidden" value="119019" />
+<input id="FileViewModel_ListOfFileItems_2__FileName" name="FileViewModel.ListOfFileItems[2].FileName" type="hidden" value="RFT 4317 - Volume 1 - Attachment 10 - Schedule of Rates.xlsx" />
+<input data-val="true" data-val-number="The field Size must be a number." data-val-required="The Size field is required." id="FileViewModel_ListOfFileItems_2__Size" name="FileViewModel.ListOfFileItems[2].Size" type="hidden" value="32020" />
+
+
+            
+
+        </div>
+    </div>
+    <div class="itemrow">
+        <div class="editor-label">
+                 &nbsp; 
+        </div>
+        <div class="editor-field">
+            
+
+<img src="/images/icon/filetypes/icon_pdf.gif" alt="image" />
+
+<a href="/Tender/DownloadFile/119020" target="_blank">RFT 4317 - Statewide Bridge Joint Rehabilitation Works 2026-27 - Volume 2.pdf</a><label for="FileViewModel_ListOfFileItems_3__lblFileSize">(1.07 MB)</label><input data-val="true" data-val-number="The field FileId must be a number." data-val-required="The FileId field is required." id="FileViewModel_ListOfFileItems_3__FileId" name="FileViewModel.ListOfFileItems[3].FileId" type="hidden" value="119020" />
+<input id="FileViewModel_ListOfFileItems_3__FileName" name="FileViewModel.ListOfFileItems[3].FileName" type="hidden" value="RFT 4317 - Statewide Bridge Joint Rehabilitation Works 2026-27 - Volume 2.pdf" />
+<input data-val="true" data-val-number="The field Size must be a number." data-val-required="The Size field is required." id="FileViewModel_ListOfFileItems_3__Size" name="FileViewModel.ListOfFileItems[3].Size" type="hidden" value="1117994" />
+
+
+            
+
+        </div>
+    </div>
+
+<div class="itemrow firstitemrow">
+    <div class="editor-label">
+        <label for="FileViewModel_lblTotalSize">Total File Size</label>
+    </div>
+    <div class="editor-field">
+        <label for="FileViewModel_lblTotalSize">2.21 MB</label>
+    </div>
+</div>
+
+    </fieldset>
+    <div class="itemrow">
+        <div class="editor-label">
+            <input type="submit" name="CloseDownloadableTenderFiles" class="button" value="Close" />
+        </div>
+        <div class="editor-field">
+            Please note that when you download documents the details of the transaction will be recorded. 
+            This is done to ensure that you can be notified appropriately if there are any changes, or if additional 
+            information is made available, in relation to this notice. To ensure all interested suppliers are able to 
+            be notified we strongly recommend that you do not distribute the document(s) to others. 
+        </div>
+    </div>
+    <br />    
+    <div class="itemrow">
+        <div class="display-label">
+            &nbsp;
+        </div>
+        <div class="display-field">
+            If you have any questions about this page or our site feel free to <a href="/Home/ContactUs">contact us.</a>
+        </div>
+    </div>
+<div class="adobe_footer_instructions">
+
+
+    <div class="adobeImageBox">
+        <a href="http://www.adobe.com/products/reader.html" target="_blank">
+            <img src="/Images/Icon/AdobeReader.png"  alt"adobe" /></a>
+    </div>
+    <div class="adobeImageFooterText">
+        If you do not have Adobe Acrobat Reader please click on the Adobe symbol to go to
+        their website and download your free copy of the Reader.
+    </div>
+    <div class="adobeInstructionText">
+        <strong>Instructions for downloading ‘pdf’ files</strong> Press the RIGHT mouse
+        button on the relevant document and select “Save Target As ..” (Internet Explorer)
+        or “Save Link As ..” (Netscape) and specified your destination. The Department of
+        Treasury and Finance has provided these links for your convenience and does not
+        endorse any of these products. WinZip and Adobe Acrobat are trademarks and are licensed
+        products. Please refer to their websites for details on the use of these products:
+        <ul>
+            <li><a href="http://www.winzip.com" target="_blank">WinZip: www.winzip.com</a></li><li>
+                <a href="http://www.adobe.com" target="_blank">Adobe: www.adobe.com</a></li>
+        </ul>
+    </div>
+</div>
+</form>
+                </div>
+                <!-- end content -->
+            </div>
+            <!-- footer -->
+            <div id="TG-footer">
+                <hr />
+                <a href="http://www.tas.gov.au/" class="logo">
+                    <img src="/Images/Logo/etenders_logo_footer.jpg" alt="Tasmania Government"
+                         title="Visit Tasmania Online" width="92" height="75" />
+                </a>
+                <p>
+                    <a href="http://www.tas.gov.au/">Tasmania Online</a> | <a href="http://www.service.tas.gov.au/">
+                        Service Tasmania
+                    </a> | <a href="/Home/Index">Home</a> | <a href="/Home/ContactUs">Contact</a>
+                    | <a href="#top">Top</a>
+                </p>
+                <p>
+                    This page is an initiative of the <a href="http://www.treasury.tas.gov.au/">
+                        Department
+                        of Treasury and Finance.
+                    </a><br />
+                    Questions regarding content or presentation may be directed to <a href="mailto:tenders@treasury.tas.gov.au">
+                        tenders@treasury.tas.gov.au
+                    </a><br />
+                    Telephone 61-3-6145 5888, Facsimile 61-3-6233 3681
+                </p>
+                <p>
+                    The URL for this site is <span id="spanSiteLocationLink"></span>
+                    . This site is a part of <a href="http://www.purchasing.tas.gov.au">http://www.purchasing.tas.gov.au</a>.
+                    © Government of Tasmania
+                </p>
+                <p>
+                    You are directed to the <a href="http://www.tas.gov.au/stds/codi.htm">
+                        disclaimer and
+                        copyright notice
+                    </a>and a <a href="/PersonalInformationProtection">personal information protection statement</a>
+                    governing the information provided on this site.
+                </p>
+            </div>
+            <!-- end footer -->
+        </div>
+    </div>
+    <!-- loading spinner -->
+    <div id="loading-spinner-div-background">
+        <div id="loading-spinner-div" class="ui-corner-all">
+            <!-- <div class="loader-spinner" style="margin-left: 160px; margin-top: 20px"></div> -->
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+    <!-- Please wait modal -->
+    <div id="loading-div-background">
+        <div id="loading-div" class="ui-corner-all">
+            <div class="loader" style="margin-left: 180px; margin-top: 20px"></div>
+
+            <h2 style="color: black; font-weight: normal;">Please wait....</h2>
+            <hr>
+            <div id="loading-div-message">
+                Dont hit the back button or any other buttons, a response receipt will come back shortly!
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog-timeout-message" title="Session timed out">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+            Your session has timed out. To continue on this page, please refresh by pressing F5.
+        </p>
+    </div>
+
+</body>
+</html>

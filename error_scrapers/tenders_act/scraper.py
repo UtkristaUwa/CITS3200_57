@@ -79,6 +79,8 @@ DETAIL_LINK_SELECTOR = "a.tenderRowTitle"
 # real-looking page, the site's structure has changed -- this is the
 # exact id the structure-changed fixture renames to simulate that.
 FIELD_SECTION_SELECTOR = "#opportunityGeneral"
+#The content area of a details page (leaves out the site menu in the full page text)
+PAGE_CONTENT_SELECTOR = "main"
 
 LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
@@ -295,6 +297,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     tender_code = fields.get("tender_code") or "UNKNOWN"
     folder = common.tender_dir(tender_code, output_dir)
     common.save_page_text(folder, tender_code, _format_detail_text(fields))
+    common.append_full_page_text(folder, tender_code, response.text, PAGE_CONTENT_SELECTOR)
     common.add_source_url(folder, tender_code, url)
     download_url = find_download_docs_url(response.text)
 
@@ -488,6 +491,7 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                     tender_code = fields.get("tender_code") or "UNKNOWN"
                     folder = common.tender_dir(tender_code, output_dir)
                     common.save_page_text(folder, tender_code, _format_detail_text(fields))
+                    common.append_full_page_text(folder, tender_code, detail_html, PAGE_CONTENT_SELECTOR)
                     common.add_source_url(folder, tender_code, url)
                     download_url = find_download_docs_url(detail_html)
 

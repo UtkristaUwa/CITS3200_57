@@ -399,6 +399,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     reference = fields["reference"]
     folder = common.tender_dir(reference, output_dir)
     common.save_page_text(folder, reference, format_detail_text(fields, url))
+    common.append_full_page_text(folder, reference, response.text)
     common.add_source_url(folder, reference, url)
 
     tender = {
