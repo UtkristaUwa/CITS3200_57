@@ -56,7 +56,7 @@ const ModeSwitch = styled(Switch)(({ theme }) => ({
 function ModeToggle() {
   const { mode, toggleColorMode } = useColorMode();
   return (
-    <Box component="label" sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+    <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
       <ModeSwitch
         checked={mode === 'dark'}
         onChange={toggleColorMode}
@@ -71,24 +71,36 @@ function ModeToggle() {
 export default function TopNav() {
   const { user, isAdmin } = useAuth();
   const location = useLocation();
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [navigationMenuAnchor, setNavigationMenuAnchor] = useState<null | HTMLElement>(null);
+  const [settingsMenuAnchor, setSettingsMenuAnchor] = useState<null | HTMLElement>(null);
   const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
 
   useLayoutEffect(() => {
-    setMenuAnchor(null);
+    setNavigationMenuAnchor(null);
+    setSettingsMenuAnchor(null);
     setViewSettingsOpen(false);
-  }, [user?.uid]);
+  }, [location.pathname, user?.uid]);
 
-  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setMenuAnchor(event.currentTarget);
+  const handleNavigationMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setSettingsMenuAnchor(null);
+    setNavigationMenuAnchor(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setMenuAnchor(null);
+  const handleNavigationMenuClose = () => {
+    setNavigationMenuAnchor(null);
+  };
+
+  const handleSettingsMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setNavigationMenuAnchor(null);
+    setSettingsMenuAnchor(event.currentTarget);
+  };
+
+  const handleSettingsMenuClose = () => {
+    setSettingsMenuAnchor(null);
   };
 
   const handleViewSettingsOpen = () => {
-    handleMenuClose();
+    handleSettingsMenuClose();
     setViewSettingsOpen(true);
   };
 
@@ -97,7 +109,7 @@ export default function TopNav() {
   };
 
   const handleLogout = () => {
-    handleMenuClose();
+    handleSettingsMenuClose();
     void signOut(auth);
   };
 
@@ -119,7 +131,6 @@ export default function TopNav() {
         >
           TenderAI
         </Typography>
-        <ModeToggle />
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1, alignItems: 'center' }}>
           <Button
             color={location.pathname === '/' ? 'primary' : 'inherit'}
@@ -168,51 +179,39 @@ export default function TopNav() {
               Admin
             </Button>
           )}
-          {user && (
-            <Tooltip title="Tender card view settings">
-              <Button
-                color="inherit"
-                aria-label="Open tender card view settings"
-                onClick={handleViewSettingsOpen}
-                startIcon={<SettingsOutlinedIcon />}
-                sx={{
-                  minWidth: { sm: 44, md: 'auto' },
-                  minHeight: 44,
-                  px: { sm: 1.25, md: 2 },
-                  whiteSpace: 'nowrap',
-                  '& .MuiButton-startIcon': {
-                    margin: { sm: 0, md: '0 8px 0 -4px' },
-                  },
-                }}
-              >
-                <Box component="span" sx={{ display: { sm: 'none', md: 'inline' } }}>
-                  View Settings
-                </Box>
-              </Button>
-            </Tooltip>
-          )}
-          <Button color="inherit" onClick={() => void signOut(auth)}>
-            Logout
-          </Button>
         </Box>
 
         <IconButton
           color="inherit"
           aria-label="Open navigation menu"
-          aria-controls={menuAnchor ? 'mobile-navigation-menu' : undefined}
+          aria-controls={navigationMenuAnchor ? 'mobile-navigation-menu' : undefined}
           aria-haspopup="true"
-          aria-expanded={menuAnchor ? 'true' : undefined}
-          onClick={handleMenuOpen}
+          aria-expanded={navigationMenuAnchor ? 'true' : undefined}
+          onClick={handleNavigationMenuOpen}
           sx={{ display: { xs: 'inline-flex', sm: 'none' }, minWidth: 48, minHeight: 48 }}
         >
           <MenuIcon />
         </IconButton>
 
+        <Tooltip title="Settings">
+          <IconButton
+            color="inherit"
+            aria-label="Open settings menu"
+            aria-controls={settingsMenuAnchor ? 'settings-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={settingsMenuAnchor ? 'true' : undefined}
+            onClick={handleSettingsMenuOpen}
+            sx={{ minWidth: { xs: 48, sm: 44 }, minHeight: { xs: 48, sm: 44 } }}
+          >
+            <SettingsOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+
         <Menu
           id="mobile-navigation-menu"
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleMenuClose}
+          anchorEl={navigationMenuAnchor}
+          open={Boolean(navigationMenuAnchor)}
+          onClose={handleNavigationMenuClose}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           slotProps={{ paper: { sx: { minWidth: 180 } } }}
@@ -221,7 +220,7 @@ export default function TopNav() {
             component={RouterLink}
             to="/"
             selected={location.pathname === '/'}
-            onClick={handleMenuClose}
+            onClick={handleNavigationMenuClose}
           >
             Home
           </MenuItem>
@@ -229,7 +228,7 @@ export default function TopNav() {
             component={RouterLink}
             to="/favorites"
             selected={location.pathname === '/favorites'}
-            onClick={handleMenuClose}
+            onClick={handleNavigationMenuClose}
           >
             Favorites
           </MenuItem>
@@ -238,14 +237,32 @@ export default function TopNav() {
               component={RouterLink}
               to="/admin"
               selected={location.pathname.startsWith('/admin')}
-              onClick={handleMenuClose}
+              onClick={handleNavigationMenuClose}
             >
               Admin
             </MenuItem>
           )}
+        </Menu>
+
+        <Menu
+          id="settings-menu"
+          anchorEl={settingsMenuAnchor}
+          open={Boolean(settingsMenuAnchor)}
+          onClose={handleSettingsMenuClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{ paper: { sx: { minWidth: 220 } } }}
+        >
           {user && (
-            <MenuItem onClick={handleViewSettingsOpen}>View settings</MenuItem>
+            <MenuItem onClick={handleViewSettingsOpen}>View Settings</MenuItem>
           )}
+          <MenuItem
+            component="label"
+            sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}
+          >
+            <Typography variant="body2">Dark Mode</Typography>
+            <ModeToggle />
+          </MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
         </Toolbar>
