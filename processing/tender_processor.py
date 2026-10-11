@@ -195,6 +195,7 @@ TRIAGE_TEMPERATURE: float = 0.1
 SUMMARY_TEMPERATURE: float = 0.2
 EXTRACTION_TEMPERATURE: float = 0.1
 TRIAGE_CHAR_LIMIT: int = 6000
+MAX_ATTACHMENTS: int = 200
 
 TAG_TAXONOMY: list[str] = []
 DOC_TRIAGE_SYSTEM_INSTRUCTION: str = ""
@@ -247,6 +248,7 @@ def load_config(config_path: Optional[str] = None):
     global _CONFIG_PATH, _LAST_CONFIG_MTIME
     global TRIAGE_MODEL, EXTRACTION_MODEL, MODEL
     global TRIAGE_TEMPERATURE, SUMMARY_TEMPERATURE, EXTRACTION_TEMPERATURE, TRIAGE_CHAR_LIMIT
+    global MAX_ATTACHMENTS
     global TAG_TAXONOMY
     global DOC_TRIAGE_SYSTEM_INSTRUCTION, SUMMARY_SYSTEM_INSTRUCTION, FIELD_EXTRACTION_SYSTEM_INSTRUCTION
     global PROMPT_TEMPLATES
@@ -275,6 +277,7 @@ def load_config(config_path: Optional[str] = None):
         SUMMARY_TEMPERATURE = cfg.getfloat("models", "summary_temperature", fallback=SUMMARY_TEMPERATURE)
         EXTRACTION_TEMPERATURE = cfg.getfloat("models", "extraction_temperature", fallback=EXTRACTION_TEMPERATURE)
         TRIAGE_CHAR_LIMIT = cfg.getint("models", "triage_char_limit", fallback=TRIAGE_CHAR_LIMIT)
+        MAX_ATTACHMENTS = cfg.getint("models", "max_attachments", fallback=MAX_ATTACHMENTS)
 
     # 2. Taxonomies / Categorisation
     if cfg.has_section("taxonomies"):
@@ -442,6 +445,18 @@ def _gather_attachment_documents(documents_dir: str) -> list[dict]:
         if not text.strip():
             return []
         return [{"file_name": os.path.basename(fallback_path), "raw_text": text}]
+
+    # Triage costs one Gemini call plus half a second of pacing per document, so
+    # a pack with hundreds of attachments spends hours before any summarising
+    # starts (one real tender had 1,248). Past the cap the extras are dropped
+    # rather than triaged; files are taken in the scraper's order.
+    if MAX_ATTACHMENTS and len(doc_paths) > MAX_ATTACHMENTS:
+        print(
+            f"  [{len(doc_paths)} attachments exceeds max_attachments="
+            f"{MAX_ATTACHMENTS}; triaging the first {MAX_ATTACHMENTS}, "
+            f"dropping {len(doc_paths) - MAX_ATTACHMENTS}]"
+        )
+        doc_paths = doc_paths[:MAX_ATTACHMENTS]
 
     # If there is only one document (e.g. the scraped tender landing page), it is inherently relevant
     if len(doc_paths) == 1:
