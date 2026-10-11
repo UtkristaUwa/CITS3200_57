@@ -517,13 +517,36 @@ def collect_all_listing_entries(session, limit: int = 0) -> list[dict]:
     return entries
 
 
+def order_for_resume(entries: list[dict], known_urls) -> tuple[list[dict], int]:
+    """
+    Put the tenders we do not hold yet first, then the ones we already have.
+
+    Cloudflare can stop a run part-way through. Doing the new tenders first means
+    each night's progress is kept (they are stored, so they count as known next
+    night) and the next run picks up what is left. The tenders we already hold
+    follow, so they are still refreshed whenever the run gets that far.
+
+    Returns (ordered entries, how many are new).
+    """
+    known_urls = known_urls or frozenset()
+    new = [e for e in entries if e["url"] not in known_urls]
+    old = [e for e in entries if e["url"] in known_urls]
+    return new + old, len(new)
+
+
 def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
-                 headless: bool = True) -> tuple[int, list[dict]]:
+                 headless: bool = True, known_urls=None,
+                 resume: bool = False) -> tuple[int, list[dict]]:
     """
     Scrape every open Victorian tender. `limit` of 0 means every tender found.
 
     Returns (site_code, tenders). A failed login with credentials set is
     SITE_LOGIN_FAILED, but the page text is still scraped.
+
+    With resume=True a Cloudflare block after at least one tender was scraped
+    is TENDER_PARTIAL, not a failure: what was scraped is kept and the next run
+    carries on with the tenders not stored yet. A block before anything was
+    scraped is still SITE_BOT_BLOCKED.
     """
     username, password = credentials()
     # Say plainly whether the secrets reached this process. Values are never logged.
@@ -547,6 +570,10 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
 
             entries = collect_all_listing_entries(session, limit)
             log.info("listing: %d tender(s) found", len(entries))
+            if resume:
+                entries, new_count = order_for_resume(entries, known_urls)
+                log.info("resume: %d new tender(s) first, then %d already stored",
+                         new_count, len(entries) - new_count)
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
             all_codes = []
@@ -583,6 +610,10 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         return common.site_code_from(tender_codes), tenders
 
     except BotBlockedError:
+        if resume and tenders:
+            log.warning("Cloudflare stopped the run after %d tender(s) -- kept; the next run "
+                        "carries on with the tenders not stored yet", len(tenders))
+            return common.TENDER_PARTIAL, tenders
         log.error("Cloudflare challenge did not clear -- stopping the run")
         return common.SITE_BOT_BLOCKED, tenders
     except common.StructureChangedError as exc:
@@ -595,7 +626,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
 
 def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
                          headless: bool = True,
-                         attempts: int = BROWSER_ATTEMPTS) -> tuple[int, list[dict]]:
+                         attempts: int = BROWSER_ATTEMPTS,
+                         known_urls=None, resume: bool = False) -> tuple[int, list[dict]]:
     """
     Retry, each time with a brand-new browser, only when nothing was scraped
     and the code is in RETRYABLE_CODES: the browser would not start or
@@ -606,7 +638,7 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
     code, tenders = common.SITE_TOTAL_FAILURE, []
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
-        code, tenders = _scrape_site(limit, output_dir, headless)
+        code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume)
         if tenders or code not in RETRYABLE_CODES:
             return code, tenders
         if attempt < attempts:
@@ -618,12 +650,14 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
 
 @reporting.reported(SOURCE_ID.upper())
 def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
-                headless: bool = True) -> common.ScrapeResult:
+                headless: bool = True, known_urls=None,
+                resume: bool = False) -> common.ScrapeResult:
     """
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_with_retries(limit, output_dir, headless)
+    code, tenders = _scrape_with_retries(limit, output_dir, headless,
+                                          known_urls=known_urls, resume=resume)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

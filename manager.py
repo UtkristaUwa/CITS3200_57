@@ -155,10 +155,11 @@ SCRAPERS = [
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
 # stray folder should not end up filed under the wrong portal.
-# Sources that can't be read in one run (buy.nsw's WAF stops us after a few requests).
-# Their scraper gets the URLs already in BigQuery and resumes from a saved listing page.
-# Not applied to --local runs.
-CRAWL_RESUME_SOURCES = {"buynsw"}
+# Sources that can't be read in one run (buy.nsw's WAF and VIC's Cloudflare stop us
+# part-way). Their scraper gets the URLs already in BigQuery and carries on where the
+# last run stopped: buy.nsw from a saved listing page, VIC by doing the tenders not
+# stored yet first. Not applied to --local runs.
+CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor"}
 
 UNKNOWN_SOURCE_ID = "unknown"
 
