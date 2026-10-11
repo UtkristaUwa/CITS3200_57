@@ -280,6 +280,48 @@ def test_scrape_one_turns_an_exception_into_a_failure(tmp_path):
     assert row[1] is None
 
 
+def test_scrape_one_updates_last_successful_run_on_success(tmp_path):
+    def scrape(limit, output_dir):
+        return common.ScrapeResult(common.SITE_SUCCESS, "portal", 1)
+
+    _manifest, _failure, health, _row = manager._scrape_one(
+        "portal", scrape, str(tmp_path), 0, False, "2026-10-11T12:00:00+00:00", prev_success="2026-10-09T10:00:00+00:00"
+    )
+    assert health["last_successful_run"] == "2026-10-11T12:00:00+00:00"
+
+
+def test_scrape_one_preserves_previous_success_on_failure(tmp_path):
+    def scrape(limit, output_dir):
+        return common.ScrapeResult(common.SITE_BOT_BLOCKED, "portal", 0)
+
+    _manifest, _failure, health, _row = manager._scrape_one(
+        "portal", scrape, str(tmp_path), 0, False, "2026-10-11T12:00:00+00:00", prev_success="2026-10-09T10:00:00+00:00"
+    )
+    assert health["last_run"] == "2026-10-11T12:00:00+00:00"
+    assert health["last_successful_run"] == "2026-10-09T10:00:00+00:00"
+
+
+def test_scrape_one_preserves_previous_success_on_exception(tmp_path):
+    def scrape(limit, output_dir):
+        raise RuntimeError("network down")
+
+    _manifest, _failure, health, _row = manager._scrape_one(
+        "portal", scrape, str(tmp_path), 0, False, "2026-10-11T12:00:00+00:00", prev_success="2026-10-09T10:00:00+00:00"
+    )
+    assert health["last_run"] == "2026-10-11T12:00:00+00:00"
+    assert health["last_successful_run"] == "2026-10-09T10:00:00+00:00"
+
+
+def test_scrape_one_sets_none_when_no_prior_success_exists(tmp_path):
+    def scrape(limit, output_dir):
+        return common.ScrapeResult(common.SITE_BOT_BLOCKED, "portal", 0)
+
+    _manifest, _failure, health, _row = manager._scrape_one(
+        "portal", scrape, str(tmp_path), 0, False, "2026-10-11T12:00:00+00:00", prev_success=None
+    )
+    assert health["last_successful_run"] is None
+
+
 # ---------------------------------------------------------------------------
 # The cloud pipeline runs one portal at a time
 # ---------------------------------------------------------------------------
