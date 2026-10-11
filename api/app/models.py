@@ -87,6 +87,16 @@ def _validate_relevance_text(value: object) -> object:
     return value
 
 
+class DisplaySettings(BaseModel):
+    """Shared admin view toggles. Presentation only -- what a non-admin can see
+    is enforced server-side by min_visible_fit, not by these."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    show_json: bool = False
+    show_irrelevant: bool = False
+
+
 class ReprocessRunResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -240,6 +250,7 @@ class TenderOut(BaseModel):
     location: str | None = None
     description: str | None = None
     summary_headline: str | None = None
+    fit: int | None = None
     focus_areas: list[TenderTagOut] = Field(default_factory=list)
     work_types: list[TenderTagOut] = Field(default_factory=list)
 

@@ -4,7 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth import current_user
 
 from app.config import settings
-from app.routers import admin_config, admin_pipeline, auth as auth_router, health, tenders
+from app.routers import (
+    admin_config,
+    admin_display,
+    admin_pipeline,
+    auth as auth_router,
+    health,
+    tenders,
+)
 
 app = FastAPI(title="TenderAI API")
 
@@ -25,3 +32,4 @@ app.include_router(auth_router.router)
 app.include_router(tenders.router, dependencies=[Depends(current_user)])
 app.include_router(admin_config.router)
 app.include_router(admin_pipeline.router)
+app.include_router(admin_display.router)

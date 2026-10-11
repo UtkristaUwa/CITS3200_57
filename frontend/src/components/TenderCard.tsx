@@ -19,6 +19,8 @@ import {
   import ShareIcon from '@mui/icons-material/Share';
   import type { Tender } from '../lib/api';
   import { useUserPreferences } from '../lib/UserPreferencesContext';
+  import { useDisplaySettings } from '../lib/DisplaySettingsContext';
+  import { isLowFit } from '../lib/fit';
   import {
     CONFIGURABLE_CARD_FIELDS,
     type CardFieldId,
@@ -100,6 +102,8 @@ import {
     const detailsId = useId();
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const { preferences } = useUserPreferences();
+    const { settings: displaySettings } = useDisplaySettings();
+    const lowFit = isLowFit(tender.fit);
     const focusAreas = Array.isArray(tender.focus_areas) ? tender.focus_areas : [];
     const workTypes = Array.isArray(tender.work_types) ? tender.work_types : [];
     const selectedCompactFieldIds = new Set(preferences.cardView.compactFields);
@@ -225,6 +229,15 @@ import {
           overflow: { xs: expanded ? 'visible' : 'hidden', sm: 'hidden' },
           border: '1px solid',
           borderColor: 'secondary.main',
+          // Spread last so it wins over borderColor above. Only admins ever
+          // see a low-fit card, and only with 'show irrelevant' on, so the
+          // tint marks "you asked to see this".
+          ...(lowFit && {
+            bgcolor: (theme) => theme.palette.mode === 'light'
+              ? 'rgba(237, 108, 2, 0.06)'
+              : 'rgba(237, 108, 2, 0.12)',
+            borderColor: 'warning.main',
+          }),
           borderRadius: 2,
           boxShadow: (theme) => theme.palette.mode === 'light'
             ? '0 4px 14px rgba(36,45,50,0.08)'
@@ -455,6 +468,34 @@ import {
             {expanded ? 'View Less' : 'View More'}
           </Button>
         </CardActions>
+        {displaySettings.show_json && (
+          <Box sx={{ px: 2, pb: 2 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+              Raw record
+            </Typography>
+            <Box
+              component="pre"
+              sx={{
+                m: 0,
+                p: 1.5,
+                maxHeight: 320,
+                overflow: 'auto',
+                // Attachment text has no line breaks to wrap on, so without
+                // this a single tender can stretch the card off-screen.
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'anywhere',
+                fontSize: 12,
+                fontFamily: 'monospace',
+                bgcolor: (theme) => (theme.palette.mode === 'light' ? 'grey.100' : 'grey.900'),
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 1,
+              }}
+            >
+              {JSON.stringify(tender)}
+            </Box>
+          </Box>
+        )}
         {shareDialogOpen && (
           <ShareTenderDialog
             tender={tender}

@@ -30,6 +30,7 @@ ALL_COLUMNS = [
     "location",
     "description",
     "summary_headline",
+    "fit",
     "focus_areas",
     "work_types",
     "contact_name",
@@ -129,6 +130,7 @@ def list_tenders(
     year: str | None = None,
     q: str | None = None,
     mode: str = "keyword",
+    min_fit: int | None = None,
 ) -> list[dict]:
     """
     SELECT from `tenders` with optional filters. All filter values are bound
@@ -144,6 +146,15 @@ def list_tenders(
     clean_q = (q or "").strip()
     is_semantic = bool(clean_q and mode == "semantic")
     col_prefix = "base." if is_semantic else ""
+
+    if min_fit is not None:
+        # Applied in SQL rather than in the browser so every page comes back
+        # full. Only ~17% of stored tenders clear the bar, so filtering after
+        # paging would leave a 50-row page showing about eight cards.
+        # An unscored tender has fit NULL, and `NULL >= n` is not true, so this
+        # hides those too.
+        conditions.append(f"{col_prefix}fit >= @min_fit")
+        params.append(bigquery.ScalarQueryParameter("min_fit", "INT64", min_fit))
 
     if status:
         conditions.append(f"{col_prefix}status = @status")

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './lib/AuthContext'
 import { FavoritesProvider } from './lib/FavoritesContext' // <-- Import the newly created Provider
 import { UserPreferencesProvider } from './lib/UserPreferencesContext'
+import { DisplaySettingsProvider } from './lib/DisplaySettingsContext'
 import { AppThemeProvider } from './lib/ThemeContext'
 import './index.css'
 import App from './App.tsx'
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')!).render(
         <AuthProvider>
           <UserPreferencesProvider>
             <FavoritesProvider>  {/* <-- Wrap the App with FavoritesProvider */}
-              <App />
+              <DisplaySettingsProvider>
+                <App />
+              </DisplaySettingsProvider>
             </FavoritesProvider>
           </UserPreferencesProvider>
         </AuthProvider>

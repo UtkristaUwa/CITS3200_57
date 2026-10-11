@@ -4,10 +4,11 @@ import math
 from datetime import date
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from fastapi.responses import StreamingResponse
 
 from app import runtime_config
+from app.auth import current_user
 from app.bigquery import (
     get_client,
     get_locations,
@@ -249,7 +250,22 @@ def get_tenders(
         default="keyword",
         description="Search mode: 'keyword' (fast token search) or 'semantic' (AI vector search)",
     ),
+    include_irrelevant: bool = Query(
+        default=False,
+        description="Admins only: also return tenders below the fit threshold.",
+    ),
+    user: dict = Depends(current_user),
 ) -> list[TenderOut]:
+    # Staff never see tenders below min_visible_fit. An admin can opt out of
+    # the filter, but it still happens in SQL rather than in the browser:
+    # only ~17% of tenders clear the bar, so filtering a 50-row page after the
+    # fact would leave about eight cards on it.
+    # The flag can only ever loosen the filter, and only for an admin.
+    min_fit = (
+        None
+        if user.get("isAdmin") and include_irrelevant
+        else settings.min_visible_fit
+    )
     if settings.use_mock_data:
         matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
         page = matches[offset : offset + limit]
@@ -261,7 +277,7 @@ def get_tenders(
         status=status, category=category, source_id=source_id, 
         location=location, min_value=min_value, max_value=max_value, 
         closing_before=closing_before, closing_after=closing_after, year=year, q=q,
-        mode=mode,
+        mode=mode, min_fit=min_fit,
     )
     if not rows:
         return []
