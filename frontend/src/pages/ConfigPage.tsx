@@ -892,6 +892,7 @@ export default function ConfigPage() {
           value={promptsForm.triage_char_limit}
           onChange={(event) => handlePromptChange('triage_char_limit', event.target.value)}
           type="number"
+          slotProps={{ htmlInput: { step: 100 } }}
           fullWidth
           sx={{ mt: 2 }}
           disabled={promptFieldDisabled}

@@ -8,6 +8,7 @@ import {
     Chip,
     Link,
     Button,
+    ButtonBase,
     IconButton,
     Tooltip,
     Collapse,
@@ -251,13 +252,31 @@ import {
                 width: { xs: focusAreas.length > 0 ? 'auto' : '100%', sm: 'auto' },
               }}
             >
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+              <ButtonBase
+                onClick={() => onToggleExpand(tender.tender_id)}
+                aria-expanded={expanded}
+                aria-controls={detailsId}
+                sx={{
+                  minWidth: 0,
+                  maxWidth: '100%',
+                  justifyContent: 'flex-start',
+                  textAlign: 'left',
+                  borderRadius: 0.5,
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'primary.main',
+                    outlineOffset: 2,
+                  },
+                }}
               >
-                {tender.title || 'Untitled tender'}
-              </Typography>
+                <Typography
+                  variant="h6"
+                  component="span"
+                  sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
+                >
+                  {tender.title || 'Untitled tender'}
+                </Typography>
+              </ButtonBase>
               {focusAreas.length > 0 && (
                 <Box
                   role="group"
