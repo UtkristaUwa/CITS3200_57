@@ -68,6 +68,10 @@ def _get_tenders(**updates) -> list[TenderOut]:
         "max_value": None,
         "closing_before": None,
         "closing_after": None,
+        "published_before": None,
+        "published_after": None,
+        "sort_by": None,
+        "sort_dir": None,
         "year": None,
         "q": None,
         # The route now reads the caller to decide whether to hide low-fit

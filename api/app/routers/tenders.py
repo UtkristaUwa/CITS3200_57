@@ -12,6 +12,7 @@ from app.auth import current_user
 from app.bigquery import (
     get_client,
     get_locations,
+    get_sources,
     get_storage_client,
     get_tender_documents,
     list_tenders,
@@ -25,7 +26,7 @@ from app.document_zip import (
     parse_storage_uri,
     stream_zip,
 )
-from app.models import TenderOut
+from app.models import SourceOut, TenderOut
 
 _ALLOWED_BUCKET_PREFIX = "tenderai-"
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ CategoryFilter = Literal["tender", "rfq", "eoi", "grant"]
 SearchMode = Literal["keyword", "semantic"]
 # Mirrors ALLOWED_LOCATION_STATES in processing/tender_processor.py.
 StateFilter = Literal["WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT", "NATIONAL"]
+SortDirection = Literal["asc", "desc"]
 
 # Fixture data for USE_MOCK_DATA=true, shaped like ingestion/sample_tender.json
 # plus the bookkeeping fields upsert_tender() would normally compute.
@@ -215,6 +217,20 @@ def _matches_mock(
     if closing_after:
         if row_closing is None or row_closing < closing_after:
              return False
+
+    row_pub_str = row.get("publish_date")
+    row_pub = None
+    if isinstance(row_pub_str, date):
+        row_pub = row_pub_str
+    elif row_pub_str:
+        row_pub = date.fromisoformat(str(row_pub_str)) if row_pub_str else None
+
+    if published_before:
+        if row_pub is None or row_pub > published_before:
+            return False
+    if published_after:
+        if row_pub is None or row_pub < published_after:
+            return False
              
     if year:
         closing_date = str(row.get("closing_date") or "")
@@ -230,6 +246,36 @@ def _matches_mock(
     return True
 
 
+def _sort_mock_tenders(rows: list[dict], sort_by: str | None, sort_dir: str | None) -> list[dict]:
+    if not sort_by:
+        return rows
+    is_asc = (sort_dir or "").lower() == "asc"
+    def sort_key(row):
+        val = row.get(sort_by)
+        if val is None:
+            return (1, "") if is_asc else (-1, "")
+        return (0, str(val))
+    return sorted(rows, key=sort_key, reverse=not is_asc)
+
+
+@router.get("/sources", response_model=list[SourceOut])
+def get_sources_endpoint() -> list[SourceOut]:
+    """
+    Return all distinct tender source portals.
+    """
+    if settings.use_mock_data:
+        seen = {}
+        for row in _MOCK_TENDERS:
+            sid = row.get("source_id")
+            if sid and sid not in seen:
+                seen[sid] = SourceOut(source_id=sid, name=sid.replace("-", " ").title())
+        return list(seen.values())
+
+    client = get_client()
+    raw = get_sources(client)
+    return [SourceOut(source_id=r["source_id"], name=r["name"]) for r in raw]
+
+
 @router.get("/tenders", response_model=list[TenderOut])
 def get_tenders(
     limit: int = Query(default=50, le=200, gt=0),
@@ -242,6 +288,10 @@ def get_tenders(
     max_value: float | None = Query(default=None, description="Maximum tender value"),
     closing_before: date | None = Query(default=None, description="Closing on or before this date"),
     closing_after: date | None = Query(default=None, description="Closing on or after this date"),
+    published_before: date | None = Query(default=None, description="Published on or before this date"),
+    published_after: date | None = Query(default=None, description="Published on or after this date"),
+    sort_by: str | None = Query(default=None, description="Sort field (e.g. closing_date, publish_date, title)"),
+    sort_dir: SortDirection | None = Query(default=None, description="Sort direction: 'asc' or 'desc'"),
     year: str | None = Query(
         default=None,
         pattern=r"^[0-9]{4}$",
@@ -274,6 +324,7 @@ def get_tenders(
     )
     if settings.use_mock_data:
         matches = [row for row in _MOCK_TENDERS if _matches_mock(row, status, category, source_id, location, min_value, max_value, closing_before, closing_after, year, q)]
+        matches = _sort_mock_tenders(matches, sort_by, sort_dir)
         page = matches[offset : offset + limit]
         return _tender_outputs(page)
 
@@ -282,9 +333,12 @@ def get_tenders(
         client, limit=limit, offset=offset,
         status=status, category=category, source_id=source_id, 
         location=location, min_value=min_value, max_value=max_value, 
-        closing_before=closing_before, closing_after=closing_after, year=year, q=q,
+        closing_before=closing_before, closing_after=closing_after, 
+        published_before=published_before, published_after=published_after,
+        year=year, q=q,
         mode=mode, min_fit=min_fit,
         states=list(states) if states else None,
+        sort_by=sort_by, sort_dir=sort_dir,
     )
     if not rows:
         return []

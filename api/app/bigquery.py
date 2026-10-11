@@ -116,6 +116,16 @@ def _build_select_columns(col_prefix: str = "") -> str:
 
 
 
+ALLOWED_SORT_FIELDS = {
+    "closing_date": "closing_date",
+    "publish_date": "publish_date",
+    "first_seen_at": "first_seen_at",
+    "updated_at": "updated_at",
+    "title": "title",
+    "issuing_agency": "issuing_agency",
+}
+
+
 def list_tenders(
     client: bigquery.Client,
     limit: int,
@@ -128,9 +138,13 @@ def list_tenders(
     max_value: float | None = None,
     closing_before: date | None = None,
     closing_after: date | None = None,
+    published_before: date | None = None,
+    published_after: date | None = None,
     year: str | None = None,
     q: str | None = None,
     mode: str = "keyword",
+    sort_by: str | None = None,
+    sort_dir: str | None = None,
     min_fit: int | None = None,
     states: list[str] | None = None,
 ) -> list[dict]:
@@ -196,6 +210,13 @@ def list_tenders(
         conditions.append(f"{col_prefix}closing_date >= @closing_after")
         params.append(bigquery.ScalarQueryParameter("closing_after", "DATE", closing_after))
 
+    if published_before:
+        conditions.append(f"{col_prefix}publish_date <= @published_before")
+        params.append(bigquery.ScalarQueryParameter("published_before", "DATE", published_before))
+    if published_after:
+        conditions.append(f"{col_prefix}publish_date >= @published_after")
+        params.append(bigquery.ScalarQueryParameter("published_after", "DATE", published_after))
+
     if year:
         year_int = int(year)
         conditions.append(
@@ -205,13 +226,20 @@ def list_tenders(
         )
         params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
-    order_clause = "ORDER BY first_seen_at DESC"
-    if clean_q and not is_semantic:
+    direction = "ASC" if (sort_dir or "").lower() == "asc" else "DESC"
+    if sort_by and sort_by in ALLOWED_SORT_FIELDS:
+        db_col = ALLOWED_SORT_FIELDS[sort_by]
+        order_clause = f"ORDER BY {col_prefix}{db_col} {direction} NULLS LAST, {col_prefix}tender_id ASC"
+    elif not is_semantic and clean_q:
         parsed_q = parse_search_query(clean_q)
         conditions.extend(parsed_q.conditions)
         params.extend(parsed_q.parameters)
         if parsed_q.order_clause:
             order_clause = parsed_q.order_clause
+        else:
+            order_clause = f"ORDER BY {col_prefix}first_seen_at DESC"
+    else:
+        order_clause = f"ORDER BY {col_prefix}first_seen_at DESC"
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -226,6 +254,8 @@ def list_tenders(
         top_k = max((limit + offset) * 5, 150)
         params.append(bigquery.ScalarQueryParameter("top_k", "INT64", top_k))
 
+        semantic_order = order_clause if (sort_by and sort_by in ALLOWED_SORT_FIELDS) else "ORDER BY distance ASC"
+
         query = f"""
             SELECT {select_cols}, distance
             FROM VECTOR_SEARCH(
@@ -237,7 +267,7 @@ def list_tenders(
                 options => '{{"use_brute_force": true}}'
             )
             {where_clause}
-            ORDER BY distance ASC
+            {semantic_order}
             LIMIT @limit OFFSET @offset
         """
     else:
@@ -300,3 +330,25 @@ def get_locations(client: bigquery.Client) -> list[str]:
     """
     job = client.query(query)
     return [row["location"] for row in job.result()]
+
+
+def get_sources(client: bigquery.Client) -> list[dict]:
+    """
+    Fetch distinct sources for the frontend portal filter dropdown.
+    """
+    query = f"""
+        SELECT DISTINCT source_id, source_name
+        FROM `{settings.tenders_table}`
+        WHERE source_id IS NOT NULL AND TRIM(source_id) != ''
+        ORDER BY source_name ASC
+    """
+    job = client.query(query)
+    sources = []
+    seen = set()
+    for row in job.result():
+        sid = row.get("source_id")
+        name = row.get("source_name") or sid
+        if sid and sid not in seen:
+            seen.add(sid)
+            sources.append({"source_id": sid, "name": name})
+    return sources

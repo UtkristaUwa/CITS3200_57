@@ -37,6 +37,18 @@ export function useTenderFilters() {
   const [jurisdiction, setJurisdiction] = useState('');
   // Session-only: not part of tenderPreferences, so no schema or rules change.
   const [states, setStates] = useState<string[]>([]);
+  const [sourceId, setSourceId] = useState('');
+  const [publishedAfter, setPublishedAfter] = useState('');
+  const [publishedBefore, setPublishedBefore] = useState('');
+  const [sortBy, setSortByState] = useState<string>('closing_date_asc');
+  const lastBrowseSortRef = useRef<string>('closing_date_asc');
+
+  const setSortBy = (val: string) => {
+    if (val !== 'relevance') {
+      lastBrowseSortRef.current = val;
+    }
+    setSortByState(val);
+  };
   const [status, setStatus] = useState<DefaultTenderStatus>('');
   const [year, setYear] = useState('');
   const [minDate, setMinDate] = useState('');
@@ -81,15 +93,30 @@ export function useTenderFilters() {
   }, [searchQuery]);
 
   useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      setSortByState((prev) => (prev === 'relevance' ? prev : 'relevance'));
+    } else {
+      setSortByState(lastBrowseSortRef.current || 'closing_date_asc');
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
     saveRequestTokenRef.current += 1;
     setSearchQuery('');
     setDebouncedSearchQuery('');
     setShowFilters(false);
     setJurisdiction('');
+    setStates([]);
+    setSourceId('');
     setStatus('');
     setYear('');
     setMinDate('');
     setMaxDate('');
+    setPublishedAfter('');
+    setPublishedBefore('');
+    setSortByState('closing_date_asc');
+    lastBrowseSortRef.current = 'closing_date_asc';
     setAdvancedSearch(false);
     setFiltersOwnerUid(null);
     setSavingDefaultFilters(false);
@@ -132,10 +159,16 @@ export function useTenderFilters() {
     setSearchQuery('');
     setDebouncedSearchQuery('');
     setJurisdiction('');
+    setStates([]);
+    setSourceId('');
     setStatus('');
     setYear('');
     setMinDate('');
     setMaxDate('');
+    setPublishedAfter('');
+    setPublishedBefore('');
+    setSortByState('closing_date_asc');
+    lastBrowseSortRef.current = 'closing_date_asc';
     setAdvancedSearch(false);
     setDefaultFiltersSaveError(null);
     setDefaultFiltersSaved(false);
@@ -225,12 +258,16 @@ export function useTenderFilters() {
     searchQuery, setSearchQuery, debouncedSearchQuery,
     advancedSearch, setAdvancedSearch,
     showFilters, setShowFilters,
-    jurisdiction, setJurisdiction: setSavedJurisdiction,
+    sortBy, setSortBy,
     states, setStates,
+    sourceId, setSourceId,
+    jurisdiction, setJurisdiction: setSavedJurisdiction,
     status, setStatus: setSavedStatus,
     year, setYear: setSavedYear,
     minDate, setMinDate: setSavedMinDate,
     maxDate, setMaxDate: setSavedMaxDate,
+    publishedAfter, setPublishedAfter,
+    publishedBefore, setPublishedBefore,
     filtersReady,
     defaultFiltersSaving,
     defaultFiltersLoadError: preferencesError?.message ?? null,

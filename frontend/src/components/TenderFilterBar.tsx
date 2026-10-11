@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -18,6 +19,8 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { getSources, type TenderSource } from '../lib/api';
+import { SORT_OPTIONS } from '../lib/tenderSort';
 import type { DefaultTenderStatus } from '../lib/tenderPreferences';
 import {
   DESKTOP_TOP_NAV_HEIGHT_PX,
@@ -32,8 +35,12 @@ export interface TenderFilterBarProps {
   setAdvancedSearch: (val: boolean) => void;
   showFilters: boolean;
   setShowFilters: (val: boolean) => void;
+  sortBy: string;
+  setSortBy: (val: string) => void;
   states: string[];
   setStates: (val: string[]) => void;
+  sourceId: string;
+  setSourceId: (val: string) => void;
   year: string;
   setYear: (val: string) => void;
   status: DefaultTenderStatus;
@@ -42,6 +49,10 @@ export interface TenderFilterBarProps {
   setMinDate: (val: string) => void;
   maxDate: string;
   setMaxDate: (val: string) => void;
+  publishedAfter: string;
+  setPublishedAfter: (val: string) => void;
+  publishedBefore: string;
+  setPublishedBefore: (val: string) => void;
   filtersReady: boolean;
   defaultFiltersSaving: boolean;
   defaultFiltersLoadError: string | null;
@@ -52,15 +63,17 @@ export interface TenderFilterBarProps {
 }
 
 export function TenderSearchControls(props: TenderFilterBarProps) {
+  const isSearchActive = Boolean(props.searchQuery.trim());
+
   return (
     <Box
       sx={{
         display: 'flex',
-        gap: 1,
+        gap: { xs: 0.75, sm: 1 },
         alignItems: 'center',
         minWidth: 0,
         width: '100%',
-        '& .MuiInputBase-root': { minHeight: 44 },
+        '& .MuiInputBase-root': { minHeight: 40 },
       }}
     >
       <TextField
@@ -70,7 +83,7 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
         placeholder="Search tenders..."
         value={props.searchQuery}
         onChange={(e) => props.setSearchQuery(e.target.value)}
-        sx={{ minWidth: 0 }}
+        sx={{ minWidth: { xs: 100, sm: 160 } }}
         slotProps={{
           input: {
             startAdornment: (
@@ -91,9 +104,9 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
           onClick={() => props.setAdvancedSearch(!props.advancedSearch)}
           sx={{
             flexShrink: 0,
-            minWidth: { xs: 44, lg: 'auto' },
-            width: { xs: 44, lg: 'auto' },
-            height: 44,
+            minWidth: { xs: 40, lg: 'auto' },
+            width: { xs: 40, lg: 'auto' },
+            height: 40,
             px: { xs: 0, lg: 2 },
             textTransform: 'none',
             fontWeight: props.advancedSearch ? 600 : 500,
@@ -125,6 +138,27 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
           </Box>
         </Button>
       </Tooltip>
+
+      <FormControl size="small" sx={{ minWidth: { xs: 110, sm: 145, md: 175 }, flexShrink: 0 }}>
+        <InputLabel id="tender-sort-label">Sort By</InputLabel>
+        <Select
+          labelId="tender-sort-label"
+          value={props.sortBy}
+          label="Sort By"
+          onChange={(e) => props.setSortBy(e.target.value)}
+          sx={{ height: 40 }}
+        >
+          {SORT_OPTIONS.map((opt) => {
+            if (opt.value === 'relevance' && !isSearchActive) return null;
+            return (
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      </FormControl>
+
       <Tooltip title={props.showFilters ? 'Hide filters' : 'Show filters'}>
         <Button
           aria-label={props.showFilters ? 'Hide tender filters' : 'Show tender filters'}
@@ -135,9 +169,9 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
           onClick={() => props.setShowFilters(!props.showFilters)}
           sx={{
             flexShrink: 0,
-            minWidth: { xs: 44, lg: 'auto' },
-            width: { xs: 44, lg: 'auto' },
-            height: 44,
+            minWidth: { xs: 40, lg: 'auto' },
+            width: { xs: 40, lg: 'auto' },
+            height: 40,
             px: { xs: 0, lg: 2 },
             '& .MuiButton-startIcon': {
               m: { xs: 0, lg: '0 8px 0 -4px' },
@@ -156,10 +190,15 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
 const SELECTABLE_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] as const;
 
 export function TenderFilterPanel(props: TenderFilterBarProps) {
+  const [availableSources, setAvailableSources] = useState<TenderSource[]>([]);
   const standardYears = ['2026', '2025', '2024'];
   const yearOptions = props.year && !standardYears.includes(props.year)
     ? [props.year, ...standardYears]
     : standardYears;
+
+  useEffect(() => {
+    getSources().then(setAvailableSources);
+  }, []);
 
   return (
     <Collapse id="tender-filter-panel" in={props.showFilters} sx={{ width: '100%' }}>
@@ -200,6 +239,7 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             '& .MuiInputBase-root': { minHeight: { xs: 44, sm: 40 } },
           }}
         >
+          {/* Row 1: States, Source Portal, Status */}
           <Box
             sx={{
               display: 'grid',
@@ -242,11 +282,18 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             </FormControl>
 
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
-              <InputLabel>Year</InputLabel>
-              <Select value={props.year} label="Year" onChange={(e) => props.setYear(e.target.value)}>
-                <MenuItem value=""><em>All Time</em></MenuItem>
-                {yearOptions.map((year) => (
-                  <MenuItem key={year} value={year}>{year}</MenuItem>
+              <InputLabel id="tender-source-label">Source Portal</InputLabel>
+              <Select
+                labelId="tender-source-label"
+                value={props.sourceId}
+                label="Source Portal"
+                onChange={(e) => props.setSourceId(e.target.value)}
+              >
+                <MenuItem value=""><em>All Portals</em></MenuItem>
+                {availableSources.map((src) => (
+                  <MenuItem key={src.source_id} value={src.source_id}>
+                    {src.name}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -267,6 +314,26 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             </FormControl>
           </Box>
 
+          {/* Row 2: Year */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+              gap: 1.5,
+            }}
+          >
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
+              <InputLabel>Year</InputLabel>
+              <Select value={props.year} label="Year" onChange={(e) => props.setYear(e.target.value)}>
+                <MenuItem value=""><em>All Time</em></MenuItem>
+                {yearOptions.map((year) => (
+                  <MenuItem key={year} value={year}>{year}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Row 3: Closing Date Range */}
           <Box
             sx={{
               display: 'grid',
@@ -292,6 +359,36 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
               slotProps={{ inputLabel: { shrink: true } }}
               value={props.maxDate}
               onChange={(e) => props.setMaxDate(e.target.value)}
+              sx={{ minWidth: 0 }}
+            />
+          </Box>
+
+          {/* Row 4: Published Date Range */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+              gap: 1.5,
+            }}
+          >
+            <TextField
+              size="small"
+              fullWidth
+              type="date"
+              label="Published After"
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={props.publishedAfter}
+              onChange={(e) => props.setPublishedAfter(e.target.value)}
+              sx={{ minWidth: 0 }}
+            />
+            <TextField
+              size="small"
+              fullWidth
+              type="date"
+              label="Published Before"
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={props.publishedBefore}
+              onChange={(e) => props.setPublishedBefore(e.target.value)}
               sx={{ minWidth: 0 }}
             />
           </Box>

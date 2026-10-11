@@ -6,6 +6,7 @@ import { TenderCard } from '../components/TenderCard';
 import { TenderFilterPanel, TenderSearchControls } from '../components/TenderFilterBar';
 import { useTenderFilters } from '../lib/useTenderFilters';
 import { useFavorites } from '../lib/FavoritesContext';
+import { parseSortOption } from '../lib/tenderSort';
 
 export default function FavoritesPage() {
   const [tenders, setTenders] = useState<Tender[]>([]);
@@ -29,14 +30,22 @@ export default function FavoritesPage() {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
+
+    const { sort_by, sort_dir } = parseSortOption(filterProps.sortBy);
+
     getTenders({
       limit: 50,
       q: filterProps.debouncedSearchQuery || undefined,
       status: filterProps.status || undefined,
-      location: filterProps.jurisdiction || undefined,
+      states: filterProps.states.length ? filterProps.states : undefined,
+      source_id: filterProps.sourceId || undefined,
       year: filterProps.year || undefined,
       closing_after: filterProps.minDate || undefined,
       closing_before: filterProps.maxDate || undefined,
+      published_after: filterProps.publishedAfter || undefined,
+      published_before: filterProps.publishedBefore || undefined,
+      sort_by,
+      sort_dir,
     }, controller.signal)
       .then((data) => {
         if (!cancelled) setTenders(data);
@@ -57,10 +66,14 @@ export default function FavoritesPage() {
     filterProps.filtersReady,
     filterProps.debouncedSearchQuery,
     filterProps.status,
-    filterProps.jurisdiction,
+    filterProps.states,
+    filterProps.sourceId,
     filterProps.year,
     filterProps.minDate,
     filterProps.maxDate,
+    filterProps.publishedAfter,
+    filterProps.publishedBefore,
+    filterProps.sortBy,
   ]);
 
   const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));
