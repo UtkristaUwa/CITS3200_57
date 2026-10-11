@@ -30,7 +30,13 @@ export function useTenderFilters() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  // Kept so the saved-defaults payload keeps the exact shape firestore.rules
+  // validates. It has no control behind it any more -- the state multi-select
+  // replaced it -- and is deliberately not applied to the query, so a value
+  // saved before that change can't narrow results invisibly.
   const [jurisdiction, setJurisdiction] = useState('');
+  // Session-only: not part of tenderPreferences, so no schema or rules change.
+  const [states, setStates] = useState<string[]>([]);
   const [status, setStatus] = useState<DefaultTenderStatus>('');
   const [year, setYear] = useState('');
   const [minDate, setMinDate] = useState('');
@@ -220,6 +226,7 @@ export function useTenderFilters() {
     advancedSearch, setAdvancedSearch,
     showFilters, setShowFilters,
     jurisdiction, setJurisdiction: setSavedJurisdiction,
+    states, setStates,
     status, setStatus: setSavedStatus,
     year, setYear: setSavedYear,
     minDate, setMinDate: setSavedMinDate,

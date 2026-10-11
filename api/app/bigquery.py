@@ -28,6 +28,7 @@ ALL_COLUMNS = [
     "value_currency",
     "value_notes",
     "location",
+    "location_states",
     "description",
     "summary_headline",
     "fit",
@@ -131,6 +132,7 @@ def list_tenders(
     q: str | None = None,
     mode: str = "keyword",
     min_fit: int | None = None,
+    states: list[str] | None = None,
 ) -> list[dict]:
     """
     SELECT from `tenders` with optional filters. All filter values are bound
@@ -146,6 +148,16 @@ def list_tenders(
     clean_q = (q or "").strip()
     is_semantic = bool(clean_q and mode == "semantic")
     col_prefix = "base." if is_semantic else ""
+
+    if states:
+        # Matches a tender in ANY of the chosen states, so selecting WA+NT+VIC
+        # returns each of them and anything spanning several. NATIONAL covers
+        # the whole country, so it always qualifies.
+        conditions.append(
+            f"EXISTS (SELECT 1 FROM UNNEST({col_prefix}location_states) s"
+            " WHERE s IN UNNEST(@states) OR s = 'NATIONAL')"
+        )
+        params.append(bigquery.ArrayQueryParameter("states", "STRING", states))
 
     if min_fit is not None:
         # Applied in SQL rather than in the browser so every page comes back

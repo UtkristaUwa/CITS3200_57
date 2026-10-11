@@ -73,6 +73,7 @@ def _get_tenders(**updates) -> list[TenderOut]:
         # The route now reads the caller to decide whether to hide low-fit
         # tenders. Default to an admin so existing cases see the unfiltered
         # behaviour they were written against.
+        "states": None,
         "include_irrelevant": True,
         "user": {"uid": "admin-1", "isAdmin": True},
     }
@@ -374,6 +375,7 @@ def test_get_tenders_route_serializes_public_tags_and_preserves_existing_fields(
         # authenticated_client signs in as a non-admin, so the low-fit filter
         # is applied in SQL rather than left to the browser.
         "min_fit": 40,
+        "states": None,
     }
 
     body = response.json()[0]
@@ -804,3 +806,50 @@ def test_missing_admin_flag_is_treated_as_staff(monkeypatch):
 
     _get_tenders(user={"uid": "nobody"}, include_irrelevant=True)
     assert captured["min_fit"] == tenders.settings.min_visible_fit
+
+
+def test_states_filter_is_passed_through_and_matches_any_selected(monkeypatch):
+    """Selecting WA+NT+VIC must return tenders in each of them and any
+    combination, which is an ANY match over the repeated column."""
+    captured = {}
+    monkeypatch.setattr(tenders, "list_tenders",
+                        lambda client, **kwargs: (captured.update(kwargs), [])[1])
+    monkeypatch.setattr(tenders, "get_client", lambda: object())
+    monkeypatch.setattr(tenders.settings, "use_mock_data", False)
+
+    _get_tenders(states=["WA", "NT", "VIC"])
+    assert captured["states"] == ["WA", "NT", "VIC"]
+
+    captured.clear()
+    _get_tenders(states=None)
+    assert captured["states"] is None, "no selection must not filter at all"
+
+
+def test_states_filter_builds_an_any_match_including_national(monkeypatch):
+    """The SQL has to match a tender holding ANY of the chosen states, and a
+    NATIONAL tender covers the whole country so it always qualifies."""
+    seen = {}
+
+    class FakeJob:
+        def result(self):
+            return []
+
+    class FakeClient:
+        def query(self, sql, job_config=None):
+            seen["sql"] = sql
+            seen["params"] = {p.name: p.values for p in job_config.query_parameters
+                              if hasattr(p, "values")}
+            return FakeJob()
+
+    bigquery_module.list_tenders(FakeClient(), limit=10, offset=0, states=["WA", "NT"])
+    assert "UNNEST(location_states)" in seen["sql"]
+    assert "IN UNNEST(@states)" in seen["sql"]
+    assert "s = 'NATIONAL'" in seen["sql"]
+    assert seen["params"]["states"] == ["WA", "NT"]
+
+
+def test_location_states_is_returned_on_each_tender():
+    output = tenders._tender_outputs([_row(location_states=["NSW", "VIC"])])[0]
+    assert output.location_states == ["NSW", "VIC"]
+    # legacy rows predate the column
+    assert tenders._tender_outputs([_row()])[0].location_states == []

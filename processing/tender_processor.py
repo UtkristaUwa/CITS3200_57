@@ -150,6 +150,58 @@ def state_from_postcode(postcode: Optional[str]) -> Optional[str]:
     return None
 
 
+# Written out so a stored location string can be re-read without the landing
+# page. Abbreviations are matched case-sensitively and on word boundaries:
+# lowercase "act" is an English word, "Act" is a statute, and only "ACT" is the
+# territory. Full names are matched case-insensitively, since nothing else
+# reads like "Western Australia".
+_STATE_ABBREVIATIONS = ("WA", "NSW", "VIC", "QLD", "SA", "TAS", "ACT", "NT")
+_STATE_FULL_NAMES = {
+    "western australia": "WA",
+    "new south wales": "NSW",
+    "victoria": "VIC",
+    "queensland": "QLD",
+    "south australia": "SA",
+    "tasmania": "TAS",
+    "australian capital territory": "ACT",
+    "northern territory": "NT",
+}
+# Deliberately narrow. A bare "Australia" appears inside "Western Australia"
+# and at the end of ordinary postal addresses, so it cannot mean nationwide.
+_NATIONAL_PHRASES = ("australia-wide", "australia wide", "nationwide", "nation-wide", "all states")
+
+_STATE_TOKEN_PATTERN = re.compile(r"\b(" + "|".join(_STATE_ABBREVIATIONS) + r")\b")
+_FULL_NAME_PATTERN = re.compile(
+    r"\b(" + "|".join(re.escape(name) for name in _STATE_FULL_NAMES) + r")\b",
+    re.IGNORECASE,
+)
+
+
+def states_from_location_text(location: Optional[str]) -> list[str]:
+    """
+    States named outright in a free-text location, e.g.
+    "21 Collingwood Street, Rye, VIC 3941" -> ["VIC"].
+
+    Deterministic and offline, so a stored location can be re-read long after
+    the scraped page it came from is gone. Postcodes are deliberately NOT
+    parsed: a bare four-digit number in an address is as likely to be a street
+    number or a year as a postcode, and "2026" is a real NSW postcode.
+    """
+    if not location:
+        return []
+
+    text = str(location)
+    found = set(_STATE_TOKEN_PATTERN.findall(text))
+    for name in _FULL_NAME_PATTERN.findall(text):
+        found.add(_STATE_FULL_NAMES[name.lower()])
+
+    lowered = text.lower()
+    if any(phrase in lowered for phrase in _NATIONAL_PHRASES):
+        return ["NATIONAL"]
+
+    return sorted(found & ALLOWED_LOCATION_STATES)
+
+
 def resolve_location_states(
     postcode: Optional[str], model_states: Optional[list[str]]
 ) -> list[str]:

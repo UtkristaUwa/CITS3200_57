@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   TextField,
@@ -11,11 +10,14 @@ import {
   MenuItem,
   Tooltip,
   Alert,
+  Checkbox,
+  Chip,
+  ListItemText,
+  OutlinedInput,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { getLocations } from '../lib/api';
 import type { DefaultTenderStatus } from '../lib/tenderPreferences';
 import {
   DESKTOP_TOP_NAV_HEIGHT_PX,
@@ -30,8 +32,8 @@ export interface TenderFilterBarProps {
   setAdvancedSearch: (val: boolean) => void;
   showFilters: boolean;
   setShowFilters: (val: boolean) => void;
-  jurisdiction: string;
-  setJurisdiction: (val: string) => void;
+  states: string[];
+  setStates: (val: string[]) => void;
   year: string;
   setYear: (val: string) => void;
   status: DefaultTenderStatus;
@@ -151,20 +153,13 @@ export function TenderSearchControls(props: TenderFilterBarProps) {
   );
 }
 
+const SELECTABLE_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] as const;
+
 export function TenderFilterPanel(props: TenderFilterBarProps) {
-  const [availableLocations, setAvailableLocations] = useState<string[]>([]);
-  const locationOptions = props.jurisdiction
-    && !availableLocations.includes(props.jurisdiction)
-    ? [props.jurisdiction, ...availableLocations]
-    : availableLocations;
   const standardYears = ['2026', '2025', '2024'];
   const yearOptions = props.year && !standardYears.includes(props.year)
     ? [props.year, ...standardYears]
     : standardYears;
-
-  useEffect(() => {
-    getLocations().then(setAvailableLocations);
-  }, []);
 
   return (
     <Collapse id="tender-filter-panel" in={props.showFilters} sx={{ width: '100%' }}>
@@ -213,11 +208,35 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             }}
           >
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
-              <InputLabel>Jurisdiction</InputLabel>
-              <Select value={props.jurisdiction} label="Jurisdiction" onChange={(e) => props.setJurisdiction(e.target.value)}>
-                <MenuItem value=""><em>All</em></MenuItem>
-                {locationOptions.map((loc) => (
-                  <MenuItem key={loc} value={loc}>{loc}</MenuItem>
+              {/* displayEmpty keeps "All" visible with nothing selected, but
+                  MUI only shrinks the label when there IS a value -- without
+                  shrink/notched the label renders on top of "All". */}
+              <InputLabel id="tender-states-label" shrink>States</InputLabel>
+              <Select
+                multiple
+                labelId="tender-states-label"
+                value={props.states}
+                input={<OutlinedInput label="States" notched />}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  props.setStates(typeof value === 'string' ? value.split(',') : value);
+                }}
+                renderValue={(selected) => (
+                  selected.length === 0
+                    ? 'All'
+                    : (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((code) => <Chip key={code} label={code} size="small" />)}
+                      </Box>
+                    )
+                )}
+                displayEmpty
+              >
+                {SELECTABLE_STATES.map((code) => (
+                  <MenuItem key={code} value={code}>
+                    <Checkbox checked={props.states.includes(code)} size="small" />
+                    <ListItemText primary={code} />
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
