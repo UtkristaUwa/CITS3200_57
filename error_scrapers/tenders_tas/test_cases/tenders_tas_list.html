@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="google-site-verification" content="k1bLaC7oMi-pQ2YvORhGym2NBnNfm1X75IaPliuG3kw" />
+    <link rel="icon" href="/Images/Icon/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/Images/Icon/favicon.ico" type="image/x-icon" />
+
+    <script src="/Scripts/Constants.js"></script>
+
+    <script src="/Scripts/jquery-3.2.1.js" type="text/javascript"></script>
+
+
+
+    <link href="/Content/eTendersStyleSheet.css" rel="stylesheet" type="text/css" />
+
+    
+    <script src="/Scripts/jquery-migrate-3.0.0.js" type="text/javascript"></script>
+
+    <script>
+        /* the following fixes backward compatibility errors after updating to latest jquery libraries
+          */
+
+        // current version of ckeditor still requires this script as of May 2021
+
+        $.browser = {};
+        (function () {
+            $.browser.msie = false;
+            $.browser.version = 0;
+            if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+                $.browser.msie = true;
+                $.browser.version = RegExp.$1;
+            }
+        })();
+        if (!$.curCSS)
+            $.curCSS = $.css;
+        $.zIndex = $.fn.zIndex = function (opt) {
+            var def = { inc: 10, group: "*" };
+            $.extend(def, opt);
+            var zmax = 0;
+            $(def.group).each(function () {
+                var cur = parseInt($(this).css('z-index'));
+                zmax = cur > zmax ? cur : zmax;
+            });
+            if (!this.jquery)
+                return zmax;
+
+            return this.each(function () {
+                zmax += def.inc;
+                $(this).css("z-index", zmax);
+                //reset overlay otherwise it has a higher index than modals
+                $(".ui-widget-overlay").css("z-index", 1000);
+            });
+
+
+        }
+    </script>
+
+    <script src="/Scripts/jquery-ui.custom/jquery-ui-1.12.1.custom.min.js" type="text/javascript"></script>
+    
+
+    <script src="/Scripts/jquery.validate.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type="text/javascript"></script>
+    <script src="/Scripts/globalize.0.1.3/globalize.js" type="text/javascript"></script>
+    <script src="/Scripts/globalize.0.1.3/cultures/globalize.culture.en-AU.js" type="text/javascript"></script>
+    
+
+    
+    
+    <script src="/Scripts/validators/tasmanianRegionValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/endDateGreaterThanStartDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/endDateGreaterThanFirstNonBlankStartDateInListValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/startDateBeforeEndDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstItemNotSelectedInDropdownValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueAfterCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateMonthValueAfterCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueBeforeCurrentDateValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/itemNotSelectedWhenPropertySetValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/otherFieldTextboxRequiredValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredUnlessFieldsetFirstOfListAndAllBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldIsTrueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldIsFalseValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldNotBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsZeroAndSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldNotBlankExceptWhenSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherFieldTrueAndTenderTypeMet.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsBlankAndSecondFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsTrueAndSecondFieldIsBlank.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/FieldRequiredWhenOtherFieldIsTrueExceptWhenSecondFieldIsTrue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldNotRequiredWhenOtherFieldHasCertainValue.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenOtherEnumFieldHasCertainAttributes.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldNotRequiredWhenOtherEnumFieldHasCertainAttributes.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/dateMonthValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedContractDateValueAfterCurrentDateWhenNotAfterGoLiveValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiresATasmanianPrintMediaValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/contractEndDateRequiredConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldCannotHaveCertainValueValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniqueTenderIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniqueAwardedContractIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstValueGreaterThanSecondValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/firstValueLessThanSecondValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/contractContactDataRequiredConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/IntValueCannotBeNegativeWhenHavingAValueValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldRequiredWhenNotAfterGoLiveValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldIsValidUrlValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/passwordValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/fieldEqualsOtherFieldValueValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/ckeditorDescriptionRequiredValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedTenderContractEndDateFieldRequiredValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/openingTenderBoxRequiresAtLeastOneHigherUserValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedContractRequiresAtLeastOneSupplierValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/awardedTenderRequiresAtLeastOneSupplierWhenNotNPTValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfAdditionalBusinessesSpecialConditionsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfTasmanianBidsValidatorIfAnyTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfTasmanianBidsValidatorIfNoTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/numberOfBidsValidatorIfNoTasSuppliers.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/uniquePrequalifierIdValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/prequalExpiryDateNotInThePastValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/businessUserMustAlreadyExistValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/emailMustMatchBusinessUserEmailValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/configurableTextItemsValidation.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/availableMultiUseListSupplierValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/abnFieldValidator.js" type="text/javascript"></script>
+    <script src="/Scripts/validators/userEditCurrentPasswordValidator.js" type="text/javascript"></script>
+
+    
+    <script src="/Scripts/multi-selectlist/jquery.selectlist.js" type="text/javascript"></script>
+    
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.filter.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery-multiselect/jquery.multiselect.etenders.helpers.js" type="text/javascript"></script>
+
+    <script src="/Scripts/jquery.autoResizeTextAreaQ-0.1.js" type="text/javascript"></script>
+
+    <script src="/Scripts/timepicker/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="/Scripts/eTendering-v0.1.js" type="text/javascript"></script>
+    
+    <script src="/ckeditor/ckeditor.js" type="text/javascript"></script>
+    <script src="/ckeditor/adapters/jquery.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="/Scripts/formatCurrency/jquery.formatCurrency-1.4.0.min.js"></script>
+    
+    <script src="/Scripts/tooltip/jquery.tools-v1.2.7.min.js" type="text/javascript"></script>
+    <link rel="Stylesheet" href="/Content/AutoComplete/jquery.autocomplete.css" />
+    <link rel="Stylesheet" href="/Content/multi-selectlist/selectlist.css" />
+    <link href="/Content/jquery-multiselect/jquery.multiselect.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/jquery-multiselect/jquery.multiselect.filter.css" rel="stylesheet" type="text/css" />
+
+    <link href="/Content/themes/redmond/jquery-ui-1.12.1.custom.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="/Content/timepicker/css/timepicker.css" rel="stylesheet" type="text/css" />
+    
+    <link rel="Stylesheet" type="text/css" href="/Content/jqGrid/css/ui.jqgrid.css" title="coffee" media="screen" />
+
+    <script src="/Scripts/jqGrid/i18n/grid.locale-en.js" type="text/javascript"></script>
+    <script src="/Scripts/jqGrid/minified/jquery.jqGrid.min.js" type="text/javascript"></script>
+    
+    
+    <script src="/Scripts/jqGrid/minified/jquery.fmatter.js" type="text/javascript"></script>
+    <script src="/Scripts/jqGrid/minified/jqDnR.js" type="text/javascript"></script>
+    
+
+    <script src="/Scripts/jqGrid/grid.subgrid.js" type="text/javascript"></script>
+
+    
+    <link rel="Stylesheet" type="text/css" href="/Content/jquerydaterangepicker/css/daterangepicker.min.css" title="coffee" media="screen" />
+    
+    <script src="/Scripts/moment.min.js" type="text/javascript"></script>
+    <script src="/Scripts/jquerydaterangepicker/jquery.daterangepicker.min.js" type="text/javascript"></script>
+
+    
+    <script src="/Scripts/af/af_script-v01.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="/Scripts/captcha/captcha.js"></script>
+    
+    <script src="/Scripts/PleaseWait/LoadingSpinner_script-v01.js"></script>
+    <script src="/Scripts/modernizr-2.8.3.js"></script>
+    
+    <script src="/Scripts/jquery.blockUI.js"></script>
+    
+    <script src="/Scripts/jquery.cookie.js"></script>
+
+</head>
+<body >
+    <!-- container gives us a minimum width for the whole page, so nothing will fall off when minimising the page -->
+    <div id="mainContainer">
+        <!-- content -->
+        <div id="wrap_outer">
+            <!-- header -->
+            <div id="TG-header">
+                <div id="TG-logoRow">
+                    <div id="TG-title-wog">
+                        <a href="http://www.tas.gov.au/" id="TG-logo">
+                            <img src="/Images/Logo/etenders_logo_header.jpg" alt="Tasmania Government"
+                                 title="Visit Tasmania Online" width="92" height="75" />
+                        </a> <a href="#" title="Return to the homepage">
+                            <img src="/Images/Logo/etenders_logo_title.gif" alt="Department of Premier and Cabinet - return to homepage"
+                                 title="Return to homepage" width="400" height="83" />
+                        </a>
+                    </div>
+                    <div id="TG-spot">
+                        
+                        
+                    </div>
+                </div>
+                <div class="nn">
+                    <div id="TG-taglineRow">
+                        <a id="TG-tag-home" href="http://www.tas.gov.au/">www.tas.gov.au</a>
+                        <div id="TG-taglineRow-centre">
+                        </div>
+                        <div id="TG-taglineRow-right">
+<a href="/Account/LogOff" id="TG-tag-username">LOGOUT: jwilliamsintern</a>                                |
+<a href="/Account/EditMe"> Edit my details</a>                                |
+                            <a href="/Home/Index" id="TG-tag-homepage">Home</a>
+                            |
+                            <a href="/Home/ContactUs" id="TG-tag-contact">Contact</a>
+                            | <a href="http://www.tas.gov.au/stds/codi.htm">DISCLAIMER</a> 
+                        </div>
+                        <div class="clearfloat">
+                        </div>
+                    </div>
+                    <div id="menucontainer">
+<html lang="en">
+<head>
+    <title>A very basic Superfish menu example</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="/Content/Menu/css/superfish.css"
+          media="screen" />
+    <script type="text/javascript" src="/Scripts/Menu/js/hoverIntent.js"></script>
+    <script type="text/javascript" src="/Scripts/Menu/js/superfish.js"></script>
+    <script type="text/javascript">
+
+        // initialise plugins
+        jQuery(function () {
+            jQuery('ul.sf-menu').superfish();
+        });
+
+    </script>
+</head>
+<body>
+    <ul class="sf-menu">
+            <li>
+                <a href="#">Future Opportunities</a>
+                    <ul>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/IndicativeDate">Indicative Date</a>
+
+    </li>
+    <li>
+            <a href="https://www.purchasing.tas.gov.au/winning-government-business/finding-business/finding-opportunities/future-opportunities" rel="noopener noreferrer" target="_blank">Infrastructure Project Pipeline</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Public/Region">Region</a>
+
+    </li>
+    <li>
+            <a href="#">Withdrawn Anticipated Tenders &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/IndicativeDate">Indicative Date</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Region">Region</a>
+
+    </li>
+    <li>
+            <a href="/FutureOpportunity/List/Withdrawn/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Open for Bids</a>
+                    <ul>
+    <li>
+            <a href="/OpenForBids/List/Public/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Public/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Public/ClosingDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="#">Withdrawn Tenders  &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/ClosingDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/OpenForBids/List/Withdrawn/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Closed for Bids</a>
+                    <ul>
+    <li>
+            <a href="/ClosedForBids/List/Closed/Agency">Agency</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/Closed/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/Closed/ClosedDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="#">Not Awarded Tenders  &gt;&gt;</a>
+
+            <ul>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/ClosedDate">Closing Date</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/Category">UNSPSC Category</a>
+
+    </li>
+    <li>
+            <a href="/ClosedForBids/List/NotAwarded/Agency">Agency</a>
+
+    </li>
+            </ul>
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Contracts Awarded</a>
+                    <ul>
+    <li>
+            <a href="/ContractAwarded/List/Agency">Agency ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/Category">UNSPSC Category ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/DateAwarded">Date Awarded ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/List/Recurrent">Recurrent ( &lt; 30 days old )</a>
+
+    </li>
+    <li>
+            <a href="/ContractAwarded/Search">Search Awarded Contracts</a>
+
+    </li>
+                    </ul>
+            </li>
+            <li>
+                <a href="#">Tools &amp; Help</a>
+                    <ul>
+    <li>
+            <a href="/Home/ContactUs">Contact Us</a>
+
+    </li>
+    <li>
+            <a href="/Help/Public">Help Page</a>
+
+    </li>
+    <li>
+            <a href="/Account/Logon">eTenders Login</a>
+
+    </li>
+    <li>
+            <a href="/Account/Register">Register for eTendering</a>
+
+    </li>
+    <li>
+            <a href="/Search/Index">Search</a>
+
+    </li>
+    <li>
+            <a href="/Help/SystemOverview">System Overview</a>
+
+    </li>
+    <li>
+            <a href="/Help/Categories">UNSPSC Categories</a>
+
+    </li>
+                    </ul>
+            </li>
+    </ul>
+</body>
+</html>
+                    </div>
+                    <div id="searchcontainer">
+                        <input type="text" id="txtSearch" aria-labelledby="btnSearch" />
+                        <button class="button" type="button" id="btnSearch" value="Search">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- end header -->
+            <div id="spacer">
+            </div>
+            <div id="wrap_inner">
+                <!-- content -->
+                <div id="content" class="content">
+                    <div id="breadcrumb" class="breadcrumb">
+
+        <a href="/Home/Index" title="Home">Home</a>
+    
+    
+        &gt;
+    
+        <a href="/OpenForBids/Index" title="Open For Bids">Open For Bids</a>
+    
+    
+        &gt;
+    List
+
+                        </div>
+                    <div id="tempMessage">
+                    </div>
+                    
+<div class="FutureOpportunities">
+    <h1>
+        Open for Bids - Sorted by Closing Date</h1>
+    <div class="tendersdisplay">
+        <div class="tableInformationBox">
+            <table>
+                <thead>
+                    <tr>
+                            <th>Files
+                            </th>
+                            <th>Title
+                            </th>
+                            <th>Agency
+                            </th>
+                            <th>Opened
+                            </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 12/10/2026, at 05:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6652"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6652"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6652">East Coast Rock Lobster Translocation Program Services Panel (2026–27) (NRET MR 2026-08)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Farming and Fishing and Forestry and Wildlife Contracting Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Natural Resources and Environment Tasmania
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 14/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6632"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6632"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6632">New Tasmanian Youth Justice Facility – Superintendent Services (DECYP 2303)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Engineering and Research and Technology Based Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>29/08/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6649"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6649"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6649">Statewide Bridge Joint Rehabilitation Works 2026-27 (4317)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Structures and Building and Construction and Manufacturing Components and Supplies
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>19/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 20/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6631"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6631"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6631">Consultancy services for the Risk Information Project (DPAC 2025-26-124)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Engineering and Research and Technology Based Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Premier and Cabinet
+                                </td>
+                                <td>12/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 21/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6633"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6633"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6633">Acton Road Intersection Upgrade (4315)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Structures and Building and Construction and Manufacturing Components and Supplies
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>29/08/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6637"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6637"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6637">Dodges Ferry Primary School - Major Redevelopment (J959)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>05/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6623"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6623"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6623">New Tasmanian Youth Justice Facility - Construction Contract (DECYP 2305)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>15/08/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6639"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6639"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6639">Risdon Prison – New Office Accommodation (SIP0040)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Justice
+                                </td>
+                                <td>05/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6640"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6640"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6640">Southern Outlet Rockface Protection Works (4303)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Structures and Building and Construction and Manufacturing Components and Supplies
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>05/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6657"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6657"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6657">Supply of Training and Support for Schools to Implement Structured Literacy 2027-2028 (DECYP 2452)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Education and Training Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 27/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6654"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6654"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6654">Dorset Child and Family Learning Centre (J958)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 28/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6665"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6665"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6665">Asbestos Register Review (K214)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Environmental Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6662"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6662"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6662">Elective Surgery Services - Refresh (DOH-6060) (DOH-6093)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Healthcare Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Health
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6659"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6659"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6659">Statewide/Regional Preventative Maintenance - Fire Services (IS-1020)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Health
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6663"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6663"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6663">Tasmanian Housing Register Review (HT-2020)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Homes Tasmania
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 28/10/2026, at 04:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6658"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6658"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6658">Ticketing Services (STRFT17)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Stadiums Tasmania
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 30/10/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6653"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6653"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6653">Vehicle Hire Services – V675 (V675-2026)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Vehicles and their Accessories and Components
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 04/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6660"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6660"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6660">Internal Audit Services (DPAC 2025-26-129)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Premier and Cabinet
+                                </td>
+                                <td>10/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6650"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6650"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6650">Risdon Vale Primary School - Outside School Hours Care (OSHC) (DECYP 2498)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: None
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6656"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6656"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6656">Tasman Highway – Northern Access Road Upgrades (4305)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Structures and Building and Construction and Manufacturing Components and Supplies
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6647"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6647"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6647">Waste Management and Recycling Services (DECYP 2391)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Environmental Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>19/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 06/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6655"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6655"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6655">Expressions of Interest: Business opportunity for the Shot Tower Historic Site, Taroona, Hobart. (26-3140)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: None
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Natural Resources and Environment Tasmania
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6651"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6651">Request for Expression of Interest - Aged Care Greenfield Sites  (IS-1039)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Land and Buildings and Structures and Thoroughfares
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Health
+                                </td>
+                                <td>26/09/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 06/11/2026, at 03:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6672"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6672"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6672">DPFEM Mechanical Engineering Consultancy Services (DPFEM-MECS-2026)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Engineering and Research and Technology Based Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Police, Fire and Emergency Management
+                                </td>
+                                <td>10/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 10/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6664"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6664"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6664">Launceston Reception Prison Infrastructure Upgrades (SIP0048)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Justice
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 11/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6670"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6670"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6670">Anatomical Pathology Tracking Solution (DOH-6096)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Information Technology Broadcasting and Telecommunications
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Health
+                                </td>
+                                <td>10/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6669"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6669"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6669">South George Town Primary School – Major Redevelopment (J963)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>10/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 17/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6667"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6667"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6667">Ron Barwick Prison (RBP) Shower Upgrade (SIP0043)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Justice
+                                </td>
+                                <td>03/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 25/11/2026, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6668"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6668"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6668">Bridport Main Road and East Tamar Highway – Heavy Vehicle Driver Rest Area Upgrade (3480)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Structures and Building and Construction and Manufacturing Components and Supplies
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>10/10/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 14/03/2028, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6256"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6256">Request for Application - Multi-Use List: Resources for Emergency Assistance (3942)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Engineering and Research and Technology Based Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>15/03/2025
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 03/05/2028, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/6271"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/6271"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6271">Standing Offer Panel for Code of Conduct Investigations (Readvertised) (DECYP 1332-2)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department for Education, Children and Young People
+                                </td>
+                                <td>05/04/2025
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 13/08/2029, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+                                                <img alt="not here" src="/Images/Icon/blank.gif"  width="18px" />
+                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/6625">Valuation Supplier List (multi-use list)  (NRET OVG 2026-08)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Land and Buildings and Structures and Thoroughfares
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Natural Resources and Environment Tasmania
+                                </td>
+                                <td>15/08/2026
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 01/01/2030, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/353"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/353">Registration of Interest - Tasmanian Government Probity Adviser Directory (ROI-PPB-2010-01)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>27/03/2010
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 30/06/2030, at 12:00 AM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+                                                <img alt="not here" src="/Images/Icon/blank.gif"  width="18px" />
+                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/5158">Production Register (13851)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Management and Business Professionals and Administrative Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Tourism Tasmania
+                                </td>
+                                <td>01/05/2021
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/4127"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/4127">TRMF Vehicle Bodywork Repairers - Request for Application (TRMF-2017-2)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Transportation and Storage and Mail Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>10/06/2017
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 03/12/2030, at 02:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/3810"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/3810">Expression of Interest for Tourism Investment Opportunities (EOIRound2)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Travel and Food and Lodging and Entertainment Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Building Tasmania
+                                </td>
+                                <td>17/12/2016
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: Perpetually Open</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+                                                <img alt="not here" src="/Images/Icon/blank.gif"  width="18px" />
+                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/4515">Department of Treasury and Finance Prequalification Scheme - Registration of Consultants for Building and Construction and Maintenance Services (PQ2)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>26/01/2019
+                                </td>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+                                                <img alt="not here" src="/Images/Icon/blank.gif"  width="18px" />
+                                        </div>
+                                        <div id="rightDiv">
+                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/4514">Department of Treasury and Finance Prequalification Scheme - Registration of Contractors for Building and Construction and Maintenance Services (PQ1)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Facility Construction and Maintenance Services
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>26/01/2019
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: 11/11/2050, at 12:00 PM</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/365"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/365"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/365">Demonstration Notice - elodgement process. (DemoTender)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Building and Construction Machinery and Accessories
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>09/10/2004
+                                </td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <b>Closes: Perpetually Open</b>
+                            </th>
+                        </tr>
+                        <tr>
+                            
+                            
+                                <td class="FilesCell">
+                                    <div class="downloadImagesCell">
+                                        <div id="leftDiv">
+<a href="/OpenForBids/Downloadables/5128"><img alt="download files" src="/Images/Icon/downloadLegendImage.gif" title="Download files" /></a>                                        </div>
+                                        <div id="rightDiv">
+<a href="/OpenForBids/ConditionsOfUse/5128"><img alt="upload files" src="/Images/Icon/uploadLegendImage.gif" title="Lodge a Submission electronically" /></a>                                        </div>
+                                    </div>
+                                </td>
+                                                            <td colspan=" 1">
+                                    <ul>
+                                        <li>
+                                            <a href="/OpenForBids/Details/5128">Technology Services Multi-use List (TSL) (TSL-2021)</a>
+                                        </li>
+                                            <li>
+                                                UNSPSC Category: Information Technology Broadcasting and Telecommunications
+                                            </li>
+                                    </ul>
+                                </td>
+                                <td>Department of Treasury and Finance
+                                </td>
+                                <td>29/05/2021
+                                </td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+</div>
+
+</div>
+
+                </div>
+                <!-- end content -->
+            </div>
+            <!-- footer -->
+            <div id="TG-footer">
+                <hr />
+                <a href="http://www.tas.gov.au/" class="logo">
+                    <img src="/Images/Logo/etenders_logo_footer.jpg" alt="Tasmania Government"
+                         title="Visit Tasmania Online" width="92" height="75" />
+                </a>
+                <p>
+                    <a href="http://www.tas.gov.au/">Tasmania Online</a> | <a href="http://www.service.tas.gov.au/">
+                        Service Tasmania
+                    </a> | <a href="/Home/Index">Home</a> | <a href="/Home/ContactUs">Contact</a>
+                    | <a href="#top">Top</a>
+                </p>
+                <p>
+                    This page is an initiative of the <a href="http://www.treasury.tas.gov.au/">
+                        Department
+                        of Treasury and Finance.
+                    </a><br />
+                    Questions regarding content or presentation may be directed to <a href="mailto:tenders@treasury.tas.gov.au">
+                        tenders@treasury.tas.gov.au
+                    </a><br />
+                    Telephone 61-3-6145 5888, Facsimile 61-3-6233 3681
+                </p>
+                <p>
+                    The URL for this site is <span id="spanSiteLocationLink"></span>
+                    . This site is a part of <a href="http://www.purchasing.tas.gov.au">http://www.purchasing.tas.gov.au</a>.
+                    © Government of Tasmania
+                </p>
+                <p>
+                    You are directed to the <a href="http://www.tas.gov.au/stds/codi.htm">
+                        disclaimer and
+                        copyright notice
+                    </a>and a <a href="/PersonalInformationProtection">personal information protection statement</a>
+                    governing the information provided on this site.
+                </p>
+            </div>
+            <!-- end footer -->
+        </div>
+    </div>
+    <!-- loading spinner -->
+    <div id="loading-spinner-div-background">
+        <div id="loading-spinner-div" class="ui-corner-all">
+            <!-- <div class="loader-spinner" style="margin-left: 160px; margin-top: 20px"></div> -->
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+    <!-- Please wait modal -->
+    <div id="loading-div-background">
+        <div id="loading-div" class="ui-corner-all">
+            <div class="loader" style="margin-left: 180px; margin-top: 20px"></div>
+
+            <h2 style="color: black; font-weight: normal;">Please wait....</h2>
+            <hr>
+            <div id="loading-div-message">
+                Dont hit the back button or any other buttons, a response receipt will come back shortly!
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog-timeout-message" title="Session timed out">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+            Your session has timed out. To continue on this page, please refresh by pressing F5.
+        </p>
+    </div>
+
+</body>
+</html>
