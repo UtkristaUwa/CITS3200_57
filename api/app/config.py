@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     # Scraper health diagnostics storage
     scraper_health_bucket: str = "tenderai-dev-documents"
     scraper_health_object: str = "scraper_health.json"
+    # Written by the reprocess run so the admin page can show its progress.
+    reprocess_progress_object: str = "reprocess_progress.json"
 
     # Entra ID SSO. Auto-provisioning trusts the tenant boundary enforced by
     # the single-tenant Entra app registration; the domain list is optional
