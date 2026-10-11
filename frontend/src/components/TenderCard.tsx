@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { Fragment, useId, useState, type ReactNode } from 'react';
 import {
     Card,
     CardContent,
@@ -17,6 +17,11 @@ import {
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
   import ShareIcon from '@mui/icons-material/Share';
   import type { Tender } from '../lib/api';
+  import { useUserPreferences } from '../lib/UserPreferencesContext';
+  import {
+    CONFIGURABLE_CARD_FIELDS,
+    type CardFieldId,
+  } from '../lib/tenderPreferences';
   import { TenderDocuments } from './TenderDocuments';
   import { ShareTenderDialog } from './ShareTenderDialog';
 
@@ -35,6 +40,8 @@ import {
       overflowWrap: 'anywhere',
     },
   } as const;
+
+  type FieldPlacement = 'compact' | 'expanded';
 
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
@@ -89,8 +96,123 @@ import {
   }) {
     const detailsId = useId();
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
+    const { preferences } = useUserPreferences();
     const focusAreas = Array.isArray(tender.focus_areas) ? tender.focus_areas : [];
     const workTypes = Array.isArray(tender.work_types) ? tender.work_types : [];
+    const selectedCompactFieldIds = new Set(preferences.cardView.compactFields);
+    const compactFieldIds = CONFIGURABLE_CARD_FIELDS
+      .map((field) => field.id)
+      .filter((fieldId) => selectedCompactFieldIds.has(fieldId));
+    const expandedFieldIds = CONFIGURABLE_CARD_FIELDS
+      .map((field) => field.id)
+      .filter((fieldId) => !selectedCompactFieldIds.has(fieldId));
+    const expandedFieldsBeforeWorkTypes = expandedFieldIds.filter(
+      (fieldId) => fieldId !== 'status',
+    );
+    const showExpandedStatus = expandedFieldIds.includes('status');
+
+    const standardFieldSx = (placement: FieldPlacement) => ({
+      textAlign: 'left',
+      mb: placement === 'compact' ? 0.5 : 0,
+      overflowWrap: 'anywhere',
+    } as const);
+
+    const configurableFieldRenderers: Record<
+      CardFieldId,
+      (placement: FieldPlacement) => ReactNode
+    > = {
+      atAGlance: (placement) => (
+        <Box
+          sx={{
+            p: 1.5,
+            mb: placement === 'compact' ? 2 : 0,
+            gridColumn: placement === 'expanded' ? '1 / -1' : 'auto',
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(207,158,255,0.12)' : 'rgba(207,158,255,0.24)'),
+            borderRadius: 1.5,
+            borderLeft: `4px solid ${BRAND_COLORS.blue}`,
+            textAlign: 'left',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+            <AutoAwesomeIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }} />
+            <Typography variant="caption" sx={{ fontWeight: 700, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }}>
+              At a Glance
+            </Typography>
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.primary',
+              fontSize: '0.875rem',
+              lineHeight: 1.4,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {tender.summary_headline ?? (tender.description ? `${tender.description.slice(0, 180)}…` : 'No AI summary generated for this tender yet.')}
+          </Typography>
+        </Box>
+      ),
+      atmId: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
+        </Typography>
+      ),
+      closingDate: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
+        </Typography>
+      ),
+      agency: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
+        </Typography>
+      ),
+      source: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Source:</strong>{' '}
+          {tender.source_url ? (
+            <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
+              {tender.source_url}
+            </Link>
+          ) : (
+            'Not specified'
+          )}
+        </Typography>
+      ),
+      monetaryValue: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Monetary Value:</strong> {formatMoney(tender)}
+        </Typography>
+      ),
+      openingDate: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
+        </Typography>
+      ),
+      location: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Location:</strong> {tender.location ?? 'Not specified'}
+        </Typography>
+      ),
+      status: (placement) => (
+        <Typography variant="body2" sx={standardFieldSx(placement)}>
+          <strong>Status:</strong> {tender.status ?? 'Active'}
+        </Typography>
+      ),
+    };
+
+    const renderConfigurableField = (
+      fieldId: CardFieldId,
+      placement: FieldPlacement,
+    ) => (
+      <Fragment key={fieldId}>
+        {configurableFieldRenderers[fieldId](placement)}
+      </Fragment>
+    );
 
     return (
       <Card
@@ -191,58 +313,7 @@ import {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              p: 1.5,
-              mb: 2,
-              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(207,158,255,0.12)' : 'rgba(207,158,255,0.24)'),
-              borderRadius: 1.5,
-              borderLeft: `4px solid ${BRAND_COLORS.blue}`,
-              textAlign: 'left',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-              <AutoAwesomeIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }} />
-              <Typography variant="caption" sx={{ fontWeight: 700, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }}>
-                At a Glance
-              </Typography>
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'text.primary',
-                fontSize: '0.875rem',
-                lineHeight: 1.4,
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                overflowWrap: 'anywhere',
-              }}
-            >
-              {tender.summary_headline ?? (tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.')}
-            </Typography>
-          </Box>
-
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
-            <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
-            <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
-            <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
-            <strong>Source:</strong>{' '}
-            {tender.source_url ? (
-              <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
-                {tender.source_url}
-              </Link>
-            ) : (
-              'Not specified'
-            )}
-          </Typography>
+          {compactFieldIds.map((fieldId) => renderConfigurableField(fieldId, 'compact'))}
         </CardContent>
 
         <Collapse in={expanded} timeout={300} unmountOnExit id={detailsId}>
@@ -283,20 +354,12 @@ import {
           )}
           <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
-              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 1 } }}>
-                <strong>Monetary Value:</strong> {formatMoney(tender)}
-              </Typography>
-              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 1 } }}>
-                <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
-              </Typography>
-              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 2 } }}>
-                <strong>Location:</strong> {tender.location ?? 'Not specified'}
-              </Typography>
+              {expandedFieldsBeforeWorkTypes.map((fieldId) => renderConfigurableField(fieldId, 'expanded'))}
               {workTypes.length > 0 && (
                 <Box
                   component="section"
                   aria-label="Work Types"
-                  sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 2 }, minWidth: 0 }}
+                  sx={{ minWidth: 0 }}
                 >
                   <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>Work Types</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0 }}>
@@ -306,10 +369,8 @@ import {
                   </Box>
                 </Box>
               )}
-              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 1 }, gridRow: { xs: 'auto', sm: 3 } }}>
-                <strong>Status:</strong> {tender.status ?? 'Active'}
-              </Typography>
-              <Typography variant="body2" sx={{ gridColumn: { xs: 'auto', sm: 2 }, gridRow: { xs: 'auto', sm: 3 } }}>
+              {showExpandedStatus && renderConfigurableField('status', 'expanded')}
+              <Typography variant="body2">
                 <strong>Category:</strong> {tender.category ?? 'Not specified'}
               </Typography>
             </Box>

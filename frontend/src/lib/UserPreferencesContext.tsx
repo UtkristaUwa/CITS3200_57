@@ -228,17 +228,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
       const unauthenticatedError = new Error(
         'You must be signed in to save tender preferences.',
       );
-      if (!authLoading && mountedRef.current) {
-        setStoredState({
-          ownerUid: null,
-          generation,
-          preferences: DEFAULT_TENDER_PREFERENCES,
-          ready: true,
-          loading: false,
-          pendingSaveCount: 0,
-          error: unauthenticatedError,
-        });
-      }
       throw unauthenticatedError;
     }
 
@@ -256,7 +245,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
       return {
         ...currentState,
         pendingSaveCount: currentState.pendingSaveCount + 1,
-        error: null,
       };
     });
 
@@ -298,17 +286,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: unknown) {
       const saveError = asError(error, 'Failed to save user preferences.');
-      if (operationIsCurrent(uid, generation)) {
-        setStoredState((currentState) => {
-          if (
-            currentState.ownerUid !== uid
-            || currentState.generation !== generation
-          ) {
-            return currentState;
-          }
-          return { ...currentState, error: saveError };
-        });
-      }
       throw saveError;
     } finally {
       if (operationIsCurrent(uid, generation)) {
