@@ -160,7 +160,6 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 | [Dockerfile](https://github.com/UtkristaUwa/CITS3200_57/blob/main/Dockerfile), [cloudbuild.yaml](https://github.com/UtkristaUwa/CITS3200_57/blob/main/cloudbuild.yaml) | Pipeline image and its build                                                  |
 | [tests/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests)                                                                                                   | Python, Firestore rules and Cloud Functions tests                             |
 | [documentation/SSO_SETUP.md](https://github.com/UtkristaUwa/CITS3200_57/blob/main/documentation/SSO_SETUP.md)                                                                            | Microsoft sign-in setup checklist                                             |
-| tenders_data/                                                                                                                                                          | Sample scraped tenders committed for testing                                  |
 
 ## 3. Daily pipeline
 
