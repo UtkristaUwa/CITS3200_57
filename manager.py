@@ -20,6 +20,7 @@ from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfo
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
+from error_scrapers.tenders_wa.scraper import run_scraper as run_tenders_wa
 from error_scrapers import common, reporting, run_notes
 from processing.runtime_config import prepare_runtime_config
 from email.message import EmailMessage
@@ -71,6 +72,8 @@ PORTAL_URL_MAP = {
     "qld_qtenders": "https://qtenders.hpw.qld.gov.au",
     "qbuild_etender": "https://etender.hpw.qld.gov.au",
     "vic_buyingfor": "https://www.tenders.vic.gov.au",
+    "tenders_wa": "https://www.tenders.wa.gov.au",
+
 }
 def explain_code(code: int | None) -> tuple[str, str, str]:
   """Translates an error status code into:
@@ -147,14 +150,15 @@ LOCAL_OUTPUT_DIR = "tenders_data"
 # Every scraper the daily run should execute, paired with the source_id that
 # identifies its portal in BigQuery and in the storage bucket's paths.
 SCRAPERS = [
-    ("grantconnect", run_grantconnect),
-    ("buynsw", run_buynsw),
-    ("tenders_act", run_act),
-    ("austender", run_austender),
-    ("nt_qtol", run_nt_qtol),
-    ("qld_qtenders", run_qld_qtenders),
-    ("qbuild_etender", run_qbuild_etender),
-    ("vic_buyingfor", run_vic_buyingfor),
+    #("grantconnect", run_grantconnect),
+    #("buynsw", run_buynsw),
+    #("tenders_act", run_act),
+    #("austender", run_austender),
+    #("nt_qtol", run_nt_qtol),
+    #("qld_qtenders", run_qld_qtenders),
+    #("qbuild_etender", run_qbuild_etender),
+    #("vic_buyingfor", run_vic_buyingfor),
+    ("tenders_wa", run_tenders_wa),
 ]
 
 # Used for any tender folder no scraper claimed -- shouldn't happen, but a
