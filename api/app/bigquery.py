@@ -7,6 +7,7 @@ from google import genai
 from google.cloud import bigquery, storage as gcs
 
 from app.config import settings
+from app.query_parser import parse_search_query
 
 logger = logging.getLogger("TenderSearch")
 
@@ -181,21 +182,13 @@ def list_tenders(
         )
         params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
-    # Future query syntax parser (AND/OR/NOT/field:term/wildcard) slots in here.
-    tokens: list[str] = []
+    order_clause = "ORDER BY first_seen_at DESC"
     if clean_q and not is_semantic:
-        tokens = clean_q.split()
-        for idx, token in enumerate(tokens):
-            param_name = f"kw_{idx}"
-            escaped_kw = _escape_like_pattern(token.lower())
-            conditions.append(
-                f"(LOWER(title) LIKE @{param_name} "
-                f"OR LOWER(source_reference_id) LIKE @{param_name} "
-                f"OR LOWER(description) LIKE @{param_name} "
-                f"OR LOWER(summary_headline) LIKE @{param_name} "
-                f"OR LOWER(issuing_agency) LIKE @{param_name})"
-            )
-            params.append(bigquery.ScalarQueryParameter(param_name, "STRING", f"%{escaped_kw}%"))
+        parsed_q = parse_search_query(clean_q)
+        conditions.extend(parsed_q.conditions)
+        params.extend(parsed_q.parameters)
+        if parsed_q.order_clause:
+            order_clause = parsed_q.order_clause
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -227,45 +220,6 @@ def list_tenders(
     else:
         # Case B: Standard chronological browse or fast keyword search with relevance ranking
         select_cols = _build_select_columns("")
-        if clean_q:
-            if len(tokens) > 1:
-                params.append(bigquery.ScalarQueryParameter("full_q", "STRING", f"%{_escape_like_pattern(clean_q.lower())}%"))
-                title_id_all = " AND ".join(
-                    f"(LOWER(title) LIKE @kw_{idx} OR LOWER(source_reference_id) LIKE @kw_{idx})"
-                    for idx in range(len(tokens))
-                )
-                title_id_any = " OR ".join(
-                    f"(LOWER(title) LIKE @kw_{idx} OR LOWER(source_reference_id) LIKE @kw_{idx})"
-                    for idx in range(len(tokens))
-                )
-                headline_any = " OR ".join(
-                    f"LOWER(summary_headline) LIKE @kw_{idx}"
-                    for idx in range(len(tokens))
-                )
-                order_clause = f"""
-                    ORDER BY
-                        CASE
-                            WHEN LOWER(title) LIKE @full_q OR LOWER(source_reference_id) LIKE @full_q THEN 0
-                            WHEN ({title_id_all}) THEN 1
-                            WHEN ({title_id_any}) THEN 2
-                            WHEN ({headline_any}) THEN 3
-                            ELSE 4
-                        END ASC,
-                        first_seen_at DESC
-                """
-            else:
-                order_clause = """
-                    ORDER BY
-                        CASE
-                            WHEN LOWER(title) LIKE @kw_0 OR LOWER(source_reference_id) LIKE @kw_0 THEN 0
-                            WHEN LOWER(summary_headline) LIKE @kw_0 THEN 1
-                            ELSE 2
-                        END ASC,
-                        first_seen_at DESC
-                """
-        else:
-            order_clause = "ORDER BY first_seen_at DESC"
-
         query = f"""
             SELECT {select_cols}
             FROM `{settings.tenders_table}`

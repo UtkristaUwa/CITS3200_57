@@ -79,6 +79,7 @@ export default function TendersPage() {
             if (!cancelled) setTenders(fallbackData);
           } catch (fallbackErr: unknown) {
             if (!cancelled && !isRequestCancelled(fallbackErr)) {
+              setWarning(null);
               setError(fallbackErr instanceof Error ? fallbackErr.message : 'Failed to load tenders.');
             }
           }

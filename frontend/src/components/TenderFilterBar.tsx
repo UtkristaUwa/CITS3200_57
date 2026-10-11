@@ -113,12 +113,12 @@ export default function TenderFilterBar(props: TenderFilterBarProps) {
               fontWeight: props.advancedSearch ? 600 : 500,
               ...(props.advancedSearch
                 ? {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                    background: 'linear-gradient(135deg, #2D3AF1 0%, #6E78F7 100%)',
                     color: '#fff',
                     borderColor: 'transparent',
-                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.35)',
+                    boxShadow: '0 2px 8px rgba(45, 58, 241, 0.35)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #6d28d9 0%, #4338ca 100%)',
+                      background: 'linear-gradient(135deg, #232EC2 0%, #5C67ED 100%)',
                     },
                   }
                 : {

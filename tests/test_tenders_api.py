@@ -703,3 +703,49 @@ def test_keyword_tender_query_filters_escapes_wildcards_and_ranks():
     assert param_dict["kw_1"] == "%solar\\_power%"
     assert param_dict["full_q"] == "%100\\% solar\\_power%"
     assert rows[0]["distance"] is None
+
+
+def test_keyword_query_syntax_operators_and_scoping():
+    client = _FakeBigQueryClient(
+        [
+            {
+                "tender_id": "sql-syntax",
+                "documents": [],
+                "raw_extra": None,
+                "focus_areas": {},
+                "work_types": {},
+            }
+        ]
+    )
+
+    rows = bigquery_module.list_tenders(
+        client,
+        limit=10,
+        offset=0,
+        q='agency:transport title:"road work" termA OR termB -dental electr*',
+        mode="keyword",
+    )
+
+    sql = client.query_text
+    param_dict = {p.name: p.value for p in client.job_config.query_parameters}
+
+    # Field scoping
+    assert "LOWER(issuing_agency) LIKE @kw_0" in sql
+    assert param_dict["kw_0"] == "%transport%"
+
+    # Exact phrase with field scoping
+    assert "LOWER(title) LIKE @kw_1" in sql
+    assert param_dict["kw_1"] == "%road work%"
+
+    # Explicit OR
+    assert "LIKE @kw_2" in sql and "LIKE @kw_3" in sql
+    assert "OR" in sql
+
+    # Negation
+    assert "NOT" in sql
+    assert "dental" in param_dict["kw_4"]
+
+    # Wildcard translation (* -> %)
+    assert param_dict["kw_5"] == "electr%"
+    assert rows[0]["tender_id"] == "sql-syntax"
+
