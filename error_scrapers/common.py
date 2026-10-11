@@ -152,6 +152,14 @@ class EmptySourceFileError(ExtractionError):
     file, so there is no text to get and nothing for us to fix.
     """
 
+class EncryptedFileError(ExtractionError):
+    """
+    Raised when a file is password protected. We cannot read it and will not be
+    given the password, so the file is dropped (see extract_attachment_text) and
+    the tender is reported as partial.
+    """
+
+
 #This is our pdf extraction code
 def extract_pdf(file_path: str) -> str:
     try:
@@ -360,6 +368,8 @@ def extract_xls(file_path: str) -> str:
         book.release_resources()
         return "\n\n".join(parts)
     except Exception as e:
+        if "encrypted" in str(e).lower():
+            raise EncryptedFileError(f"XLS extraction failed on {file_path}: {e}") from e
         raise ExtractionError(f"XLS extraction failed on {file_path}: {e}") from e
 
 
@@ -465,8 +475,66 @@ def run_extractor(extractor, path: str, timeout: float | None = None) -> str:
         # The type name travels in the message, because only text crosses the process boundary.
         if payload.startswith("EmptySourceFileError:"):
             raise EmptySourceFileError(payload)
+        if payload.startswith("EncryptedFileError:"):
+            raise EncryptedFileError(payload)
         raise ExtractionError(payload)
     return payload
+
+
+_ZIP_OFFICE_TYPES = (".docx", ".xlsx", ".xlsm", ".pptx")
+_OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+# "EncryptedPackage" as it is stored inside an encrypted Office file (UTF-16).
+_ENCRYPTED_MARKER = "EncryptedPackage".encode("utf-16-le")
+
+
+def _check_office_container(path: str):
+    """
+    Look at the first bytes of a .docx/.xlsx/.xlsm/.pptx before handing it to an
+    extractor. These formats are zip files; anything else is not what its name
+    says.
+
+    Returns None for a genuine zip (carry on as normal). Returns the file's text
+    ("" if it has none we can read) for a file that is not a zip, after logging
+    what it actually is (.docx only; other types fail as before). Raises EncryptedFileError for a password-protected one.
+    """
+    name = os.path.basename(path)
+    is_docx = path.lower().endswith(".docx")
+    try:
+        with open(path, "rb") as handle:
+            head = handle.read(8)
+            if head.startswith(b"PK"):
+                return None
+            if head == _OLE_MAGIC:
+                handle.seek(0)
+                if _ENCRYPTED_MARKER in handle.read():
+                    raise EncryptedFileError(
+                        f"{name} is password protected (encrypted Office file)")
+                if not is_docx:
+                    return None
+                kind = "an old-format Office file (not a zip)"
+                text = ""
+            elif not is_docx:
+                return None  # other types: the extractor fails as before
+            else:
+                handle.seek(0)
+                sample = handle.read(5 * 1024 * 1024)
+                stripped = sample.lstrip()[:200].lower()
+                if stripped.startswith((b"<!doctype html", b"<html", b"<?xml", b"<")):
+                    kind = "a web/XML page"
+                    text = re.sub(r"\s+", " ", re.sub(
+                        r"<[^>]*>", " ", sample.decode("utf-8", errors="replace"))).strip()
+                elif not sample:
+                    kind = "an empty file"
+                    text = ""
+                else:
+                    kind = "not a zip file (unrecognised content)"
+                    text = ""
+    except OSError:
+        return None  # let the normal extractor report the real problem
+    logger.warning("%s is named %s but is %s; stored %s",
+                   name, os.path.splitext(name)[1].lower(), kind,
+                   "with its readable text" if text else "without text")
+    return text
 
 
 def extract_with_fallback(extractor, path: str, timeout: float | None = None) -> str:
@@ -476,7 +544,16 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
     file. The tender keeps that text (tables and headers may be missing), and
     the loss is logged. Any other file type, or a file the fallback can't read
     either, raises the original error.
+
+    A password-protected file raises EncryptedFileError. An Office-named file
+    that is not a zip at all (a web page or old-format file saved under the
+    wrong name) is stored with whatever text it has, and logged -- the portal
+    served it that way, so there is nothing for us to fix.
     """
+    if path.lower().endswith(_ZIP_OFFICE_TYPES):
+        text = _check_office_container(path)
+        if text is not None:
+            return text
     try:
         return run_extractor(extractor, path, timeout)
     except EmptySourceFileError as e:
@@ -495,6 +572,14 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
         return text
 
 
+def _drop_file(path: str) -> None:
+    for candidate in (path, path + ".txt"):
+        try:
+            os.remove(candidate)
+        except OSError:
+            pass
+
+
 def extract_attachment_text(folder: str, file_name: str) -> bool:
     """
     Write <file_name>.txt next to a saved attachment, when we have an extractor
@@ -510,6 +595,15 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
         text = extract_with_fallback(extractor, path)
         save_extracted_text(folder, file_name, text)
         return True
+    except EncryptedFileError as e:
+        # Password protected: we can't read it and never will. Drop the file so
+        # it isn't stored, say so in the log, and report the tender as partial.
+        _drop_file(path)
+        print(f"PASSWORD PROTECTED: {file_name} dropped")
+        logger.warning("%s is password protected; dropped it (not stored) -- "
+                       "tender %s is reported as partial", file_name,
+                       os.path.basename(os.path.normpath(folder)))
+        return False
     except ExtractionError as e:
         size = os.path.getsize(path) if os.path.exists(path) else "?"
         print(f"EXTRACTION FAILED: {e}")
@@ -582,7 +676,11 @@ def download_attachment(client, url: str, folder: str, file_name: str,
         "content_type": content_type,
         "size_bytes": os.path.getsize(raw_path),
     }
-    return attachment, extract_attachment_text(folder, saved_name)
+    extracted = extract_attachment_text(folder, saved_name)
+    if not os.path.exists(raw_path):
+        # Dropped because it is password protected: it is not an attachment.
+        raise EncryptedFileError(f"{saved_name} is password protected; dropped")
+    return attachment, extracted
 
 def wait_for_download(downloads_dir: str, before, max_wait: float,
                       poll: float = 1.0, stall_seconds: float = 300.0,
@@ -682,12 +780,17 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                 logger.warning(f"package held an empty file ({saved_name}); not stored")
                 any_failed = True
                 continue
+            size = os.path.getsize(path)
+            extracted = extract_attachment_text(folder, saved_name)
+            if not os.path.exists(path):
+                any_failed = True  # dropped (password protected): not an attachment
+                continue
             attachments.append({
                 "file_name": saved_name,
                 "content_type": None,
-                "size_bytes": os.path.getsize(path),
+                "size_bytes": size,
             })
-            any_failed = any_failed or not extract_attachment_text(folder, saved_name)
+            any_failed = any_failed or not extracted
 
     return attachments, any_failed
 
