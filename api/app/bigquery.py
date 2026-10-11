@@ -91,6 +91,11 @@ def get_storage_client() -> gcs.Client:
     return gcs.Client(project=settings.google_cloud_project)
 
 
+def _escape_like_pattern(text: str) -> str:
+    """Escape backslash and SQL LIKE wildcards (% and _)."""
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def _build_select_columns(col_prefix: str = "") -> str:
     """Build column projection, excluding extracted_text to reduce payload by ~98%."""
     cols = []
@@ -151,7 +156,7 @@ def list_tenders(
 
     if location:
         conditions.append(f"LOWER({col_prefix}location) LIKE @location")
-        params.append(bigquery.ScalarQueryParameter("location", "STRING", f"%{location.lower()}%"))
+        params.append(bigquery.ScalarQueryParameter("location", "STRING", f"%{_escape_like_pattern(location.lower())}%"))
 
     if min_value is not None:
         conditions.append(f"{col_prefix}value_amount >= @min_value")
@@ -177,10 +182,12 @@ def list_tenders(
         params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
     # Future query syntax parser (AND/OR/NOT/field:term/wildcard) slots in here.
+    tokens: list[str] = []
     if clean_q and not is_semantic:
         tokens = clean_q.split()
         for idx, token in enumerate(tokens):
             param_name = f"kw_{idx}"
+            escaped_kw = _escape_like_pattern(token.lower())
             conditions.append(
                 f"(LOWER(title) LIKE @{param_name} "
                 f"OR LOWER(source_reference_id) LIKE @{param_name} "
@@ -188,7 +195,7 @@ def list_tenders(
                 f"OR LOWER(summary_headline) LIKE @{param_name} "
                 f"OR LOWER(issuing_agency) LIKE @{param_name})"
             )
-            params.append(bigquery.ScalarQueryParameter(param_name, "STRING", f"%{token.lower()}%"))
+            params.append(bigquery.ScalarQueryParameter(param_name, "STRING", f"%{escaped_kw}%"))
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -221,15 +228,41 @@ def list_tenders(
         # Case B: Standard chronological browse or fast keyword search with relevance ranking
         select_cols = _build_select_columns("")
         if clean_q:
-            order_clause = """
-                ORDER BY
-                    CASE
-                        WHEN LOWER(title) LIKE @kw_0 OR LOWER(source_reference_id) LIKE @kw_0 THEN 0
-                        WHEN LOWER(summary_headline) LIKE @kw_0 THEN 1
-                        ELSE 2
-                    END ASC,
-                    first_seen_at DESC
-            """
+            if len(tokens) > 1:
+                params.append(bigquery.ScalarQueryParameter("full_q", "STRING", f"%{_escape_like_pattern(clean_q.lower())}%"))
+                title_id_all = " AND ".join(
+                    f"(LOWER(title) LIKE @kw_{idx} OR LOWER(source_reference_id) LIKE @kw_{idx})"
+                    for idx in range(len(tokens))
+                )
+                title_id_any = " OR ".join(
+                    f"(LOWER(title) LIKE @kw_{idx} OR LOWER(source_reference_id) LIKE @kw_{idx})"
+                    for idx in range(len(tokens))
+                )
+                headline_any = " OR ".join(
+                    f"LOWER(summary_headline) LIKE @kw_{idx}"
+                    for idx in range(len(tokens))
+                )
+                order_clause = f"""
+                    ORDER BY
+                        CASE
+                            WHEN LOWER(title) LIKE @full_q OR LOWER(source_reference_id) LIKE @full_q THEN 0
+                            WHEN ({title_id_all}) THEN 1
+                            WHEN ({title_id_any}) THEN 2
+                            WHEN ({headline_any}) THEN 3
+                            ELSE 4
+                        END ASC,
+                        first_seen_at DESC
+                """
+            else:
+                order_clause = """
+                    ORDER BY
+                        CASE
+                            WHEN LOWER(title) LIKE @kw_0 OR LOWER(source_reference_id) LIKE @kw_0 THEN 0
+                            WHEN LOWER(summary_headline) LIKE @kw_0 THEN 1
+                            ELSE 2
+                        END ASC,
+                        first_seen_at DESC
+                """
         else:
             order_clause = "ORDER BY first_seen_at DESC"
 

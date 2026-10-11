@@ -365,6 +365,7 @@ def test_get_tenders_route_serializes_public_tags_and_preserves_existing_fields(
         "closing_after": bigquery_module.date(2026, 1, 1),
         "year": "2026",
         "q": "evaluation",
+        "mode": "keyword",
     }
 
     body = response.json()[0]
@@ -631,6 +632,7 @@ def test_vector_tender_query_includes_classifications_and_preserves_search_behav
         closing_after=bigquery_module.date(2026, 1, 1),
         year="2026",
         q="evaluation",
+        mode="semantic",
     )
 
     sql = client.query_text
@@ -664,3 +666,40 @@ def test_vector_tender_query_includes_classifications_and_preserves_search_behav
     assert rows[0]["distance"] == 0.25
     assert rows[0]["focus_areas"] == {"focus": 5}
     assert rows[0]["work_types"] == '{"work": 4}'
+
+
+def test_keyword_tender_query_filters_escapes_wildcards_and_ranks():
+    client = _FakeBigQueryClient(
+        [
+            {
+                "tender_id": "sql-keyword",
+                "documents": [],
+                "raw_extra": None,
+                "focus_areas": {"focus": 5},
+                "work_types": '{"work": 4}',
+            }
+        ]
+    )
+
+    rows = bigquery_module.list_tenders(
+        client,
+        limit=20,
+        offset=0,
+        status="open",
+        q="100% solar_power",
+        mode="keyword",
+    )
+
+    sql = client.query_text
+    assert "VECTOR_SEARCH" not in sql
+    assert "LOWER(title) LIKE @kw_0" in sql
+    assert "LOWER(title) LIKE @kw_1" in sql
+    assert "ORDER BY" in sql
+    assert "WHEN LOWER(title) LIKE @full_q" in sql
+
+    param_dict = {p.name: p.value for p in client.job_config.query_parameters}
+    # Wildcards % and _ must be escaped
+    assert param_dict["kw_0"] == "%100\\%%"
+    assert param_dict["kw_1"] == "%solar\\_power%"
+    assert param_dict["full_q"] == "%100\\% solar\\_power%"
+    assert rows[0]["distance"] is None
