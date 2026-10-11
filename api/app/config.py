@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     runtime_config_bucket: str = ""
     runtime_config_object: str = ""
 
+    # Tenders scoring below this are hidden from non-admin users. Unscored
+    # tenders (fit NULL) are hidden too, since `NULL >= n` is never true.
+    min_visible_fit: int = 40
+
     # Cloud Run job the admin reprocess button starts. Defaults match the
     # deployed job; override per environment if it is ever renamed.
     pipeline_job_name: str = "tender-batch-job"
