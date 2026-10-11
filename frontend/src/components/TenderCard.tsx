@@ -1,4 +1,4 @@
-import { Fragment, useId, useState, type ReactNode } from 'react';
+import { useId } from 'react';
 import {
     Card,
     CardContent,
@@ -15,33 +15,7 @@ import {
   } from '@mui/material';
   import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
   import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-  import ShareIcon from '@mui/icons-material/Share';
   import type { Tender } from '../lib/api';
-  import { useUserPreferences } from '../lib/UserPreferencesContext';
-  import {
-    CONFIGURABLE_CARD_FIELDS,
-    type CardFieldId,
-  } from '../lib/tenderPreferences';
-  import { TenderDocuments } from './TenderDocuments';
-  import { ShareTenderDialog } from './ShareTenderDialog';
-
-  const BRAND_COLORS = {
-    blue: '#2D3AF1',
-    lilac: '#CF9EFF',
-    orange: '#FF7C00',
-  } as const;
-
-  const TAG_CHIP_SX = {
-    maxWidth: '100%',
-    height: 'auto',
-    '& .MuiChip-label': {
-      py: 0.5,
-      whiteSpace: 'normal',
-      overflowWrap: 'anywhere',
-    },
-  } as const;
-
-  type FieldPlacement = 'compact' | 'expanded';
 
   export function formatDate(value: string | null): string {
     if (!value) return 'Not specified';
@@ -63,14 +37,16 @@ import {
     return 'Not disclosed';
   }
 
-  function StarIcon({ size = 20 }: { size?: number }) {
+  function StarIcon({ size = 20, filled = true }: { size?: number; filled?: boolean }) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}
         height={size}
         viewBox="0 0 256 256"
-        fill="currentColor"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth={filled ? 0 : 16}
         aria-hidden="true"
         focusable="false"
       >
@@ -79,234 +55,36 @@ import {
     );
   }
 
+  function isRecentlySeen(tender: Tender): boolean {
+    if (!tender.first_seen_at) return false;
+    const ageDays = (Date.now() - new Date(tender.first_seen_at).getTime()) / 86_400_000;
+    return ageDays <= 7;
+  }
+
   export function TenderCard({
     tender,
-    isNew = false,
     isFavorite,
     onToggleFavorite,
     expanded,
     onToggleExpand,
   }: {
     tender: Tender;
-    isNew?: boolean;
     isFavorite: boolean;
     onToggleFavorite: (tenderId: string) => void;
     expanded: boolean;
     onToggleExpand: (tenderId: string) => void;
   }) {
     const detailsId = useId();
-    const [shareDialogOpen, setShareDialogOpen] = useState(false);
-    const { preferences } = useUserPreferences();
-    const focusAreas = Array.isArray(tender.focus_areas) ? tender.focus_areas : [];
-    const workTypes = Array.isArray(tender.work_types) ? tender.work_types : [];
-    const selectedCompactFieldIds = new Set(preferences.cardView.compactFields);
-    const compactFieldIds = CONFIGURABLE_CARD_FIELDS
-      .map((field) => field.id)
-      .filter((fieldId) => selectedCompactFieldIds.has(fieldId));
-    const expandedFieldIds = CONFIGURABLE_CARD_FIELDS
-      .map((field) => field.id)
-      .filter((fieldId) => !selectedCompactFieldIds.has(fieldId));
-    const expandedFieldsBeforeWorkTypes = expandedFieldIds.filter(
-      (fieldId) => fieldId !== 'status',
-    );
-    const showExpandedStatus = expandedFieldIds.includes('status');
-
-    const standardFieldSx = (placement: FieldPlacement) => ({
-      textAlign: 'left',
-      mb: placement === 'compact' ? 0.5 : 0,
-      overflowWrap: 'anywhere',
-    } as const);
-
-    const configurableFieldRenderers: Record<
-      CardFieldId,
-      (placement: FieldPlacement) => ReactNode
-    > = {
-      atAGlance: (placement) => (
-        <Box
-          sx={{
-            p: 1.5,
-            mb: placement === 'compact' ? 2 : 0,
-            gridColumn: placement === 'expanded' ? '1 / -1' : 'auto',
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(207,158,255,0.12)' : 'rgba(207,158,255,0.24)'),
-            borderRadius: 1.5,
-            borderLeft: `4px solid ${BRAND_COLORS.blue}`,
-            textAlign: 'left',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-            <AutoAwesomeIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }} />
-            <Typography variant="caption" sx={{ fontWeight: 700, color: (theme) => theme.palette.mode === 'light' ? BRAND_COLORS.blue : BRAND_COLORS.lilac }}>
-              At a Glance
-            </Typography>
-          </Box>
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'text.primary',
-              fontSize: '0.875rem',
-              lineHeight: 1.4,
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              overflowWrap: 'anywhere',
-            }}
-          >
-            {tender.summary_headline ?? (tender.description ? `${tender.description.slice(0, 180)}…` : 'No AI summary generated for this tender yet.')}
-          </Typography>
-        </Box>
-      ),
-      atmId: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
-        </Typography>
-      ),
-      closingDate: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
-        </Typography>
-      ),
-      agency: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
-        </Typography>
-      ),
-      source: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Source:</strong>{' '}
-          {tender.source_url ? (
-            <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
-              {tender.source_url}
-            </Link>
-          ) : (
-            'Not specified'
-          )}
-        </Typography>
-      ),
-      monetaryValue: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Monetary Value:</strong> {formatMoney(tender)}
-        </Typography>
-      ),
-      openingDate: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Opening Date:</strong> {formatDate(tender.publish_date)}
-        </Typography>
-      ),
-      location: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Location:</strong> {tender.location ?? 'Not specified'}
-        </Typography>
-      ),
-      status: (placement) => (
-        <Typography variant="body2" sx={standardFieldSx(placement)}>
-          <strong>Status:</strong> {tender.status ?? 'Active'}
-        </Typography>
-      ),
-    };
-
-    const renderConfigurableField = (
-      fieldId: CardFieldId,
-      placement: FieldPlacement,
-    ) => (
-      <Fragment key={fieldId}>
-        {configurableFieldRenderers[fieldId](placement)}
-      </Fragment>
-    );
 
     return (
-      <Card
-        sx={{
-          mb: 2,
-          minWidth: 0,
-          overflow: { xs: expanded ? 'visible' : 'hidden', sm: 'hidden' },
-          border: '1px solid',
-          borderColor: 'secondary.main',
-          borderRadius: 2,
-          boxShadow: (theme) => theme.palette.mode === 'light'
-            ? '0 4px 14px rgba(36,45,50,0.08)'
-            : 'none',
-        }}
-      >
+      <Card sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
         <CardContent sx={{ pb: 1 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: { xs: focusAreas.length > 0 ? 'row' : 'column', sm: 'row' },
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              gap: { xs: 1, sm: 0 },
-              minWidth: 0,
-              mb: 1.5,
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 0.75,
-                flex: 1,
-                minWidth: 0,
-                width: { xs: focusAreas.length > 0 ? 'auto' : '100%', sm: 'auto' },
-              }}
-            >
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{ minWidth: 0, textAlign: 'left', fontWeight: 700, fontSize: '1.1rem', overflowWrap: 'anywhere' }}
-              >
-                {tender.title || 'Untitled tender'}
-              </Typography>
-              {focusAreas.length > 0 && (
-                <Box
-                  role="group"
-                  aria-label="Focus Areas"
-                  sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 0.75, minWidth: 0 }}
-                >
-                  {focusAreas.map((focusArea) => (
-                    <Chip key={focusArea.id} label={focusArea.label} size="small" sx={TAG_CHIP_SX} />
-                  ))}
-                </Box>
-              )}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, flexShrink: 0, ml: { xs: 0, sm: 1 } }}>
-              {isNew && <Chip label="New" color="primary" size="small" />}
-              {tender.distance != null && (
-                <Tooltip title={`AI semantic match distance: ${tender.distance.toFixed(3)} (lower distance is closer match)`}>
-                  <Chip
-                    icon={<AutoAwesomeIcon sx={{ fontSize: '13px !important', color: '#7c3aed !important' }} />}
-                    label="AI Match"
-                    size="small"
-                    sx={{
-                      fontSize: '0.72rem',
-                      height: 24,
-                      fontWeight: 600,
-                      bgcolor: 'rgba(124, 58, 237, 0.1)',
-                      color: '#7c3aed',
-                      border: '1px solid rgba(124, 58, 237, 0.25)',
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <Tooltip title="Share tender">
-                <IconButton
-                  size="small"
-                  aria-label="Share tender"
-                  onClick={() => setShareDialogOpen(true)}
-                  sx={{
-                    width: 44,
-                    height: 44,
-                    color: BRAND_COLORS.blue,
-                    '&:hover': {
-                      color: BRAND_COLORS.blue,
-                      bgcolor: (theme) => theme.palette.mode === 'light' ? 'rgba(207,158,255,0.28)' : 'rgba(207,158,255,0.16)',
-                    },
-                  }}
-                >
-                  <ShareIcon />
-                </IconButton>
-              </Tooltip>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+            <Typography variant="h6" component="div" sx={{ textAlign: 'left', fontWeight: 600, fontSize: '1.1rem' }}>
+              {tender.title || 'Untitled Tender'}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, ml: 1 }}>
+              {isRecentlySeen(tender) && <Chip label="NEW" color="primary" size="small" />}
               <Tooltip title={isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
                 <IconButton
                   size="small"
@@ -316,85 +94,87 @@ import {
                   sx={{
                     width: 44,
                     height: 44,
-                    color: isFavorite ? BRAND_COLORS.orange : BRAND_COLORS.blue,
+                    color: isFavorite ? 'warning.main' : 'grey.400',
                     transition: 'color 150ms ease',
-                    '&:hover': {
-                      color: isFavorite ? BRAND_COLORS.orange : BRAND_COLORS.blue,
-                      bgcolor: (theme) => theme.palette.mode === 'light' ? 'rgba(207,158,255,0.28)' : 'rgba(207,158,255,0.16)',
-                    },
+                    '&:hover': { color: isFavorite ? 'warning.dark' : 'warning.light', bgcolor: 'transparent' },
                   }}
                 >
-                  <StarIcon />
+                  <StarIcon filled={isFavorite} />
                 </IconButton>
               </Tooltip>
             </Box>
           </Box>
-
-          {compactFieldIds.map((fieldId) => renderConfigurableField(fieldId, 'compact'))}
-        </CardContent>
-
-        <Collapse in={expanded} timeout={300} unmountOnExit id={detailsId}>
-          <Divider sx={{ mx: 2 }} />
-          {expanded && (
-            <Box
+  
+          <Box
+            sx={{
+              p: 1.5,
+              mb: 2,
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.16)' : '#f4f7fb'),
+              borderRadius: 1.5,
+              borderLeft: '4px solid #1976d2',
+              textAlign: 'left',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
+              <AutoAwesomeIcon sx={{ fontSize: 16, color: '#1976d2' }} />
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#1976d2', textTransform: 'uppercase' }}>
+                AI Summary
+              </Typography>
+            </Box>
+            <Typography
+              variant="body2"
               sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                position: { xs: 'sticky', sm: 'static' },
-                top: { xs: 78 },
-                zIndex: { xs: 5 },
-                pointerEvents: { xs: 'none', sm: 'auto' },
-                px: { xs: 1.5, sm: 2 },
-                pt: 0.5,
+                color: 'text.primary',
+                fontSize: '0.875rem',
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
               }}
             >
-              <Button
-                size="small"
-                variant="text"
-                onClick={() => onToggleExpand(tender.tender_id)}
-                sx={{
-                  minHeight: 44,
-                  px: 2,
-                  pointerEvents: 'auto',
-                  bgcolor: { xs: 'background.paper', sm: 'transparent' },
-                  border: { xs: '1px solid', sm: 'none' },
-                  borderColor: { xs: 'secondary.main' },
-                  boxShadow: { xs: 1, sm: 0 },
-                }}
-                aria-expanded={expanded}
-                aria-controls={detailsId}
-                endIcon={<ExpandMoreIcon sx={{ transform: 'rotate(180deg)' }} />}
-              >
-                View Less
-              </Button>
-            </Box>
-          )}
-          <Box sx={{ px: { xs: 1.5, sm: 2 }, pt: 2, minWidth: 0, textAlign: 'left', overflowWrap: 'anywhere' }}>
+              {tender.description ? tender.description.slice(0, 180) + '…' : 'No AI summary generated for this tender yet.'}
+            </Typography>
+          </Box>
+
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+            <strong>ATM ID:</strong> {tender.source_reference_id ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+            <strong>Closing Date:</strong> {formatDate(tender.closing_date)}
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5 }}>
+            <strong>Agency:</strong> {tender.issuing_agency ?? 'Not specified'}
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'left', mb: 0.5, overflowWrap: 'anywhere' }}>
+            <strong>Source:</strong>{' '}
+            {tender.source_url ? (
+              <Link href={tender.source_url} target="_blank" rel="noopener noreferrer">
+                {tender.source_url}
+              </Link>
+            ) : (
+              'Not specified'
+            )}
+          </Typography>
+        </CardContent>
+
+        <Collapse in={expanded} timeout={300} id={detailsId}>
+          <Divider sx={{ mx: 2 }} />
+          <Box sx={{ px: 2, pt: 2, textAlign: 'left' }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
-              {expandedFieldsBeforeWorkTypes.map((fieldId) => renderConfigurableField(fieldId, 'expanded'))}
-              {workTypes.length > 0 && (
-                <Box
-                  component="section"
-                  aria-label="Work Types"
-                  sx={{ minWidth: 0 }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>Work Types</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, minWidth: 0 }}>
-                    {workTypes.map((workType) => (
-                      <Chip key={workType.id} label={workType.label} size="small" sx={TAG_CHIP_SX} />
-                    ))}
-                  </Box>
-                </Box>
-              )}
-              {showExpandedStatus && renderConfigurableField('status', 'expanded')}
+              <Typography variant="body2"><strong>Monetary Value:</strong> {formatMoney(tender)}</Typography>
+              <Typography variant="body2"><strong>Opening Date:</strong> {formatDate(tender.publish_date)}</Typography>
+              <Typography variant="body2"><strong>Location:</strong> {tender.location ?? 'Not specified'}</Typography>
+              <Typography variant="body2"><strong>Category:</strong> {tender.category ?? 'Not specified'}</Typography>
+              <Typography variant="body2"><strong>Status:</strong> {tender.status ?? 'Active'}</Typography>
             </Box>
 
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>AI Summary</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>Full Tender Description</Typography>
             <Typography
               variant="body2"
               component="div"
               sx={{
-                p: { xs: 1.5, sm: 2 },
+                p: 2,
                 bgcolor: 'background.default',
                 border: '1px solid',
                 borderColor: 'divider',
@@ -409,11 +189,6 @@ import {
             >
               {tender.description ?? 'No description extracted for this tender.'}
             </Typography>
-            <TenderDocuments
-              documents={tender.documents}
-              tenderId={tender.tender_id}
-              tenderReference={tender.source_reference_id}
-            />
           </Box>
         </Collapse>
 
@@ -434,13 +209,6 @@ import {
             {expanded ? 'View Less' : 'View More'}
           </Button>
         </CardActions>
-        {shareDialogOpen && (
-          <ShareTenderDialog
-            tender={tender}
-            open={shareDialogOpen}
-            onClose={() => setShareDialogOpen(false)}
-          />
-        )}
       </Card>
     );
   }
