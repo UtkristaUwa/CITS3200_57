@@ -99,6 +99,21 @@ def find_login_form(html: str):
     return None
 
 
+# After a lapse the session is signed out, so GrantConnect shows its login
+# form on pages that a signed-in user sees without one (checked against the
+# saved pages in test_cases: signed in -> no login form; signed out -> a login form).
+MAX_RELOGINS = 3
+
+
+class SessionLapsedError(Exception):
+    """GrantConnect showed its sign-in form in place of the page asked for."""
+
+
+def signed_out(html: str) -> bool:
+    """True if `html` is a page served to someone who is not signed in."""
+    return find_login_form(html) is not None
+
+
 def login(client: httpx.Client) -> bool:
     username, password = credentials()
 
@@ -264,14 +279,11 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
 
     for document in documents:
         try:
-            with client.stream(
-                "GET", document["url"], headers=HEADERS, timeout=60.0
-            ) as response:
-                response.raise_for_status()
-                content_type = response.headers.get("content-type")
-                raw_path = common.save_attachment_stream(
-                    output_dir, document["file_name"], response
-                )
+            # Tried once more on a timeout, dropped connection or 5xx. GrantConnect
+            # has always saved whatever came back, so a web page is not rejected here.
+            raw_path, content_type = common.stream_attachment(
+                client, document["url"], output_dir, document["file_name"],
+                headers=HEADERS, timeout=60.0, reject_web_pages=False)
         except Exception as exc:
             log.warning("       download FAILED  %s  (%s: %s)",
                         document["file_name"], type(exc).__name__, exc)
@@ -324,6 +336,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     """
     response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
+    if signed_out(response.text):
+        raise SessionLapsedError(f"signed out on {url}")
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
         return code, {}
@@ -337,6 +351,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     doc_response = common.request_with_retries(
         client, "get", documents_url, headers=HEADERS, timeout=30.0)
     doc_response.raise_for_status()
+    if signed_out(doc_response.text):
+        raise SessionLapsedError(f"signed out on {documents_url}")
     documents = parse_documents(doc_response.text)
 
     code, attachments = process_documents(client, documents, folder)
@@ -391,10 +407,24 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
 
             tender_codes = set()
             all_codes = []
+            relogins = 0
             for index, url in enumerate(urls, start=1):
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
-                    code, tender = scrape_opportunity(client, url, output_dir)
+                    try:
+                        code, tender = scrape_opportunity(client, url, output_dir)
+                    except SessionLapsedError:
+                        if relogins >= MAX_RELOGINS:
+                            raise
+                        # We signed in at the start, so the session has lapsed:
+                        # sign in again and redo this tender.
+                        relogins += 1
+                        log.warning("       signed out -- signing in again (%d/%d) and "
+                                    "retrying this tender", relogins, MAX_RELOGINS)
+                        if not login(client):
+                            log.error("login: FAILED on re-login -- stopping the run")
+                            return common.SITE_LOGIN_FAILED, tenders
+                        code, tender = scrape_opportunity(client, url, output_dir)
                     if tender:
                         tenders.append(tender)
                     if code != common.SITE_SUCCESS:

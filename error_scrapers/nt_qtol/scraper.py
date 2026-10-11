@@ -344,21 +344,34 @@ def download_bundle(client, download_url: str, folder: str) -> tuple[int, list[d
     login form instead of the zip. The zip itself is streamed to a temporary
     file and deleted once unpacked -- it isn't an attachment, its contents are.
     """
-    zip_path = None
+    def fetch_once():
+        """Stream the zip to a temporary file. None means QTOL sent the login form."""
+        path = None
+        try:
+            with client.stream("GET", download_url, headers=HEADERS, timeout=180.0) as response:
+                response.raise_for_status()
+                if is_login_redirect(response):
+                    return None
+                with tempfile.NamedTemporaryFile(dir=folder, suffix=".zip", delete=False) as handle:
+                    path = handle.name
+                    for chunk in response.iter_bytes():
+                        handle.write(chunk)
+            return path
+        except BaseException:
+            # A half-written zip must never sit in the folder looking like an
+            # attachment (and a retry starts a fresh one).
+            if path and os.path.exists(path):
+                os.remove(path)
+            raise
+
+    # A timeout, dropped connection or 500/502/503/504 is tried once more.
+    zip_path = common.retry_transient(fetch_once, download_url)
+    if zip_path is None:
+        return common.TENDER_PARTIAL, [], True
     try:
-        with client.stream("GET", download_url, headers=HEADERS, timeout=180.0) as response:
-            response.raise_for_status()
-            if is_login_redirect(response):
-                return common.TENDER_PARTIAL, [], True
-            with tempfile.NamedTemporaryFile(dir=folder, suffix=".zip", delete=False) as handle:
-                zip_path = handle.name
-                for chunk in response.iter_bytes():
-                    handle.write(chunk)
         attachments, any_failed = common.unpack_zip(zip_path, folder)
     finally:
-        # Also on a failed download, so a half-written zip never sits in the
-        # folder looking like an attachment.
-        if zip_path and os.path.exists(zip_path):
+        if os.path.exists(zip_path):
             os.remove(zip_path)
 
     code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS

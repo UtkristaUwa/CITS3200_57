@@ -435,6 +435,10 @@ class VendorPanelSession:
         if self._sb_cm is not None:
             self._sb_cm.__exit__(exc_type, exc_val, exc_tb)
 
+    def _open(self, url: str) -> None:
+        """Open a page, loading it again if the load itself fails (timeout, connection reset)."""
+        common.load_page_with_retries(lambda: self.sb.open(url), url)
+
     def _debug_dump(self, label: str) -> None:
         """Log what the browser is looking at, flattened to one line for Cloud Logging."""
         try:
@@ -451,7 +455,7 @@ class VendorPanelSession:
         """
         username, password = credentials()
         self._on_list = False
-        self.sb.open(VP_LIST_URL)
+        self._open(VP_LIST_URL)
         self.sb.wait_for_element(LOGIN_USER, timeout=WAIT_TIMEOUT)
         self.sb.type(LOGIN_USER, username)
         self.sb.click(LOGIN_SUBMIT)
@@ -466,7 +470,7 @@ class VendorPanelSession:
         return False
 
     def _open_list(self) -> None:
-        self.sb.open(VP_LIST_URL)
+        self._open(VP_LIST_URL)
         try:
             self.sb.wait_for_element(LIST_TABLE, timeout=WAIT_TIMEOUT)
         except Exception:
@@ -532,7 +536,7 @@ class VendorPanelSession:
         before = set(os.listdir(self._downloads_dir))
         for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
             self._on_list = False
-            self.sb.open(VP_PACKAGE_URL.format(number=number))
+            self._open(VP_PACKAGE_URL.format(number=number))
             try:
                 self.sb.wait_for_element(PACKAGE_BUTTON, timeout=WAIT_TIMEOUT)
             except Exception:
@@ -764,6 +768,31 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
     return common.SITE_SUCCESS, result
 
 
+# Chrome sometimes fails to start inside the container. That is tried again with a
+# fresh browser; a sign-in that does not take is NOT repeated (a lockout risk).
+BROWSER_START_ATTEMPTS = 3
+BROWSER_START_WAIT_SECONDS = 15
+
+
+def open_vendorpanel(stack, headless: bool = True,
+                     attempts: int = BROWSER_START_ATTEMPTS) -> "VendorPanelSession":
+    """
+    Start the VendorPanel browser inside `stack`, trying again (with a fresh
+    Chrome, waiting longer each time) if it will not start. Raises the last
+    error when every attempt fails.
+    """
+    for attempt in range(1, attempts + 1):
+        try:
+            return stack.enter_context(VendorPanelSession(headless=headless))
+        except Exception as exc:
+            if attempt == attempts:
+                raise
+            wait = BROWSER_START_WAIT_SECONDS * attempt
+            log.warning("browser did not start (%s: %s) -- trying again in %ds (attempt %d/%d)",
+                        type(exc).__name__, exc, wait, attempt + 1, attempts)
+            time.sleep(wait)
+
+
 def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                  headless: bool = True) -> tuple[int, list[dict]]:
     """
@@ -790,7 +819,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             login_failed = False
             if have_credentials:
                 try:
-                    vendorpanel = stack.enter_context(VendorPanelSession(headless=headless))
+                    vendorpanel = open_vendorpanel(stack, headless)
                     logged_in = vendorpanel.login()
                 except Exception as exc:
                     log.error("login: could not sign in to VendorPanel: %s: %s", type(exc).__name__, exc)

@@ -358,13 +358,18 @@ class BrowserSession:
 
     def get(self, url: str, wait_selector: str | None = None) -> str:
         """
-        Load url once and return its HTML. If Cloudflare serves its challenge
-        instead, log what the page looked like and raise BotBlockedError at
-        once: reloading in the same browser does not clear it and only adds
-        load to the site. A page that loads but never shows wait_selector is
-        returned as-is, so the parser can report it as a structure change.
+        Load url and return its HTML. A load that fails (driver timeout, reset
+        connection) is loaded again, up to common.PAGE_LOAD_ATTEMPTS times. If
+        Cloudflare serves its challenge instead, log what the page looked like
+        and raise BotBlockedError at once: reloading in the same browser does
+        not clear it and only adds load to the site. A page that loads but
+        never shows wait_selector is returned as-is, so the parser can report
+        it as a structure change.
         """
-        self.sb.uc_open_with_reconnect(url, reconnect_time=RECONNECT_SECONDS)
+        # A page that fails to load (driver timeout, connection reset) is loaded
+        # again; a challenge is not a load failure and is checked below.
+        common.load_page_with_retries(
+            lambda: self.sb.uc_open_with_reconnect(url, reconnect_time=RECONNECT_SECONDS), url)
         if wait_selector:
             try:
                 self.sb.wait_for_element(wait_selector, timeout=WAIT_TIMEOUT)
