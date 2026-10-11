@@ -18,6 +18,8 @@ from docx.text.paragraph import Paragraph
 from openpyxl import load_workbook
 import httpx
 
+from error_scrapers import run_notes
+
 #Error status codes for failures
 #Scraping was a total success
 SITE_SUCCESS = 0
@@ -51,6 +53,7 @@ class ScrapeResult(NamedTuple):
 #This function is specifically for returning the folder path for a tender, and creating one if there isn't one.
 #All of a tenders output, the page html, attachments, and extracted attachement text lives here and is named after the tender ID
 def tender_dir(tender_id: str, base_dir: str = "tenders_data") -> str:
+    run_notes.note_current(tender_id)  # if this tender fails, say which one
     path = os.path.join(base_dir, sanitise_filename(tender_id))
     os.makedirs(path, exist_ok=True)
     return path
@@ -121,9 +124,16 @@ def save_attachment(folder: str, filename: str, content: bytes) -> str:
 #filesystem is memory -- holding a whole file in RAM can take the run out.
 def save_attachment_stream(folder: str, filename: str, response) -> str:
     path = unique_path(folder, filename)
-    with open(path, "wb") as f:
-        for chunk in response.iter_bytes():
-            f.write(chunk)
+    try:
+        with open(path, "wb") as f:
+            for chunk in response.iter_bytes():
+                f.write(chunk)
+    except BaseException:
+        # A connection that drops mid-file must not leave half a file behind
+        # (and a retry then writes the same name again).
+        if os.path.exists(path):
+            os.remove(path)
+        raise
     return path
 
 #This function is for extracted the attachment file's contents, we also make sure the file names match between the attachement and extracted information
@@ -151,6 +161,14 @@ class EmptySourceFileError(ExtractionError):
     document" / "Cannot open empty file"). The portal itself is serving a blank
     file, so there is no text to get and nothing for us to fix.
     """
+
+class EncryptedFileError(ExtractionError):
+    """
+    Raised when a file is password protected. We cannot read it and will not be
+    given the password, so the file is dropped (see extract_attachment_text) and
+    the tender is reported as partial.
+    """
+
 
 #This is our pdf extraction code
 def extract_pdf(file_path: str) -> str:
@@ -360,6 +378,8 @@ def extract_xls(file_path: str) -> str:
         book.release_resources()
         return "\n\n".join(parts)
     except Exception as e:
+        if "encrypted" in str(e).lower():
+            raise EncryptedFileError(f"XLS extraction failed on {file_path}: {e}") from e
         raise ExtractionError(f"XLS extraction failed on {file_path}: {e}") from e
 
 
@@ -465,8 +485,66 @@ def run_extractor(extractor, path: str, timeout: float | None = None) -> str:
         # The type name travels in the message, because only text crosses the process boundary.
         if payload.startswith("EmptySourceFileError:"):
             raise EmptySourceFileError(payload)
+        if payload.startswith("EncryptedFileError:"):
+            raise EncryptedFileError(payload)
         raise ExtractionError(payload)
     return payload
+
+
+_ZIP_OFFICE_TYPES = (".docx", ".xlsx", ".xlsm", ".pptx")
+_OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+# "EncryptedPackage" as it is stored inside an encrypted Office file (UTF-16).
+_ENCRYPTED_MARKER = "EncryptedPackage".encode("utf-16-le")
+
+
+def _check_office_container(path: str):
+    """
+    Look at the first bytes of a .docx/.xlsx/.xlsm/.pptx before handing it to an
+    extractor. These formats are zip files; anything else is not what its name
+    says.
+
+    Returns None for a genuine zip (carry on as normal). Returns the file's text
+    ("" if it has none we can read) for a file that is not a zip, after logging
+    what it actually is (.docx only; other types fail as before). Raises EncryptedFileError for a password-protected one.
+    """
+    name = os.path.basename(path)
+    is_docx = path.lower().endswith(".docx")
+    try:
+        with open(path, "rb") as handle:
+            head = handle.read(8)
+            if head.startswith(b"PK"):
+                return None
+            if head == _OLE_MAGIC:
+                handle.seek(0)
+                if _ENCRYPTED_MARKER in handle.read():
+                    raise EncryptedFileError(
+                        f"{name} is password protected (encrypted Office file)")
+                if not is_docx:
+                    return None
+                kind = "an old-format Office file (not a zip)"
+                text = ""
+            elif not is_docx:
+                return None  # other types: the extractor fails as before
+            else:
+                handle.seek(0)
+                sample = handle.read(5 * 1024 * 1024)
+                stripped = sample.lstrip()[:200].lower()
+                if stripped.startswith((b"<!doctype html", b"<html", b"<?xml", b"<")):
+                    kind = "a web/XML page"
+                    text = re.sub(r"\s+", " ", re.sub(
+                        r"<[^>]*>", " ", sample.decode("utf-8", errors="replace"))).strip()
+                elif not sample:
+                    kind = "an empty file"
+                    text = ""
+                else:
+                    kind = "not a zip file (unrecognised content)"
+                    text = ""
+    except OSError:
+        return None  # let the normal extractor report the real problem
+    logger.warning("%s is named %s but is %s; stored %s",
+                   name, os.path.splitext(name)[1].lower(), kind,
+                   "with its readable text" if text else "without text")
+    return text
 
 
 def extract_with_fallback(extractor, path: str, timeout: float | None = None) -> str:
@@ -476,7 +554,16 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
     file. The tender keeps that text (tables and headers may be missing), and
     the loss is logged. Any other file type, or a file the fallback can't read
     either, raises the original error.
+
+    A password-protected file raises EncryptedFileError. An Office-named file
+    that is not a zip at all (a web page or old-format file saved under the
+    wrong name) is stored with whatever text it has, and logged -- the portal
+    served it that way, so there is nothing for us to fix.
     """
+    if path.lower().endswith(_ZIP_OFFICE_TYPES):
+        text = _check_office_container(path)
+        if text is not None:
+            return text
     try:
         return run_extractor(extractor, path, timeout)
     except EmptySourceFileError as e:
@@ -495,6 +582,31 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
         return text
 
 
+def _drop_file(path: str) -> None:
+    for candidate in (path, path + ".txt"):
+        try:
+            os.remove(candidate)
+        except OSError:
+            pass
+
+
+def drop_locked_file(path: str) -> None:
+    """
+    A password-protected file we cannot read and will never be given the
+    password for: remove it (and any text file beside it), log it, and note the
+    reason against the tender being scraped.
+    """
+    name = os.path.basename(path)
+    _drop_file(path)
+    logger.warning("%s is password protected; dropped it (not stored)", name)
+    run_notes.note_reason(run_notes.LOCKED, name)
+
+
+def zip_member_is_encrypted(member) -> bool:
+    """True if a zip entry is password protected (the zip's own encryption flag)."""
+    return bool(member.flag_bits & 0x1)
+
+
 def extract_attachment_text(folder: str, file_name: str) -> bool:
     """
     Write <file_name>.txt next to a saved attachment, when we have an extractor
@@ -510,38 +622,144 @@ def extract_attachment_text(folder: str, file_name: str) -> bool:
         text = extract_with_fallback(extractor, path)
         save_extracted_text(folder, file_name, text)
         return True
+    except EncryptedFileError as e:
+        # Password protected: we can't read it and never will. Drop the file so
+        # it isn't stored, say so in the log, and report the tender as partial.
+        _drop_file(path)
+        print(f"PASSWORD PROTECTED: {file_name} dropped")
+        logger.warning("%s is password protected; dropped it (not stored) -- "
+                       "tender %s is reported as partial", file_name,
+                       os.path.basename(os.path.normpath(folder)))
+        run_notes.note_reason(run_notes.LOCKED, file_name)
+        return False
     except ExtractionError as e:
         size = os.path.getsize(path) if os.path.exists(path) else "?"
         print(f"EXTRACTION FAILED: {e}")
         logger.warning(f"text extraction failed for {file_name} ({size} bytes): {e}")
+        run_notes.note_reason(run_notes.UNREADABLE, file_name)
         return False
 
-# A request that times out is made again, this many attempts in all, waiting a
-# little longer each time. Only timeouts are retried: a 403/429 is the portal
-# telling us to stop, and a login is never repeated (a lockout risk).
+# A page request that fails in a way that usually passes on its own is made
+# again, this many attempts in all, waiting a little longer each time:
+#   * a timeout, a dropped or refused connection, a connection cut mid-reply
+#   * a 500, 502, 503 or 504 from the server
+# Never a 403 or 429 (the portal telling us to stop), never anything the site
+# sends as a block or challenge, and a login is never repeated (a lockout risk).
 PAGE_ATTEMPTS = 3
 PAGE_RETRY_SECONDS = 5
+RETRY_STATUSES = frozenset({500, 502, 503, 504})
+
+
+def is_block_response(response) -> bool:
+    """True if the site sent this as a block or challenge (Cloudflare, AWS WAF)."""
+    headers = response.headers
+    return headers.get("cf-mitigated", "").lower() == "challenge" or "x-amzn-waf-action" in headers
+
+
+def is_transient_error(exc: BaseException) -> bool:
+    """
+    True for a failure that is usually gone on the next try: a timeout, a
+    dropped or refused connection, a connection cut mid-reply, or a 500/502/503/504.
+    False for everything else, including a 403, 404 or 429 and anything the
+    site sent as a block.
+    """
+    if isinstance(exc, httpx.HTTPStatusError):
+        return exc.response.status_code in RETRY_STATUSES and not is_block_response(exc.response)
+    return isinstance(exc, (httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError))
 
 
 def request_with_retries(client, method: str, url: str, **kwargs):
     """
     client.get / client.post (`method` is "get" or "post"), asked again when the
-    request times out.
+    request times out, the connection drops, or the server answers 500/502/503/504.
 
-    Raises the last timeout if every attempt times out. Anything else -- an HTTP
-    status, a refused connection -- comes straight back to the caller as before.
+    If every attempt fails the last error is raised, or for a server error the
+    last response is returned so the caller's raise_for_status sees it. Any
+    other status (403, 404, 429...) comes straight back, never retried.
     """
     send = getattr(client, method)
+    log = logging.getLogger("scraper.common")
     for attempt in range(1, PAGE_ATTEMPTS + 1):
         try:
-            return send(url, **kwargs)
-        except httpx.TimeoutException as exc:
+            response = send(url, **kwargs)
+        except (httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError) as exc:
             if attempt == PAGE_ATTEMPTS:
                 raise
-            wait = PAGE_RETRY_SECONDS * attempt
+            problem = type(exc).__name__
+        else:
+            if (response.status_code not in RETRY_STATUSES or is_block_response(response)
+                    or attempt == PAGE_ATTEMPTS):
+                return response
+            problem = f"HTTP {response.status_code}"
+            response.close()
+        wait = PAGE_RETRY_SECONDS * attempt
+        log.warning("       %s failed (%s) -- trying again in %ds (attempt %d/%d)",
+                    url, problem, wait, attempt + 1, PAGE_ATTEMPTS)
+        time.sleep(wait)
+
+
+# A document download that fails the same way is made again once. Used by every
+# scraper that streams a file (GrantConnect, Austender, QLD, NT).
+DOWNLOAD_ATTEMPTS = 2
+DOWNLOAD_RETRY_SECONDS = 5
+
+
+def retry_transient(action, what: str, attempts: int | None = None):
+    """
+    Run `action()` (which fetches one document) and run it again if it fails
+    with a transient error (see is_transient_error). Anything else, such as a
+    login page served in place of the file, is raised at once.
+    """
+    attempts = DOWNLOAD_ATTEMPTS if attempts is None else attempts
+    for attempt in range(1, attempts + 1):
+        try:
+            return action()
+        except Exception as exc:
+            if attempt == attempts or not is_transient_error(exc):
+                raise
+            wait = DOWNLOAD_RETRY_SECONDS * attempt
             logging.getLogger("scraper.common").warning(
-                "       %s timed out (%s) -- trying again in %ds (attempt %d/%d)",
-                url, type(exc).__name__, wait, attempt + 1, PAGE_ATTEMPTS)
+                "       %s failed (%s: %s) -- trying again in %ds (attempt %d/%d)",
+                what, type(exc).__name__, exc, wait, attempt + 1, attempts)
+            time.sleep(wait)
+
+
+# A browser page that fails to LOAD (the driver times out, the connection is
+# reset) is loaded again, this many attempts in all, waiting longer each time.
+# Only the load is retried: a Cloudflare challenge, a login page or a missing
+# element is not a load failure and is never reloaded.
+PAGE_LOAD_ATTEMPTS = 3
+PAGE_LOAD_RETRY_SECONDS = 5
+_TRANSIENT_BROWSER_ERRORS = (
+    "ERR_CONNECTION_RESET", "ERR_CONNECTION_CLOSED", "ERR_CONNECTION_TIMED_OUT",
+    "ERR_TIMED_OUT", "ERR_EMPTY_RESPONSE", "ERR_NETWORK_CHANGED", "ERR_CONNECTION_REFUSED",
+)
+
+
+def is_transient_page_load_error(exc: BaseException) -> bool:
+    """
+    True for a browser page load that failed in a way a reload usually fixes: a
+    timeout from the driver (selenium's TimeoutException, urllib3's
+    ReadTimeoutError, TimeoutError) or Chrome reporting a reset, closed, empty
+    or timed-out connection. Nothing else, so a dead browser still fails at once.
+    """
+    if isinstance(exc, TimeoutError) or "timeout" in type(exc).__name__.lower():
+        return True
+    return any(code in str(exc) for code in _TRANSIENT_BROWSER_ERRORS)
+
+
+def load_page_with_retries(load, url: str):
+    """Run `load()` (which opens `url` in the browser), loading again if the load itself fails."""
+    for attempt in range(1, PAGE_LOAD_ATTEMPTS + 1):
+        try:
+            return load()
+        except Exception as exc:
+            if attempt == PAGE_LOAD_ATTEMPTS or not is_transient_page_load_error(exc):
+                raise
+            wait = PAGE_LOAD_RETRY_SECONDS * attempt
+            logging.getLogger("scraper.common").warning(
+                "       %s did not load (%s) -- loading it again in %ds (attempt %d/%d)",
+                url, type(exc).__name__, wait, attempt + 1, PAGE_LOAD_ATTEMPTS)
             time.sleep(wait)
 
 
@@ -549,6 +767,30 @@ def request_with_retries(client, method: str, url: str, **kwargs):
 #always its login form) instead of the file.
 class DocumentGatedError(Exception):
     """Raised when a document download comes back as a web page, not a file."""
+
+def stream_attachment(client, url: str, folder: str, file_name: str,
+                      headers: dict | None = None, timeout: float = 60.0,
+                      reject_web_pages: bool = True) -> tuple[str, str | None]:
+    """
+    Stream one file into `folder` and return (path written, content type). A
+    timeout, dropped connection or 500/502/503/504 is tried once more
+    (retry_transient); the half-written file is removed first.
+
+    With reject_web_pages, a web page served in place of a non-.htm file (almost
+    always the portal's login form) raises DocumentGatedError, which is not retried.
+    """
+    def fetch_once():
+        with client.stream("GET", url, headers=headers or {}, timeout=timeout) as response:
+            response.raise_for_status()
+            content_type = response.headers.get("content-type")
+            wants_html = file_name.lower().endswith((".htm", ".html"))
+            if (reject_web_pages and content_type and "text/html" in content_type.lower()
+                    and not wants_html):
+                raise DocumentGatedError(f"{url} returned a web page, not a file")
+            return save_attachment_stream(folder, file_name, response), content_type
+
+    return retry_transient(fetch_once, url)
+
 
 def download_attachment(client, url: str, folder: str, file_name: str,
                         headers: dict | None = None, timeout: float = 60.0) -> tuple[dict, bool]:
@@ -562,15 +804,10 @@ def download_attachment(client, url: str, folder: str, file_name: str,
     the caller can report the tender as partial.
 
     Raises on a failed download (HTTP error, network error, or a login page
-    served in place of the file), so the caller decides what that means.
+    served in place of the file), so the caller decides what that means. A
+    transient failure is tried once more first (stream_attachment).
     """
-    with client.stream("GET", url, headers=headers or {}, timeout=timeout) as response:
-        response.raise_for_status()
-        content_type = response.headers.get("content-type")
-        wants_html = file_name.lower().endswith((".htm", ".html"))
-        if content_type and "text/html" in content_type.lower() and not wants_html:
-            raise DocumentGatedError(f"{url} returned a web page, not a file")
-        raw_path = save_attachment_stream(folder, file_name, response)
+    raw_path, content_type = stream_attachment(client, url, folder, file_name, headers, timeout)
 
     saved_name = os.path.basename(raw_path)
     if os.path.getsize(raw_path) == 0:
@@ -582,7 +819,11 @@ def download_attachment(client, url: str, folder: str, file_name: str,
         "content_type": content_type,
         "size_bytes": os.path.getsize(raw_path),
     }
-    return attachment, extract_attachment_text(folder, saved_name)
+    extracted = extract_attachment_text(folder, saved_name)
+    if not os.path.exists(raw_path):
+        # Dropped because it is password protected: it is not an attachment.
+        raise EncryptedFileError(f"{saved_name} is password protected; dropped")
+    return attachment, extracted
 
 def wait_for_download(downloads_dir: str, before, max_wait: float,
                       poll: float = 1.0, stall_seconds: float = 300.0,
@@ -664,6 +905,12 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
             file_name = os.path.basename(member.filename.replace("\\", "/"))
             if member.is_dir() or not file_name:
                 continue
+            if zip_member_is_encrypted(member):
+                # One locked file must not cost the tender the rest of its package.
+                logger.warning("package held a password-protected file (%s); not stored", file_name)
+                run_notes.note_reason(run_notes.LOCKED, file_name)
+                any_failed = True
+                continue
             if file_name.lower().endswith(".zip"):
                 nested, nested_failed = unpack_zip(io.BytesIO(zf.read(member)), folder, depth + 1)
                 attachments += nested
@@ -680,14 +927,20 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                 # not a document: drop it and report the tender as partial.
                 os.remove(path)
                 logger.warning(f"package held an empty file ({saved_name}); not stored")
+                run_notes.note_reason(run_notes.EMPTY, saved_name)
                 any_failed = True
+                continue
+            size = os.path.getsize(path)
+            extracted = extract_attachment_text(folder, saved_name)
+            if not os.path.exists(path):
+                any_failed = True  # dropped (password protected): not an attachment
                 continue
             attachments.append({
                 "file_name": saved_name,
                 "content_type": None,
-                "size_bytes": os.path.getsize(path),
+                "size_bytes": size,
             })
-            any_failed = any_failed or not extract_attachment_text(folder, saved_name)
+            any_failed = any_failed or not extracted
 
     return attachments, any_failed
 

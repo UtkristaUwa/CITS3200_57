@@ -24,7 +24,7 @@ import httpx
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 load_dotenv()
 
@@ -304,6 +304,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
             docs_response = client.get(download_url, headers=HEADERS, timeout=30.0)
             form = parse_download_form(docs_response.text)
             if form["code"] != common.SITE_SUCCESS or not form["ids"]:
+                run_notes.note_reason(run_notes.PORTAL)
                 tender = {"title": fields.get("title"), "folder": folder,
                           "attachments": [], "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
@@ -338,6 +339,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
                             text = extractor(raw_path)
                             common.save_extracted_text(folder, file_name, text)
                         except common.ExtractionError:
+                            run_notes.note_reason(run_notes.UNREADABLE, file_name)
                             any_failed = True
                     attachments.append({"file_name": file_name, "content_type": None})
 
@@ -346,6 +348,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
                           "attachments": attachments, "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
         except Exception:
+            run_notes.note_reason(run_notes.DOWNLOAD)
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
                 "source_url": url, **fields,
@@ -410,6 +413,7 @@ def _scrape_documents(session, download_url: str, folder: str) -> tuple[list[dic
     if form["code"] != common.SITE_SUCCESS or not form["ids"]:
         log.warning("       documents: the download page had no usable form (%s)",
                     reporting.code_name(form["code"]))
+        run_notes.note_reason(run_notes.PORTAL)
         return [], 0, False
 
     zip_path = session.download_via_form(download_url, form["ids"])
@@ -420,6 +424,11 @@ def _scrape_documents(session, download_url: str, folder: str) -> tuple[list[dic
             os.remove(zip_path)
     advertised = len(form["ids"])
     reporting.documents_line(log, len(attachments), advertised)
+    if len(attachments) < advertised:
+        # Files already dropped for a reason of their own (empty, locked,
+        # unreadable) were noted where they were found; this is the shortfall.
+        run_notes.note_reason(run_notes.DOWNLOAD,
+                              f"{len(attachments)} of {advertised} documents")
     return attachments, advertised, not any_failed and len(attachments) >= advertised
 
 

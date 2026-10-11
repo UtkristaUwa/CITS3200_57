@@ -426,7 +426,7 @@ def test_browser_get_gives_up_on_the_first_challenge():
 def test_a_dead_browser_is_retried_with_a_fresh_one(monkeypatch):
     calls = []
 
-    def run(limit, output_dir, headless):
+    def run(limit, output_dir, headless, known_urls=None, resume=False):
         calls.append(1)
         return (common.SITE_TOTAL_FAILURE, []) if len(calls) < 3 else (common.SITE_SUCCESS, [{"tender_id": "X"}])
 
@@ -442,7 +442,7 @@ def test_login_failures_and_structure_changes_are_never_retried(monkeypatch, cod
     # Repeated bad logins can lock an account, so a failed login stops at once.
     calls = []
     monkeypatch.setattr(scraper, "_scrape_site",
-                        lambda limit, output_dir, headless: (calls.append(1), (code, []))[1])
+                        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (code, []))[1])
     monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
     assert scraper._scrape_with_retries() == (code, [])
     assert len(calls) == 1
@@ -452,7 +452,7 @@ def test_a_cloudflare_block_is_retried_with_a_fresh_browser_then_reported(monkey
     calls, sleeps = [], []
     monkeypatch.setattr(
         scraper, "_scrape_site",
-        lambda limit, output_dir, headless: (calls.append(1), (common.SITE_BOT_BLOCKED, []))[1])
+        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (common.SITE_BOT_BLOCKED, []))[1])
     monkeypatch.setattr(scraper.time, "sleep", sleeps.append)
 
     assert scraper._scrape_with_retries() == (common.SITE_BOT_BLOCKED, [])
@@ -464,7 +464,7 @@ def test_a_cloudflare_block_is_retried_with_a_fresh_browser_then_reported(monkey
 def test_a_cloudflare_block_that_clears_on_a_later_attempt_succeeds(monkeypatch):
     calls = []
 
-    def run(limit, output_dir, headless):
+    def run(limit, output_dir, headless, known_urls=None, resume=False):
         calls.append(1)
         return (common.SITE_BOT_BLOCKED, []) if len(calls) < 2 else (common.SITE_SUCCESS, [{"tender_id": "X"}])
 
@@ -481,7 +481,7 @@ def test_a_block_after_some_tenders_were_scraped_is_not_retried(monkeypatch):
     calls = []
     monkeypatch.setattr(
         scraper, "_scrape_site",
-        lambda limit, output_dir, headless: (calls.append(1), (common.SITE_BOT_BLOCKED, [{"tender_id": "X"}]))[1])
+        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (common.SITE_BOT_BLOCKED, [{"tender_id": "X"}]))[1])
     monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
 
     code, tenders = scraper._scrape_with_retries()

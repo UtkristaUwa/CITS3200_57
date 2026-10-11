@@ -21,7 +21,7 @@ import inspect
 import logging
 import time
 
-from error_scrapers import common
+from error_scrapers import common, run_notes
 
 TAG_WIDTH = 13  # len("VIC_BUYINGFOR"); keeps
 RULE = "=" * 78
@@ -86,6 +86,7 @@ def reported(site: str):
             limit = bound.arguments.get("limit")
             output_dir = bound.arguments.get("output_dir")
 
+            run_notes.reset()
             log.info(RULE)
             log.info(f"START  limit={limit or 'none (every tender)'}  output_dir={output_dir}")
             started = time.monotonic()
@@ -129,11 +130,13 @@ def tender_line(log, index: int, total: int, ref: str, code: int) -> None:
         log.warning if code == common.TENDER_PARTIAL else log.error
     )
     say(f"({index}/{total}) {ref}  {code_name(code)}")
+    run_notes.note_tender(ref, code)
 
 
 def tender_failed(log, index: int, total: int, url: str, exc: Exception) -> None:
     """A tender raised. The run carries on; this is the only record of why."""
     log.error(f"({index}/{total}) FAILED  {url}  ({type(exc).__name__}: {exc})")
+    run_notes.note_tender_error(url, exc)
 
 
 def documents_line(log, saved: int, advertised: int | None = None) -> None:

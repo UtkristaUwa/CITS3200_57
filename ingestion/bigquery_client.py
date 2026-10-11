@@ -348,6 +348,18 @@ def upsert_tender(client: bigquery.Client, record: dict) -> dict:
         _bump_last_scanned(client, existing["tender_id"])
         return {"action": "noop", "tender_id": existing["tender_id"]}
 
+    # A scrape that came back with no documents must not wipe documents we
+    # already hold. That is what a failed or blocked document step looks like
+    # (e.g. VendorPanel lookup failing for a QLD tender), and replacing the row
+    # would also replace its title/description, which are read from the
+    # documents. Keep the stored row and just record that we saw the tender.
+    if not record["documents"] and existing.get("documents"):
+        _bump_last_scanned(client, existing["tender_id"])
+        return {
+            "action": "kept_existing_documents",
+            "tender_id": existing["tender_id"],
+        }
+
     changed_fields = _diff_fields(existing, record)
     row = {col: record.get(col) for col in ALL_COLUMNS if col in CONTENT_FIELDS
            or col in ("source_reference_id", "source_id", "source_url", "embedding")}

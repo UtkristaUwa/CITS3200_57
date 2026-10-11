@@ -217,9 +217,17 @@ def test_a_docx_python_docx_cannot_open_falls_back_to_its_body_text(tmp_path):
     assert "The surviving body text" in text
 
 
-def test_a_file_that_is_not_a_zip_still_raises(tmp_path):
+def test_a_docx_that_is_not_a_zip_is_stored_with_what_text_it_has(tmp_path):
+    # Was: raised "Package not found". The portal served a web page under a
+    # .docx name; see tests/test_encrypted_and_misnamed_files.py.
     path = tmp_path / "fake.docx"
     path.write_bytes(b"<html>not a word file</html>")
+    assert common.extract_with_fallback(common.extract_docx, str(path)) == "not a word file"
+
+
+def test_a_corrupt_zip_docx_still_raises(tmp_path):
+    path = tmp_path / "fake.docx"
+    path.write_bytes(b"PK\x03\x04 truncated")
     with pytest.raises(common.ExtractionError):
         common.extract_with_fallback(common.extract_docx, str(path))
 

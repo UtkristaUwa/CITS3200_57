@@ -413,6 +413,7 @@ class FakeVendorPanel:
         self.package = _package_zip() if package is None else package
         self.lapse_on_first = lapse_on_first
         self.login_ok = login_ok
+        self.filter_wait = 0  # the real session has one; the retry pass raises it for a while
         self.logins = 0
         self.follow_calls = []
         self.downloads = []

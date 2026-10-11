@@ -22,7 +22,7 @@ import re
 import httpx
 from bs4 import BeautifulSoup
  
-from error_scrapers import common, reporting
+from error_scrapers import common, reporting, run_notes
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -97,6 +97,21 @@ def find_login_form(html: str):
         if form.select_one("input[name='Password']"):
             return form
     return None
+
+
+# After a lapse the session is signed out, so GrantConnect shows its login
+# form on pages that a signed-in user sees without one (checked against the
+# saved pages in test_cases: signed in -> no login form; signed out -> a login form).
+MAX_RELOGINS = 3
+
+
+class SessionLapsedError(Exception):
+    """GrantConnect showed its sign-in form in place of the page asked for."""
+
+
+def signed_out(html: str) -> bool:
+    """True if `html` is a page served to someone who is not signed in."""
+    return find_login_form(html) is not None
 
 
 def login(client: httpx.Client) -> bool:
@@ -264,17 +279,15 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
 
     for document in documents:
         try:
-            with client.stream(
-                "GET", document["url"], headers=HEADERS, timeout=60.0
-            ) as response:
-                response.raise_for_status()
-                content_type = response.headers.get("content-type")
-                raw_path = common.save_attachment_stream(
-                    output_dir, document["file_name"], response
-                )
+            # Tried once more on a timeout, dropped connection or 5xx. GrantConnect
+            # has always saved whatever came back, so a web page is not rejected here.
+            raw_path, content_type = common.stream_attachment(
+                client, document["url"], output_dir, document["file_name"],
+                headers=HEADERS, timeout=60.0, reject_web_pages=False)
         except Exception as exc:
             log.warning("       download FAILED  %s  (%s: %s)",
                         document["file_name"], type(exc).__name__, exc)
+            run_notes.note_reason(run_notes.DOWNLOAD, document["file_name"])
             any_failed = True
             continue
 
@@ -282,23 +295,28 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         # name it actually wrote -- otherwise the extracted text ends up
         # attached to the wrong file.
         saved_name = os.path.basename(raw_path)
+        size_bytes = os.path.getsize(raw_path)
+
+        extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
+        if extractor is not None:
+            try:
+                log.info("       extracting text from %s", saved_name)
+                common.save_extracted_text(
+                    output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
+            except common.EncryptedFileError:
+                common.drop_locked_file(raw_path)  # not stored, not an attachment
+                any_failed = True
+                continue
+            except common.ExtractionError as e:
+                log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
+                run_notes.note_reason(run_notes.UNREADABLE, saved_name)
+                any_failed = True
+
         attachments.append({
             "file_name": saved_name,
             "content_type": content_type,
-            "size_bytes": os.path.getsize(raw_path),
+            "size_bytes": size_bytes,
         })
-
-        extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
-        if extractor is None:
-            continue
-
-        try:
-            log.info("       extracting text from %s", saved_name)
-            common.save_extracted_text(
-                output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
-        except common.ExtractionError as e:
-            log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
-            any_failed = True
 
     code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
     return code, attachments
@@ -318,6 +336,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     """
     response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
+    if signed_out(response.text):
+        raise SessionLapsedError(f"signed out on {url}")
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
         return code, {}
@@ -331,6 +351,8 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     doc_response = common.request_with_retries(
         client, "get", documents_url, headers=HEADERS, timeout=30.0)
     doc_response.raise_for_status()
+    if signed_out(doc_response.text):
+        raise SessionLapsedError(f"signed out on {documents_url}")
     documents = parse_documents(doc_response.text)
 
     code, attachments = process_documents(client, documents, folder)
@@ -385,10 +407,24 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
 
             tender_codes = set()
             all_codes = []
+            relogins = 0
             for index, url in enumerate(urls, start=1):
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
-                    code, tender = scrape_opportunity(client, url, output_dir)
+                    try:
+                        code, tender = scrape_opportunity(client, url, output_dir)
+                    except SessionLapsedError:
+                        if relogins >= MAX_RELOGINS:
+                            raise
+                        # We signed in at the start, so the session has lapsed:
+                        # sign in again and redo this tender.
+                        relogins += 1
+                        log.warning("       signed out -- signing in again (%d/%d) and "
+                                    "retrying this tender", relogins, MAX_RELOGINS)
+                        if not login(client):
+                            log.error("login: FAILED on re-login -- stopping the run")
+                            return common.SITE_LOGIN_FAILED, tenders
+                        code, tender = scrape_opportunity(client, url, output_dir)
                     if tender:
                         tenders.append(tender)
                     if code != common.SITE_SUCCESS:
