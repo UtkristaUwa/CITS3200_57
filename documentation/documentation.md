@@ -299,7 +299,7 @@ flowchart LR
 
 ### Steps in process_tender()
 
-1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see the warning below).
+1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see the  below).
 2.  **Triage.** If there’s more than one file, each is sent to Gemini with its name and first 6,000 characters (`triage_char_limit`). Gemini answers `{relevant, reason}`. Overviews, scope, addenda, Q&A and evaluation criteria are kept; blank forms, unamended contract boilerplate and CAD tables are dropped. A single file is always kept. There’s a 0.5 s pause between triage calls.
 3.  **Context.** Kept files are joined in full, each under `=== DOCUMENT: <name> ===`.
 4.  **Summary.** One call returns `headline` (one sentence, about 20 words) and `description` (2 to 4 paragraphs on scope, value, dates and anything unusual).
@@ -311,8 +311,6 @@ Every call asks for JSON that matches a Pydantic schema, so replies are parsed a
 - **Retries:** only server errors (5xx) and rate limits (429) are retried, up to 5 attempts in total with backoff of roughly 2, 4, 8 and 16 s. A document that still fails triage is skipped. If the summary or extraction call still fails, the error is re-raised, no partial record is returned, and the manager skips that tender.
 - **Long tenders:** there is no chunking. All kept documents go to Gemini in one call; if that is over the model’s input limit, the call fails and the tender is skipped. Triage’s 6,000-character preview is the only size limit, and it exists to keep the yes/no screen cheap.
 - **Accuracy:** made-up values are discouraged by the prompts (never infer, leave blank if not stated, ranges go in `value_notes`) and by the schemas, but nothing checks the output against the source text, and there is no test set of real tenders.
-
-> **Warning (since 24 Sep, commit 37c5b00):** step 1 also skips `__tender__<ref>.txt`, the tender’s own page text. The AI now only sees attachments, and a tender with no attachments reaches Gemini as “no relevant source documents”. The prompts still say landing pages are always relevant, so this looks unintended. See section 15.
 
 ### Relevance scoring (in progress, not merged)
 
