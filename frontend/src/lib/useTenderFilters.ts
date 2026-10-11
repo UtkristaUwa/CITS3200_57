@@ -11,6 +11,7 @@ export function useTenderFilters() {
   const [year, setYear] = useState('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
+  const [advancedSearch, setAdvancedSearch] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -22,15 +23,18 @@ export function useTenderFilters() {
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setDebouncedSearchQuery('');
     setJurisdiction('');
     setStatus('');
     setYear('');
     setMinDate('');
     setMaxDate('');
+    setAdvancedSearch(false);
   };
 
   return {
     searchQuery, setSearchQuery, debouncedSearchQuery,
+    advancedSearch, setAdvancedSearch,
     showFilters, setShowFilters,
     jurisdiction, setJurisdiction,
     status, setStatus,

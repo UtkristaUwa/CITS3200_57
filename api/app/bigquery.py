@@ -7,6 +7,7 @@ from google import genai
 from google.cloud import bigquery, storage as gcs
 
 from app.config import settings
+from app.query_parser import parse_search_query
 
 logger = logging.getLogger("TenderSearch")
 
@@ -91,6 +92,28 @@ def get_storage_client() -> gcs.Client:
     return gcs.Client(project=settings.google_cloud_project)
 
 
+def _escape_like_pattern(text: str) -> str:
+    """Escape backslash and SQL LIKE wildcards (% and _)."""
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _build_select_columns(col_prefix: str = "") -> str:
+    """Build column projection, excluding extracted_text to reduce payload by ~98%."""
+    cols = []
+    for col in ALL_COLUMNS:
+        if col == "documents":
+            doc_ref = f"{col_prefix}documents" if col_prefix else "documents"
+            cols.append(
+                f"ARRAY(SELECT AS STRUCT d.document_id, d.file_name, d.file_type, "
+                f"CAST(NULL AS STRING) AS extracted_text, d.parsed_at, d.storage_uri "
+                f"FROM UNNEST({doc_ref}) d) AS documents"
+            )
+        else:
+            cols.append(f"{col_prefix}{col}")
+    return ", ".join(cols)
+
+
+
 def list_tenders(
     client: bigquery.Client,
     limit: int,
@@ -105,6 +128,7 @@ def list_tenders(
     closing_after: date | None = None,
     year: str | None = None,
     q: str | None = None,
+    mode: str = "keyword",
 ) -> list[dict]:
     """
     SELECT from `tenders` with optional filters. All filter values are bound
@@ -118,7 +142,8 @@ def list_tenders(
     ]
 
     clean_q = (q or "").strip()
-    col_prefix = "base." if clean_q else ""
+    is_semantic = bool(clean_q and mode == "semantic")
+    col_prefix = "base." if is_semantic else ""
 
     if status:
         conditions.append(f"{col_prefix}status = @status")
@@ -132,7 +157,7 @@ def list_tenders(
 
     if location:
         conditions.append(f"LOWER({col_prefix}location) LIKE @location")
-        params.append(bigquery.ScalarQueryParameter("location", "STRING", f"%{location.lower()}%"))
+        params.append(bigquery.ScalarQueryParameter("location", "STRING", f"%{_escape_like_pattern(location.lower())}%"))
 
     if min_value is not None:
         conditions.append(f"{col_prefix}value_amount >= @min_value")
@@ -157,14 +182,22 @@ def list_tenders(
         )
         params.append(bigquery.ScalarQueryParameter("year", "INT64", year_int))
 
+    order_clause = "ORDER BY first_seen_at DESC"
+    if clean_q and not is_semantic:
+        parsed_q = parse_search_query(clean_q)
+        conditions.extend(parsed_q.conditions)
+        params.extend(parsed_q.parameters)
+        if parsed_q.order_clause:
+            order_clause = parsed_q.order_clause
+
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
-    if clean_q:
+    if is_semantic:
         # Case A: Semantic Vector Search
         query_vector = generate_query_embedding(clean_q)
         params.append(bigquery.ArrayQueryParameter("query_vector", "FLOAT64", query_vector))
 
-        select_cols = ", ".join([f"base.{col}" for col in ALL_COLUMNS])
+        select_cols = _build_select_columns("base.")
 
         # top_k should be comfortably large so post-filtering doesn't eliminate all rows
         top_k = max((limit + offset) * 5, 150)
@@ -185,13 +218,13 @@ def list_tenders(
             LIMIT @limit OFFSET @offset
         """
     else:
-        # Case B: Standard chronological browse
-        select_cols = ", ".join(ALL_COLUMNS)
+        # Case B: Standard chronological browse or fast keyword search with relevance ranking
+        select_cols = _build_select_columns("")
         query = f"""
             SELECT {select_cols}
             FROM `{settings.tenders_table}`
             {where_clause}
-            ORDER BY first_seen_at DESC
+            {order_clause}
             LIMIT @limit OFFSET @offset
         """
 
