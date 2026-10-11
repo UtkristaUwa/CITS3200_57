@@ -147,6 +147,25 @@ export async function updateDisplaySettings(update: DisplaySettings): Promise<Di
   return data;
 }
 
+export interface ReprocessStatus {
+  running: boolean;
+  state: string | null;
+  processed: number | null;
+  total: number | null;
+  reprocessed: number | null;
+  skipped: number | null;
+  failed: number | null;
+  started_at: string | null;
+  updated_at: string | null;
+}
+
+export async function getReprocessStatus(): Promise<ReprocessStatus> {
+  const { data } = await http.get<ReprocessStatus>(
+    `${API_BASE_URL}/admin/pipeline/reprocess/status`,
+  );
+  return data;
+}
+
 export interface ReprocessRunResponse {
   execution: string;
 }
