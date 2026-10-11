@@ -266,9 +266,10 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
             break
         page += 1
         time.sleep(PAUSE_SECONDS)
-        # A POST is not retried on a timeout: the pager's state is per-page.
-        response = client.post(LIST_URL, data=form, headers=dict(HEADERS, Referer=LIST_URL),
-                               timeout=45.0)
+        # Asking for a list page is a read, so it is safe to ask again if it fails.
+        response = common.request_with_retries(
+            client, "post", LIST_URL, data=form, headers=dict(HEADERS, Referer=LIST_URL),
+            timeout=45.0)
         response.raise_for_status()
     return urls
 

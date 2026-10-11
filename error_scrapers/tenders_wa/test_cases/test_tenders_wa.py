@@ -363,6 +363,19 @@ def test_a_tender_with_no_download_link_is_complete_without_documents(tmp_path):
     assert [m for m, _ in transport.state["requests"]] == ["GET"]  # no download attempted
 
 
+def test_documents_listed_but_no_download_link_is_partial_with_a_reason(tmp_path):
+    # Keep the documents table, take away only the "Download Now" link.
+    html = re.sub(r'<a href="[^"]*downloadspecs\.action[^"]*"[^>]*>.*?</a>', "", _detail(), flags=re.S)
+    assert "downloadspecs.action" not in html and 'id="documents"' in html
+    transport = _portal(detail_html=html)
+    code, tender = scraper.scrape_opportunity(_client(transport), DETAIL_URL, str(tmp_path))
+    assert code == common.TENDER_PARTIAL
+    assert tender["attachments"] == []
+    assert os.path.exists(os.path.join(tender["folder"], "__tender__WA70532.txt"))
+    assert (run_notes.PORTAL, None) in run_notes._pending
+    assert [m for m, _ in transport.state["requests"]] == ["GET"]  # no download attempted
+
+
 def test_documents_served_as_a_web_page_give_tender_partial_with_page_text_saved(tmp_path):
     login_page = httpx.Response(200, text="<html>Please sign in</html>", headers={"content-type": "text/html"})
     code, tender = scraper.scrape_opportunity(_client(_portal(package=login_page)), DETAIL_URL, str(tmp_path))

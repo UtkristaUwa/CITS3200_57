@@ -547,9 +547,12 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     advertised = len(fields["documents"])
     if not fields["download_url"]:
         if advertised:
-            log.info("       documents: %d listed but the page offers no download", advertised)
-        else:
-            reporting.documents_line(log, 0)
+            # Documents are listed but the page gives no way to fetch them: the
+            # tender is not fully obtained, so it is partial, not a clean success.
+            log.warning("       documents: %d listed but the page offers no download", advertised)
+            run_notes.note_reason(run_notes.PORTAL)
+            return common.TENDER_PARTIAL, tender
+        reporting.documents_line(log, 0)
         return common.SITE_SUCCESS, tender
 
     try:

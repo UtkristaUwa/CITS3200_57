@@ -247,6 +247,39 @@ def test_a_detail_page_that_times_out_is_asked_for_again(tmp_path, monkeypatch):
     assert code == common.SITE_SUCCESS and tender
 
 
+def test_a_list_page_that_fails_is_asked_for_again_and_no_tender_is_lost(tmp_path, monkeypatch):
+    monkeypatch.setattr(common.time, "sleep", lambda s: None, raising=False)
+    transport = _portal()
+    failures = {"n": 0}
+
+    def handler(request):
+        if request.method == "POST" and failures["n"] == 0:
+            failures["n"] += 1
+            return httpx.Response(503, text="try later")
+        return transport.handler(request)
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert failures["n"] == 1
+    assert result.code == common.SITE_SUCCESS
+    assert result.count == 20  # page 2 arrived on the second try
+
+
+def test_a_429_on_the_list_pager_is_not_retried(tmp_path, monkeypatch):
+    monkeypatch.setattr(common.time, "sleep", lambda s: None, raising=False)
+    transport = _portal()
+    posts = {"n": 0}
+
+    def handler(request):
+        if request.method == "POST":
+            posts["n"] += 1
+            return httpx.Response(429, text="slow down")
+        return transport.handler(request)
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert posts["n"] == 1
+    assert result.code == common.SITE_RATE_LIMITED
+
+
 def test_run_scraper_returns_a_scrape_result(tmp_path, monkeypatch):
     _patch_client(monkeypatch, _portal())
     result = scraper.run_scraper(limit=1, output_dir=str(tmp_path))
