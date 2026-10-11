@@ -283,24 +283,28 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         # name it actually wrote -- otherwise the extracted text ends up
         # attached to the wrong file.
         saved_name = os.path.basename(raw_path)
+        size_bytes = os.path.getsize(raw_path)
+
+        extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
+        if extractor is not None:
+            try:
+                log.info("       extracting text from %s", saved_name)
+                common.save_extracted_text(
+                    output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
+            except common.EncryptedFileError:
+                common.drop_locked_file(raw_path)  # not stored, not an attachment
+                any_failed = True
+                continue
+            except common.ExtractionError as e:
+                log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
+                run_notes.note_reason(run_notes.UNREADABLE, saved_name)
+                any_failed = True
+
         attachments.append({
             "file_name": saved_name,
             "content_type": content_type,
-            "size_bytes": os.path.getsize(raw_path),
+            "size_bytes": size_bytes,
         })
-
-        extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
-        if extractor is None:
-            continue
-
-        try:
-            log.info("       extracting text from %s", saved_name)
-            common.save_extracted_text(
-                output_dir, saved_name, common.extract_with_fallback(extractor, raw_path))
-        except common.ExtractionError as e:
-            log.warning("       text extraction FAILED  %s  (%s)", saved_name, e)
-            run_notes.note_reason(run_notes.UNREADABLE, saved_name)
-            any_failed = True
 
     code = common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS
     return code, attachments

@@ -582,6 +582,23 @@ def _drop_file(path: str) -> None:
             pass
 
 
+def drop_locked_file(path: str) -> None:
+    """
+    A password-protected file we cannot read and will never be given the
+    password for: remove it (and any text file beside it), log it, and note the
+    reason against the tender being scraped.
+    """
+    name = os.path.basename(path)
+    _drop_file(path)
+    logger.warning("%s is password protected; dropped it (not stored)", name)
+    run_notes.note_reason(run_notes.LOCKED, name)
+
+
+def zip_member_is_encrypted(member) -> bool:
+    """True if a zip entry is password protected (the zip's own encryption flag)."""
+    return bool(member.flag_bits & 0x1)
+
+
 def extract_attachment_text(folder: str, file_name: str) -> bool:
     """
     Write <file_name>.txt next to a saved attachment, when we have an extractor
@@ -765,6 +782,12 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
         for member in zf.infolist():
             file_name = os.path.basename(member.filename.replace("\\", "/"))
             if member.is_dir() or not file_name:
+                continue
+            if zip_member_is_encrypted(member):
+                # One locked file must not cost the tender the rest of its package.
+                logger.warning("package held a password-protected file (%s); not stored", file_name)
+                run_notes.note_reason(run_notes.LOCKED, file_name)
+                any_failed = True
                 continue
             if file_name.lower().endswith(".zip"):
                 nested, nested_failed = unpack_zip(io.BytesIO(zf.read(member)), folder, depth + 1)

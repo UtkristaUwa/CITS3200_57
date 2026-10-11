@@ -58,6 +58,8 @@ DETAIL_LINK_SELECTOR = "a[href*='/prcOpportunity/']"
 # that.
 FIELD_ROW_SELECTOR = ".nsw-table-row"
 
+PACKAGE_TIMEOUT_SECONDS = 120.0   # one opportunity's whole document package
+
 # Be polite to buy.nsw: it answers with HTTP 202 and no page once we go too fast.
 REQUEST_DELAY_SECONDS = 1.5   # pause before each detail-page request
 BLOCK_RETRIES = 0             # in a real run: wait out the WAF block and resume this many times
@@ -207,6 +209,13 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
             file_name = os.path.basename(name)
             if not file_name:
                 continue
+            if common.zip_member_is_encrypted(zf.getinfo(name)):
+                # One locked file must not cost the tender the rest of its package.
+                log.warning("       package held a password-protected file (%s); not stored",
+                            file_name)
+                run_notes.note_reason(run_notes.LOCKED, file_name)
+                any_failed = True
+                continue
             content = zf.read(name)
             extension = os.path.splitext(file_name)[1].lower()
 
@@ -231,6 +240,7 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
                     page_text = common.extract_with_fallback(common.extract_pdf, tmp_path)
                 except common.ExtractionError:
                     page_text = ""
+                    run_notes.note_reason(run_notes.UNREADABLE, file_name)
                     any_failed = True
                 finally:
                     os.remove(tmp_path)
@@ -243,7 +253,12 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
                 try:
                     text = common.extract_with_fallback(extractor, raw_path)
                     common.save_extracted_text(output_dir, file_name, text)
+                except common.EncryptedFileError:
+                    common.drop_locked_file(raw_path)
+                    any_failed = True
+                    continue
                 except common.ExtractionError:
+                    run_notes.note_reason(run_notes.UNREADABLE, file_name)
                     any_failed = True
             attachments.append({"file_name": file_name, "content_type": None})
 
@@ -292,7 +307,10 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     attachments = []
     if package_url:
         try:
-            pkg_response = client.get(package_url, headers=HEADERS, timeout=60.0)
+            # A timeout is asked again (common.request_with_retries); an HTTP
+            # error, such as an expired link, is not. Big packages get longer.
+            pkg_response = common.request_with_retries(
+                client, "get", package_url, headers=HEADERS, timeout=PACKAGE_TIMEOUT_SECONDS)
             pkg_response.raise_for_status()
             result = extract_package(pkg_response.content, folder, opportunity_id)
             common.add_source_url(folder, opportunity_id, url)
@@ -303,9 +321,14 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
                           "attachments": attachments, "source_url": url, **fields}
                 return common.TENDER_PARTIAL, tender
         except Exception as exc:
+            # The link is signed (its query string carries an AWS key id and
+            # signature), so only the part before the "?" goes in the log.
             log.warning("       package download/extract FAILED  %s  (%s: %s)",
-                        package_url, type(exc).__name__, exc)
-            run_notes.note_reason(run_notes.DOWNLOAD, "document package")
+                        package_url.split("?")[0], type(exc).__name__, _without_query(exc))
+            run_notes.note_reason(run_notes.DOWNLOAD, f"document package, {type(exc).__name__}")
+            # Keep what the page itself told us, as for a tender with no files.
+            common.save_page_text(folder, opportunity_id, format_detail_text(fields))
+            common.add_source_url(folder, opportunity_id, url)
             return common.TENDER_PARTIAL, {
                 "title": fields.get("title"), "folder": folder, "attachments": [],
                 "source_url": url, **fields,
@@ -321,6 +344,11 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     tender = {"title": fields.get("title"), "folder": folder,
               "attachments": attachments, "source_url": url, **fields}
     return common.SITE_SUCCESS, tender
+
+
+def _without_query(exc: Exception) -> str:
+    """str(exc) with any URL's "?query" removed: signed links carry credentials."""
+    return re.sub(r"\?[^\s'\")]*", "", str(exc))
 
 
 def _get_with_retry(client, url, *, retries=2, **kwargs):

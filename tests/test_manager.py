@@ -362,8 +362,10 @@ def test_each_portal_is_processed_and_cleared_before_the_next_starts(pipeline, m
     assert "A1" not in pipeline["seen_by_scraper"]["second"]
     assert "A2" not in pipeline["seen_by_scraper"]["second"]
     assert pipeline["cleanups"] == 2  # browsers cleaned up after every portal
-    # The health table is refreshed after every portal, cumulatively.
-    assert pipeline["published"] == [1, 2]
+    # The health table is published after each portal's scrape and again once
+    # its tenders are stored (the store stage can find more incomplete tenders),
+    # cumulatively.
+    assert pipeline["published"] == [1, 1, 2, 2]
 
 
 def test_a_failing_portal_does_not_stop_the_others_but_the_run_exits_1(pipeline, monkeypatch):
