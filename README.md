@@ -35,6 +35,107 @@ TenderAI will:
 - Let users see why an opportunity was matched, review source docs, and accept/reject with feedback
 - Provide an admin interface to manage sources, profiles, keywords, thresholds and system status
 
+CITS3200_57/
+├── .github/
+│   └── workflows/
+│       ├── deploy-backend.yml
+│       └── deploy-frontend.yml
+├── api/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── config.py
+│   │   ├── main.py
+│   │   ├── query_parser.py
+│   │   ├── routers/
+│   │   │   ├── __init__.py
+│   │   │   ├── admin.py
+│   │   │   ├── locations.py
+│   │   │   └── tenders.py
+│   │   ├── schemas.py
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── bigquery_service.py
+│   │   │   ├── classification_service.py
+│   │   │   ├── embedding_service.py
+│   │   │   ├── firestore_service.py
+│   │   │   ├── gemini_service.py
+│   │   │   └── scraper_service.py
+│   │   └── utils.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── tests/
+│       ├── __init__.py
+│       ├── test_admin.py
+│       ├── test_auth.py
+│       ├── test_locations.py
+│       ├── test_main.py
+│       ├── test_query_parser.py
+│       ├── test_schemas.py
+│       └── test_tenders.py
+├── frontend/
+│   ├── .env
+│   ├── .env.production
+│   ├── .gitignore
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── firebase.json
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public/
+│   │   └── sva-logo.png
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── assets/
+│   │   │   └── sva-logo.png
+│   │   ├── components/
+│   │   │   ├── AdminConfigPage.tsx
+│   │   │   ├── AdminRoute.tsx
+│   │   │   ├── ForgotPasswordPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── ManageUsersPage.tsx
+│   │   │   ├── NavBar.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── TenderDetailPage.tsx
+│   │   │   ├── TenderFilterBar.tsx
+│   │   │   ├── TenderListPage.tsx
+│   │   │   └── TenderTable.tsx
+│   │   ├── contexts/
+│   │   │   └── AuthContext.tsx
+│   │   ├── firebaseConfig.ts
+│   │   ├── hooks/
+│   │   │   └── useTenderFilters.ts
+│   │   ├── main.tsx
+│   │   ├── services/
+│   │   │   └── api.ts
+│   │   ├── theme.ts
+│   │   └── vite-env.d.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── scrapers/
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── run_scraper.sh
+│   └── spiders/
+│       ├── __init__.py
+│       ├── austender_spider.py
+│       ├── base_spider.py
+│       ├── buysa_spider.py
+│       ├── eprocure_spider.py
+│       ├── gem_spider.py
+│       ├── nsw_spider.py
+│       ├── qld_spider.py
+│       ├── tenders_vic_spider.py
+│       └── wa_spider.py
+├── .gitignore
+├── LICENSE
+└── README.md
+
+
 # How TenderAI Works
 
 TenderAI is built from three flows that share one BigQuery database and one Cloud Storage bucket:
