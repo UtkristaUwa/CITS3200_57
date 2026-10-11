@@ -19,7 +19,13 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { getSources, type TenderSource } from '../lib/api';
+import {
+  getSources,
+  getFocusAreas,
+  DEFAULT_FOCUS_AREAS,
+  type TenderSource,
+  type TenderTag,
+} from '../lib/api';
 import { SORT_OPTIONS } from '../lib/tenderSort';
 import type { DefaultTenderStatus } from '../lib/tenderPreferences';
 import {
@@ -39,6 +45,8 @@ export interface TenderFilterBarProps {
   setSortBy: (val: string) => void;
   states: string[];
   setStates: (val: string[]) => void;
+  focusAreas: string[];
+  setFocusAreas: (val: string[]) => void;
   sourceId: string;
   setSourceId: (val: string) => void;
   year: string;
@@ -191,6 +199,7 @@ const SELECTABLE_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] 
 
 export function TenderFilterPanel(props: TenderFilterBarProps) {
   const [availableSources, setAvailableSources] = useState<TenderSource[]>([]);
+  const [availableFocusAreas, setAvailableFocusAreas] = useState<TenderTag[]>(DEFAULT_FOCUS_AREAS);
   const standardYears = ['2026', '2025', '2024'];
   const yearOptions = props.year && !standardYears.includes(props.year)
     ? [props.year, ...standardYears]
@@ -198,6 +207,7 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
 
   useEffect(() => {
     getSources().then(setAvailableSources);
+    getFocusAreas().then(setAvailableFocusAreas);
   }, []);
 
   return (
@@ -314,14 +324,48 @@ export function TenderFilterPanel(props: TenderFilterBarProps) {
             </FormControl>
           </Box>
 
-          {/* Row 2: Year */}
+          {/* Row 2: Focus Areas, Year */}
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+              gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'minmax(0, 2fr) minmax(0, 1fr)' },
               gap: 1.5,
             }}
           >
+            <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
+              <InputLabel id="tender-focus-areas-label" shrink>Focus Areas</InputLabel>
+              <Select
+                multiple
+                labelId="tender-focus-areas-label"
+                value={props.focusAreas}
+                input={<OutlinedInput label="Focus Areas" notched />}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  props.setFocusAreas(typeof value === 'string' ? value.split(',') : value);
+                }}
+                renderValue={(selected) => (
+                  selected.length === 0
+                    ? 'All'
+                    : (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((tagId) => {
+                          const item = availableFocusAreas.find((fa) => fa.id === tagId);
+                          return <Chip key={tagId} label={item ? item.label : tagId} size="small" />;
+                        })}
+                      </Box>
+                    )
+                )}
+                displayEmpty
+              >
+                {availableFocusAreas.map((fa) => (
+                  <MenuItem key={fa.id} value={fa.id}>
+                    <Checkbox checked={props.focusAreas.includes(fa.id)} size="small" />
+                    <ListItemText primary={fa.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <FormControl size="small" fullWidth sx={{ minWidth: 0 }}>
               <InputLabel>Year</InputLabel>
               <Select value={props.year} label="Year" onChange={(e) => props.setYear(e.target.value)}>

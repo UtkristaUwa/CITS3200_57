@@ -147,6 +147,7 @@ def list_tenders(
     sort_dir: str | None = None,
     min_fit: int | None = None,
     states: list[str] | None = None,
+    focus_areas: list[str] | None = None,
 ) -> list[dict]:
     """
     SELECT from `tenders` with optional filters. All filter values are bound
@@ -172,6 +173,18 @@ def list_tenders(
             " WHERE s IN UNNEST(@states) OR s = 'NATIONAL')"
         )
         params.append(bigquery.ArrayQueryParameter("states", "STRING", states))
+
+    if focus_areas:
+        # Matches a tender having ANY of the chosen focus areas.
+        # BigQuery stores focus_areas as a JSON map of {tag_id: score 1-5}.
+        # Accessing `focus_areas[fa]` using the JSON subscript operator yields
+        # non-null when the tag key is present in the JSON map.
+        conditions.append(
+            f"EXISTS (SELECT 1 FROM UNNEST(@focus_areas) fa "
+            f"WHERE {col_prefix}focus_areas IS NOT NULL "
+            f"AND {col_prefix}focus_areas[fa] IS NOT NULL)"
+        )
+        params.append(bigquery.ArrayQueryParameter("focus_areas", "STRING", focus_areas))
 
     if min_fit is not None:
         # Applied in SQL rather than in the browser so every page comes back
