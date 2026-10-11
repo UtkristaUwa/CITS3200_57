@@ -102,9 +102,6 @@ TenderAI is a UWA CITS3200 project (Group 57) built for Social Ventures Australi
 
 Every morning TenderAI scrapes the portals, reads each tender and its attachments, uses Gemini to summarise and saves it to BigQuery. SVA staff sign in to a web app to to check the tenders, rather then going through 20+ portals they can check TenderAI
 
-**What the brief asks for** ([README](https://github.com/UtkristaUwa/CITS3200_57/blob/main/README.md)): monitor configurable sources, extract key information, remove duplicates, match tenders to SVA’s interest areas, store them centrally, notify staff through Microsoft Teams, explain why a tender matched, collect accept/reject feedback, and give admins a console for sources, profiles and system status.
-
-Client contact at SVA: Ramon.
 
 ## 2. Architecture
 
