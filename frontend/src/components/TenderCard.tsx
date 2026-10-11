@@ -64,14 +64,16 @@ import {
     return 'Not disclosed';
   }
 
-  function StarIcon({ size = 20 }: { size?: number }) {
+  function StarIcon({ size = 20, filled = true }: { size?: number; filled?: boolean }) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}
         height={size}
         viewBox="0 0 256 256"
-        fill="currentColor"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth={filled ? 0 : 16}
         aria-hidden="true"
         focusable="false"
       >
@@ -343,7 +345,7 @@ import {
                     },
                   }}
                 >
-                  <StarIcon />
+                  <StarIcon filled={isFavorite} />
                 </IconButton>
               </Tooltip>
             </Box>
