@@ -19,7 +19,6 @@ from error_scrapers.vic_buyingfor.scraper import run_scraper as run_vic_buyingfo
 from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
 from error_scrapers.buy_nsw.scraper import run_scraper as run_buynsw
 from error_scrapers.tenders_act.scraper import run_scraper_via_browser as run_act
-from document_scraper.main import process_tenders as run_doc_scraper
 from error_scrapers import common, reporting
 from processing.runtime_config import prepare_runtime_config
 from email.message import EmailMessage
@@ -287,9 +286,8 @@ def _merge_document_records(attachment_records, txt_documents):
         record = dict(record)
         base, _ext = os.path.splitext(record["file_name"])
         # The scrapers save the full extraction as <file name>.txt (e.g.
-        # Form.docx.txt: headers, footers, tables, spreadsheets). The older
-        # document_scraper stage saves <base>.txt for PDF/DOCX only and reads
-        # body paragraphs alone. Prefer the fuller one, fall back to the other.
+        # Form.docx.txt: headers, footers, tables, spreadsheets). <base>.txt is
+        # only the attachment itself when it is a genuine .txt file.
         extracted_text = extracted_text_by_txt_name.get(f"{record['file_name']}.txt")
         if not extracted_text:
             extracted_text = extracted_text_by_txt_name.get(f"{base}.txt")
@@ -639,7 +637,7 @@ def main():
         for source_id, scrape in SCRAPERS:
             # 1. Run the web scraper. It downloads the tender page text and
             # attachments into temp_dir.
-            _stage(1, 4, f"SCRAPE {source_id}")
+            _stage(1, 3, f"SCRAPE {source_id}")
             scraped, failure, health_record, summary_row = _scrape_one(
                 source_id, scrape, temp_dir, SCRAPE_LIMIT_CLOUD, True, now_iso
             )
@@ -660,19 +658,10 @@ def main():
                 continue
 
             try:
-                # 2. Run the Document Scraper
-                # It scans temp_dir, parses PDFs/DOCXs, and creates individual .txt files
-                _stage(2, 4, f"EXTRACT text from attachments ({source_id})")
-                logger.info("📄 Executing Document Scraper...")
-                try:
-                    run_doc_scraper(temp_dir)
-                except Exception as e:
-                    # Not fatal: tenders still have their page text, so the AI stage can
-                    # work from that alone, and the attachments are still worth storing.
-                    logger.error(f"Document scraper failed: {e}")
-
-                # 3. Store attachments, then hand each tender to AI processing
-                _stage(3, 4, f"STORE attachments, AI-process, upsert "
+                # 2. Store attachments, then hand each tender to AI processing.
+                # The scrapers have already written each attachment's text
+                # (error_scrapers/common.py), so there is no separate extraction step.
+                _stage(2, 3, f"STORE attachments, AI-process, upsert "
                              f"{source_id} ({len(tender_folders)} tender(s))")
                 logger.info("🤖 Preparing data for AI Processing...")
                 errors = _process_tenders(
@@ -697,7 +686,7 @@ def main():
             sys.exit(1)
 
     # Once the 'with' block ends, Python permanently deletes the temp_dir and all files inside it.
-    _stage(4, 4, "FINISH")
+    _stage(3, 3, "FINISH")
     logger.info("Pipeline finished. Temporary files wiped from memory.")
     if failures:
         summary = ", ".join(f"{s} ({why})" for s, why in failures)
