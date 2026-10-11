@@ -20,9 +20,15 @@ export default function FavoritesPage() {
     setExpandedId((prev) => (prev === tenderId ? null : tenderId));
 
   useEffect(() => {
+    if (!filterProps.filtersReady) {
+      setLoading(true);
+      return;
+    }
+
     let cancelled = false;
     const controller = new AbortController();
     setLoading(true);
+    setError(null);
     getTenders({
       limit: 50,
       q: filterProps.debouncedSearchQuery || undefined,
@@ -48,13 +54,17 @@ export default function FavoritesPage() {
       controller.abort();
     };
   }, [
-    filterProps.debouncedSearchQuery, filterProps.status, filterProps.jurisdiction,
-    filterProps.year, filterProps.minDate,
-    filterProps.maxDate
+    filterProps.filtersReady,
+    filterProps.debouncedSearchQuery,
+    filterProps.status,
+    filterProps.jurisdiction,
+    filterProps.year,
+    filterProps.minDate,
+    filterProps.maxDate,
   ]);
 
   const bookmarkedTenders = tenders.filter(t => favorites.has(t.tender_id));
-  const isDataLoading = loading || loadingFavorites;
+  const isDataLoading = loading || !filterProps.filtersReady || loadingFavorites;
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>

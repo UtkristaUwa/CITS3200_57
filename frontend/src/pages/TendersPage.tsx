@@ -39,6 +39,11 @@ export default function TendersPage() {
   const filterProps = useTenderFilters();
 
   useEffect(() => {
+    if (!filterProps.filtersReady) {
+      setLoading(true);
+      return;
+    }
+
     let cancelled = false;
     const controller = new AbortController();
     setLoading(true);
@@ -96,6 +101,7 @@ export default function TendersPage() {
       controller.abort();
     };
   }, [
+    filterProps.filtersReady,
     filterProps.debouncedSearchQuery,
     filterProps.advancedSearch,
     filterProps.status,
@@ -108,7 +114,7 @@ export default function TendersPage() {
   const sortedTenders = [...tenders].sort(
     (a, b) => Number(favorites.has(b.tender_id)) - Number(favorites.has(a.tender_id))
   );
-  const isDataLoading = loading || !tenderVisitReady;
+  const isDataLoading = loading || !filterProps.filtersReady || !tenderVisitReady;
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', pb: 6 }}>
