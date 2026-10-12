@@ -1,0 +1,883 @@
+* 6b464f6  (HEAD -> main, origin/main, origin/HEAD) Update documentation.md (UtkristaUwa)
+*   c23f1e1  Merge pull request #108 from UtkristaUwa/documentation (UtkristaUwa)
+|\  
+| * 3be49b4  (origin/documentation) Add test execution logs for documentation (aki)
+| * 358b682  Add execution log allowlist to .gitignore and log summary (aki)
+* |   8d52fce  Merge pull request #107 from UtkristaUwa/fix/default-filters-schema-sync (Jinghao HU)
+|\ \  
+| * | f36472f  (origin/fix/default-filters-schema-sync) fix: persist all current user default filters (jinghao163)
+* | | d55f1d6  Update documentation.md (UtkristaUwa)
+|/ /  
+| | * 8b9b3f9  (origin/factory_bug_fix) UPDATE: udpating alls crapers to be a same level absed opn specific bug fixes. (bgilmore22)
+| | * e454184  FIX: fetched tedneres that are stored imcompleted are fetched again on later tnights. (bgilmore22)
+| | * a8bf430  FIX: improved vic backoff plan to try and sfix the download problems. (bgilmore22)
+| | * 9bde96e  FIX: if chrome nevr starts, we retry that and added protections for if chrome dies mid run. (bgilmore22)
+| | * 9168791  FIX: fixed the tas timeout problerms that was happening, weve increased the time allowed for it to handle all cases seen in the last run. (bgilmore22)
+| | * 4ff4613  FIX: changed the way we list and login to ensure maximum success on scraping. (bgilmore22)
+| | * dda10ad  FIX: further junk files and spreadsheet fixes. (bgilmore22)
+| | * 6b72e14  FIX: junk files in a package no longer make a tender partioal and spreadhssets openpyxl refuses are then read cell be cell. (bgilmore22)
+| | * 7e0cad8  FIX: fixed the qld search by addinhg more waiut time and retries before calling a tender absent,  downloads get 3 retries. (bgilmore22)
+| | * 7f85278  FIX: Tenders ACT stops on a challenge page instead of re-logging in, logs what page it was served, resumes the next night, retries with a fresh browser after a wait, and waits up to 8 minutes for big packages. (bgilmore22)
+| | * 1cdd2c8  FIX: SA tenders problem where the pager wuill now no longer delete its own form. (bgilmore22)
+| |/  
+|/|   
+* |   77d35cf  (origin/fixFocusAreaSort, fixFocusAreaSort) Merge pull request #105 from UtkristaUwa/feature/focus-areas-filter (Lucan McDonald)
+|\ \  
+| * | 6b8ffb4  (origin/feature/focus-areas-filter) feat: add focus areas multi-select filter with checkboxes and chips (Radrados)
+|/ /  
+* |   4010a55  Merge pull request #104 from UtkristaUwa/fixFrontendFinalisation (Lucan McDonald)
+|\ \  
+| * | 1c43c15  (origin/fixFrontendFinalisation, fixFrontendFinalisation) edited favicon (PiesOnTues)
+| * | fd072f9  added the favicon (PiesOnTues)
+| * | cc92208  changed admin sidebar titles (PiesOnTues)
+| * | 097082e  JSON now pretty-prints in the 'Show JSON' admin view (PiesOnTues)
+| * | 56ea984  made tender cards reflect location_states (PiesOnTues)
+* | |   d76e05e  Merge pull request #103 from UtkristaUwa/feature/sort-and-filters (Lucan McDonald)
+|\ \ \  
+| |/ /  
+|/| |   
+| | | * 7ca2c5a  (origin/feature/sort-and-filters) feat: add focus areas multi-select filter with checkboxes and chips (Radrados)
+| | |/  
+| |/|   
+| * | 3541c21  feat(tenders): add multi-field sorting, top-nav sort controls, and date/portal filters (Radrados)
+|/ /  
+* |   a0e82f9  Merge pull request #102 from UtkristaUwa/fixLocationStates (Lucan McDonald)
+|\ \  
+| * | 67a0ba8  (origin/fixLocationStates, fixLocationStates) fixed some formatting on the front end (PiesOnTues)
+| * | 162bd24  changed state selection behaviour and associated front end (PiesOnTues)
+* | |   5bfc74c  Merge pull request #101 from UtkristaUwa/scraper_factory (bgilmore22)
+|\ \ \  
+| |/ /  
+|/| |   
+| * | ab8434d  (origin/scraper_factory) bug fix (bgilmore22)
+| * | 432f46a  added tas tenders to scraper linup and undid testing manager py changes so it runs evrything. (bgilmore22)
+| * | 6960de5  FEAT: SA scrapers are now up and running. (bgilmore22)
+| * | be0e891  FIX: tenders wa now fully captures what we need. (bgilmore22)
+| * | 8da19ab  etender files (bgilmore22)
+| * | 53496d0  FIX: added full page text block to enery tender txt. (bgilmore22)
+| * | 0068cde  FEAT: added wa tedners to the scraper build. (bgilmore22)
+| * | bb2d335  FEAT: added the etender scraper to the build. (bgilmore22)
+| * | 75448ce  Add QBuild eTender scraper (bgilmore22)
+* | |   59efc61  Merge pull request #100 from UtkristaUwa/implementReprocessTracker (Lucan McDonald)
+|\ \ \  
+| * | | 43f295e  (origin/implementReprocessTracker, implementReprocessTracker) added from wrong folder (PiesOnTues)
+| * | | 5ef2b07  added tender reprocess status over button when reprocess is running (PiesOnTues)
+|/ / /  
+* | |   738416d  Merge pull request #99 from UtkristaUwa/feature/sticky-search-navbar (Lucan McDonald)
+|\ \ \  
+| * | | d83f65c  (origin/feature/sticky-search-navbar) feat(frontend): integrate sticky search and filters into navbar (jinghao163)
+| |/ /  
+* | |   b8c2c25  Merge pull request #98 from UtkristaUwa/feature/last-successful-run (Lucan McDonald)
+|\ \ \  
+| * | | 4f199fc  (origin/feature/last-successful-run) fix(frontend): update tooltip on successful scraper runs (Radrados)
+| * | | 99c9989  feat(frontend): display last successful run in SystemHealthPage (Radrados)
+| * | | de8a885  feat(api): expose last_successful_run in ScraperHealthRecord (Radrados)
+| * | | e062b95  feat(pipeline): carry forward last_successful_run in scraper_health.json (Radrados)
+* | | |   048f5b4  Merge pull request #97 from UtkristaUwa/implementAdminSettings (Lucan McDonald)
+|\ \ \ \  
+| |_|/ /  
+|/| | |   
+| * | | f63acb3  (origin/implementAdminSettings, implementAdminSettings) missed sm stuff i think (PiesOnTues)
+| * | | 26027a0  changed tsx for the tenderspage slightly (PiesOnTues)
+| * | | d8b486b  added regular user view and admin settings (PiesOnTues)
+| |/ /  
+* | | 1c8b6d0  Remove tenders_data reference from documentation (UtkristaUwa)
+* | | e46e868  Update documentation.md (UtkristaUwa)
+* | |   2eead01  Merge pull request #96 from UtkristaUwa/documentation (Lucan McDonald)
+|\ \ \  
+| | |/  
+| |/|   
+| * | 4d442c8  Remove outdated documentation files (aki)
+| * | 6973364  Rename title to TenderAI and simplify TenderCard component (aki)
+| * | cb7dad3  Update process_tender steps with relevance call (UtkristaUwa)
+| * | 2da95ac  Fix formatting in documentation for scraper step (UtkristaUwa)
+| * | b0f9fb6  Refactor upsert flow in documentation (UtkristaUwa)
+| * | 17c0d78  Update owner transfer manual with links for clarity (UtkristaUwa)
+| * | eee7d2a  Update owner_transefer.md (UtkristaUwa)
+| * | 67ac63b  Add owner handover manual (aki)
+| * | c0f274c  Update documentation.md (UtkristaUwa)
+| * | ebb3291  Add Medrian redline step to pipeline diagram (aki)
+| * | 17a61ab  Update project documentation (aki)
+| * | 8397465  Fix heading formatting in documentation (UtkristaUwa)
+| * | bd205cd  Update documentation (UtkristaUwa)
+| * | f178fc2  Add project documentation (aki)
+* | |   7bd16a8  Merge pull request #95 from UtkristaUwa/feature/ui-polish-triage-and-title (Lucan McDonald)
+|\ \ \  
+| * | | 668f95f  feat(frontend): improve triage input and tender title interaction (jinghao163)
+|/ / /  
+* | | f2b718e  Revert "Refactor TenderCard component for clarity and efficiency" (PiesOnTues)
+* | | 7375265  Revert "Change title from 'frontend' to 'TenderAI'" (PiesOnTues)
+* | | 4e1d1e1  Change title from 'frontend' to 'TenderAI' (UtkristaUwa)
+* | | 9a8a06f  Refactor TenderCard component for clarity and efficiency (UtkristaUwa)
+| |/  
+|/|   
+* |   43a4453  Merge pull request #91 from UtkristaUwa/bug_fixes (Radrados)
+|\ \  
+| * | 1432352  (origin/bug_fixes) UPGRADE: added retires to be cosnistent across all scrapers, previosuily they were added to address specific bugs, this is now been implemented across all scrapers where relevant. (bgilmore22)
+| * | 4f7309c  FIX: health summary now names the failed tenders by id, not the url, we also note the document package for nt and vic downloads for when they have problems. (bgilmore22)
+| * | 7dbaa4d  FIX: further bug fixes such as recording why tenders are incomplete and we now skip locked files inside of the zip isntead of fialing everything. (bgilmore22)
+| * | 4b02783  FEAT: changed tyhe healthj table to better reflect the actual status of the scrapers. resume scrapres are the intended flow and are moved to success. for partial we report what went wrong and on how many tenders. (bgilmore22)
+| * | 837ac70  FEAT: added resuming on vic scraper because we get cloudfare challenges and cant complete all tedners, so we remember when we get blocked and resume from that ppoint the next run. (bgilmore22)
+| * | 25a17b1  FIX: we now drop and report password protected files, and we handle docx files that are not zips. (bgilmore22)
+| * | dbfe71c  FEAT: added a retry for qld tenders for the unfollowed ones after the main loop has finished, and we also keep sotred documents when a scraper returns 0 documents so we dont overwrite good work. (bgilmore22)
+* | |   6bf771b  Merge pull request #92 from UtkristaUwa/feature/general-ui-polish (Lucan McDonald)
+|\ \ \  
+| * | | bd97611  fix(frontend): polish navigation settings and tender card display (jinghao163)
+* | | | 22ecf6c  Revise README to streamline content and structure (UtkristaUwa)
+* | | | 723c79a  Update README.md (UtkristaUwa)
+|/ / /  
+* | |   c732918  Merge pull request #90 from UtkristaUwa/feature/user-specific-view-default-filters (Lucan McDonald)
+|\ \ \  
+| * | | 4d926b2  (origin/feature/user-specific-view-default-filters) feat: add user-specific default filter saving and restoration (jinghao163)
+| * | |   ef74e45  Merge commit '66fde60d54bfa8c267d7cfff7406f2ca5934dd30' into feature/user-specific-view-default-filters (jinghao163)
+| |\ \ \  
+| * | | | 2b6609c  feat: apply card preferences and preserve settings on save failure (jinghao163)
+| * | | |   0743d06  Merge remote-tracking branch 'origin/main' into feature/user-specific-view-default-filters (jinghao163)
+| |\ \ \ \  
+| * | | | | 8df2ebe  style: improve view settings navigation visibility (jinghao163)
+| * | | | | 5f65901  feat: add view settings navigation entry (jinghao163)
+| * | | | | c0260c9  feat: add tender card view settings dialog (jinghao163)
+| * | | | |   51cab87  Merge remote-tracking branch 'origin/main' into feature/user-specific-view-default-filters (jinghao163)
+| |\ \ \ \ \  
+| * | | | | | cab534b  feat: add user preferences provider (jinghao163)
+| * | | | | | 56065ea  feat: secure user preferences with Firestore rules (jinghao163)
+| * | | | | | cc2eb28  feat: add user preference types and sanitization (jinghao163)
+* | | | | | | 0365555  Update documentation.md (UtkristaUwa)
+* | | | | | | fffb2ee  Update documentation on relevance settings (UtkristaUwa)
+* | | | | | | 2c8aa98  Enhance AI Configuration Reference in documentation (UtkristaUwa)
+* | | | | | | c7e4c57  Revise team info and enhance search documentation (UtkristaUwa)
+| |_|_|/ / /  
+|/| | | | |   
+* | | | | |   66fde60  Merge pull request #83 from UtkristaUwa/feature/keyword-fast-search (Lucan McDonald)
+|\ \ \ \ \ \  
+| * | | | | | 7b80dd6  (origin/feature/keyword-fast-search) feat(search): add boolean operators, field scoping, and exact phrases to keyword search (Radrados)
+| * | | | | | b80feab  fix(search): escape wildcards, rank multi-keyword queries, revert dev CORS, and align tests (Radrados)
+| * | | | | |   25f4506  Merge remote-tracking branch 'origin/main' into feature/keyword-fast-search (Radrados)
+| |\ \ \ \ \ \  
+| * | | | | | | 6432fa9  fix(api): allow all localhost dev ports in CORS middleware (Radrados)
+| * | | | | | | f98d0b6  perf(api): exclude extracted_text from documents in tender list queries (Radrados)
+| * | | | | | |   5e41ac0  Merge remote-tracking branch 'origin/main' into feature/keyword-fast-search (Radrados)
+| |\ \ \ \ \ \ \  
+| * | | | | | | | dc85543  fix(search): include ATM ID in keyword search and prioritize title/ID matches (Radrados)
+| * | | | | | | | d8e8ec2  feat(frontend): add AI search fallback, match badge, and zero-results guidance (Radrados)
+| * | | | | | | | 9e1eabf  feat(frontend): add advanced search toggle and search debouncing (Radrados)
+| * | | | | | | | 2d2ae10  feat(frontend): integrate search mode in api client and filter state (Radrados)
+| * | | | | | | | ec38c5d  feat(api): implement fast keyword search with mode switch parameter (Radrados)
+* | | | | | | | |   8793c22  Merge pull request #89 from UtkristaUwa/fixCapAttachments (Lucan McDonald)
+|\ \ \ \ \ \ \ \ \  
+| * | | | | | | | | 6e12040  (origin/fixCapAttachments, fixCapAttachments) capped attachments (PiesOnTues)
+|/ / / / / / / / /  
+* | | | | | | | |   847da77  Merge pull request #88 from UtkristaUwa/implementForceReprocess (Lucan McDonald)
+|\ \ \ \ \ \ \ \ \  
+| * | | | | | | | | 5f6b5f2  (origin/implementForceReprocess, implementForceReprocess) added a limit environ variable (similar to scrape limit but only applies to the 'reprocess all' logic (PiesOnTues)
+| * | | | | | | | | 8f5815b  added force-repro button (PiesOnTues)
+| | |_|_|_|/ / / /  
+| |/| | | | | | |   
+* | | | | | | | | 3e92481  yaml changes (PiesOnTues)
+| |_|_|_|_|/ / /  
+|/| | | | | | |   
+* | | | | | | | 6f566f8  Expand README with TenderAI functionality details (UtkristaUwa)
+| |_|_|/ / / /  
+|/| | | | | |   
+* | | | | | | 936c0fb  Simplify project brief in documentation (UtkristaUwa)
+* | | | | | | 5c9f68c  Move docs into documentation folder; add project docs and owner manual (aki)
+* | | | | | |   a457b4b  Merge pull request #84 from UtkristaUwa/feature/focus-areas-work-types-display (Lucan McDonald)
+|\ \ \ \ \ \ \  
+| |_|_|_|_|/ /  
+|/| | | | | |   
+| * | | | | |   b9283cc  (origin/feature/focus-areas-work-types-display) merge: integrate latest main into focus areas and work types (jinghao163)
+| |\ \ \ \ \ \  
+| |/ / / / / /  
+|/| | | | | |   
+* | | | | | |   0cd5b34  Merge pull request #87 from UtkristaUwa/scraper_fixes (bgilmore22)
+|\ \ \ \ \ \ \  
+| * | | | | | | d6f63ec  FIX: scrapersd are now stall aware on downloads so that we can wait properly and make sure we donwload the files we need. (bgilmore22)
+| * | | | | | | 6e0e382  FIX: scraper extraction failures addressed suchg as the word tables, a fallback and grantconnet/buynsw problems. also added nt login retry, extended the act wait and removed thje dead document scraper code. (bgilmore22)
+|/ / / / / / /  
+* | | | | | |   33f8e6c  Merge pull request #79 from UtkristaUwa/feature/download-all-attachments (Jinghao HU)
+|\ \ \ \ \ \ \  
+| |_|/ / / / /  
+|/| | | | | |   
+| * | | | | | 5c5b13d  (origin/feature/download-all-attachments) Download all: show the server's reason and reject truncated zips (sepehrmoghani)
+| * | | | | | f4de125  Zip download: fail clearly on missing attachments and storage errors (sepehrmoghani)
+| * | | | | |   b075ec7  Merge remote-tracking branch 'origin/main' into feature/download-all-attachments (sepehrmoghani)
+| |\ \ \ \ \ \  
+| | | |_|_|/ /  
+| | |/| | | |   
+| * | | | | | 419807e  Add Download All: stream a tender's attachments as one zip (sepehrmoghani)
+| | | * | | | ce8e47a  fix(api): restore runtime config dataclasses after merge (jinghao163)
+| | | * | | |   007b875  Merge branch 'main' into feature/focus-areas-work-types-display (Jinghao HU)
+| | | |\ \ \ \  
+| |_|_|/ / / /  
+|/| | | | | |   
+* | | | | | |   8923afb  Merge pull request #86 from UtkristaUwa/fixConfigPage (Jinghao HU)
+|\ \ \ \ \ \ \  
+| |_|/ / / / /  
+|/| | | | | |   
+| * | | | | | 60e103f  (origin/fixConfigPage, fixConfigPage) fixed issues mentioned by Jinghao (PiesOnTues)
+| * | | | | | 73bdc0f  added missing files (PiesOnTues)
+| * | | | | | b57345b  added triage and summary editing to admin page (PiesOnTues)
+| * | | | | | f00ceaa  this part of the config just wasnt wired up to the API so this should fix that (PiesOnTues)
+|/ / / / / /  
+* | | | | | 5044d32  made scrape limit a proper env variable (PiesOnTues)
+* | | | | | c55917a  made new notif channel and updated files (PiesOnTues)
+* | | | | | f9386cc  fresh yaml file for warning when we have to fallback to the cfg from the repo (PiesOnTues)
+* | | | | | b773a79  changes to config file and infra script to validate diff between git and prod config (PiesOnTues)
+* | | | | |   fde97ee  Merge pull request #82 from UtkristaUwa/fixLocationFiltering (Radrados)
+|\ \ \ \ \ \  
+| * | | | | | e54a579  (origin/fixLocationFiltering, fixLocationFiltering) changed scrape limit back to the usual 0 2 (PiesOnTues)
+| * | | | | | a6e9e02  skrape limi (PiesOnTues)
+| * | | | | | 5e365b7  updated location_state -> location_states, an array of all involved states, or 'national' if too vaugue (PiesOnTues)
+| * | | | | | 35f919c  added additional field for filtering from full state name/specific address to their postal abbreviations e.g. Western Australia or 1 paper st. claremont WA 6060 would both map to 'WA' (PiesOnTues)
+| | | * | | | 93f1589  fix(frontend): align work types in expanded tender details (jinghao163)
+| | | * | | | b937bcb  test(api): add tender classification integration tests (jinghao163)
+| | | * | | | b72835e  feat(api): expose ordered tender classification tags (jinghao163)
+| | | * | | | a8bb03f  feat(api): add runtime taxonomy label mapping (jinghao163)
+| | | * | | | 78cb2ef  feat(api): include classification fields in tender queries (jinghao163)
+| | | * | | | 9a87787  feat(frontend): display focus areas and work types on tender cards (jinghao163)
+| | | | |/ /  
+| | | |/| |   
+| | | | | | * de87ff6  Agent host session 35f33e6f-4ccf-4bc2-93e9-e505dcbff95b - baseline checkpoint (PiesOnTues)
+| | | | | | * cf8ab0b  (origin/feature/user-tender-alerts) feat: implement Microsoft Teams alerts for high-relevance tenders (Radrados)
+| |_|_|_|_|/  
+|/| | | | |   
+* | | | | | 9c33192  needed to commit this directly to main for this fix (PiesOnTues)
+| |_|/ / /  
+|/| | | |   
+* | | | |   41b602b  Merge pull request #75 from UtkristaUwa/feature/attachments-sort-cleanup (Jinghao HU)
+|\ \ \ \ \  
+| | |/ / /  
+| |/| | |   
+| * | | | 887c7dc  (origin/feature/attachments-sort-cleanup) Add sorting and file-type labels to tender documents list (sepehrmoghani)
+* | | | |   9a5b295  Merge pull request #81 from UtkristaUwa/feature/frontend-performance-main (Lucan McDonald)
+|\ \ \ \ \  
+| * | | | | 56a721c  (origin/feature/frontend-performance-main) Reuse cached location options (jinghao163)
+| * | | | | 0ba510f  Cancel stale tender requests (jinghao163)
+| * | | | | d0a3bbe  Add debounce to tender search (jinghao163)
+|/ / / / /  
+* | | | |   07ebf5d  Merge pull request #76 from UtkristaUwa/health-report-page-fix (Lucan McDonald)
+|\ \ \ \ \  
+| | |_|/ /  
+| |/| | |   
+| * | | | c098704  (origin/health-report-page-fix)  reworked health report page to get arround permissions issue, implemented backend + front end tweaks (Radrados)
+| |/ / /  
+* | | |   8e3eac8  Merge pull request #77 from UtkristaUwa/feature/legacy-category-ui-cleanup (Radrados)
+|\ \ \ \  
+* \ \ \ \   eb379cc  Merge pull request #78 from UtkristaUwa/extraction_timeout (bgilmore22)
+|\ \ \ \ \  
+| |_|/ / /  
+|/| | | |   
+| * | | | a788f13  FEAT: added a new test file to test my upgrade on common.py where we limit the amount of time each file has per execution so we dont hang. (Ben Gilmore)
+|/ / / /  
+| | | | * 2af6f98  Agent host session 07dde897-833e-4970-bfd7-93979910ec44 - turn 1 (PiesOnTues)
+| | | | * 25fe0b6  Agent host session 07dde897-833e-4970-bfd7-93979910ec44 - turn 1 start (PiesOnTues)
+| | | | * 3b0a204  Agent host session 07dde897-833e-4970-bfd7-93979910ec44 - baseline checkpoint (PiesOnTues)
+| | | | * c472eae  (origin/feature/legacy-category-ui-cleanup) Merge pull request #80 from UtkristaUwa/feature/frontend-performance (Lucan McDonald)
+| | |_|/| 
+| |/| | | 
+| | | | * 8de31da  (origin/feature/frontend-performance) Reuse cached location options (jinghao163)
+| | | | * fafbaed  Cancel stale tender requests (jinghao163)
+| | | | * 5539872  Add debounce to tender search (jinghao163)
+| | |_|/  
+| |/| |   
+| * | | 553d582  Remove legacy category from frontend UI (jinghao163)
+|/ / /  
+* | |   620070c  Merge pull request #74 from UtkristaUwa/feature/tender-card-expand-ux (Lucan McDonald)
+|\ \ \  
+| * | | 72b2c4c  (origin/feature/tender-card-expand-ux) Improve tender card expand collapse UX (jinghao163)
+* | | | 4acefce  Merge pull request #72 from UtkristaUwa/feature/filter-bar-cleanup (Lucan McDonald)
+|\| | | 
+| * | | 7c4a14e  (origin/feature/filter-bar-cleanup) Remove value filter and simplify filter bar (jinghao163)
+* | | |   0b55562  Merge pull request #73 from UtkristaUwa/gcp_mem_upgrade (bgilmore22)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| * | | c5662f0  (origin/gcp_mem_upgrade) FEAT: implemented gcp pipleine upgrades: we run each scraper trhough all stages, then delete its folder, kill its processes, then move onto the next scraper, isolates failures and stops our memeory ebing eaten up, we also process tenders concurrently now to speed up the process for gemini calls, we predownload chorme drviers now so they dont need to be done each time, and we add tender retries so that a single timeout doesnt result us in missing a whole tender. (Ben Gilmore)
+|/ / /  
+* | |   f16f8d2  Merge pull request #71 from UtkristaUwa/upgrade-sepehr-scrapers (bgilmore22)
+|\ \ \  
+| |/ /  
+|/| |   
+| * | 4087ecb  FEAT: upgraded all of sepehrs scrapers to current needs, and tested them local and via gcp pipeline. (Ben Gilmore)
+| * | e65894b  Remove tracked scraper output (tenders_data) and the standalone QLD preview fixture (Ben Gilmore)
+| * | 74bf922  (origin/ben/scraper-fixtures) fixture (Ben Gilmore)
+| * | d6894fe  Add live-capture fixtures for the four scrapers (Ben Gilmore)
+| * |   4bfdf11  Merge remote-tracking branch 'origin/main' into upgrade-sepehr-scrapers (Ben Gilmore)
+| |\ \  
+| * | | 4b027b6  (origin/fix/web-scrapers-output-standard) Rebuild Buying for Victoria scraper on the error_scrapers standard (sepehrmoghani)
+| * | | 20efd55  Rebuild QLD QTenders scraper on the error_scrapers standard, without Chrome (sepehrmoghani)
+| * | | d265c1b  Rebuild AusTender and NT QTOL scrapers on the error_scrapers standard (sepehrmoghani)
+* | | |   5f76e3f  Merge pull request #69 from UtkristaUwa/feature/sharable-tenders (Lucan McDonald)
+|\ \ \ \  
+| |_|/ /  
+|/| | |   
+| * | | a2063dd  (origin/feature/sharable-tenders) fix(sharing): strengthen URL validation and email encoding (jinghao163)
+| * | | e8a94e1  feat(sharing): enable email sharing via mailto (jinghao163)
+| * | | 3e5e56d  perf(tenders): reduce unnecessary rendering in tender cards (jinghao163)
+| * | | 5f46abd  feat(sharing): integrate share dialog into tender cards (jinghao163)
+| * | | bc45e1c  fix(sharing): harden email content and source URL validation (jinghao163)
+| * | | d902abb  feat(sharing): integrate live email preview (jinghao163)
+| * | | 03914f1  feat(sharing): add tender email content generation (jinghao163)
+| * | | 8aa2e67  fix(sharing): reset dialog state and use unique accessibility IDs (jinghao163)
+| * | | 070a629  feat(sharing): create reusable share tender dialog (jinghao163)
+| |/ /  
+* | |   1702d62  Merge pull request #67 from UtkristaUwa/fix/scraper-login (bgilmore22)
+|\ \ \  
+| * \ \   61acdfc  UPDATE: merged fix/scraper-login and ported cloudflare login fixes onto scraperesult, keeps the parts of this branch that main did not already cover which was the cloudfare detection and fail fast for act, early exit on missing credentials and lazy credential reads, and also the grantconnect login form lookup. afapted to the scraperesult new output and reporting logger. Co-Authored-By: sephermoghani <sepehr.moghani@hotmail.com> (Ben Gilmore)
+| |\ \ \  
+| |/ / /  
+|/| | |   
+* | | |   8f40368  Merge pull request #68 from UtkristaUwa/fix/cloudbuild-logging (bgilmore22)
+|\ \ \ \  
+| * | | | ab0f075  (origin/fix/cloudbuild-logging) Send daily build logs to Cloud Logging so the trigger can run (sepehrmoghani)
+| | |/ /  
+| |/| |   
+* | | |   dec2def  Merge pull request #70 from UtkristaUwa/output_logging_returns (bgilmore22)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| * | |   534f8aa  Merge branch 'main' into output_logging_returns (bgilmore22)
+| |\ \ \  
+| |/ / /  
+|/| | |   
+| * | | 1673f0c  update: reset scraper limit to 0 for cloud run and uncommented scrpers that were removed so theiur active. (Ben Gilmore)
+| * | | 26832ab  FEAT: aws waf 202 challenge failed full scrapes, so changed the method that we search the nav page and get the ids, compare with our db, if its there we skip, if not we scrape it,. once we get a block, we stop, finish processing what we have and then onto the next scraper. (Ben Gilmore)
+| * | | 55830dd  (origin/output_logging_returns) emergency save work (Ben Gilmore)
+| | * | cfa94f8  (origin/fix/scraper-login) Tenders ACT: report Cloudflare challenges as SITE_BOT_BLOCKED, fail fast (sepehrmoghani)
+| | * | fd27070  GrantConnect: say when credentials are missing instead of posting an empty login (sepehrmoghani)
+| |/ /  
+|/| |   
+* | |   1706151  Merge pull request #66 from UtkristaUwa/feature/admin-relevance-config (Lucan McDonald)
+|\ \ \  
+| * \ \   ca68d62  (origin/feature/admin-relevance-config) Merge branch 'main' into feature/admin-relevance-config (Lucan McDonald)
+| |\ \ \  
+| |/ / /  
+|/| | |   
+* | | |   eaaa754  Merge pull request #61 from UtkristaUwa/feature/admin-model-configuration (Lucan McDonald)
+|\ \ \ \  
+| * \ \ \   4e47645  (origin/feature/admin-model-configuration) merge main and resolve relevance import conflict (jinghao163)
+| |\ \ \ \  
+| |/ / / /  
+|/| | | |   
+* | | | |   eded04e  Merge pull request #65 from UtkristaUwa/implementRelevance (Radrados)
+|\ \ \ \ \  
+| |_|_|/ /  
+|/| | | |   
+| | | * | 23f305b  fix: align relevance config validation (jinghao163)
+| | | * | 48c3e19  feat: add admin relevance configuration UI (jinghao163)
+| | | * | e4a8937  feat: validate relevance runtime config (jinghao163)
+| | | * | b34f5bc  feat: add admin relevance config API (jinghao163)
+| | | * | 1265fb4  merge admin model configuration into relevance config (jinghao163)
+| | |/| | 
+| |/|/ /  
+| | * |   a19257c  merge main into admin model configuration and resolve manager conflict (jinghao163)
+| | |\ \  
+| |_|/ /  
+|/| | |   
+* | | |   b6720ce  Merge pull request #57 from UtkristaUwa/alerts (Jinghao HU)
+|\ \ \ \  
+| * \ \ \   e7d9c57  (origin/alerts) Merge origin/main into alerts: resolve conflict in manager.py (Radrados)
+| |\ \ \ \  
+| * | | | | cf7a144  fix(frontend): remove unused React import to satisfy tsc (Radrados)
+| * | | | | b43c63a  fix(frontend): resolve duplicate imports and casing in SystemHealthPage (Radrados)
+| * | | | | 4168179  ci: update actions/checkout to remove node20 deprecation warning (Radrados)
+| * | | | | 3c66a64  updated system health admin page todisplay status (Radrados)
+| * | | | | f41e382  removes austender and calls to send email alert function (Radrados)
+| * | | | | 1db00be  edit run scrapers to store verbose error readout and upload it to gcs as json (Radrados)
+| * | | | | 7a1bb66  publish error codes to gcs bucket as json (Radrados)
+| * | | | | 735efbd  added dicts and explain error code function (Radrados)
+| | | | * |   3f0d686  merge main and resolve ConfigPage conflict (jinghao163)
+| | | | |\ \  
+| | | | * | | d4fc833  feat: add admin model configuration (jinghao163)
+| | | * | | | b3254c6  (origin/implementRelevance, implementRelevance) changed addenda handling slightly (PiesOnTues)
+| | | * | | | 10a8379  comments (PiesOnTues)
+| | | * | | | af88019  relevence determination, more verbose logging. Not yet fully exposed to front end via API (will consult Jinghao) (PiesOnTues)
+| |_|/ / / /  
+|/| | | | |   
+* | | | | |   072a354  Merge pull request #64 from UtkristaUwa/feature/search-v2-integrated (Lucan McDonald)
+|\ \ \ \ \ \  
+| |_|/ / / /  
+|/| | | | |   
+| * | | | |   9f94199  (origin/feature/search-v2-integrated) Merge branch 'main' into feature/search-v2-integrated: resolve conflicts in manager.py and bigquery_client.py (Radrados)
+| |\ \ \ \ \  
+| |/ / / / /  
+|/| | | | |   
+* | | | | |   1ff0e35  Merge pull request #63 from UtkristaUwa/fixingestionbug (Lucan McDonald)
+|\ \ \ \ \ \  
+| * | | | | | 92e36c6  (origin/fixingestionbug) FEAT: fixed tender processing bug where files with no attachements meant the details txt was being dropped before ai processing, set a strict limit to the fields being sent to bigquery so we avoid crash as downstream process collects more fields than bigquery asks for, created source reference id fallback to be the file name which is the non human readable source id if the ai cant get the source id from the txt files. (Ben Gilmore)
+| | |_|_|/ /  
+| |/| | | |   
+* | | | | |   8e1712d  Merge pull request #62 from UtkristaUwa/fix/frontend-ui-labels-dark-toggle (Radrados)
+|\ \ \ \ \ \  
+| |/ / / / /  
+|/| | | | |   
+| * | | | | ad86ba4  (origin/fix/frontend-ui-labels-dark-toggle) update tender card summary labels (jinghao163)
+| * | | | | 7053054  fix dark mode toggle click area (jinghao163)
+|/ / / / /  
+* | | | |   af8f8ba  Merge pull request #58 from UtkristaUwa/stylistic-branding (bgilmore22)
+|\ \ \ \ \  
+| |_|_|/ /  
+|/| | | |   
+| * | | | 13307ac  (origin/stylistic-branding) feat(frontend): apply SVA branding and color scheme (jinghao163)
+| | |/ /  
+| |/| |   
+* | | |   9072e45  Merge pull request #59 from UtkristaUwa/fix/attachment-viewing-cross-browser (Sepehr Moghani)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| * | | 5101d5d  (origin/fix/attachment-viewing-cross-browser) Fix attachment viewing: wrong content_type and cross-browser popup blocking (sepehrmoghani)
+|/ / /  
+| * | 0d2f6b3  feat(ingestion): add embedding default to _EXPECTED_TENDER_FIELDS (Radrados)
+| * | 6eeca5a  updated some logging formats (Radrados)
+| * | e685796  fix(ingestion): sanitize documents struct to match BigQuery schema, dropping extra attachment_store metadata (Radrados)
+| * | 0f44597  fix(processing): add temporary context length cap to prevent Gemini 400 token limit errors (Radrados)
+| * |   03fc6eb  Merge branch 'main' into feature/search-v2-integrated: resolve conflicts and preserve search features (Radrados)
+| |\ \  
+| |/ /  
+|/| |   
+* | |   6bb6267  Merge pull request #56 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\ \ \  
+| * | | 279b497  (origin/fix/attachment-txt-filtering) fixing attachments (sepehrmoghani)
+* | | | 8d39138  Merge pull request #55 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\| | | 
+| * | | edb33d8  fixing attachments (sepehrmoghani)
+* | | | e1f9c2f  Merge pull request #54 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\| | | 
+| * | | 40f100a  fixing attachment issues (sepehrmoghani)
+* | | | 1462268  Merge pull request #53 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\| | | 
+| * | | e601a89  fixed attachments saving as .txt (sepehrmoghani)
+* | | | 6feb9c3  Merge pull request #52 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\| | | 
+| * | |   095e189  Merge fix/attachment-txt-filtering: resolve TenderDocuments conflict (sepehrmoghani)
+| |\ \ \  
+| * | | | 4a36119  fixed file duplication and access deny (sepehrmoghani)
+* | | | |   f0c517e  Merge pull request #51 from UtkristaUwa/fix/attachment-txt-filtering (Sepehr Moghani)
+|\ \ \ \ \  
+| | |/ / /  
+| |/| | |   
+| * | | |   c3a383e  Merge branch 'main' into fix/attachment-txt-filtering (Sepehr Moghani)
+| |\ \ \ \  
+| |/ / / /  
+|/| / / /   
+| |/ / /    
+* | | |   1ed6846  Merge pull request #50 from UtkristaUwa/feature/new-tender-flag (bgilmore22)
+|\ \ \ \  
+| * | | | d166c56  (origin/feature/new-tender-flag) Implement per-user new tender flag (jinghao163)
+|/ / / /  
+| * | | 7390dde  updated tenderDocuments to match main (sepehrmoghani)
+| * | | 37c5b00  Updated metadata text file format, also filtered out (sepehrmoghani)
+| | * | c93914a  (origin/searchv2) removed austender (Radrados)
+| | * | 4eebceb  imported re lib for reg expressions (Radrados)
+| | * | d3acc39  half random chnages anywhere source url could be lost (Radrados)
+| | * | 814965d  increased scraper limits everywhere i could find (Radrados)
+| | * | 0d0db09  removed keyword from searchbar text (Radrados)
+| | * | 8cf3c2f  backend search logic done, ready for testing (Radrados)
+| | * | 8ab533d  added embedding column to upsert function in another spot i missed (Radrados)
+| | * | f863b38  added embedding column to list of all columns (Radrados)
+| | * | 1d1dd52  added embedding column to bigquery client upsert function (Radrados)
+| | * | a14a328  added debug log, changed model to text-embedding-004 (Radrados)
+| | * | f598220   updated requrements  file (Radrados)
+| | * | f5f9bf8  changed pydantic model to include vector distance (Radrados)
+| | * | ff93d6e  added embedding field to typescript interface (Radrados)
+| | * | 0640d2a  vectorising tenders before upload (Radrados)
+| | | | * d02536d  (origin/testbranch) FEAT: thsi is a new feature (Ben Gilmore)
+| |_|_|/  
+|/| | |   
+* | | |   9d36042  Merge pull request #49 from UtkristaUwa/download-attachment (Sepehr Moghani)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| * | | 575bc3f  (origin/download-attachment) Added attachment and downloads to more. (sepehrmoghani)
+|/ / /  
+* | |   d38c358  Merge pull request #48 from UtkristaUwa/act_fixes (bgilmore22)
+|\ \ \  
+| * | | 4c8399e  (origin/act_fixes) FEAT: changed the sys exit in manager py to os exit to avoid the sefault cleanup error on shutdown. (Ben Gilmore)
+| * | | 0dfaa07  FEAT: fixed act error with login and made manager py report my scraper error codes. (Ben Gilmore)
+|/ / /  
+* | |   c403f94  Merge pull request #45 from UtkristaUwa/feature/mobile-version (bgilmore22)
+|\ \ \  
+| * \ \   62f663a  (origin/feature/mobile-version) merge latest main and preserve responsive mobile layout (jinghao163)
+| |\ \ \  
+| * | | | b6abffd  feat: add responsive mobile frontend (jinghao163)
+* | | | | 3c25df3  capped scrape limit at 50 for this mornining (PiesOnTues)
+* | | | |   fabb0bd  Merge pull request #47 from UtkristaUwa/fixSourceURL (Lucan McDonald)
+|\ \ \ \ \  
+| |_|_|/ /  
+|/| | | |   
+| * | | | 42b67b3  (origin/fixSourceURL, fixSourceURL) added back act scraper (PiesOnTues)
+| * | | | 44e1d20  disabled act scraper temporarily (PiesOnTues)
+| * | | | fd98be1  fix for lost sourceURL, done via tender_processor.py (PiesOnTues)
+|/ / / /  
+* | | |   9ea9bf8  Merge pull request #46 from UtkristaUwa/fixScheduling (Lucan McDonald)
+|\ \ \ \  
+| |_|/ /  
+|/| | |   
+| * | | d174b64  (origin/fixScheduling, fixScheduling) dockerfile (PiesOnTues)
+| * | | b7d7975  made use of summary_headline, which is now passed all the way to the db, updated schema, migrations, etc... accordingly (PiesOnTues)
+| * | | b3cd65d  fixed missing reqs files (PiesOnTues)
+| * | | 2f853ee  removed chrome dependancy issues from dockerfile, and changed the pipeline ntry point 2 manager.py, so the AI processing n everything should occur as per the cloude schedule (PiesOnTues)
+| * | | 513f281  comments (PiesOnTues)
+| * | | 6e95730  Renamed the data_ingestion/ directory and any reference to it to a more meaningful name: processing (PiesOnTues)
+|/ / /  
+| | | * 0e562e8  (origin/search) add distance filed for vec search (Radrados)
+| | | * 6a36ede  added field for distance to vec embedding to frontend (Radrados)
+| | | * c5c6a7e  added search logic to backend (Radrados)
+| | | * 757b71b  added search logic to backend (Radrados)
+| | | * c44cf47  added requrements to backend (Radrados)
+| | | * 3359222  vectorize tender descripion and upload to BQ (Radrados)
+| | | | * 8cfa83c  (backup-fixScheduling) made use of summary_headline, which is now passed all the way to the db, updated schema, migrations, etc... accordingly (PiesOnTues)
+| | | | * 4ca5eb3  fixed missing reqs files (PiesOnTues)
+| | | | * 1fe9a87  removed chrome dependancy issues from dockerfile, and changed the pipeline ntry point 2 manager.py, so the AI processing n everything should occur as per the cloude schedule (PiesOnTues)
+| | | | * b8dda23  comments (PiesOnTues)
+| | | | * 6c45a4d  Renamed the data_ingestion/ directory and any reference to it to a more meaningful name: processing (PiesOnTues)
+| |_|_|/  
+|/| | |   
+* | | | b47b8df  Update TopNav.tsx (UtkristaUwa)
+* | | |   44f9dda  Merge pull request #44 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\ \ \ \  
+| | |/ /  
+| |/| |   
+| * | | ff5cc44  (origin/add-run-pipeline-docker) Restore star favorite icon and inline expand for tender details (aki)
+* | | | 3508230  Merge pull request #43 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\| | | 
+| * | | ea6af27  Revert favourite control back to the chip, split modal open state (aki)
+* | | | c490105  Merge pull request #42 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\| | | 
+| * | | 148a310  Swap the favourite chip for a star icon button, widen tap targets (aki)
+* | | | 99705fb  Merge pull request #41 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\| | | 
+| * | | 266b562  Simplify TenderCard to a details modal, update its callers to match (aki)
+* | | | fcc480d  Merge pull request #40 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\| | | 
+| * | | c44f821  Actually fix the TenderCard Dialog imports and Switch inputProps (aki)
+| * | |   6204d4d  Merge remote-tracking branch 'origin/add-run-pipeline-docker' into add-run-pipeline-docker (aki)
+| |\ \ \  
+| | * \ \   701c5ca  Merge branch 'main' into add-run-pipeline-docker (UtkristaUwa)
+| | |\ \ \  
+| |_|/ / /  
+|/| | | |   
+* | | | |   2fa8b00  Merge pull request #38 from UtkristaUwa/ui-tweaks (Sepehr Moghani)
+|\ \ \ \ \  
+| |_|_|_|/  
+|/| | | |   
+| * | | | dfb9cc6  (origin/ui-tweaks) fixed star position, made mobile friendly. (sepehrmoghani)
+* | | | | 68ded8b  Merge pull request #37 from UtkristaUwa/ui-tweaks (UtkristaUwa)
+|\| | | | 
+| * | | | d3d5b12  replaced favourite with star, view more now appears under the tender not a new popup (sepehrmoghani)
+* | | | |   0ee704f  Merge pull request #33 from UtkristaUwa/fix/filter-backend (UtkristaUwa)
+|\ \ \ \ \  
+| |/ / / /  
+|/| | | |   
+| * | | | f716606  (origin/fix/filter-backend) Fix filter year and zero-value handling (jinghao163)
+* | | | |   8b562f4  Merge pull request #36 from UtkristaUwa/sso-setup (UtkristaUwa)
+|\ \ \ \ \  
+| |_|_|_|/  
+|/| | | |   
+| * | | | 3bf17f5  (origin/sso-setup) feat: add Entra ID SSO alongside password login, and gate the API (sepehrmoghani)
+* | | | |   8b3b05f  LGTM (UtkristaUwa)
+|\ \ \ \ \  
+| |/ / / /  
+|/| | | |   
+| * | | | 95f870e  (origin/feature/admin-page) feat: add admin configuration and scraper monitoring UI (jinghao163)
+* | | | |   fded659  Merge pull request #34 from UtkristaUwa/cloudrun_gcp (bgilmore22)
+|\ \ \ \ \  
+| |/ / / /  
+|/| | | |   
+| * | | | 11f24bc  (origin/cloudrun_gcp) FEAT: added the dockerfile manager image and bloud build config for it, also updated requirements txt. (Ben Gilmore)
+|/ / / /  
+* | | | 6dd039c  a (UtkristaUwa)
+* | | | 01793b2  a (UtkristaUwa)
+* | | | ffe5bbf  a (UtkristaUwa)
+* | | | ecf5555  a (UtkristaUwa)
+* | | |   ac01cd5  Merge pull request #24 from UtkristaUwa/add-run-pipeline-docker (UtkristaUwa)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| | * | d79ad17  Fix TenderCard imports and MUI Switch slotProps after merge (aki)
+| | |/  
+| | * 592b1a1  Allow the deployed frontend origins in CORS, default missing tender titles (aki)
+| | * 1b4fdd7  Add light/dark theme toggle to the frontend (aki)
+| |/  
+| *   d6ebd71  Merge branch 'main' into add-run-pipeline-docker (UtkristaUwa)
+| |\  
+| |/  
+|/|   
+* |   356732f  Merge pull request #32 from UtkristaUwa/act_scraper (bgilmore22)
+|\ \  
+| * | 3602793  FEAT: completed tenders act scraper, included browser login because of the bot protection, sa tenders will follow the same because of its potections too. (Ben Gilmore)
+|/ /  
+* |   44ab525  Merge pull request #31 from UtkristaUwa/fixFields (Lucan McDonald)
+|\ \  
+| * | 1172e96  (origin/fixFields, fixFields) flipped values (PiesOnTues)
+|/ /  
+* | ea8283f  swapped source id and source ref to be correct in the cfg file (PiesOnTues)
+* |   d27fa5e  Merge pull request #30 from UtkristaUwa/scrapers_2 (bgilmore22)
+|\ \  
+| * | 1c0bd4c  FEAT: completed buynsw scraper, include test fixtures, test cases and the scraper, also updated manager to include the scraper in its scraper list. (Ben Gilmore)
+|/ /  
+* |   a057234  Merge pull request #29 from UtkristaUwa/scraper_to_gcp (bgilmore22)
+|\ \  
+| * | 884ec64  fixed the raw_extra json parsing and source_id override and also the missing field crash, added the grantconnect scraper to scrapers in manager.py. (Ben Gilmore)
+|/ /  
+* |   3b91216  Merge pull request #27 from UtkristaUwa/feat/store-attachments (bgilmore22)
+|\ \  
+| * \   102b458  (origin/feat/store-attachments) Merge branch 'main' into feat/store-attachments (bgilmore22)
+| |\ \  
+| |/ /  
+|/| |   
+* | |   a43d94a  Merge pull request #28 from UtkristaUwa/dataStorage (bgilmore22)
+|\ \ \  
+| * \ \   473b6a5  (origin/dataStorage) Merge branch 'main' into dataStorage (Lucan McDonald)
+| |\ \ \  
+| |/ / /  
+|/| | |   
+* | | | fa7f69e  changed triage_model (Lucan McDonald)
+| * | | 9619aab  (dataStorage) removed old files (PiesOnTues)
+| * | | f55da93  commented out tender_id line (PiesOnTues)
+| * | | 7f09894  full manager loop implemented? (PiesOnTues)
+| * | | 3cfbdf7  added db loader functionality (PiesOnTues)
+|/ / /  
+* | | bb9394a  add cloudbuild.yaml pipeline config (“Radrados”)
+| * | 429e38c  Attribute tender folders to the scraper that created them, and stop logging full document text (sepehrmoghani)
+| * | 66a1bc5  Add .dockerignore and .gcloudignore so the pipeline image excludes the venv, node_modules and local scrape output (sepehrmoghani)
+| * | b88ce8b  Store tender attachments in Cloud Storage before the temp directory is wiped (sepehrmoghani)
+|/ /  
+* |   9624680  Merge pull request #26 from UtkristaUwa/error_scraping (Sepehr Moghani)
+|\ \  
+| * | 3ac8b9b  (origin/error_scraping) Return attachment manifest from scrapers, stream downloads, handle duplicate filenames (sepehrmoghani)
+| * | ba68858  Update error_scrapers/common.py (bgilmore22)
+| * | 76943c9  Update error_scrapers/grant_connect/scraper.py (bgilmore22)
+| * | 0d62d93  Update error_scrapers/grant_connect/scraper.py (bgilmore22)
+| * | 2e5dcbd  Delete error_scrapers/__init__.py (Sepehr Moghani)
+| * | c3e11a7  Delete error_scrapers/grant_connect/__init__.py (Sepehr Moghani)
+| * | c6a6331  Delete error_scrapers/grant_connect/test_cases/__init__.py (Sepehr Moghani)
+| * | c86794c  FEAT: added ability for scraper to cycle through pages to scrabe every single tender, not just the first page. (Ben Gilmore)
+| * | 5f1c87a  FEAT: Added excel extraction and fixed the docx extraction to include more info, grantconnect scraper is fully tested against the live site and all error codes working as expected. (Ben Gilmore)
+| * | 7d81f8f  FEAT: added grantconnect fixtures for our test cases and also a test suite for them, also added a login helper function in common.py. (Ben Gilmore)
+| * | beee1f3  FEAT: implemented the common pythoin file that all the scrapers will be using, pdf and docx extraction and the error codes for failure. (Ben Gilmore)
+|/ /  
+* |   f299090  (origin/host_on_gcp, host_on_gcp) Merge branch 'main' of https://github.com/UtkristaUwa/CITS3200_57 into host_on_gcp (PiesOnTues)
+|\ \  
+| * \   5a53a39  Merge pull request #23 from UtkristaUwa/backend-filters (bgilmore22)
+| |\ \  
+| | * | e7fcaeb  fix: update FavoritesPage to align with backend API filter parameters (jinghao163)
+| | * | 0b014a4  feat: integrate frontend filters with backend API and dynamic locations (jinghao163)
+| | * | ecfa94e  feat: update api.ts for locations filter backend (jinghao163)
+| | * |   03cfb36  Merge branch 'feature/favorites-page' into backend-filters (jinghao163)
+| | |\ \  
+| | * | | 73e60e9  feat: add GET /locations endpoint for dynamic filters (jinghao163)
+| | * | | dbd1c96  complete backend filter logic for tenders (jinghao163)
+| | * | | 253024c  feat: update bigquery list_tenders with new filter params (jinghao163)
+| * | | |   ba77d82  Merge pull request #21 from UtkristaUwa/feature/favorites-page (bgilmore22)
+| |\ \ \ \  
+| | | |/ /  
+| | |/| |   
+| | * | | 2b44105  (origin/feature/favorites-page) ui: refine page header spacing and add active nav styling (jinghao163)
+| | * | | cbea03b  feat: implement Favorites page and refactor TendersPage (jinghao163)
+| | * | | 69b0fde  refactor: extract TenderCard and TenderFilterBar components (jinghao163)
+| | * | | efdd5f9  feat: setup Firestore backed favorites context and extract filter logic (jinghao163)
+| | |/ /  
+* | | | c7874c5  refactored da processor to have a cfg file (PiesOnTues)
+* | | | 78ae470  removed some debug prints (PiesOnTues)
+* | | | efc3857  commiting: Rate limiting w/ backoff on faliure, different models per task, 6K Char hard cap on characters of raw text read before triage facts are constructed (PiesOnTues)
+* | | | 1eacb87  added ignore AFC to config for each response call (PiesOnTues)
+* | | | f9c1e0f  2.5 flash attempt (PiesOnTues)
+* | | | 25efb7b  more comments for errorchecking (PiesOnTues)
+* | | | 6a0e589  fixed model error (PiesOnTues)
+* | | | d6c583e  direcotry print debugging (PiesOnTues)
+* | | | 4a92d60  changed API method to vertexai (PiesOnTues)
+* | | |   448753f  Merge branch 'host_on_gcp' of https://github.com/UtkristaUwa/CITS3200_57 into host_on_gcp (“Radrados”)
+|\ \ \ \  
+| * | | | 8644089  manager update call to ai process (PiesOnTues)
+| * | | | f86fba4  added call for tender processing in the manager code (PiesOnTues)
+* | | | | 1bc7668  build: update requirements with pydantic, tenacity, and ai libraries (“Radrados”)
+|/ / / /  
+* | | | 3256906  ready script?? (PiesOnTues)
+* | | | 8a6da71  added some more old code to plaintext store (PiesOnTues)
+* | | | dbaebf8  plaintexted old py files (PiesOnTues)
+* | | | e6968b5  removed superfluous libraries (PiesOnTues)
+* | | | d098c8b  chunked field processor and summary engine into one 'tender_processor.py' file (PiesOnTues)
+* | | | cf09d04  minor varname changes (PiesOnTues)
+* | | | 97b6927  fixed data loss issues by changing data pipelining between raw and gemini (PiesOnTues)
+* | | | 816b67d  field extractor working with correct format, prompts need further work to correctly pick up all the available data (PiesOnTues)
+* | | | 9bb9391  refactored both scripts to handle proper input source (PiesOnTues)
+* | | | 238c695  semi-done version of tender field extractor (PiesOnTues)
+* | | | e3a276a  Added tender summariser script to repo (PiesOnTues)
+* | | | dab48fc  changed storage location of files to temporary etherial ram: (Radrados)
+* | | | 0b17490  added web scraper to test cloud deployment (Radrados)
+* | | | d9aac83  added dockerfile for cloud host (Radrados)
+* | | | 3b0ce0b  local version of manager function (Radrados)
+| | | * 7dc00e9  Parse raw_extra JSON strings returned by BigQuery in TenderOut (aki)
+| | | * ccafea1  Add scheduled pipeline runner and its Cloud Run image (aki)
+| | |/  
+| |/|   
+| * | baf6fed  (origin/feat/scraper-output-format-and-tests) Hand the scrapers to the manager function, and add WA and NT (sepehrmoghani)
+| * | e0b5e16  Reference the schema file rather than a teammate's name (sepehrmoghani)
+| * | 7e29fac  Add the daily 5am schedule and a rerunnable deploy script (sepehrmoghani)
+| * | 0f3e2a4  Emit tender.json in ingestion's 20-field shape, and drop out-of-scope files (sepehrmoghani)
+| * | c585e23  Do not lose a QLD scrape when the URL list cannot be written (sepehrmoghani)
+| * | 77be831  Forward MAX_PAGES to the QLD scraper through the job entrypoint (sepehrmoghani)
+| * | 6507ab9  Report the browser mode Chrome actually uses (sepehrmoghani)
+| * | 45e57f5  Start the virtual display from Python, not xvfb-run (sepehrmoghani)
+| * | 6f76c3f  Ship Chrome in the scraper image so VIC and QLD run in Cloud Run (sepehrmoghani)
+| * | 3731739  Stop judging AusTender login success by the response body (sepehrmoghani)
+| * | d3d7a30  Standardise scraper output on one directory per tender, with tests (sepehrmoghani)
+| |/  
+| *   51b84df  Merge pull request #10 from UtkristaUwa/qld_qtenders (Radrados)
+| |\  
+| | *   59023c3  (origin/qld_qtenders) Merge remote-tracking branch 'refs/remotes/origin/main' into qld_qtenders (sepehrmoghani)
+| | |\  
+| | * \   2c91d05  Merge branch 'main' into qld_qtenders (Sepehr Moghani)
+| | |\ \  
+| | * | | 7ce0b0d  web scraper for qld_qtenders.py (sepehrmoghani)
+| * | | |   ec417f8  Merge pull request #20 from UtkristaUwa/user_management (bgilmore22)
+| |\ \ \ \  
+| | * | | | 8d26ffb  FEAT: completed user management with the invite flow and status tracking. (Ben Gilmore)
+| | * | | | e2d10de  FEAT: added cloud functions scaffold with the inviteUser function for our account creation by invite. (Ben Gilmore)
+| |/ / / /  
+| * | | |   c8a580b  Merge pull request #19 from UtkristaUwa/admin_scaffold (bgilmore22)
+| |\ \ \ \  
+| | * | | | db222ab  FEAT: added admin route guard and the admin nav pages for scaffolding for furutre develoment. (Ben Gilmore)
+| | * | | | 5dee340  FEAT:moved the old nav bar section inside tenderspage that was hardcoded to components folder where the nav will now live. keeps things separate and cleaner. (Ben Gilmore)
+| | * | | | 4956ade  FEAT: added an extra check using the isadmin value to confirm the state of the users page. (Ben Gilmore)
+| | * | | | 3024235  Feat: Updated authcontext to account for an extra lookup in the firestore admin, done to not let the page flash not admin before it has a second to read the firestore completely, also added check for if the firestore read fails, we have a failsafe that sets the isadmin to no as a default. (Ben Gilmore)
+| * | | | |   f1cb575  Merge pull request #16 from UtkristaUwa/feature/filter-ui (bgilmore22)
+| |\ \ \ \ \  
+| | |/ / / /  
+| |/| | | |   
+| | * | | | 3ef090c  fix: update filter UI with slotProps, add reset button, and resolve conflicts (jinghao163)
+| | * | | |   a175331  fix: resolve merge conflicts with main, keeping new routing structure (jinghao163)
+| | |\ \ \ \  
+| | * | | | | f6f93cb  (origin/feature/filter-ui) feat: add filter options UI component (jinghao163)
+| * | | | | |   5f168ca  Merge pull request #18 from UtkristaUwa/forgot_pass (bgilmore22)
+| |\ \ \ \ \ \  
+| | |_|/ / / /  
+| |/| | | | |   
+| | * | | | | 87105c2  fix: Remove unused navigate import in ResetPasswordPage leftover from a previous design so that we can clear checks in github. (Ben Gilmore)
+| | * | | | | 629be93  fix: handlecodeinapp flag and indentation for the reset password flow. (Ben Gilmore)
+| | * | | | | 1940388  Add custom reset-password page and forgot-password flow (Ben Gilmore)
+| | * | | | | d1d59a0  FEAT: added the route fixes and the forgot password button on the login page. (Ben Gilmore)
+| | * | | | | e95fbda  FEAT: added the forgot password page for when a user forgets their password on the login page. (Ben Gilmore)
+| |/ / / / /  
+| * | | | |   f692de7  Merge pull request #17 from UtkristaUwa/login_page (bgilmore22)
+| |\ \ \ \ \  
+| | |/ / / /  
+| |/| | | |   
+| | * | | | 013476b  FEAT: added the login page with firebase auth and route protection. also included a logout button. full login functionality is now complete. (Ben Gilmore)
+| |/ / / /  
+| * | | |   ad98c91  Merge pull request #15 from UtkristaUwa/feat-modal-and-summary (bgilmore22)
+| |\ \ \ \  
+| | * | | | b06cf43  (origin/feat-modal-and-summary) feat: add top AI summary box and detail dialog modal (jinghao163)
+| |/ / / /  
+| * | | |   1a46b6b  Merge pull request #14 from UtkristaUwa/frontend_db_connection (bgilmore22)
+| |\ \ \ \  
+| | * | | | 68b62fe  feat: added frontend to db functionality so that the frontend can display the tender info in the database. (Ben Gilmore)
+| |/ / / /  
+| * | | |   ff5f379  Merge pull request #13 from UtkristaUwa/fix_app_tsx (bgilmore22)
+| |\ \ \ \  
+| | * | | | f91f4d9  fix: pr 9 had a broken merge left behind in the app.tsx file. (Ben Gilmore)
+| |/ / / /  
+| * | | |   56d9307  Merge pull request #9 from UtkristaUwa/feat-basic-ui (bgilmore22)
+| |\ \ \ \  
+| | * \ \ \   329b2c6  Merge branch 'main' into feat-basic-ui (bgilmore22)
+| | |\ \ \ \  
+| | |/ / / /  
+| |/| | | |   
+| * | | | |   0a0489a  Merge pull request #12 from UtkristaUwa/document-scraper-v2-individual-txt-files-for-each-doc (Radrados)
+| |\ \ \ \ \  
+| |/ / / / /  
+|/| | | | |   
+* | | | | | 86e7906  (origin/document-scraper-v2-individual-txt-files-for-each-doc) reworked logic, each document file gets its own txt file (Radrados)
+* | | | | | bd65c30  added save to individual txt function (Radrados)
+| |_|_|/ /  
+|/| | | |   
+| * | | | 91a1eea  Add production environment variable for API base URL (UtkristaUwa)
+| * | | | e76f172  Create env.yaml (UtkristaUwa)
+| * | | |   40ff0d1  Merge pull request #11 from UtkristaUwa/feat/api-backend (UtkristaUwa)
+| |\ \ \ \  
+| | |_|_|/  
+| |/| | |   
+| | * | |   7d3d131  (origin/feat/api-backend) Merge branch 'main' into feat/api-backend (UtkristaUwa)
+| | |\ \ \  
+| | |/ / /  
+| |/| | |   
+| * | | | b261090  Fix frontend build failures in App.tsx (sepehrmoghani)
+|/ / / /  
+| * | | 9c6cfd3  Add api/ FastAPI service with BigQuery-backed tenders endpoint (aki)
+| | * |   1c00135  (origin/feat-basic-ui) chore: force resolve all conflicts and apply perfect UI (jinghao163)
+| | |\ \  
+| |_|/ /  
+|/| | |   
+| | * | f60ad0f  feat: apply modal UI skeleton changes (jinghao163)
+| | * | f4c923c  feat: update tender card to use modal popup and add AI summary (jinghao163)
+| | | | * cd73b27  (origin/Data-Ingestion-Model, Data-Ingestion-Model) ready script?? (PiesOnTues)
+| | | | * 7e0685b  added some more old code to plaintext store (PiesOnTues)
+| | | | * cb063c2  plaintexted old py files (PiesOnTues)
+| | | | * de8eb67  removed superfluous libraries (PiesOnTues)
+| | | | * 06c6e29  chunked field processor and summary engine into one 'tender_processor.py' file (PiesOnTues)
+| | | | * feaf4c0  minor varname changes (PiesOnTues)
+| | | | * 258860f  fixed data loss issues by changing data pipelining between raw and gemini (PiesOnTues)
+| | | | * e084515  field extractor working with correct format, prompts need further work to correctly pick up all the available data (PiesOnTues)
+| | | | * 55fba8c  refactored both scripts to handle proper input source (PiesOnTues)
+| | | | * 311d423  semi-done version of tender field extractor (PiesOnTues)
+| | | | *   b792eb2  Merge remote-tracking branch 'origin/main' into Data-Ingestion-Model (PiesOnTues)
+| | | | |\  
+| | | | * | 16db032  Added tender summariser script to repo (PiesOnTues)
+| | |_|/ /  
+| |/| | |   
+| | | | | * 58a450a  (origin/fix/frontend-build) Fix frontend build failures in App.tsx (sepehrmoghani)
+| |_|_|_|/  
+|/| | | |   
+* | | | |   b1874f5  Merge pull request #5 from UtkristaUwa/bgilmore22-patch-1 (UtkristaUwa)
+|\ \ \ \ \  
+| |_|_|_|/  
+|/| | | |   
+| * | | | bd54fa4  (origin/bgilmore22-patch-1) Update README.md (bgilmore22)
+* | | | |   4005103  Merge pull request #7 from UtkristaUwa/document-scraper (Radrados)
+|\ \ \ \ \  
+| |_|/ / /  
+|/| | | |   
+| * | | | f32712e  (origin/document-scraper) processed pdf and docx files (Radrados)
+| * | | | ce88cb6  docx files scraped and added to master txt file (Radrados)
+| * | | | 9c3db37  pdf text added to master text file (Radrados)
+| * | | | 1719d02  pdf text extracted (Radrados)
+| * | | | 14dc9ef  fixed commit history (Radrados)
+| * | | | f9cc257  tender documents scanned and identified (Radrados)
+| * | | | 41dff30  files & requirements setup (Radrados)
+|/ / / /  
+* | | |   976c5c9  Merge pull request #6 from UtkristaUwa/webskeleton (jinghao163)
+|\ \ \ \  
+| * | | | 4e90c43  (origin/webskeleton) Added a favorites tag to the tender and also extra tender cards to demonstrate the page flow. (Ben Gilmore)
+| |/ / /  
+* | | |   914da6a  Merge pull request #3 from UtkristaUwa/vic_buyingfor (UtkristaUwa)
+|\ \ \ \  
+| |/ / /  
+|/| | |   
+| * | | 3343164  (origin/vic_buyingfor) setup vic_buyingfor (sepehrmoghani)
+| | |/  
+| |/|   
+| * | ec1c7d1  Add root .gitignore (sepehrmoghani)
+* | |   d591155  Merge pull request #4 from UtkristaUwa/feat-basic-ui (bgilmore22)
+|\ \ \  
+| |/ /  
+|/| /   
+| |/    
+| * fca9bad  feat: add tender feed UI skeleton and MUI components (jinghao163)
+|/  
+* 6546ba7  Add tender data from one site including docs (Radrados)
+* 8740a44  Remove Firebase agent skills docs, not needed for this repo (aki)
+*   be5dcf6  Merge pull request #2 from UtkristaUwa/ci/firebase-hosting-github-actions (UtkristaUwa)
+|\  
+| * 200c000  (origin/ci/firebase-hosting-github-actions) Set up Firebase Hosting deploy via GitHub Actions (aki)
+|/  
+* 8ea1e3a  Update package-lock.json (aki)
+*   b64d464  Merge pull request #1 from UtkristaUwa/feature/frontend-init (UtkristaUwa)
+|\  
+| * 4447a89  (origin/feature/frontend-init) Initialize frontend React/Vite project and install MUI dependencies (jinghao163)
+* | da6ccdf  added self to contributors list (Lucan McDonald)
+|/  
+* cce6f66  Add Jinghao Hu to README。 (jinghao163)
+* 933ca69  Update team members section in README.md (Sepehr Moghani)
+* 469b559  Revise README with project details and team info (UtkristaUwa)
+* 0840bf9  Initial commit (UtkristaUwa)
