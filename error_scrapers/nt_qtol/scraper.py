@@ -165,6 +165,7 @@ def login(client) -> bool:
     payload["Password"] = password
     payload["RememberMe"] = "false"
 
+    common.note_login_attempt()
     result = client.post(
         urljoin(BASE_URL, form.get("action") or "/Account/LogOn"),
         data=payload,

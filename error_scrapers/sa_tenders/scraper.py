@@ -596,6 +596,10 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
     except BotBlockedError:
         raise  # a Cloudflare challenge ends the run -- it is not a per-tender failure
     except Exception as e:
+        if common.browser_is_gone(e):
+            # Not this tender's fault: let the loop end the attempt, so a fresh
+            # browser does this tender again instead of skipping it as "done".
+            raise
         log.warning("       document download FAILED for %s: %s", tender_code, e)
         run_notes.note_reason(run_notes.DOWNLOAD, "document package")
         return common.TENDER_PARTIAL, tender
@@ -703,7 +707,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
     login_didnt_work = False
     try:
         with BrowserSession(headless=headless) as session:
-            if username and password:
+            if state is not None and common.SITE_LOGIN_FAILED in state["codes"]:
+                # An earlier attempt's login was refused: the same credentials are
+                # not posted again (a lockout risk), this attempt goes without documents.
+                login_didnt_work = True
+                log.error("login: refused on an earlier attempt -- not sent again; "
+                          "continuing without documents")
+            elif username and password:
                 logged_in = session.login()
                 login_didnt_work = not logged_in
                 if logged_in:
@@ -731,6 +741,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                           "reporting a structure change", ", ".join(listing_problems))
                 tender_codes.add(common.SITE_STRUCTURE_CHANGE)
             all_codes = []
+            unparsed: list[str] = []
             relogins = 0
             for index, entry in enumerate(entries, start=1):
                 if entry["url"] in done:
@@ -749,7 +760,10 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                             log.error("login: FAILED on re-login")
                     if tender:
                         tenders.append(tender)
-                    tender_codes.add(code)
+                    if code == common.SITE_STRUCTURE_CHANGE:
+                        unparsed.append(entry["url"])  # levelled after the loop
+                    else:
+                        tender_codes.add(code)
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(entries),
                                           tender.get("tender_id") or entry["url"], code)
@@ -766,6 +780,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 done.add(entry["url"])
                 time.sleep(PAUSE_SECONDS)
 
+            common.level_unparsed_pages(log, unparsed, len(all_codes), tender_codes)
             reporting.diagnose(log, all_codes, logged_in=logged_in)
 
         return common.site_code_from(tender_codes), tenders

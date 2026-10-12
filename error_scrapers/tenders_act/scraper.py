@@ -539,7 +539,15 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
                         reporting.tender_line(log, index, len(urls), url, code)
                         continue
 
-                    tender_code = fields.get("tender_code") or "UNKNOWN"
+                    tender_code = fields.get("tender_code")
+                    if not tender_code:
+                        # Without its number every tender would land in one "UNKNOWN"
+                        # folder, each overwriting the last: the page has changed.
+                        log.error("       no tender number on %s -- the details layout has changed", url)
+                        tender_codes.add(common.SITE_STRUCTURE_CHANGE)
+                        all_codes.append(common.SITE_STRUCTURE_CHANGE)
+                        reporting.tender_line(log, index, len(urls), url, common.SITE_STRUCTURE_CHANGE)
+                        continue
                     folder = common.tender_dir(tender_code, output_dir)
                     common.save_page_text(folder, tender_code, _format_detail_text(fields))
                     common.append_full_page_text(folder, tender_code, detail_html, PAGE_CONTENT_SELECTOR)
@@ -652,6 +660,10 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
             retry = False
         if not retry:
             break
+        # The next attempt signs in afresh. A lapsed or refused re-login seen by
+        # this attempt is not a verdict on the next one: left in, it made a run
+        # whose retry scraped every tender cleanly report SITE_LOGIN_FAILED.
+        state["codes"].discard(common.SITE_LOGIN_FAILED)
         if attempt < attempts:
             wait = (BLOCKED_WAIT_SECONDS if code == common.SITE_BOT_BLOCKED else 15) * attempt
             log.warning("attempt %d/%d got %s after %d tender(s) -- retrying with a new browser "

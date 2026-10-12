@@ -39,6 +39,7 @@ PORTAL = "documents could not be opened on the portal"
 SIZE = "file over the size limit not stored"
 NOT_STORED = "file could not be stored"
 SCRAPE_ERROR = "error while scraping the tender"
+PAGE = "the tender page could not be read"
 LISTING = "the list of tenders was not read in full"
 SITE_STOPPED = "the site stopped answering part-way through"
 UNKNOWN = "reason not recorded"
@@ -170,7 +171,7 @@ def note_late(ref, category: str, detail: str | None = None) -> None:
 
 # Problems another night's try can fix. A password-protected, unreadable, empty or
 # oversized file will be just as bad next time, so those do not count.
-RETRYABLE = (DOWNLOAD, PORTAL, SCRAPE_ERROR, NOT_STORED, UNKNOWN)
+RETRYABLE = (DOWNLOAD, PORTAL, SCRAPE_ERROR, NOT_STORED, UNKNOWN, PAGE)
 # A tender is fetched again on at most this many later nights, then left alone, so
 # a document that is gone for good cannot use up a site's request allowance every night.
 MAX_INCOMPLETE_TRIES = 3

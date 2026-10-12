@@ -277,10 +277,16 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
     any_failed = False
     attachments: list[dict] = []
 
+    # Looked up by name here (not common.EXTRACTORS) so a test can patch one.
+    # A .csv/.txt attachment is stored as it is: its own text is the file.
+    # .xls, .xlsm and .pptx were left out before, so those never reached the AI.
     extractors = {
         ".pdf": common.extract_pdf,
         ".docx": common.extract_docx,
         ".xlsx": common.extract_xlsx,
+        ".xlsm": common.extract_xlsx,
+        ".xls": common.extract_xls,
+        ".pptx": common.extract_pptx,
     }
 
     for document in documents:
@@ -351,7 +357,12 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     if code != common.SITE_SUCCESS:
         return code, {}
 
-    go_id = fields.get("go_id") or "UNKNOWN"
+    go_id = fields.get("go_id")
+    if not go_id:
+        # Without its GO ID every opportunity would land in one "UNKNOWN" folder,
+        # each overwriting the last: the page has changed, say so.
+        log.error("       no GO ID on %s -- the details layout has changed", url)
+        return common.SITE_STRUCTURE_CHANGE, {}
     folder = common.tender_dir(go_id, output_dir)
     common.save_page_text(folder, go_id, format_detail_text(fields))
     common.append_full_page_text(folder, go_id, response.text, PAGE_CONTENT_SELECTOR)
@@ -395,8 +406,13 @@ def collect_all_listing_urls(client, limit: int = 0, problems: list | None = Non
             if common.listing_page_failed(log, page, exc, len(urls), problems):
                 break
             raise
-        page_urls = parse_listing(response.text)
+        # Only links not seen on an earlier page count: a site that answers an
+        # out-of-range page with its last page (or page 1) would otherwise be
+        # walked forever, and a grant that moved pages mid-walk scraped twice.
+        page_urls = [u for u in parse_listing(response.text) if u not in urls]
         if not page_urls:
+            if page == 1:
+                raise common.StructureChangedError("No opportunity links on the first listing page.")
             break  # no more results
         urls.extend(page_urls)
         if limit and len(urls) >= limit:
@@ -463,6 +479,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                         # rather than being turned away for every tender after this one.
                         log.error("HTTP 429 from %s -- stopping the run", exc.request.url)
                         return common.SITE_RATE_LIMITED, tenders
+                    if (isinstance(exc, httpx.HTTPStatusError)
+                            and (exc.response.status_code == 403
+                                 or common.is_block_response(exc.response))):
+                        # Blocked: the same for every tender after this one.
+                        log.error("HTTP %s (blocked) from %s -- stopping the run",
+                                  exc.response.status_code, exc.request.url)
+                        return common.SITE_BOT_BLOCKED, tenders
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)

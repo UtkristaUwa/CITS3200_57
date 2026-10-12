@@ -1071,6 +1071,10 @@ def wait_for_download(downloads_dir: str, before, max_wait: float,
     point waiting the full `max_wait` for one.
     """
     before = set(before)
+    # A download the previous tender gave up on (its "X.zip.crdownload" was
+    # already there) can finish during this wait, under a name that is not in
+    # `before`. It is that tender's file, not this one's, so it is not "new".
+    stale = {name[: -len(".crdownload")] for name in before if name.endswith(".crdownload")}
     started = time.monotonic()
     last_change = started
     last_stop_check = started
@@ -1078,7 +1082,7 @@ def wait_for_download(downloads_dir: str, before, max_wait: float,
     seen_partial = False
     vanished_polls = 0
     while True:
-        new = set(os.listdir(downloads_dir)) - before
+        new = set(os.listdir(downloads_dir)) - before - stale
         finished = sorted(name for name in new if not name.endswith(".crdownload"))
         if finished:
             return finished[0]
@@ -1250,6 +1254,23 @@ def note_listing_problems(log, problems: list) -> bool:
 RUN_RETRY_WAITS = (60, 180)
 
 
+# How many login forms have been posted in this process. The whole-run retry
+# below reads it: a run that already sent the credentials is not run again,
+# because that would post them again (a lockout risk) -- the site was reachable,
+# whatever failed after the login was not "unreachable".
+_LOGIN_ATTEMPTS = 0
+
+
+def note_login_attempt() -> None:
+    """Call just before posting a login form (submit_login does it itself)."""
+    global _LOGIN_ATTEMPTS
+    _LOGIN_ATTEMPTS += 1
+
+
+def login_attempts() -> int:
+    return _LOGIN_ATTEMPTS
+
+
 def retry_if_site_unreachable(run_once, log, waits=None):
     """
     run_once() -> (code, tenders). Runs it, and runs it again after each wait in
@@ -1260,18 +1281,47 @@ def retry_if_site_unreachable(run_once, log, waits=None):
 
     For the scrapers without a browser to restart (GrantConnect, AusTender, NT,
     buy.nsw, eTender, WA, TAS). A failed login, a block, a rate limit and a
-    structure change are never retried.
+    structure change are never retried -- and nor is a run that already posted
+    its login form (see note_login_attempt): the credentials are sent once.
     """
     waits = RUN_RETRY_WAITS if waits is None else waits
+    logins_before = login_attempts()
     code, tenders = run_once()
     for attempt, wait in enumerate(waits, start=2):
         if code != SITE_TOTAL_FAILURE or tenders:
+            break
+        if login_attempts() > logins_before:
+            log.warning("the run failed after the login was sent -- not trying the whole "
+                        "run again, so the credentials are not posted a second time")
             break
         log.warning("the site could not be reached -- trying the whole run again in %ds "
                     "(try %d of %d)", wait, attempt, len(waits) + 1)
         time.sleep(wait)
         code, tenders = run_once()
     return code, tenders
+
+
+def level_unparsed_pages(log, unparsed: list, attempted: int, tender_codes: set) -> None:
+    """
+    For a loop that reports a detail page it could not parse as SITE_STRUCTURE_CHANGE.
+    `unparsed` holds those tenders' refs, `attempted` how many tenders the loop
+    tried in all. When EVERY page failed to parse the layout has changed and the
+    site is reported so. When only some did (a tender withdrawn between the
+    listing and its page, a page that did not render in time) those tenders are
+    reported as incomplete -- fetched again next run -- rather than failing the
+    whole site over one page.
+    """
+    if not unparsed:
+        return
+    if len(unparsed) >= attempted:
+        tender_codes.add(SITE_STRUCTURE_CHANGE)
+        return
+    log.warning("%d of %d tender page(s) could not be parsed -- reported as incomplete, "
+                "not as a site-wide structure change, since the other pages parsed",
+                len(unparsed), attempted)
+    for ref in unparsed:
+        run_notes.note_late(ref, run_notes.PAGE)
+    tender_codes.add(TENDER_PARTIAL)
 
 
 # A site that answers nothing for this many tenders in a row has stopped
@@ -1366,6 +1416,7 @@ def site_code_from(tender_codes) -> int:
 #-----
 
 def submit_login(client: httpx.Client, url: str, payload: dict) -> httpx.Response:
+    note_login_attempt()
     return client.post(
         url,
         data=payload,

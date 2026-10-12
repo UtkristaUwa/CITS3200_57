@@ -157,6 +157,7 @@ def login(client) -> bool:
     payload["Password"] = password
 
     post_url = urljoin(BASE_URL, form.get("action") or LOGIN_URL)
+    common.note_login_attempt()
     result = client.post(
         post_url,
         data=payload,
@@ -343,6 +344,13 @@ def process_documents(client, documents: list[dict], folder: str) -> tuple[int, 
             attachment, extracted = common.download_attachment(
                 client, document["url"], folder, document["file_name"], headers=HEADERS
             )
+        except common.EncryptedFileError as e:
+            # Already dropped and noted as LOCKED by common.download_attachment.
+            # Not a download failure: noting DOWNLOAD as well would have the
+            # tender fetched again on later nights for a file that never opens.
+            log.warning("       %s", e)
+            any_failed = True
+            continue
         except Exception as e:
             if isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429:
                 raise  # the site says slow down: stop the run, don't keep downloading
