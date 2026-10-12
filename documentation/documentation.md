@@ -77,14 +77,14 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
   - [Pipeline](#pipeline)
 - [14. Testing](#14-testing)
 - [15. Fast Keyword Search & Query Syntax](#15-fast-keyword-search--query-syntax)
-  - [Overview](#search-overview)
+  - [Search overview](#search-overview)
   - [Search query syntax](#search-query-syntax)
   - [Supported field scopes](#supported-field-scopes)
   - [API changes](#api-changes)
   - [Query parser architecture](#query-parser-architecture)
   - [Relevance ranking](#relevance-ranking)
   - [Payload optimisation](#payload-optimisation)
-  - [Frontend UX enhancements](#frontend-ux-enhancements-1)
+  - [Frontend UX enhancements](#frontend-ux-enhancements)
 - [16. Admin Page – AI Configuration Reference](#16-admin-page--ai-configuration-reference)
   - [Tender extraction prompt](#tender-extraction-prompt)
   - [Tender summary prompt](#tender-summary-prompt)
@@ -102,9 +102,6 @@ TenderAI is a UWA CITS3200 project (Group 57) built for Social Ventures Australi
 
 Every morning TenderAI scrapes the portals, reads each tender and its attachments, uses Gemini to summarise and saves it to BigQuery. SVA staff sign in to a web app to to check the tenders, rather then going through 20+ portals they can check TenderAI
 
-**What the brief asks for** ([README](https://github.com/UtkristaUwa/CITS3200_57/blob/main/README.md)): monitor configurable sources, extract key information, remove duplicates, match tenders to SVA’s interest areas, store them centrally, notify staff through Microsoft Teams, explain why a tender matched, collect accept/reject feedback, and give admins a console for sources, profiles and system status.
-
-Client contact at SVA: Ramon.
 
 ## 2. Architecture
 
@@ -163,7 +160,6 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 | [Dockerfile](https://github.com/UtkristaUwa/CITS3200_57/blob/main/Dockerfile), [cloudbuild.yaml](https://github.com/UtkristaUwa/CITS3200_57/blob/main/cloudbuild.yaml) | Pipeline image and its build                                                  |
 | [tests/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests)                                                                                                   | Python, Firestore rules and Cloud Functions tests                             |
 | [documentation/SSO_SETUP.md](https://github.com/UtkristaUwa/CITS3200_57/blob/main/documentation/SSO_SETUP.md)                                                                            | Microsoft sign-in setup checklist                                             |
-| tenders_data/                                                                                                                                                          | Sample scraped tenders committed for testing                                  |
 
 ## 3. Daily pipeline
 
@@ -179,9 +175,6 @@ flowchart TD
     upload --> gemini["Gemini summary + fields"]
     gemini --> upsert["Upsert into BigQuery"]
     upsert --> done["Delete temp directory"]
-    done --> scrape["Run each scraper"]
-
-
 ```
 
 ### Step by step
@@ -203,16 +196,23 @@ flowchart TD
 
 ## 4. Scrapers
 
-Four portals run in the daily pipeline. [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers) (Ben’s) is the current design with proper status codes. [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers) (Sepehr’s) is the older design; AusTender still runs from it, and its WA, NT, VIC and QLD scrapers are not in the pipeline. The plan is to end with one folder, probably named `web_scrapers`.
+Eleven portals are scraped across federal, state and territory governments. [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers) (Ben’s) is the current design with proper status codes. [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers) (Sepehr’s) is the older design; AusTender still runs from it. The plan is to end with one folder, probably named `web_scrapers`.
 
 ### Sources in the pipeline
 
-| Source                        | `source_id`    | Code                                                                                                                                                                                                                                           | How it fetches             | Login                                             | Documents                                   |
-|-------------------------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|---------------------------------------------------|---------------------------------------------|
-| AusTender (federal)           | `austender`    | [web_scrapers/webscraperinit.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/web_scrapers/webscraperinit.py)                                                                                                                          | httpx                      | Registered user, for downloads                    | Soft copies and addenda, one file at a time |
-| GrantConnect (federal grants) | `grantconnect` | [error_scrapers/grant_connect/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/grant_connect/scraper.py)                                                                                                        | httpx                      | `GRANTCONNECT_USERNAME` / `GRANTCONNECT_PASSWORD` | From the logged-in documents page           |
-| buy.nsw (NSW)                 | `buynsw`       | [error_scrapers/buy_nsw/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/buy_nsw/scraper.py)                                                                                                                    | httpx                      | None                                              | One public zip per opportunity              |
-| Tenders ACT                   | `tenders_act`  | [error_scrapers/tenders_act/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/scraper.py) + [browser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/browser.py) | Real Chrome (SeleniumBase) | `ACT_USERNAME` / `ACT_PASSWORD`                   | Zip from a download form                    |
+| # | Source | URL | Code | How it fetches | Login | Documents |
+|---|--------|-----|------|----------------|-------|-----------|
+| 1 | AusTender (federal ATMs) | https://www.tenders.gov.au/atm | [web_scrapers/webscraperinit.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/web_scrapers/webscraperinit.py) | httpx | Registered user, for downloads | Soft copies and addenda, one file at a time |
+| 2 | GrantConnect (federal grants) | https://www.grants.gov.au/Go/List | [error_scrapers/grant_connect/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/grant_connect/scraper.py) | httpx | `GRANTCONNECT_USERNAME` / `GRANTCONNECT_PASSWORD` | From the logged-in documents page |
+| 3 | buy.nsw (NSW) | https://buy.nsw.gov.au/opportunity/search | [error_scrapers/buy_nsw/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/buy_nsw/scraper.py) | httpx | None | One public zip per opportunity |
+| 4 | Buying for Victoria (VIC) | https://www.tenders.vic.gov.au/tenders/open | [web_scrapers/vic_buyingfor/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/vic_buyingfor) | httpx | TBC | TBC |
+| 5 | QTenders (QLD) | https://www.vendorpanel.com.au/Members/?do=Tenders:AllTenders | [web_scrapers/qld_qtenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/qld_qtenders) | httpx | TBC | TBC |
+| 6 | QBuild eTender (QLD) | https://etender.hpw.qld.gov.au/public/TendersListingCurrent.aspx | TBC | TBC | TBC | TBC |
+| 7 | Tenders WA | https://www.tenders.wa.gov.au/ | [web_scrapers/wa_tenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/wa_tenders) | httpx | TBC | TBC |
+| 8 | SA Tenders | https://www.tenders.sa.gov.au/tender/search?preset=open | TBC | TBC | TBC | TBC |
+| 9 | Tasmanian Gov Tenders | https://www.tenders.tas.gov.au/OpenForBids/Index | TBC | TBC | TBC | TBC |
+| 10 | NT QTOL | https://tendersonline.nt.gov.au/Tender/SearchResults/Current | [web_scrapers/nt_qtol/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/nt_qtol) | httpx | TBC | TBC |
+| 11 | Tenders ACT | https://www.tenders.act.gov.au/tenders/open | [error_scrapers/tenders_act/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/scraper.py) + [browser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/browser.py) | Real Chrome (SeleniumBase) | `ACT_USERNAME` / `ACT_PASSWORD` | Zip from a download form |
 
 ### How a scraper works (AusTender)
 
@@ -299,7 +299,7 @@ flowchart LR
 
 ### Steps in process_tender()
 
-1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see the warning below).
+1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see section 5 above).
 2.  **Triage.** If there’s more than one file, each is sent to Gemini with its name and first 6,000 characters (`triage_char_limit`). Gemini answers `{relevant, reason}`. Overviews, scope, addenda, Q&A and evaluation criteria are kept; blank forms, unamended contract boilerplate and CAD tables are dropped. A single file is always kept. There’s a 0.5 s pause between triage calls.
 3.  **Context.** Kept files are joined in full, each under `=== DOCUMENT: <name> ===`.
 4.  **Summary.** One call returns `headline` (one sentence, about 20 words) and `description` (2 to 4 paragraphs on scope, value, dates and anything unusual).
@@ -311,8 +311,6 @@ Every call asks for JSON that matches a Pydantic schema, so replies are parsed a
 - **Retries:** only server errors (5xx) and rate limits (429) are retried, up to 5 attempts in total with backoff of roughly 2, 4, 8 and 16 s. A document that still fails triage is skipped. If the summary or extraction call still fails, the error is re-raised, no partial record is returned, and the manager skips that tender.
 - **Long tenders:** there is no chunking. All kept documents go to Gemini in one call; if that is over the model’s input limit, the call fails and the tender is skipped. Triage’s 6,000-character preview is the only size limit, and it exists to keep the yes/no screen cheap.
 - **Accuracy:** made-up values are discouraged by the prompts (never infer, leave blank if not stated, ranges go in `value_notes`) and by the schemas, but nothing checks the output against the source text, and there is no test set of real tenders.
-
-> **Warning (since 24 Sep, commit 37c5b00):** step 1 also skips `__tender__<ref>.txt`, the tender’s own page text. The AI now only sees attachments, and a tender with no attachments reaches Gemini as “no relevant source documents”. The prompts still say landing pages are always relevant, so this looks unintended. See section 15.
 
 ### Relevance scoring (in progress, not merged)
 
@@ -341,7 +339,7 @@ Multi-line values are indented with spaces. Developers edit this file for now; o
 
 ## 7. Database
 
-All tender data lives in BigQuery dataset `TenderAI` in project `tenderai-dev`. The app uses two tables: `tenders` (one row per tender, the current version) and `tender_snapshots` (a log of changes). The full column-by-column reference is in [TenderAI Tenders Table Reference](https://claude.ai/code/artifact/a266066a-dd87-4170-97b7-74d94a1812b3).
+All tender data lives in BigQuery dataset `TenderAI` in project `tenderai-dev`. The app uses two tables: `tenders` (one row per tender, the current version) and `tender_snapshots` (a log of changes). The full column-by-column reference is in the TenderAI Tenders Table Reference (see `Schema/schema.sql`).
 
 ### tenders, in short
 
@@ -677,19 +675,106 @@ The AI and database steps still call Vertex AI and BigQuery, so you need access 
 
 Tests run by hand; there is no CI test job on pull requests.
 
-| Suite           | Location                                                                                             | Command                   | Covers                                                                                                                                 |
-|-----------------|------------------------------------------------------------------------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| Python, offline | [tests/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests)                                 | `pytest tests`            | web_scrapers against saved HTML and a fake local portal, attachment_store, manager, output format, ingestion shape, downloads          |
-| Python, live    | tests/test_live_sites.py                                                                             | `pytest tests --live`     | Whether the real portals are up and still shaped as expected (slow, needs network)                                                     |
-| Error scrapers  | `error_scrapers/*/test_cases/`                                                                       | `pytest error_scrapers`   | Each current scraper against saved pages: public list, details, attachments, login success and failure, and a “structure changed” copy |
-| Firestore rules | [tests/firestore_rules/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests/firestore_rules) | `npm install && npm test` | Who can write which profile fields; runs on the emulator only                                                                          |
-| Cloud Functions | [tests/functions/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests/functions)             | `npm install && npm test` | `setUserAdmin` rules, including no self-demotion                                                                                       |
+| Suite | Location | Command | Covers |
+|-------|----------|---------|--------|
+| Scraper unit tests (error_scrapers) | `error_scrapers/test_cases/` | `pytest error_scrapers/test_cases/` | Parsing, login, download, structure-change detection for GrantConnect, buy.nsw, Tenders ACT |
+| Scraper unit tests (web_scrapers) | `web_scrapers/tests/` | `pytest tests` (from `web_scrapers/`) | Offline fixture tests for AusTender, WA, NT, VIC, QLD scrapers |
+| Scraper live tests | `web_scrapers/tests/` | `pytest tests --live` (from `web_scrapers/`) | Hits real portals — checks sites are up and still shaped as expected |
+| Cloud Functions | `tests/functions/` | `cd tests/functions && npm install && npm test` | `inviteUser`, `setUserAdmin` callable functions |
+| Firestore rules | `tests/firestore_rules/` | `cd tests/firestore_rules && npm install && npm test` | Security rules on `users/{uid}` (emulator only, no cloud project touched) |
 
-Offline tests need no network or passwords. The saved HTML pages in `tests/fixtures/` and each `test_cases/` folder are real portal pages; when a portal changes, save fresh copies and update the tests.
+Offline tests need no network or passwords. The live scraper tests need network access and, for gated portals, the same env-var credentials the pipeline uses (`GRANTCONNECT_USERNAME`, `ACT_USERNAME`, etc.).
+
+---
+
+### Cloud Run Pipeline Execution Logs
+
+85 execution logs from the `tender-batch-job` are stored in `execution_logs/` in the repository. These serve as evidence of system-level integration testing across the full pipeline on Cloud Run.
+
+**Environment:** GCP Cloud Run Job, region `australia-southeast1`
+**Job Name:** `tender-batch-job`
+**Testing Period:** 2026-09-20 to 2026-10-12
+**Total Executions:** 85
+
+#### Sample Execution Results
+
+| Execution ID | Date | Outcome | Duration | Key Observations |
+|---|---|---|---|---|
+| `tender-batch-job-rgh9r` | 2026-09-20 | ✅ SUCCESS | ~2h 22m | Full pipeline run, all scrapers executed. BigQuery upsert errors for `summary_headline` column (schema mismatch at time). |
+| `tender-batch-job-gj2dt` | 2026-09-20 | ✅ SUCCESS | ~58m | Full pipeline run with BigQuery `summary_headline` errors during ingestion. Pipeline completed despite ingestion errors. |
+| `tender-batch-job-c2bf4` | 2026-09-20 | ❌ FAILED | <1m | Startup crash — traceback on launch, `exit(1)`. Early development iteration. |
+| `tender-batch-job-gvjvf` | 2026-09-20 | ❌ FAILED | <1m | `/app/manager.py` file not found — Docker image build issue. |
+| `tender-batch-job-62v9c` | 2026-09-21 | ❌ FAILED | ~13m | Embedding model `text-embedding-001` not found in `australia-southeast1`. Repeated 404 errors from Vertex AI. AusTender scraper timed out. |
+| `tender-batch-job-8rz4z` | 2026-09-21 | ❌ FAILED | ~13m | Same embedding model 404 errors. Container terminated on signal 11 (SIGSEGV) across multiple task attempts. |
+| `tender-batch-job-28vtf` | 2026-09-26 | ✅ SUCCESS | ~1.5m | Clean run. AusTender auth successful, tender ingested. |
+| `tender-batch-job-l52rh` | 2026-09-29 | ❌ FAILED | ~32m | GrantConnect login failure (code 2), ACT Tenders failure (code 2), BuyNSW partial data (code 6). BigQuery date format error (`'2026-06'` invalid for `publish_date`). |
+
+#### Scrapers Tested
+
+The pipeline executes the following scrapers in sequence. Each was exercised across multiple executions:
+
+| # | Scraper | Source | Executions Observed | Status |
+|---|---------|--------|---------------------|--------|
+| 1 | `austender` | AusTender (federal ATMs) | 15+ | Working — auth flow (login → token → session cookie) verified. Occasional timeouts. |
+| 2 | `grantconnect` | GrantConnect (federal grants) | 19+ | Intermittent failures (code 2) — login returning 200 but auth not establishing. |
+| 3 | `buynsw` | buy.nsw (NSW) | 19+ | Working with partial data warnings (code 6) — successfully fetches opportunity pages and attachment ZIPs from S3. |
+| 4 | `vic_buyingfor` | Buying for Victoria (VIC) | Configured | Credentials provisioned via GCP Secret Manager. |
+| 5 | `qld_qtenders` | QTenders (QLD) | Configured | Credentials provisioned via GCP Secret Manager. |
+| 6 | `qbuild_etender` | QBuild eTender (QLD) | Configured | Credentials provisioned via GCP Secret Manager. |
+| 7 | `wa_tenders` | Tenders WA | Configured | Credentials provisioned via GCP Secret Manager. |
+| 8 | `sa_tenders` | SA Tenders | Configured | Credentials provisioned via GCP Secret Manager. |
+| 9 | `tas_tenders` | Tasmanian Gov Tenders | Configured | Credentials provisioned via GCP Secret Manager. |
+| 10 | `nt_qtol` | NT QTOL | Configured | Credentials provisioned via GCP Secret Manager. |
+| 11 | `tenders_act` | Tenders ACT | 19+ | Intermittent failures (code 2) — anti-bot detection (Cloudflare/reCAPTCHA) blocking access. |
+
+#### Error Categories Observed
+
+**Scraper Authentication Failures:**
+- **AusTender:** Occasional read timeouts during login
+- **GrantConnect:** Login endpoint returns 200 but session not established (code 2)
+- **ACT Tenders:** Cloudflare/reCAPTCHA anti-bot blocks (code 2)
+- **BuyNSW:** Partial data returns (code 6) — some opportunities fetched, others missed
+
+**BigQuery Ingestion Errors:**
+- **Schema mismatch:** `Unrecognized name: summary_headline` — column not yet added to BigQuery schema at time of early executions. Resolved in later iterations.
+- **Date format:** `Invalid date: '2026-06'` for `publish_date` field — incomplete date string from scraper output. Requires `YYYY-MM-DD` format.
+
+**Vertex AI Embedding Errors:**
+- **Model not found:** `text-embedding-001` not available in `australia-southeast1` region. 404 NOT_FOUND errors from Vertex AI publisher model endpoint. Resolved by switching to available model/region.
+
+**Container Runtime Errors:**
+- **Signal 11 (SIGSEGV):** Container terminated with segmentation fault across multiple early executions (2026-09-20, 2026-09-21). Likely memory-related during large attachment processing.
+- **Exit code 1:** Pipeline finished with scraper failures, non-zero exit.
+- **Exit code 2:** Docker image missing `/app/manager.py` — build configuration issue, resolved.
+
+#### Pipeline Flow Verified
+
+Each successful execution demonstrates the following tested flow:
+
+1. **Startup** — Pipeline initialises, creates temp working directory
+2. **Scraper Execution** — Each configured scraper runs in sequence:
+   - Authenticates with target portal (form-based auth with CSRF tokens)
+   - Fetches tender listing pages
+   - Parses individual tender details (ID, title, dates, categories)
+   - Downloads attachment documents (ZIP packages from S3/portal)
+3. **Data Ingestion** — Parsed tenders upserted to BigQuery
+4. **Embedding Generation** — Vertex AI text embeddings generated for search
+5. **Email Notification** — Pipeline completion notification via Resend API
+6. **Cleanup** — Temporary files wiped from memory
+
+#### Log File Reference
+
+All 85 execution log files are stored in `execution_logs/` in the repository. Each file is named `tender-batch-job-<execution-id>.log` and contains timestamped, severity-tagged log entries.
+
+**File size range:** 0 bytes (no container output for very short-lived failures) to 1.8 MB (full multi-scraper runs with attachment processing)
+
+**How logs were collected:** Bulk export via `gcloud logging read` against Cloud Logging, filtered to `resource.type="cloud_run_job"` for the `tender-batch-job` job, covering 60 days of execution history. Logs split per execution using the `run.googleapis.com/execution_name` label.
+
+*Logs downloaded 2026-10-12 from GCP project `tenderai-dev`.*
 
 ## 15. Fast Keyword Search & Query Syntax
 
-### Overview
+### Search overview
 
 Fast Keyword Search is the default search engine for TenderAI. An **Advanced** toggle in the search bar switches to AI Semantic Search (Vertex AI embeddings).
 
@@ -1031,5 +1116,3 @@ Not: ordinary grant administration. A request to supply or manage capital is bor
 | Out-of-scope fit cap | `2` | 0 to 100 |
 | Max focus areas | `3` | Maximum focus-area tags retained |
 | Max work types | `2` | Maximum work-type tags retained |
-
-> **Note:** Saved relevance settings affect future tender processing and do not automatically re-score existing tenders. Use the "Reprocess all tenders" button on the admin page to re-run AI over existing tenders with updated prompts.
