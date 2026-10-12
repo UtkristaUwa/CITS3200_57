@@ -1142,9 +1142,10 @@ def is_junk_file(member_name: str) -> bool:
 
 MAX_ZIP_DEPTH = 5
 # A package member larger than this is not unpacked. attachment_store would
-# refuse to store it anyway (MAX_ATTACHMENT_MB), and on Cloud Run the
-# filesystem is memory: writing it out could take the run down first.
-MAX_PACKAGE_MEMBER_BYTES = 500 * 1024 * 1024
+# refuse to store it anyway, and on Cloud Run the filesystem is memory: writing
+# it out could take the run down first. The same MAX_ATTACHMENT_MB setting as
+# attachment_store, so the deployed limit stays in charge of both.
+MAX_PACKAGE_MEMBER_BYTES = int(os.environ.get("MAX_ATTACHMENT_MB", "500")) * 1024 * 1024
 
 def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]:
     """
