@@ -205,13 +205,13 @@ Eleven portals are scraped across federal, state and territory governments. [err
 | 1 | AusTender (federal ATMs) | https://www.tenders.gov.au/atm | [web_scrapers/webscraperinit.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/web_scrapers/webscraperinit.py) | httpx | Registered user, for downloads | Soft copies and addenda, one file at a time |
 | 2 | GrantConnect (federal grants) | https://www.grants.gov.au/Go/List | [error_scrapers/grant_connect/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/grant_connect/scraper.py) | httpx | `GRANTCONNECT_USERNAME` / `GRANTCONNECT_PASSWORD` | From the logged-in documents page |
 | 3 | buy.nsw (NSW) | https://buy.nsw.gov.au/opportunity/search | [error_scrapers/buy_nsw/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/buy_nsw/scraper.py) | httpx | None | One public zip per opportunity |
-| 4 | Buying for Victoria (VIC) | https://www.tenders.vic.gov.au/tenders/open | [web_scrapers/vic_buyingfor/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/vic_buyingfor) | httpx | TBC | TBC |
-| 5 | QTenders (QLD) | https://www.vendorpanel.com.au/Members/?do=Tenders:AllTenders | [web_scrapers/qld_qtenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/qld_qtenders) | httpx | TBC | TBC |
-| 6 | QBuild eTender (QLD) | https://etender.hpw.qld.gov.au/public/TendersListingCurrent.aspx | TBC | TBC | TBC | TBC |
-| 7 | Tenders WA | https://www.tenders.wa.gov.au/ | [web_scrapers/wa_tenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/wa_tenders) | httpx | TBC | TBC |
-| 8 | SA Tenders | https://www.tenders.sa.gov.au/tender/search?preset=open | TBC | TBC | TBC | TBC |
-| 9 | Tasmanian Gov Tenders | https://www.tenders.tas.gov.au/OpenForBids/Index | TBC | TBC | TBC | TBC |
-| 10 | NT QTOL | https://tendersonline.nt.gov.au/Tender/SearchResults/Current | [web_scrapers/nt_qtol/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/nt_qtol) | httpx | TBC | TBC |
+| 4 | Buying for Victoria (VIC) | https://www.tenders.vic.gov.au/tenders/open | [web_scrapers/vic_buyingfor/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/vic_buyingfor) | httpx |     |     |
+| 5 | QTenders (QLD) | https://www.vendorpanel.com.au/Members/?do=Tenders:AllTenders | [web_scrapers/qld_qtenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/qld_qtenders) | httpx |     |     |
+| 6 | QBuild eTender (QLD) | https://etender.hpw.qld.gov.au/public/TendersListingCurrent.aspx |    |    |     |     |
+| 7 | Tenders WA | https://www.tenders.wa.gov.au/ | [web_scrapers/wa_tenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/wa_tenders) | httpx |     |     |
+| 8 | SA Tenders | https://www.tenders.sa.gov.au/tender/search?preset=open |    |    |    |   |
+| 9 | Tasmanian Gov Tenders | https://www.tenders.tas.gov.au/OpenForBids/Index |   |   |   |    |
+| 10 | NT QTOL | https://tendersonline.nt.gov.au/Tender/SearchResults/Current | [web_scrapers/nt_qtol/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/nt_qtol) | httpx |    |    |
 | 11 | Tenders ACT | https://www.tenders.act.gov.au/tenders/open | [error_scrapers/tenders_act/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/scraper.py) + [browser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/browser.py) | Real Chrome (SeleniumBase) | `ACT_USERNAME` / `ACT_PASSWORD` | Zip from a download form |
 
 ### How a scraper works (AusTender)
