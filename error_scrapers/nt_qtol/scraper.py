@@ -165,6 +165,7 @@ def login(client) -> bool:
     payload["Password"] = password
     payload["RememberMe"] = "false"
 
+    common.note_login_attempt()
     result = client.post(
         urljoin(BASE_URL, form.get("action") or "/Account/LogOn"),
         data=payload,
@@ -436,7 +437,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     return code, tender
 
 
-def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
+def collect_all_listing_urls(client, limit: int = 0, problems: list | None = None) -> list[str]:
     """
     Walk the search pages, stopping at the page count the first page reports,
     at an empty page, or once `limit` is reached. `limit` of 0 means every
@@ -445,14 +446,23 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     Raises StructureChangedError if the very first page has no tender cards:
     QTOL always has current tenders, so an empty first page means the markup
     changed, not that there is nothing to scrape.
+
+    If a later page cannot be read (a timeout or server error that survived its
+    retries) the tenders from the pages before it are kept and the page is noted
+    in `problems`, so one bad page does not cost the whole night.
     """
     urls, page, pages = [], 1, None
     while True:
-        response = common.request_with_retries(
-            client, "get", LIST_URL, params={"page": page, "size": PAGE_SIZE},
-            headers=HEADERS, timeout=45.0
-        )
-        response.raise_for_status()
+        try:
+            response = common.request_with_retries(
+                client, "get", LIST_URL, params={"page": page, "size": PAGE_SIZE},
+                headers=HEADERS, timeout=45.0
+            )
+            response.raise_for_status()
+        except Exception as exc:
+            if common.listing_page_failed(log, page, exc, len(urls), problems):
+                break
+            raise
         if pages is None:
             pages = total_pages(response.text)
 
@@ -500,12 +510,16 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                 log.warning("login: no credentials -- tender documents will be skipped and "
                             "tenders with documents will be TENDER_PARTIAL")
 
-            urls = collect_all_listing_urls(client, limit)
+            listing_problems: list[str] = []
+            urls = collect_all_listing_urls(client, limit, listing_problems)
             log.info("listing: %d tender link(s) found", len(urls))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             relogins = 0
+            watch = common.DeadSiteWatch()
             for index, url in enumerate(urls, start=1):
                 try:
                     code, tender = scrape_opportunity(client, url, output_dir)
@@ -525,6 +539,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(urls),
                                           tender.get("tender_id", url) if tender else url, code)
+                    watch.succeeded()
                 except httpx.HTTPStatusError as exc:
                     blocked = blocked_code(exc)
                     if blocked is not None:
@@ -534,12 +549,19 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 except Exception as exc:
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 time.sleep(PAUSE_SECONDS)
 
+            if watch.stopped:
+                watch.report(log, index, len(urls))
+                tender_codes.add(common.TENDER_PARTIAL)
             reporting.diagnose(log, all_codes, logged_in=logged_in)
 
         return common.site_code_from(tender_codes), tenders
@@ -561,7 +583,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.Scra
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

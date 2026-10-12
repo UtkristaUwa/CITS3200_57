@@ -494,6 +494,7 @@ def test_empty_list_page_is_a_structure_change(tmp_path, monkeypatch):
 
 
 def test_site_total_failure_on_unreachable_url(tmp_path, monkeypatch):
+    monkeypatch.setattr(common, "RUN_RETRY_WAITS", ())
     def handler(request):
         raise httpx.ConnectError("down")
     _patch_client(monkeypatch, httpx.MockTransport(handler))

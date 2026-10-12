@@ -114,7 +114,12 @@ FOLLOW_LINK = "a[href*='/fpt.axd']"
 PACKAGE_BUTTON = "input[name='PopUpMaster$masterMain$btnGo']"
 
 WAIT_TIMEOUT = 30            # seconds for a page's table or form to appear
-FILTER_WAIT_SECONDS = 10     # seconds for the search box to narrow the list
+# Seconds for the search box to narrow the list to one row. 10 was too short: on the
+# 5am run 67 of 100 tenders were reported "not on the Public Tenders list" when the
+# list had simply not narrowed yet, and every one the retry pass reached (25 s) was
+# found. A row that appears sooner returns at once, so a longer limit costs nothing
+# unless the search really is slow.
+FILTER_WAIT_SECONDS = int(os.environ.get("QLD_FILTER_WAIT_SECONDS", "30"))
 RELOAD_SECONDS = 3           # pause after clicking Follow, which reloads the page
 FOLLOW_CHECKS = 6            # times to look for "Unfollow" after clicking Follow
 FOLLOW_CHECK_PAUSE = 5       # seconds between those looks
@@ -126,16 +131,22 @@ FOLLOW_CHECK_PAUSE = 5       # seconds between those looks
 DOWNLOAD_WAIT_SECONDS = int(os.environ.get("QLD_DOWNLOAD_WAIT_SECONDS", "240"))
 DOWNLOAD_STALL_SECONDS = int(os.environ.get("QLD_DOWNLOAD_STALL_SECONDS", "300"))
 DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("QLD_DOWNLOAD_HARD_MAX_SECONDS", "900"))
-FIND_ATTEMPTS = 2            # times to search the list for a tender before calling it absent
-DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "2"))
+FIND_ATTEMPTS = int(os.environ.get("QLD_FIND_ATTEMPTS", "3"))  # searches before a tender is called absent
+# Three tries, not two: on the 5am run three packages gave nothing for 240 s on the
+# first click and arrived about a minute after the second, and one failed both tries.
+DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "3"))
 DOWNLOAD_POLL_SECONDS = 1.0
 
 # After the main loop, tenders whose documents could not be reached (typically
-# the search never narrowed to their row) get one more go with a fresh list and
-# a more patient search. The pass stops after RETRY_PASS_MAX_SECONDS so it can
-# never stretch the nightly run without bound.
-RETRY_PASS_MAX_SECONDS = int(os.environ.get("QLD_RETRY_PASS_MAX_SECONDS", "3600"))
-RETRY_FILTER_WAIT_SECONDS = int(os.environ.get("QLD_RETRY_FILTER_WAIT_SECONDS", "25"))
+# the search never narrowed to their row) get another go with a fresh list and
+# a more patient search, up to RETRY_ROUNDS times each. The pass stops after
+# RETRY_PASS_MAX_SECONDS so it can never stretch the nightly run without bound.
+# The old limit of one hour reached 11 of 75 tenders; 6 hours covers every tender
+# at the pace seen (1-8 minutes each) and still leaves the 18 hour job timeout
+# well clear of the rest of the run.
+RETRY_PASS_MAX_SECONDS = int(os.environ.get("QLD_RETRY_PASS_MAX_SECONDS", "21600"))
+RETRY_FILTER_WAIT_SECONDS = int(os.environ.get("QLD_RETRY_FILTER_WAIT_SECONDS", "45"))
+RETRY_ROUNDS = int(os.environ.get("QLD_RETRY_ROUNDS", "3"))
 RETRY_PAUSE_SECONDS = 3
 
 # A session that lapses mid-run is replaced by signing in again, this many
@@ -188,7 +199,7 @@ def parse_search_page(data) -> tuple[list[dict], int | None]:
     return tenders, data.get("totalPages")
 
 
-def collect_all_tenders(client, limit: int = 0) -> list[dict]:
+def collect_all_tenders(client, limit: int = 0, problems: list | None = None) -> list[dict]:
     """
     Walk every page of open tenders, stopping at the reported page count, at
     an empty page, or once `limit` is reached. `limit` of 0 means every
@@ -196,9 +207,15 @@ def collect_all_tenders(client, limit: int = 0) -> list[dict]:
     """
     tenders, seen, page = [], set(), 1
     while True:
-        response = common.request_with_retries(
-            client, "post", SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
-        response.raise_for_status()
+        try:
+            response = common.request_with_retries(
+                client, "post", SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
+            response.raise_for_status()
+        except Exception as exc:
+            # A later page that keeps failing must not cost the pages before it.
+            if common.listing_page_failed(log, page, exc, len(tenders), problems):
+                break
+            raise
         try:
             data = response.json()
         except ValueError:
@@ -583,6 +600,8 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
         if not row["followed"]:
             if not row["can_follow"]:
                 log.warning("       documents: VP%s has no Follow toggle", number)
+                result["cannot_follow"] = True
+                run_notes.note_reason(run_notes.PORTAL, f"VP{number} cannot be followed")
                 return common.TENDER_PARTIAL
             log.info("       following VP%s", number)
             if not vendorpanel.follow(number):
@@ -602,9 +621,14 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
         result["session_lapsed"] = True
         return common.TENDER_PARTIAL
     except Exception as e:
+        if common.browser_is_gone(e):
+            # Not this tender's fault: every tender after it would fail the same way.
+            raise common.BrowserLostError(f"{type(e).__name__}: {e}") from e
         log.warning("       documents FAILED for VP%s: %s: %s", number, type(e).__name__, e)
+        result["package_failed"] = True  # the retry pass tries the download again
         return common.TENDER_PARTIAL
 
+    result["package_failed"] = False
     result["attachments"] = attachments
     # The package also holds a summary PDF, so it can hold more files than were advertised.
     if len(attachments) < advertised:
@@ -618,15 +642,18 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
 
 def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
                      max_seconds: float = None, sleep=time.sleep,
-                     clock=time.monotonic) -> dict[str, int]:
+                     clock=time.monotonic, restart=None) -> dict[str, int]:
     """
-    Second pass, run once after every tender has had its first go: try again for
-    each tender that has documents but is still not followed. The usual cause is
+    Second pass, run after every tender has had its first go: try again for each
+    tender that has documents but is still not followed (or was followed but whose
+    package download failed), up to RETRY_ROUNDS times each. The usual cause is
     the search not narrowing to the tender's row in time, which a fresh list and
     a more patient search often gets past (as doing it by hand does).
 
     `relogin` is called if the session lapses; it returns True when signed in
-    again. Returns {tender_id: status code} for every tender it tried, so the
+    again. `restart` is called if the browser itself dies; it returns a fresh,
+    signed-in session (or None when it cannot), and the pass carries on with it.
+    Returns {tender_id: status code} for every tender it tried, so the
     caller can replace the codes from the first pass.
     """
     if max_seconds is None:
@@ -634,8 +661,13 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     # "Gated" means the tender's public page advertises more documents than it
     # links, so the rest can only come through VendorPanel and the tender has to
     # be followed. A tender whose documents are all linked never needs following.
-    todo = [r for r in results
-            if r.get("documents_advertised", 0) > 0 and r.get("documents_gated") and not r["followed"]]
+    def still_to_do():
+        return [r for r in results
+                if r.get("documents_advertised", 0) > 0 and r.get("documents_gated")
+                and (not r["followed"] or r.get("package_failed"))
+                and not r.get("cannot_follow")]  # no Follow toggle: another round cannot help
+
+    todo = still_to_do()
     if not todo:
         return {}
 
@@ -646,34 +678,69 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     started = clock()
     previous_wait = vendorpanel.filter_wait
     vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
+    stop = False
+
+    def fetch(result, advertised):
+        """fetch_documents, on a fresh browser if this one dies. None if there is no browser left."""
+        nonlocal vendorpanel
+        for _ in range(1 + MAX_BROWSER_RESTARTS):  # restart_browser caps the restarts itself
+            try:
+                return fetch_documents(vendorpanel, result, advertised)
+            except common.BrowserLostError as exc:
+                log.warning("retry pass: the browser is gone (%s)", exc)
+                fresh = restart() if restart is not None else None
+                if fresh is None:
+                    return None
+                vendorpanel = fresh
+                vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
+        return None
+
     try:
-        for result in todo:
-            if clock() - started > max_seconds:
-                log.warning("retry pass: out of time (%ds) -- leaving the rest as they are", max_seconds)
+        for round_number in range(1, RETRY_ROUNDS + 1):
+            pending = still_to_do()
+            if not pending or stop:
                 break
-            reference = result["tender_id"]
-            advertised = result["documents_advertised"]
-            vendorpanel._on_list = False  # open the list afresh, not the page the last search left
-            sleep(RETRY_PAUSE_SECONDS)
-            result["session_lapsed"] = False
-            code = fetch_documents(vendorpanel, result, advertised)
-            if result["session_lapsed"] and relogin is not None and relogin():
+            if round_number > 1:
+                log.info("retry pass: round %d of %d -- %d tender(s) still not followed",
+                         round_number, RETRY_ROUNDS, len(pending))
+            for result in pending:
+                if clock() - started > max_seconds:
+                    log.warning("retry pass: out of time (%ds) -- leaving the rest as they are", max_seconds)
+                    stop = True
+                    break
+                reference = result["tender_id"]
+                advertised = result["documents_advertised"]
+                vendorpanel._on_list = False  # open the list afresh, not the page the last search left
+                sleep(RETRY_PAUSE_SECONDS)
                 result["session_lapsed"] = False
-                code = fetch_documents(vendorpanel, result, advertised)
-            if result["session_lapsed"]:
-                log.warning("retry pass: the VendorPanel session lapsed and could not be "
-                            "restored -- stopping")
-                break
-            if result["followed"]:
-                recovered += 1
-                if result.get("public_download_failed"):
-                    code = common.TENDER_PARTIAL  # a directly linked document failed earlier
-                log.info("retry pass: %s followed this time", reference)
-            else:
-                log.warning("retry pass: %s still could not be followed", reference)
-                run_notes.note_reason(run_notes.PORTAL)
-            codes[reference] = code
-            run_notes.note_tender(reference, code)  # replaces the first pass's verdict
+                code = fetch(result, advertised)
+                if code is None:
+                    log.error("retry pass: the browser is gone and could not be restarted -- stopping")
+                    stop = True
+                    break
+                if result["session_lapsed"] and relogin is not None and relogin():
+                    result["session_lapsed"] = False
+                    code = fetch(result, advertised)
+                    if code is None:
+                        log.error("retry pass: the browser is gone and could not be restarted -- stopping")
+                        stop = True
+                        break
+                if result["session_lapsed"]:
+                    log.warning("retry pass: the VendorPanel session lapsed and could not be "
+                                "restored -- stopping")
+                    stop = True
+                    break
+                if result["followed"] and not result.get("package_failed"):
+                    recovered += 1
+                    if result.get("public_download_failed"):
+                        code = common.TENDER_PARTIAL  # a directly linked document failed earlier
+                    log.info("retry pass: %s followed this time", reference)
+                else:
+                    log.warning("retry pass: %s still could not be fetched (round %d of %d)",
+                                reference, round_number, RETRY_ROUNDS)
+                    run_notes.note_reason(run_notes.PORTAL)
+                codes[reference] = code
+                run_notes.note_tender(reference, code)  # replaces the first pass's verdict
     finally:
         vendorpanel.filter_wait = previous_wait
     log.info("retry pass: %d of %d tender(s) followed this time", recovered, len(todo))
@@ -730,6 +797,7 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
         "session_lapsed": False,
     }
     if fetch_failed:
+        run_notes.note_reason(run_notes.PAGE, "preview page")  # else "reason not recorded"
         return common.TENDER_PARTIAL, result
 
     any_failed = False
@@ -772,8 +840,22 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
 
 # Chrome sometimes fails to start inside the container. That is tried again with a
 # fresh browser; a sign-in that does not take is NOT repeated (a lockout risk).
-BROWSER_START_ATTEMPTS = 3
+BROWSER_START_ATTEMPTS = int(os.environ.get("QLD_BROWSER_START_ATTEMPTS", "4"))
 BROWSER_START_WAIT_SECONDS = 15
+# A browser that dies mid-run is replaced (and signed in again) up to this many times.
+MAX_BROWSER_RESTARTS = int(os.environ.get("QLD_BROWSER_RESTARTS", "3"))
+# A browser that would not start at the beginning gets another go after the pages
+# have been read, when whatever stopped it (memory, a busy container) has often passed.
+LATE_START_ATTEMPTS = int(os.environ.get("QLD_LATE_START_ATTEMPTS", "3"))
+LATE_START_WAIT_SECONDS = 60
+
+
+def _close_quietly(stack) -> None:
+    """Close a browser's ExitStack; a browser that is already dead may complain, which is fine."""
+    try:
+        stack.close()
+    except Exception as exc:
+        log.warning("browser: closing it raised %s: %s (ignored)", type(exc).__name__, exc)
 
 
 def open_vendorpanel(stack, headless: bool = True,
@@ -819,41 +901,116 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             vendorpanel = None
             logged_in = False
             login_failed = False
-            if have_credentials:
+            start_status = "none"   # "ok", "login_rejected", "no_browser" or "none" (no credentials)
+            restarts = 0
+            browser = {"stack": contextlib.ExitStack()}
+            stack.callback(lambda: _close_quietly(browser["stack"]))
+
+            def start_browser() -> str:
+                """
+                Open a fresh Chrome and sign in once. "ok", "login_rejected" (the site
+                did not accept the sign-in; never tried again) or "no_browser".
+                """
+                nonlocal vendorpanel, logged_in
+                _close_quietly(browser["stack"])
+                browser["stack"] = contextlib.ExitStack()
+                vendorpanel, logged_in = None, False
                 try:
-                    vendorpanel = open_vendorpanel(stack, headless)
+                    candidate = open_vendorpanel(browser["stack"], headless)
+                except Exception as exc:
+                    log.error("browser: could not start (%s: %s)", type(exc).__name__, exc)
+                    return "no_browser"
+                try:
+                    signed_in = candidate.login()
+                except Exception as exc:
+                    if common.browser_is_gone(exc):
+                        log.error("browser: died while signing in (%s: %s)", type(exc).__name__, exc)
+                        return "no_browser"
+                    log.error("login: could not sign in to VendorPanel: %s: %s", type(exc).__name__, exc)
+                    signed_in = False
+                if not signed_in:
+                    return "login_rejected"
+                vendorpanel, logged_in = candidate, True
+                return "ok"
+
+            def restart_browser(reason) -> bool:
+                """Replace a dead browser (signing in again), up to MAX_BROWSER_RESTARTS times."""
+                nonlocal restarts, vendorpanel, logged_in
+                if restarts >= MAX_BROWSER_RESTARTS:
+                    log.error("browser: lost again (%s) and already restarted %d time(s) -- "
+                              "carrying on without documents", reason, restarts)
+                    vendorpanel, logged_in = None, False
+                    return False
+                restarts += 1
+                log.warning("browser: lost (%s) -- starting a fresh one and signing in (%d/%d)",
+                            reason, restarts, MAX_BROWSER_RESTARTS)
+                status = start_browser()
+                if status != "ok":
+                    log.error("browser: could not be replaced (%s) -- carrying on without documents", status)
+                return status == "ok"
+
+            def restart_for_retry_pass():
+                return vendorpanel if restart_browser("retry pass") else None
+
+            def sign_in_again() -> bool:
+                """
+                vendorpanel.login() after a lapsed session. login() raises when the
+                sign-in form does not appear (a maintenance page, a slow render, a
+                browser that has died); start_browser guards the first sign-in
+                against that, and this guards the later ones, so a failed re-login
+                is a failed re-login and not a crash of the whole run.
+                """
+                nonlocal logged_in
+                try:
                     logged_in = vendorpanel.login()
                 except Exception as exc:
-                    log.error("login: could not sign in to VendorPanel: %s: %s", type(exc).__name__, exc)
                     logged_in = False
-                login_failed = not logged_in
-                if logged_in:
+                    log.error("login: could not sign in to VendorPanel again (%s: %s)",
+                              type(exc).__name__, exc)
+                return logged_in
+
+            if have_credentials:
+                start_status = start_browser()
+                login_failed = start_status != "ok"
+                if start_status == "ok":
                     log.info("login: ok")
                 else:
                     log.error("login: FAILED -- check QLD_USERNAME (the account's email "
-                              "address) and QLD_PASSWORD; carrying on without documents")
-                    vendorpanel = None
+                              "address) and QLD_PASSWORD; carrying on without documents"
+                              if start_status == "login_rejected" else
+                              "browser: would not start; will try again after the tender pages are read")
             else:
                 log.warning("login: no credentials -- documents will be skipped and tenders "
                             "with documents will be TENDER_PARTIAL")
 
-            tenders = collect_all_tenders(client, limit)
+            listing_problems: list[str] = []
+            tenders = collect_all_tenders(client, limit, listing_problems)
             log.info("listing: %d tender(s) found", len(tenders))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             code_index = {}  # tender reference -> its position in all_codes
             relogins = 0
             for index, tender in enumerate(tenders, start=1):
                 reference = tender.get("vpReference")
                 try:
-                    code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
+                    # Chrome may die under this tender. A fresh one (signed in again) takes
+                    # over and the tender is done again; once restarts run out the browser
+                    # is dropped and this tender and the rest go on without documents.
+                    while True:
+                        try:
+                            code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
+                            break
+                        except common.BrowserLostError as exc:
+                            restart_browser(exc)
                     if result and result["session_lapsed"] and logged_in and relogins < MAX_RELOGINS:
                         # We were signed in, so the session probably lapsed.
                         relogins += 1
                         log.warning("       VendorPanel session lapsed -- signing in again "
                                     "(%d/%d) and retrying this tender", relogins, MAX_RELOGINS)
-                        logged_in = vendorpanel.login()
+                        logged_in = sign_in_again()
                         if logged_in:
                             code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
                         else:
@@ -880,6 +1037,23 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     all_codes.append(common.TENDER_PARTIAL)
                 time.sleep(PAUSE_SECONDS)
 
+            if (have_credentials and start_status == "no_browser" and vendorpanel is None
+                    and any(r.get("documents_gated") for r in results)):
+                # Chrome would not start at the beginning. Now that the pages are read,
+                # try again; the retry pass below then fetches the documents.
+                for attempt in range(1, LATE_START_ATTEMPTS + 1):
+                    wait = LATE_START_WAIT_SECONDS * attempt
+                    log.warning("browser: trying to start it again in %ds (late attempt %d/%d)",
+                                wait, attempt, LATE_START_ATTEMPTS)
+                    time.sleep(wait)
+                    start_status = start_browser()
+                    if start_status != "no_browser":
+                        break
+                if start_status == "ok":
+                    log.info("login: ok (browser started on a later attempt)")
+                    login_failed = False
+                    tender_codes.discard(common.SITE_LOGIN_FAILED)
+
             if vendorpanel is not None and logged_in:
                 def relogin() -> bool:
                     nonlocal relogins, logged_in
@@ -888,13 +1062,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     relogins += 1
                     log.warning("       VendorPanel session lapsed -- signing in again (%d/%d)",
                                 relogins, MAX_RELOGINS)
-                    logged_in = vendorpanel.login()
-                    return logged_in
+                    return sign_in_again()
 
-                for reference, code in retry_unfollowed(vendorpanel, results, relogin).items():
+                for reference, code in retry_unfollowed(vendorpanel, results, relogin, restart=restart_for_retry_pass).items():
                     if reference in code_index:
                         all_codes[code_index[reference]] = code
-                tender_codes = set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
+                tender_codes = (set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
+                                | ({common.TENDER_PARTIAL} if listing_problems else set()))
 
             if have_credentials:
                 needing = [r for r in results if r["documents_advertised"] > 0]

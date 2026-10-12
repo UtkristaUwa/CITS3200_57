@@ -48,6 +48,12 @@ BASE_URL = "https://www.tenders.tas.gov.au"
 LOGIN_URL = f"{BASE_URL}/Account/Logon"
 LIST_URL = f"{BASE_URL}/OpenForBids/List/Public/ClosingDate"
 
+# How long to wait for a tender page or a file before giving up on that try
+# (each is then asked for again). The site is slow on some tenders; a timeout
+# here costs a tender its page or documents, so wait generously.
+PAGE_TIMEOUT_SECONDS = float(os.environ.get("TAS_PAGE_TIMEOUT_SECONDS", "120"))
+FILE_TIMEOUT_SECONDS = float(os.environ.get("TAS_FILE_TIMEOUT_SECONDS", "180"))
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -376,7 +382,7 @@ def download_documents(client, site_id: str, folder: str) -> tuple[list[dict], i
     that fails on its own is counted in `failed` and does not stop the others.
     """
     page_url = documents_url(site_id)
-    page = common.request_with_retries(client, "get", page_url, headers=HEADERS, timeout=30.0)
+    page = common.request_with_retries(client, "get", page_url, headers=HEADERS, timeout=PAGE_TIMEOUT_SECONDS)
     page.raise_for_status()
     if find_login_form(page.text) is not None:
         raise SessionLapsedError("the documents page asked for a sign-in")
@@ -384,11 +390,20 @@ def download_documents(client, site_id: str, folder: str) -> tuple[list[dict], i
 
     attachments, failed = [], 0
     for document in documents:
+        file_name = common.sanitise_filename(document["name"])
+        existing = os.path.join(folder, file_name)
+        if os.path.isfile(existing):
+            # Already fetched: this tender is being done again after a session
+            # lapse part-way through its documents. Fetching it again would store
+            # the same file twice ("x.pdf" and "x (2).pdf").
+            attachments.append({"file_name": file_name, "content_type": None,
+                                "size_bytes": os.path.getsize(existing)})
+            continue
         time.sleep(PAUSE_SECONDS)
         try:
             attachment, extracted = common.download_attachment(
                 client, document["url"], folder, common.sanitise_filename(document["name"]),
-                headers=dict(HEADERS, Referer=page_url))
+                headers=dict(HEADERS, Referer=page_url), timeout=FILE_TIMEOUT_SECONDS)
             attachments.append(attachment)
             if not extracted:
                 failed += 1
@@ -427,7 +442,7 @@ def scrape_opportunity(client, entry: dict, output_dir: str = "tenders_data",
     Raises SessionLapsedError when the site wanted a sign-in and we had signed in.
     """
     url = entry["url"]
-    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
+    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=PAGE_TIMEOUT_SECONDS)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:
@@ -515,8 +530,10 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
             run_notes.note_total(len(entries))
 
             all_codes = []
+            unparsed: list[str] = []
             taken: dict[str, str] = {}
             relogins = 0
+            watch = common.DeadSiteWatch()
             for index, entry in enumerate(entries, start=1):
                 try:
                     try:
@@ -527,17 +544,29 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                         relogins += 1
                         log.warning("       signed out (%s) -- signing in again (%d/%d) and "
                                     "retrying this tender", exc, relogins, MAX_RELOGINS)
-                        signed_in = login(client)
+                        try:
+                            signed_in = login(client)
+                        except Exception as login_exc:
+                            # Left as it was, signed_in stayed True and every later
+                            # tender went round the re-login loop for nothing.
+                            signed_in = False
+                            log.error("login: could not sign in again (%s: %s)",
+                                      type(login_exc).__name__, login_exc)
                         if not signed_in:
                             log.error("login: FAILED on re-login -- continuing without documents")
                             tender_codes.add(common.SITE_LOGIN_FAILED)
                         code, tender = scrape_opportunity(client, entry, output_dir, signed_in, taken)
                     if tender:
                         tenders.append(tender)
-                    tender_codes.add(code)
+                    if code == common.SITE_STRUCTURE_CHANGE:
+                        # levelled after the loop; keyed by the site's tender id for the report
+                        unparsed.append(entry.get("id") or entry["url"])
+                    else:
+                        tender_codes.add(code)
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(entries),
                                           tender.get("tender_id") or entry["url"], code)
+                    watch.succeeded()
                 except httpx.HTTPStatusError as exc:
                     blocked = blocked_code(exc)
                     if blocked is not None:
@@ -547,12 +576,20 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 except Exception as exc:
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 time.sleep(PAUSE_SECONDS)
 
+            if watch.stopped:
+                watch.report(log, index, len(entries))
+                tender_codes.add(common.TENDER_PARTIAL)
+            common.level_unparsed_pages(log, unparsed, len(all_codes), tender_codes)
             reporting.diagnose(log, all_codes, logged_in=signed_in)
 
         return common.site_code_from(tender_codes), tenders
@@ -574,7 +611,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.Scra
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

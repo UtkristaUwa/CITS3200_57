@@ -30,6 +30,7 @@ class CrawlResult:
     tenders: list = field(default_factory=list)
     codes: list = field(default_factory=list)   # status code per tender scraped
     blocked: bool = False                       # the WAF stopped us for good this run
+    listing_failed: bool = False                # a listing page timed out / dropped after its retries
     next_page: int = 1                          # where the next run starts
     pages: int = 0                              # listing pages fetched
     skipped: int = 0                            # tenders already in the DB
@@ -73,7 +74,19 @@ def crawl(fetch_page, scrape_one, known_urls, start_page, limit, log, res,
             res.next_page = 1
             return res
 
-        status, links = fetch_page(page)
+        try:
+            status, links = fetch_page(page)
+        except Exception as exc:
+            if not common.is_transient_error(exc):
+                raise
+            # A timeout or dropped connection that survived its retries. Keep
+            # what this run already scraped; the cursor stays on this page so
+            # the next run picks up here.
+            log.error("crawl: listing page %d could not be read (%s: %s) -> stopping; "
+                      "next run resumes at page %d", page, type(exc).__name__,
+                      (str(exc).strip().splitlines() or [""])[0][:200], page)
+            res.listing_failed, res.next_page = True, page
+            return res
         res.pages += 1
         if status != 200:
             if wait_out_block(f"listing page {page} answered HTTP {status}"):

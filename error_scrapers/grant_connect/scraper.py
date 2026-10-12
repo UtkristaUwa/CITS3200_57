@@ -132,7 +132,11 @@ def login(client: httpx.Client) -> bool:
 
     # First GET the login page -- needed for its anti-forgery token,
     # which the server rejects the POST without.
-    get_response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
+    get_response = common.request_with_retries(client, "get", LOGIN_URL, headers=HEADERS, timeout=30.0)
+    # A 403/429/5xx here is a block, a rate limit or an outage, not a changed
+    # login page: raise it as the status it is, so _scrape_site reports (and
+    # retries) it as such instead of calling it a structure change.
+    get_response.raise_for_status()
     form = find_login_form(get_response.text)
     if form is None:
         raise common.StructureChangedError(
@@ -153,9 +157,7 @@ def login(client: httpx.Client) -> bool:
         log.info("login: OK")
         return True
     if login_failed(response.text):
-        log.error("login: REJECTED by GrantConnect (%s)",
-                  "credentials were missing" if not (username and password)
-                  else "wrong password, or account suspended")
+        log.error("login: REJECTED by GrantConnect (wrong password, or account suspended)")
         return False
 
     log.error("login: response matched neither success nor failure -- page may have changed")
@@ -273,19 +275,28 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
     any_failed = False
     attachments: list[dict] = []
 
+    # Looked up by name here (not common.EXTRACTORS) so a test can patch one.
+    # A .csv/.txt attachment is stored as it is: its own text is the file.
+    # .xls, .xlsm and .pptx were left out before, so those never reached the AI.
     extractors = {
         ".pdf": common.extract_pdf,
         ".docx": common.extract_docx,
         ".xlsx": common.extract_xlsx,
+        ".xlsm": common.extract_xlsx,
+        ".xls": common.extract_xls,
+        ".pptx": common.extract_pptx,
     }
 
     for document in documents:
         try:
-            # Tried once more on a timeout, dropped connection or 5xx. GrantConnect
-            # has always saved whatever came back, so a web page is not rejected here.
+            # Tried once more on a timeout, dropped connection or 5xx. A web page
+            # served in place of the file (the sign-in form after the session
+            # lapsed) is a failed download, not a document: saved as "spec.pdf"
+            # it would be stored, and its "please sign in" text extracted, as if
+            # it were the real file.
             raw_path, content_type = common.stream_attachment(
                 client, document["url"], output_dir, document["file_name"],
-                headers=HEADERS, timeout=60.0, reject_web_pages=False)
+                headers=HEADERS, timeout=60.0)
         except Exception as exc:
             log.warning("       download FAILED  %s  (%s: %s)",
                         document["file_name"], type(exc).__name__, exc)
@@ -298,6 +309,14 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         # attached to the wrong file.
         saved_name = os.path.basename(raw_path)
         size_bytes = os.path.getsize(raw_path)
+        if size_bytes == 0:
+            # Nothing came back: not a document (common.download_attachment
+            # makes the same check for the other scrapers).
+            os.remove(raw_path)
+            log.warning("       download FAILED  %s  (empty file)", saved_name)
+            run_notes.note_reason(run_notes.EMPTY, saved_name)
+            any_failed = True
+            continue
 
         extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
         if extractor is not None:
@@ -344,7 +363,12 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     if code != common.SITE_SUCCESS:
         return code, {}
 
-    go_id = fields.get("go_id") or "UNKNOWN"
+    go_id = fields.get("go_id")
+    if not go_id:
+        # Without its GO ID every opportunity would land in one "UNKNOWN" folder,
+        # each overwriting the last: the page has changed, say so.
+        log.error("       no GO ID on %s -- the details layout has changed", url)
+        return common.SITE_STRUCTURE_CHANGE, {}
     folder = common.tender_dir(go_id, output_dir)
     common.save_page_text(folder, go_id, format_detail_text(fields))
     common.append_full_page_text(folder, go_id, response.text, PAGE_CONTENT_SELECTOR)
@@ -368,19 +392,33 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     }
 
 
-def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
+def collect_all_listing_urls(client, limit: int = 0, problems: list | None = None) -> list[str]:
     """
     Walk every page of the opportunity list, stopping when a page comes
     back with no new links (end of results) or once `limit` is reached.
     `limit` of 0 means walk every page.
+
+    If a later page cannot be read (a timeout or server error that survived its
+    retries) the opportunities from the pages before it are kept and the page
+    is noted in `problems`, so one bad page does not cost the whole night.
     """
     urls, page = [], 1
     while True:
-        response = common.request_with_retries(
-            client, "get", LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
-        response.raise_for_status()
-        page_urls = parse_listing(response.text)
+        try:
+            response = common.request_with_retries(
+                client, "get", LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
+            response.raise_for_status()
+        except Exception as exc:
+            if common.listing_page_failed(log, page, exc, len(urls), problems):
+                break
+            raise
+        # Only links not seen on an earlier page count: a site that answers an
+        # out-of-range page with its last page (or page 1) would otherwise be
+        # walked forever, and a grant that moved pages mid-walk scraped twice.
+        page_urls = [u for u in parse_listing(response.text) if u not in urls]
         if not page_urls:
+            if page == 1:
+                raise common.StructureChangedError("No opportunity links on the first listing page.")
             break  # no more results
         urls.extend(page_urls)
         if limit and len(urls) >= limit:
@@ -405,12 +443,16 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
             if not login(client):
                 return common.SITE_LOGIN_FAILED, tenders
 
-            urls = collect_all_listing_urls(client, limit)
+            listing_problems: list[str] = []
+            urls = collect_all_listing_urls(client, limit, listing_problems)
             log.info("listing: %d opportunity link(s) found", len(urls))
 
             tender_codes = set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             relogins = 0
+            watch = common.DeadSiteWatch()
             for index, url in enumerate(urls, start=1):
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
@@ -435,12 +477,31 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(urls),
                                           tender.get("tender_id", url) if tender else url, code)
+                    watch.succeeded()
                 except Exception as exc:
+                    if (isinstance(exc, httpx.HTTPStatusError)
+                            and exc.response.status_code == 429):
+                        # Asked to slow down: stop at once, as the other scrapers do,
+                        # rather than being turned away for every tender after this one.
+                        log.error("HTTP 429 from %s -- stopping the run", exc.request.url)
+                        return common.SITE_RATE_LIMITED, tenders
+                    if (isinstance(exc, httpx.HTTPStatusError)
+                            and (exc.response.status_code == 403
+                                 or common.is_block_response(exc.response))):
+                        # Blocked: the same for every tender after this one.
+                        log.error("HTTP %s (blocked) from %s -- stopping the run",
+                                  exc.response.status_code, exc.request.url)
+                        return common.SITE_BOT_BLOCKED, tenders
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                     continue
 
+            if watch.stopped:
+                watch.report(log, index, len(urls))
+                tender_codes.add(common.TENDER_PARTIAL)
             reporting.diagnose(log, all_codes, logged_in=True)
 
         if not tender_codes:
@@ -453,9 +514,17 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
         log.error("HTTP %s from %s", exc.response.status_code, exc.request.url)
         if exc.response.status_code == 429:
             return common.SITE_RATE_LIMITED, tenders
+        if exc.response.status_code == 403 or common.is_block_response(exc.response):
+            return common.SITE_BOT_BLOCKED, tenders
         return common.SITE_TOTAL_FAILURE, tenders
-    except (httpx.ConnectError, ConnectionError) as exc:
-        log.error("could not connect: %s", exc)
+    except common.StructureChangedError as exc:
+        log.error("structure change: %s", exc)
+        return common.SITE_STRUCTURE_CHANGE, tenders
+    except (httpx.TransportError, ConnectionError) as exc:
+        # Every way a request can fail to get an answer: a timeout, a refused or
+        # dropped connection, a reply cut off part-way. (ConnectError alone left
+        # a ReadTimeout on the login or listing to crash the whole run.)
+        log.error("could not reach the site: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, tenders
 
 
@@ -465,7 +534,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.Scra
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

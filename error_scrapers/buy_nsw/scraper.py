@@ -69,9 +69,21 @@ BLOCK_COOLDOWN_SECONDS = 600  # how long to wait each time (the true cooldown is
 RATE_LIMIT_ABORT_AFTER = 3    # stop the site after this many rate-limited tenders in a row
 
 # The opportunity package's auto-generated summary PDF is always named
-# "opportunity-<opportunity-id>.pdf" -- everything else in the zip is a
-# real attachment.
-SUMMARY_PDF_PATTERN = re.compile(r"^opportunity-.*\.pdf$", re.IGNORECASE)
+# "opportunity-<id>.pdf" (e.g. opportunity-RFT-12634672652.pdf) -- everything
+# else in the zip is a real attachment. The old "opportunity-*.pdf" pattern also
+# swallowed an agency's own "Opportunity-Brief.pdf", which then replaced the page
+# text and was never stored. The generated name is lower-case "opportunity-"
+# followed by buy.nsw's own reference (RFT-12634672652: an optional short type
+# prefix and a long number) -- not the agency's Opportunity ID shown on the
+# page, which is why the exact-ID check alone is not enough. An agency's
+# "opportunity-brief-2024.pdf" or "opportunity-1.pdf" does not match.
+SUMMARY_PDF_PATTERN = re.compile(r"^opportunity-(?:[A-Z]{2,5}-)?\d{5,}\.pdf$")
+
+
+def is_summary_pdf(file_name: str, opportunity_id: str) -> bool:
+    if file_name.lower() == f"opportunity-{opportunity_id}.pdf".lower():
+        return True
+    return SUMMARY_PDF_PATTERN.match(file_name) is not None
 
 
 # ---------------------------------------------------------------------------
@@ -200,16 +212,27 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
     if depth > MAX_ZIP_DEPTH:
         return page_text, True
 
+    # Looked up by name here (not common.EXTRACTORS) so a test can patch one.
+    # A .csv/.txt attachment is stored as it is: its own text is the file.
+    # .xls, .xlsm and .pptx were left out before, so those never reached the AI.
     extractors = {
         ".pdf": common.extract_pdf,
         ".docx": common.extract_docx,
         ".xlsx": common.extract_xlsx,
+        ".xlsm": common.extract_xlsx,
+        ".xls": common.extract_xls,
+        ".pptx": common.extract_pptx,
     }
 
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
         for name in zf.namelist():
             file_name = os.path.basename(name)
             if not file_name:
+                continue
+            if common.is_junk_file(name):
+                # Office lock files, macOS "._" copies and __MACOSX folders: never
+                # documents, and unreadable -- they made the tender partial.
+                log.info("       package held a junk file (%s); ignored", file_name)
                 continue
             if common.zip_member_is_encrypted(zf.getinfo(name)):
                 # One locked file must not cost the tender the rest of its package.
@@ -234,7 +257,7 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
                 any_failed = any_failed or nested_failed
                 continue
 
-            if SUMMARY_PDF_PATTERN.match(file_name) and depth == 0:
+            if depth == 0 and is_summary_pdf(file_name, opportunity_id):
                 tmp_path = os.path.join(output_dir, file_name)
                 with open(tmp_path, "wb") as f:
                     f.write(content)
@@ -250,19 +273,24 @@ def _extract_zip_entries(zip_bytes: bytes, output_dir: str, opportunity_id: str,
                 continue
 
             raw_path = common.save_attachment(output_dir, file_name, content)
+            # save_attachment de-duplicates the name ("Schedule (2).pdf" for a
+            # second Schedule.pdf from another folder of the package): the text
+            # file and the manifest must use the name actually written, or the
+            # first file's text is overwritten and the second has none.
+            saved_name = os.path.basename(raw_path)
             extractor = extractors.get(extension)
             if extractor is not None:
                 try:
                     text = common.extract_with_fallback(extractor, raw_path)
-                    common.save_extracted_text(output_dir, file_name, text)
+                    common.save_extracted_text(output_dir, saved_name, text)
                 except common.EncryptedFileError:
                     common.drop_locked_file(raw_path)
                     any_failed = True
                     continue
                 except common.ExtractionError:
-                    run_notes.note_reason(run_notes.UNREADABLE, file_name)
+                    run_notes.note_reason(run_notes.UNREADABLE, saved_name)
                     any_failed = True
-            attachments.append({"file_name": file_name, "content_type": None})
+            attachments.append({"file_name": saved_name, "content_type": None})
 
     return page_text, any_failed
 
@@ -302,7 +330,12 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     if code != common.SITE_SUCCESS:
         return code, {}
 
-    opportunity_id = fields.get("opportunity_id") or "UNKNOWN"
+    opportunity_id = fields.get("opportunity_id")
+    if not opportunity_id:
+        # Without its ID every tender would land in one "UNKNOWN" folder, each
+        # overwriting the last: the page has changed, say so.
+        log.error("       no Opportunity ID on %s -- the details layout has changed", url)
+        return common.SITE_STRUCTURE_CHANGE, {}
     folder = common.tender_dir(opportunity_id, output_dir)
     package_url = find_package_url(response.text)
 
@@ -362,11 +395,15 @@ def _get_with_retry(client, url, *, retries=2, **kwargs):
     a body that isn't the real page -- seen live, gone on an immediate
     retry. Not a block (that would be 403/429), just a transient
     hiccup. Retry a couple of times before giving up.
+
+    Only a 202 is asked for again here. A 5xx has already had its retries
+    in request_with_retries, and a 403, 404 or 429 is the site's answer:
+    sending it again is what a block is meant to stop.
     """
     last_response = None
     for attempt in range(retries + 1):
         response = common.request_with_retries(client, "get", url, **kwargs)
-        if response.status_code == 200:
+        if response.status_code != 202:
             return response
         last_response = response
         if attempt < retries:
@@ -433,6 +470,14 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 n = counter["n"]
                 try:
                     code, tender = scrape_opportunity(client, url, output_dir)
+                except httpx.HTTPStatusError as exc:
+                    if exc.response.status_code in (403, 429):
+                        # Blocked or asked to slow down: stop the run (handled
+                        # below), rather than logging it as one partial tender
+                        # and asking for the next page 1.5s later.
+                        raise
+                    reporting.tender_failed(log, n, "?", url, exc)
+                    return common.TENDER_PARTIAL, {}
                 except Exception as exc:
                     reporting.tender_failed(log, n, "?", url, exc)
                     return common.TENDER_PARTIAL, {}
@@ -457,6 +502,12 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         codes = set(res.codes) - {common.SITE_SUCCESS}
         if common.SITE_STRUCTURE_CHANGE in codes:
             return common.SITE_STRUCTURE_CHANGE, res.tenders
+        if res.listing_failed:
+            if res.pages == 0 and not res.tenders and not res.skipped:
+                log.error("verdict: the first listing page could not be read")
+                return common.SITE_TOTAL_FAILURE, res.tenders
+            common.note_listing_problems(log, [f"page {res.next_page}"])
+            return common.TENDER_PARTIAL, res.tenders
         if res.blocked:
             if res.pages <= 1 and not res.tenders and not res.skipped:
                 log.error("verdict: buy.nsw's WAF turned us away before anything could be read")
@@ -470,10 +521,14 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         return (common.TENDER_PARTIAL if codes else common.SITE_SUCCESS), res.tenders
 
     except httpx.HTTPStatusError as exc:
+        log.error("HTTP %s from %s -- stopping the run", exc.response.status_code, exc.request.url)
         if exc.response.status_code == 429:
             return common.SITE_RATE_LIMITED, res.tenders
+        if exc.response.status_code == 403 or common.is_block_response(exc.response):
+            return common.SITE_BOT_BLOCKED, res.tenders
         return common.SITE_TOTAL_FAILURE, res.tenders
-    except (httpx.ConnectError, ConnectionError):
+    except (httpx.TransportError, ConnectionError) as exc:
+        log.error("could not reach the site: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, res.tenders
 
 
@@ -484,7 +539,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir, known_urls, resume)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir, known_urls, resume), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

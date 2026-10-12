@@ -200,6 +200,7 @@ def test_empty_first_list_page_is_a_structure_change(tmp_path, monkeypatch):
 
 
 def test_site_total_failure_on_unreachable_url(monkeypatch, tmp_path):
+    monkeypatch.setattr(common, "RUN_RETRY_WAITS", ())
     def handler(request):
         raise httpx.ConnectError("down")
     _patch_client(monkeypatch, httpx.MockTransport(handler))
@@ -285,3 +286,56 @@ def test_run_scraper_returns_a_scrape_result(tmp_path, monkeypatch):
     result = scraper.run_scraper(limit=1, output_dir=str(tmp_path))
     assert isinstance(result, common.ScrapeResult)
     assert result.site == "qbuild_etender"
+
+# --- v24: listing halfway, whole-run retry, dead site ------------------------
+
+def test_a_list_page_that_keeps_failing_keeps_the_pages_before_it(tmp_path, monkeypatch):
+    monkeypatch.setattr(common.time, "sleep", lambda s: None, raising=False)
+    transport = _portal()
+
+    def handler(request):
+        if request.method == "POST":
+            return httpx.Response(503, text="down")
+        return transport.handler(request)
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.count == 10  # page 1 only
+    assert result.code == common.TENDER_PARTIAL
+    assert "the list of tenders was not read in full" in str(run_notes.snapshot().partials)
+
+
+def test_a_site_that_is_down_at_the_start_gets_the_whole_run_again(tmp_path, monkeypatch):
+    sleeps = []
+    monkeypatch.setattr(common.time, "sleep", lambda s: sleeps.append(s), raising=False)
+    monkeypatch.setattr(common, "PAGE_RETRY_SECONDS", 0)
+    transport = _portal()
+    down = {"runs": 2}
+    seen_first = {"n": 0}
+
+    def handler(request):
+        if request.method == "GET" and request.url.path == "/public/TendersListingCurrent.aspx":
+            seen_first["n"] += 1
+            if seen_first["n"] <= 3 * down["runs"]:  # three request tries per run
+                raise httpx.ConnectError("down")
+        return transport.handler(request)
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    result = scraper.run_scraper(limit=1, output_dir=str(tmp_path))
+    assert result.code == common.SITE_SUCCESS and result.count == 1
+    assert [x for x in sleeps if x >= 60] == [60, 180]
+
+
+def test_a_site_that_dies_part_way_stops_after_fifteen_tenders_in_a_row(tmp_path, monkeypatch):
+    monkeypatch.setattr(common.time, "sleep", lambda s: None, raising=False)
+    transport = _portal()
+    details = {"n": 0}
+
+    def handler(request):
+        if request.url.path.endswith("TenderDetailsActive.aspx"):
+            details["n"] += 1
+            raise httpx.ReadTimeout("slow")
+        return transport.handler(request)
+    _patch_client(monkeypatch, httpx.MockTransport(handler))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert details["n"] == 15 * common.PAGE_ATTEMPTS
+    assert result.count == 0
+    assert "the site stopped answering part-way through" in str(run_notes.snapshot().partials)

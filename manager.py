@@ -201,7 +201,7 @@ SCRAPERS = [
 # part-way). Their scraper gets the URLs already in BigQuery and carries on where the
 # last run stopped: buy.nsw from a saved listing page, VIC by doing the tenders not
 # stored yet first. Not applied to --local runs.
-CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor", "sa_tenders"}
+CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor", "sa_tenders", "tenders_act"}
 
 UNKNOWN_SOURCE_ID = "unknown"
 
@@ -224,17 +224,35 @@ def _stage(number, total, title):
     logger.info(reporting.RULE)
 
 
+# {source_url: how many times it has already been fetched again} for tenders stored
+# incomplete. Filled by _known_source_urls, read when such a tender comes back.
+_INCOMPLETE_TRIES: dict[str, int] = {}
+
+
 def _known_source_urls(source_id):
-    """source_urls already stored for this source. Empty set if the lookup fails."""
+    """
+    source_urls already stored for this source, which a resuming scraper skips.
+    A tender stored incomplete (a document that failed to download, say) is left
+    out until it has been fetched again a few times, so it gets another go.
+    Empty set if the lookup fails.
+    """
     try:
         job = bq_client.query(
-            f"SELECT DISTINCT source_url FROM `{TENDERS_TABLE}` "
+            "SELECT source_url, "
+            "SAFE.JSON_VALUE(raw_extra, '$.scrape_incomplete') AS incomplete, "
+            "SAFE_CAST(SAFE.JSON_VALUE(raw_extra, '$.scrape_attempts') AS INT64) AS tries "
+            f"FROM `{TENDERS_TABLE}` "
             "WHERE source_id = @sid AND source_url IS NOT NULL",
             job_config=bigquery.QueryJobConfig(query_parameters=[
                 bigquery.ScalarQueryParameter("sid", "STRING", source_id)]),
         )
-        urls = {row.source_url for row in job.result()}
-        logger.info(f"{source_id}: {len(urls)} tender URL(s) already in the DB")
+        rows = [(row.source_url, row.incomplete, row.tries) for row in job.result()]
+        urls, tries = run_notes.urls_to_treat_as_stored(rows)
+        _INCOMPLETE_TRIES.update(tries)
+        again = sum(1 for url, n in tries.items()
+                    if n < run_notes.MAX_INCOMPLETE_TRIES)
+        logger.info(f"{source_id}: {len(urls)} tender URL(s) already in the DB"
+                    + (f"; {again} stored incomplete and will be fetched again" if again else ""))
         return urls
     except Exception as e:
         logger.warning(f"{source_id}: could not load known URLs ({e}); treating none as stored")
@@ -435,6 +453,19 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso, prev_succe
         result = scrape(limit=limit, output_dir=temp_dir, **extra)
     except Exception as e:
         logger.error(f"Scraper '{source_id}' failed: {e}")
+        # The tenders it wrote before crashing are still this portal's. Returning
+        # an empty manifest filed them under "unknown" (wrong source_id in
+        # BigQuery, never matched by the resume). The one it was part-way through
+        # is noted as incomplete, so it is stored for another try rather than as
+        # a finished tender missing its documents.
+        run_notes.note_unfinished(e)
+        manifest = {
+            folder_name: (source_id, None, None)
+            for folder_name in _folders_in(temp_dir) - before
+        }
+        if manifest:
+            logger.warning(f"{source_id}: keeping the {len(manifest)} tender folder(s) "
+                           "scraped before the failure")
         health_record = {
             "website": source_id.upper(),
             "url": PORTAL_URL_MAP.get(source_id, "N/A"),
@@ -444,8 +475,8 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso, prev_succe
             "status_color": "error",
             "message": f"Unhandled exception: {e}",
         }
-        summary_row = (source_id.upper(), None, 0, time.monotonic() - started)
-        return {}, (source_id, f"exception: {e}"), health_record, summary_row
+        summary_row = (source_id.upper(), None, len(manifest), time.monotonic() - started)
+        return manifest, (source_id, f"exception: {e}"), health_record, summary_row
 
     code = _site_code(result)
     scraped_count = result.count if code is not None else 0
@@ -599,6 +630,13 @@ def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
             # The scraper's own reference (the folder name), never Gemini's guess:
             # the model's value changed between runs and produced duplicate rows.
             current_tender["source_reference_id"] = tender_folder_name
+            if run_notes.needs_another_try(tender_folder_name):
+                # Stored with something missing that another try could fix: mark it so
+                # the next night's resume fetches it again (see _known_source_urls).
+                current_tender["raw_extra"] = run_notes.flag_incomplete(
+                    current_tender.get("raw_extra"),
+                    _INCOMPLETE_TRIES.get(current_tender.get("source_url"), 0))
+                logger.info(f"{tender_folder_name}: stored incomplete; will be fetched again")
             current_tender["documents"] = _merge_document_records(
                 documents, current_tender.get("documents") or []
             )
