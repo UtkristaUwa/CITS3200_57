@@ -20,6 +20,7 @@ changes, only how it gets fetched.
 """
 
 import os
+import shutil
 import time
 
 from seleniumbase import SB
@@ -188,7 +189,17 @@ class BrowserSession:
         folder, then move it into download_dir. Returns the moved
         file's path.
         """
-        self.get(download_docs_url, wait_selector="#downloadButton")
+        # _scrape_documents has just loaded this page to read its form; loading
+        # it again is a second Cloudflare-fronted request per tender for nothing.
+        try:
+            on_page = (self.sb.get_current_url().split("#")[0].rstrip("/")
+                       == download_docs_url.split("#")[0].rstrip("/"))
+        except Exception:
+            on_page = False
+        if on_page:
+            self.sb.wait_for_element("#downloadButton", timeout=WAIT_TIMEOUT)
+        else:
+            self.get(download_docs_url, wait_selector="#downloadButton")
         os.makedirs(self._sb_downloads_dir, exist_ok=True)
         before = set(os.listdir(self._sb_downloads_dir))
         self.sb.click("#downloadButton")
@@ -198,7 +209,7 @@ class BrowserSession:
         if name:
             src = os.path.join(self._sb_downloads_dir, name)
             dst = os.path.join(self.download_dir, name)
-            os.replace(src, dst)
+            shutil.move(src, dst)  # os.replace fails across mounts (EXDEV)
             return dst
         # Say what the browser is looking at. A download that never starts has been
         # followed by a signed-out or challenge page; this is how we find out which.

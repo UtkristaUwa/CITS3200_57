@@ -157,9 +157,7 @@ def login(client: httpx.Client) -> bool:
         log.info("login: OK")
         return True
     if login_failed(response.text):
-        log.error("login: REJECTED by GrantConnect (%s)",
-                  "credentials were missing" if not (username and password)
-                  else "wrong password, or account suspended")
+        log.error("login: REJECTED by GrantConnect (wrong password, or account suspended)")
         return False
 
     log.error("login: response matched neither success nor failure -- page may have changed")
@@ -311,6 +309,14 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
         # attached to the wrong file.
         saved_name = os.path.basename(raw_path)
         size_bytes = os.path.getsize(raw_path)
+        if size_bytes == 0:
+            # Nothing came back: not a document (common.download_attachment
+            # makes the same check for the other scrapers).
+            os.remove(raw_path)
+            log.warning("       download FAILED  %s  (empty file)", saved_name)
+            run_notes.note_reason(run_notes.EMPTY, saved_name)
+            any_failed = True
+            continue
 
         extractor = extractors.get(os.path.splitext(saved_name)[1].lower())
         if extractor is not None:

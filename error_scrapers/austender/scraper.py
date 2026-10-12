@@ -165,6 +165,10 @@ def login(client) -> bool:
         follow_redirects=True,
         timeout=25.0,
     )
+    if result.status_code >= 500:
+        # The site failed, not the credentials: reported as the site being
+        # down, not as a wrong password to check.
+        result.raise_for_status()
     if result.status_code >= 400:
         return False
 

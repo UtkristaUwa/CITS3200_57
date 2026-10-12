@@ -600,6 +600,8 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
         if not row["followed"]:
             if not row["can_follow"]:
                 log.warning("       documents: VP%s has no Follow toggle", number)
+                result["cannot_follow"] = True
+                run_notes.note_reason(run_notes.PORTAL, f"VP{number} cannot be followed")
                 return common.TENDER_PARTIAL
             log.info("       following VP%s", number)
             if not vendorpanel.follow(number):
@@ -662,7 +664,8 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     def still_to_do():
         return [r for r in results
                 if r.get("documents_advertised", 0) > 0 and r.get("documents_gated")
-                and (not r["followed"] or r.get("package_failed"))]
+                and (not r["followed"] or r.get("package_failed"))
+                and not r.get("cannot_follow")]  # no Follow toggle: another round cannot help
 
     todo = still_to_do()
     if not todo:
@@ -680,7 +683,7 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     def fetch(result, advertised):
         """fetch_documents, on a fresh browser if this one dies. None if there is no browser left."""
         nonlocal vendorpanel
-        for _ in range(2):
+        for _ in range(1 + MAX_BROWSER_RESTARTS):  # restart_browser caps the restarts itself
             try:
                 return fetch_documents(vendorpanel, result, advertised)
             except common.BrowserLostError as exc:
@@ -794,6 +797,7 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
         "session_lapsed": False,
     }
     if fetch_failed:
+        run_notes.note_reason(run_notes.PAGE, "preview page")  # else "reason not recorded"
         return common.TENDER_PARTIAL, result
 
     any_failed = False

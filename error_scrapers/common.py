@@ -61,7 +61,10 @@ def tender_dir(tender_id: str, base_dir: str = "tenders_data") -> str:
 #This function strips anything that could escape the tender folder or break the filesystem as we cant trust a name scraped off a page
 def sanitise_filename(name: str) -> str:
     name = name.replace("/", "_").replace("\\", "_")
-    return re.sub(r'[<>:"|?*\x00-\x1f]', "_", name).strip()
+    name = re.sub(r'[<>:"|?*\x00-\x1f]', "_", name).strip()
+    # "." and ".." are directories, not names: a tender ID of ".." would make
+    # tender_dir() the folder above the output folder.
+    return name if name not in ("", ".", "..") else "_"
 
 #-----
 #This is the section that saves the per tender output
@@ -1138,6 +1141,10 @@ def is_junk_file(member_name: str) -> bool:
 
 
 MAX_ZIP_DEPTH = 5
+# A package member larger than this is not unpacked. attachment_store would
+# refuse to store it anyway (MAX_ATTACHMENT_MB), and on Cloud Run the
+# filesystem is memory: writing it out could take the run down first.
+MAX_PACKAGE_MEMBER_BYTES = 500 * 1024 * 1024
 
 def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]:
     """
@@ -1170,6 +1177,12 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                 # One locked file must not cost the tender the rest of its package.
                 logger.warning("package held a password-protected file (%s); not stored", file_name)
                 run_notes.note_reason(run_notes.LOCKED, file_name)
+                any_failed = True
+                continue
+            if member.file_size > MAX_PACKAGE_MEMBER_BYTES:
+                logger.warning("package held a file over the size limit (%s, %d MB); not stored",
+                               file_name, member.file_size // (1024 * 1024))
+                run_notes.note_reason(run_notes.SIZE, file_name)
                 any_failed = True
                 continue
             if file_name.lower().endswith(".zip"):
