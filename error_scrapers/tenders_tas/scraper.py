@@ -48,6 +48,12 @@ BASE_URL = "https://www.tenders.tas.gov.au"
 LOGIN_URL = f"{BASE_URL}/Account/Logon"
 LIST_URL = f"{BASE_URL}/OpenForBids/List/Public/ClosingDate"
 
+# How long to wait for a tender page or a file before giving up on that try
+# (each is then asked for again). The site is slow on some tenders; a timeout
+# here costs a tender its page or documents, so wait generously.
+PAGE_TIMEOUT_SECONDS = float(os.environ.get("TAS_PAGE_TIMEOUT_SECONDS", "120"))
+FILE_TIMEOUT_SECONDS = float(os.environ.get("TAS_FILE_TIMEOUT_SECONDS", "180"))
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -376,7 +382,7 @@ def download_documents(client, site_id: str, folder: str) -> tuple[list[dict], i
     that fails on its own is counted in `failed` and does not stop the others.
     """
     page_url = documents_url(site_id)
-    page = common.request_with_retries(client, "get", page_url, headers=HEADERS, timeout=30.0)
+    page = common.request_with_retries(client, "get", page_url, headers=HEADERS, timeout=PAGE_TIMEOUT_SECONDS)
     page.raise_for_status()
     if find_login_form(page.text) is not None:
         raise SessionLapsedError("the documents page asked for a sign-in")
@@ -388,7 +394,7 @@ def download_documents(client, site_id: str, folder: str) -> tuple[list[dict], i
         try:
             attachment, extracted = common.download_attachment(
                 client, document["url"], folder, common.sanitise_filename(document["name"]),
-                headers=dict(HEADERS, Referer=page_url))
+                headers=dict(HEADERS, Referer=page_url), timeout=FILE_TIMEOUT_SECONDS)
             attachments.append(attachment)
             if not extracted:
                 failed += 1
@@ -427,7 +433,7 @@ def scrape_opportunity(client, entry: dict, output_dir: str = "tenders_data",
     Raises SessionLapsedError when the site wanted a sign-in and we had signed in.
     """
     url = entry["url"]
-    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=30.0)
+    response = common.request_with_retries(client, "get", url, headers=HEADERS, timeout=PAGE_TIMEOUT_SECONDS)
     response.raise_for_status()
     fields, code = parse_detail(response.text)
     if code != common.SITE_SUCCESS:

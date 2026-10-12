@@ -492,6 +492,24 @@ def test_two_tenders_with_the_same_unique_id_get_separate_folders(tmp_path):
     assert first["folder"] != second["folder"]
 
 
+def test_slow_tender_pages_and_files_are_given_two_minutes_or_more(tmp_path, monkeypatch):
+    """A tender page that takes 40 s to answer used to time out at 30 s and cost the tender."""
+    client, transport = _signed_in_client(monkeypatch)
+    waits = {}
+    real_send = client.send
+
+    def spy(request, **kwargs):
+        waits[request.url.path] = request.extensions["timeout"]["read"]
+        return real_send(request, **kwargs)
+
+    monkeypatch.setattr(client, "send", spy)
+    scraper.scrape_opportunity(client, _entry(), str(tmp_path), signed_in=True)
+    detail = [t for path, t in waits.items() if "Downloadables" not in path and "/Download" not in path]
+    documents = [t for path, t in waits.items() if "Downloadables" in path]
+    assert detail and min(detail) >= 120
+    assert documents and min(documents) >= 120
+
+
 def test_a_retried_tender_reuses_its_own_folder_name(tmp_path):
     client = _client(_portal())
     taken = {}
