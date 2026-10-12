@@ -145,9 +145,8 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 | Path                                                                                                                                                                   | What’s in it                                                                  |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
 | [manager.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/manager.py)                                                                                          | The daily pipeline: runs every stage in order                                 |
-| [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers)                                                                                 | Current scrapers (GrantConnect, buy.nsw, Tenders ACT) and shared status codes |
-| [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers)                                                                                     | Older scrapers; AusTender still runs from here                                |
-| [document_scraper/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/document_scraper)                                                                             | Pulls text out of PDF and Word attachments                                    |
+| [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers)                                                                                 | Current scrapers: one folder per portal (all 11) with `scraper.py` and `test_cases/`, plus shared `common.py`, `reporting.py`, `run_notes.py`, `crawl_state.py` |
+| [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers)                                                                                     | Older scrapers; not used by the pipeline, to be removed                       |
 | [attachment_store.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/attachment_store.py)                                                                        | Uploads original attachments to Cloud Storage                                 |
 | [processing/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/processing)                                                                                         | Gemini processing and its prompt config file                                  |
 | [ingestion/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/ingestion)                                                                                           | BigQuery upsert, dedup and change history                                     |
@@ -167,28 +166,32 @@ Everything runs in GCP project `tenderai-dev`, region `australia-southeast1` (Sy
 
 ```mermaid
 flowchart TD
-    tmp["Create temp directory"] --> scrape["Run each scraper"]
-    scrape --> medrian["Medrian redline processing"]
-    medrian --> extract["Extract text from attachments"]
-    extract --> each["For each tender folder"]
+    tmp["Create temp directory"] --> portal["For each portal in SCRAPERS"]
+    portal --> scrape["Run its scraper: pages, attachments and extracted text"]
+    scrape --> health["Publish scraper_health.json"]
+    health --> each["For each tender folder (4 at a time)"]
     each --> upload["Upload originals to Cloud Storage"]
     upload --> gemini["Gemini summary + fields"]
     gemini --> upsert["Upsert into BigQuery"]
-    upsert --> done["Delete temp directory"]
+    upsert --> clear["Clear the portal's folders"]
+    clear --> portal
+    portal --> done["Delete temp directory"]
 ```
 
 ### Step by step
 
 1.  **Temporary directory.** Everything is written to a temp folder in the container’s memory. It is deleted when the run ends, so anything worth keeping must be uploaded first.
-2.  **Scrapers.** `run_scrapers()` calls each scraper in the `SCRAPERS` list with `limit=SCRAPE_LIMIT` (50 in the Dockerfile) per source: `austender`, `grantconnect`, `buynsw`, `tenders_act`. Each writes one folder per tender. Newer scrapers return `(status_code, tenders)`, listing each folder, its attachments and source URL. For older scrapers that return nothing, the manager compares folders before and after the run to work out which portal they came from.
-3.  **Text extraction.** `document_scraper.process_tenders()` writes a `.txt` beside every PDF and Word file. A failure here is logged but not fatal.
-4.  **Per tender, attachments.** `attachment_store.upload_tender_attachments()` copies each original to Cloud Storage and deletes the local copy to save memory.
-5.  **Per tender, AI.** `process_tender()` sends the text to Gemini and gets back a summary and structured fields. The manager then overrides `source_id` and `source_url` with what the scraper reported, and merges storage details with extracted text into the `documents` list.
-6.  **Per tender, database.** `upsert_tender()` inserts the tender, updates it, or just bumps `last_scanned_at` if nothing changed.
+2.  **Scrapers.** `main()` runs the `SCRAPERS` list in `manager.py` one portal at a time: it scrapes the portal, then stores, AI-processes and upserts that portal’s tenders, then clears their folders before the next portal, so memory peaks at one portal rather than all eleven. Every scraper is called as `run_scraper(limit=SCRAPE_LIMIT_CLOUD, output_dir=<temp dir>)` — the cloud limit is 0 (no cap) unless set on the job execution; `--local` runs use 2 per site — and returns `common.ScrapeResult(code, site, count)`. Each writes one folder per tender; the manager works out which portal a folder came from by comparing the temp directory before and after the run. `run_scrapers()` is only the `--local`, scrape-only path.
+3.  **Text extraction.** There is no separate extraction stage: each scraper extracts the text of every attachment as it downloads it (`error_scrapers/common.py`, section 5) and writes `<file name>.txt` beside the original. A file that cannot be read is logged and the tender is reported as partial.
+4.  **Resume and incomplete tenders.** For `buynsw`, `vic_buyingfor`, `sa_tenders` and `tenders_act` the manager passes `known_urls` (the source URLs already in BigQuery) and `resume=True`, so a run that Cloudflare or buy.nsw’s WAF stops part-way carries on the next night; buy.nsw also keeps its listing-page cursor in the bucket at `scraper_state/buynsw.json`. A tender stored with something missing that another try could fix (a document that failed to download) is flagged `scrape_incomplete` in `raw_extra` and fetched again on up to 3 later nights.
+5.  **Health.** After every portal the manager publishes `scraper_health.json` to the `tenderai-dev-documents` bucket (status chip, message and last successful run per portal) for the System Health page. A problem found while storing a tender, such as a file over the size limit, re-words that portal’s row as Partial.
+6.  **Per tender, attachments.** `attachment_store.upload_tender_attachments()` copies each original to Cloud Storage and deletes the local copy to save memory.
+7.  **Per tender, AI.** `process_tender()` sends the text to Gemini and gets back a summary and structured fields. The manager then overrides `source_id` and `source_url` with what the scraper reported, and merges storage details with extracted text into the `documents` list.
+8.  **Per tender, database.** `upsert_tender()` inserts the tender, updates it, or just bumps `last_scanned_at` if nothing changed.
 
 ### Failure handling
 
-- A scraper that throws, or returns a failure code (1 to 5), is logged and recorded; the others still run. Code 6 (partial) is logged as a warning.
+- A scraper that throws, or returns a failure code (1 to 5), is logged and recorded; the others still run. Tenders it had already written before throwing are kept under its own `source_id`, and the one it was part-way through is stored as incomplete so it is fetched again. Code 6 (partial) is logged as a warning.
 - If no tender folders exist at all, the job exits with code 1.
 - A failure in AI processing or the database write skips that one tender and moves on.
 - At the end, any scraper failure makes the job exit with code 1, so Cloud Run marks the run failed. It exits with `os._exit` rather than `sys.exit` to avoid a segfault during shutdown cleanup.
@@ -196,51 +199,55 @@ flowchart TD
 
 ## 4. Scrapers
 
-Eleven portals are scraped across federal, state and territory governments. [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers) (Ben’s) is the current design with proper status codes. [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers) (Sepehr’s) is the older design; AusTender still runs from it. The plan is to end with one folder, probably named `web_scrapers`.
+Eleven portals are scraped across federal, state and territory governments, all from [error_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/error_scrapers). Each portal has its own folder holding `scraper.py` and a `test_cases/` folder with its saved portal pages and tests; `common.py` (downloads, text extraction, retries, status codes), `reporting.py` (log lines), `run_notes.py` (why a tender was partial, and the System Health wording) and `crawl_state.py` (buy.nsw’s cursor) are shared. [web_scrapers/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers) is the older design and is no longer used by the pipeline; it will be removed.
 
 ### Sources in the pipeline
 
-| # | Source | URL | Code | How it fetches | Login | Documents |
-|---|--------|-----|------|----------------|-------|-----------|
-| 1 | AusTender (federal ATMs) | https://www.tenders.gov.au/atm | [web_scrapers/webscraperinit.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/web_scrapers/webscraperinit.py) | httpx | Registered user, for downloads | Soft copies and addenda, one file at a time |
-| 2 | GrantConnect (federal grants) | https://www.grants.gov.au/Go/List | [error_scrapers/grant_connect/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/grant_connect/scraper.py) | httpx | `GRANTCONNECT_USERNAME` / `GRANTCONNECT_PASSWORD` | From the logged-in documents page |
-| 3 | buy.nsw (NSW) | https://buy.nsw.gov.au/opportunity/search | [error_scrapers/buy_nsw/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/buy_nsw/scraper.py) | httpx | None | One public zip per opportunity |
-| 4 | Buying for Victoria (VIC) | https://www.tenders.vic.gov.au/tenders/open | [web_scrapers/vic_buyingfor/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/vic_buyingfor) | httpx |     |     |
-| 5 | QTenders (QLD) | https://www.vendorpanel.com.au/Members/?do=Tenders:AllTenders | [web_scrapers/qld_qtenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/qld_qtenders) | httpx |     |     |
-| 6 | QBuild eTender (QLD) | https://etender.hpw.qld.gov.au/public/TendersListingCurrent.aspx |    |    |     |     |
-| 7 | Tenders WA | https://www.tenders.wa.gov.au/ | [web_scrapers/wa_tenders/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/wa_tenders) | httpx |     |     |
-| 8 | SA Tenders | https://www.tenders.sa.gov.au/tender/search?preset=open |    |    |    |   |
-| 9 | Tasmanian Gov Tenders | https://www.tenders.tas.gov.au/OpenForBids/Index |   |   |   |    |
-| 10 | NT QTOL | https://tendersonline.nt.gov.au/Tender/SearchResults/Current | [web_scrapers/nt_qtol/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/web_scrapers/nt_qtol) | httpx |    |    |
-| 11 | Tenders ACT | https://www.tenders.act.gov.au/tenders/open | [error_scrapers/tenders_act/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/scraper.py) + [browser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/browser.py) | Real Chrome (SeleniumBase) | `ACT_USERNAME` / `ACT_PASSWORD` | Zip from a download form |
+| # | Source | source_id | URL | Code | How it fetches | Login | Documents |
+|---|--------|-----------|-----|------|----------------|-------|-----------|
+| 1 | AusTender (federal ATMs) | `austender` | https://www.tenders.gov.au/atm | [error_scrapers/austender/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/austender/scraper.py) | httpx | `AUSTENDER_USERNAME` / `AUSTENDER_PASSWORD`, for downloads | Soft copies and addenda, one file at a time |
+| 2 | GrantConnect (federal grants) | `grantconnect` | https://www.grants.gov.au/Go/List | [error_scrapers/grant_connect/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/grant_connect/scraper.py) | httpx | `GRANTCONNECT_USERNAME` / `GRANTCONNECT_PASSWORD` | From the logged-in documents page |
+| 3 | buy.nsw (NSW) | `buynsw` | https://buy.nsw.gov.au/opportunity/search | [error_scrapers/buy_nsw/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/buy_nsw/scraper.py) | httpx | None | One public zip per opportunity |
+| 4 | Buying for Victoria (VIC) | `vic_buyingfor` | https://www.tenders.vic.gov.au/tenders/open | [error_scrapers/vic_buyingfor/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/vic_buyingfor/scraper.py) | Real Chrome (SeleniumBase); Cloudflare | `VIC_USERNAME` / `VIC_PASSWORD` | Zip from the download page; a blocked run resumes the next night |
+| 5 | QTenders (QLD) | `qld_qtenders` | https://qtenders.hpw.qld.gov.au | [error_scrapers/qld_qtenders/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/qld_qtenders/scraper.py) | httpx for the pages; real Chrome for documents | `QLD_USERNAME` / `QLD_PASSWORD` (VendorPanel) | Files linked on the page, plus the VendorPanel package once the tender is followed; a retry pass at the end re-tries the ones not followed yet |
+| 6 | QBuild eTender (QLD) | `qbuild_etender` | https://etender.hpw.qld.gov.au/public/TendersListingCurrent.aspx | [error_scrapers/eTender/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/eTender/scraper.py) | httpx | None | Files linked from the tender page, one at a time |
+| 7 | Tenders WA | `tenders_wa` | https://www.tenders.wa.gov.au/ | [error_scrapers/tenders_wa/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_wa/scraper.py) | httpx | None | Files linked from the tender page, one at a time |
+| 8 | SA Tenders | `sa_tenders` | https://www.tenders.sa.gov.au/tender/search?preset=open | [error_scrapers/sa_tenders/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/sa_tenders/scraper.py) | Real Chrome (SeleniumBase); Cloudflare | `SA_USERNAME` / `SA_PASSWORD` | Zip from the download page; a blocked run resumes the next night |
+| 9 | Tasmanian Gov Tenders | `tenders_tas` | https://www.tenders.tas.gov.au/OpenForBids/Index | [error_scrapers/tenders_tas/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_tas/scraper.py) | httpx | `TAS_USERNAME` / `TAS_PASSWORD` | From the signed-in documents page, one at a time |
+| 10 | NT QTOL | `nt_qtol` | https://tendersonline.nt.gov.au/Tender/SearchResults/Current | [error_scrapers/nt_qtol/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/nt_qtol/scraper.py) | httpx | `NT_QTOL_USERNAME` / `NT_QTOL_PASSWORD` | One zip per tender, unpacked into the folder |
+| 11 | Tenders ACT | `tenders_act` | https://www.tenders.act.gov.au/tenders/open | [error_scrapers/tenders_act/scraper.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/scraper.py) + [error_scrapers/tenders_act/browser.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/tenders_act/browser.py) | Real Chrome (SeleniumBase); Cloudflare | `ACT_USERNAME` / `ACT_PASSWORD` | Zip from a download form |
 
 ### How a scraper works (AusTender)
 
-1.  Opens the AusTender list page and reads each tender’s link from the HTML, page by page, until it reaches the limit.
+1.  Opens the AusTender list page and reads each tender’s link, page by page, until a page adds nothing new (or the limit, when one is set).
 2.  Opens each tender’s full details page and saves the text to `__tender__<tenderID>.txt` in that tender’s folder.
-3.  Logs in as a registered user, then downloads each attachment and addendum into the same folder, pausing 0.3 s between files.
-4.  Text is later extracted from each attachment into its own `.txt` file (section 5).
+3.  Signs in once (`AUSTENDER_USERNAME` / `AUSTENDER_PASSWORD`), then streams each attachment and addendum into the same folder, pausing 0.3 s between files, and extracts each file’s text as soon as it is saved.
+4.  Reports one code per tender; the site’s code is the worst of them (see Status codes). A run that could not reach the site at all is tried again after 60 s and 180 s — but never after the login was already posted, so credentials are sent once per run.
 
 ### Differences between sources
 
-- **buy.nsw** needs no login. Its zip holds the attachments plus an auto-generated summary PDF named `opportunity-<id>.pdf`. The summary becomes the tender’s page text and is not kept as an attachment.
-- **Tenders ACT** blocks plain HTTP clients with a 403, even on the login page, because it fingerprints the browser. So a real Chrome does the whole scrape. Documents come in two stages: the detail page links to a download page of checkboxes, and posting that form returns a zip. A run is retried up to 3 times with a fresh browser (waiting 15 s, then 30 s) when it gets nothing back.
-- **GrantConnect** logs in with httpx and reads attachment links from the documents page.
+- **buy.nsw** needs no login. Its zip holds the attachments plus an auto-generated summary PDF named `opportunity-<buy.nsw reference>.pdf` (e.g. `opportunity-RFT-12634672652.pdf` — buy.nsw’s own reference, not the agency’s Opportunity ID shown on the page). The summary becomes the tender’s page text and is not kept as an attachment. buy.nsw’s WAF stops the crawl after a few dozen requests (HTTP 202), so the run keeps a listing-page cursor in the bucket and the next night carries on from it; stopping this way is a normal (Success) outcome.
+- **Tenders ACT** blocks plain HTTP clients with a 403, even on the login page, because it fingerprints the browser. So a real Chrome does the whole scrape. Documents come in two stages: the detail page links to a download page, and its Download button returns a zip. A run is tried up to 3 times with a fresh browser when it is blocked (waiting 120 s, then 240 s) or fails outright (15 s, then 30 s); tenders already finished are kept and not redone, and with resume on, a block part-way is reported as what was scraped. A Cloudflare challenge served as the listing or as a download page is recognised as a block, not as “no tenders”.
+- **GrantConnect** logs in with httpx and reads attachment links from the documents page. If the session lapses mid-run (the site serves its sign-in form instead of a page) it signs in again, up to 3 times. A sign-in page served in place of a document is a failed download, not a document.
+- **NT, Tasmania, QBuild and WA.** All four are httpx scrapers in the same shape as AusTender. NT’s documents come as one zip per tender, which is unpacked; Tasmania’s come from a signed-in documents page; QBuild and WA need no login.
+- **QLD QTenders.** The public pages are read with httpx, but most documents are released only through VendorPanel to an account that follows the tender. So a real Chrome signs in to VendorPanel, follows each gated tender and downloads its package; tenders that could not be followed in the main pass get a retry pass at the end of the run (capped at 6 hours). If Chrome will not start, the pages are still scraped and those tenders are reported partial.
+- **Buying for Victoria and SA Tenders.** Both sit behind Cloudflare, so a real Chrome does the whole scrape. A run stopped by a challenge keeps what it has, and with resume on the next night does the tenders not stored yet first. A browser that dies mid-run is replaced with a fresh one that skips the tenders already finished.
+- **Shared httpx rules.** A page request that times out or gets a 5xx is asked for again (3 attempts), a 403 or 429 is never retried and ends the run as blocked / rate limited, a listing page that fails after the first keeps the tenders from the pages before it, and a site that stops answering for 15 tenders in a row ends the run early, leaving the rest for the next night.
 
 ### Output folder for one tender
 
     <tenderID>/
-      __tender__<tenderID>.txt   text of the tender's own page
+      __tender__<tenderID>.txt   text of the tender's own page, its full visible text, and a "Detail URL:" line
       attachment1.pdf            original download
-      attachment1.txt            text extracted from it
+      attachment1.pdf.txt        text extracted from it
       attachment2.docx
-      attachment2.txt
+      attachment2.docx.txt
 
-The `__tender__` prefix marks the page text so later stages can tell it apart from real attachments. Folder and file names pass through `sanitise_filename`, and `unique_path` adds `(2)`, `(3)` rather than overwrite a duplicate name.
+The `__tender__` prefix marks the page text so later stages can tell it apart from real attachments. The page text ends with the full visible text of the details page (a safety net for fields the scraper has no selector for) and a `Detail URL:` line, which the manager reads back as the tender’s `source_url`. Extracted text is the attachment’s full name plus `.txt`. Folder and file names pass through `sanitise_filename`, and `unique_path` adds `(2)`, `(3)` rather than overwrite a duplicate name.
 
 ### Status codes
 
-Defined in [error_scrapers/common.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/common.py). Each scraper returns one code for the whole site plus a list of the tenders it saved.
+Defined in [error_scrapers/common.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/common.py). Each tender gets a code, and the scraper returns one `common.ScrapeResult(code, site, count)` for the whole site. The site code is the worst tender code seen, ranked bot-blocked > structure change > login failed > rate limited > partial (`site_code_from`). `run_notes.py` records why each tender was partial (a password-protected file dropped, a document that failed to download, a page that could not be read) and builds the System Health message from it, e.g. “2 of 30 tenders incomplete: GO1234: a document failed to download”.
 
 | Code | Name                    | Meaning                                                    |
 |------|-------------------------|------------------------------------------------------------|
@@ -252,19 +259,19 @@ Defined in [error_scrapers/common.py](https://github.com/UtkristaUwa/CITS3200_57
 | 5    | `SITE_RATE_LIMITED`     | The site temporarily blocked us (HTTP 429)                 |
 | 6    | `TENDER_PARTIAL`        | Some tenders were only partly scraped and need checking    |
 
-“Structure changed” is detected with one CSS selector per site, e.g. `div.list-desc` on GrantConnect. If that selector finds nothing on an otherwise normal page, the layout has changed. The saved test pages include a copy with that class renamed to prove it.
+“Structure changed” is detected with one CSS selector per site, e.g. `div.list-desc` on GrantConnect. If that selector finds nothing on an otherwise normal page, the layout has changed. The saved test pages include a copy with that class renamed to prove it. An empty first listing page, or a details page without the tender’s own ID, is also reported as a structure change. On SA Tenders and Tasmania a single details page that will not parse marks that tender partial (it is tried again next run); only every page failing is reported as a site-wide structure change.
 
 ### When a site breaks, and adding a site
 
-Failures are recorded on each run. After a set number of failures a rebuild is triggered: Ramon or an admin is emailed the documentation for regenerating the scraper with an LLM, which includes the full context and our specs, plus the steps for putting it into the live pipeline. The same guide covers adding a new website. Ben is writing it.
+Failures are recorded on each run and shown on the System Health page. The step-by-step guide for fixing a broken scraper and for adding a new website — written for Ramon and the SVA team to follow with an AI coding assistant — is [documentation/scraper_guide.md](https://github.com/UtkristaUwa/CITS3200_57/blob/main/documentation/scraper_guide.md).
 
 ## 5. Document extraction and attachment storage
 
 ### Text extraction
 
-[document_scraper/main.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/document_scraper/main.py) loops over every tender folder. For each `.pdf` it uses PyMuPDF to read every page’s text; for each `.docx` it uses python-docx to read every non-empty paragraph. The text is saved beside the original with the same name, e.g. `Addendum 1.pdf` becomes `Addendum 1.txt`. The `__tender__` page file is skipped. A file that can’t be read produces an empty result rather than stopping the run.
+[error_scrapers/common.py](https://github.com/UtkristaUwa/CITS3200_57/blob/main/error_scrapers/common.py) extracts text as each scraper downloads a file and writes it beside the original as `<file name>.txt` (`Addendum 1.pdf` becomes `Addendum 1.pdf.txt`). PDF: PyMuPDF, every page. Word (`.docx`): python-docx, including headers, footers, tables and content controls, with a raw-XML body-text fallback if that fails. Excel (`.xlsx`, `.xlsm`): openpyxl cell values, with a raw-XML fallback; `.xls`: xlrd. PowerPoint (`.pptx`): every slide and its notes. `.csv` and `.txt` are read as text. Each extraction runs in a child process with a 300 s limit, so one stuck file cannot stall the night.
 
-Other formats (`.xlsx`, `.doc`, `.rtf`, images) are not extracted, and scanned PDFs return no text because there is no OCR. `error_scrapers/common.py` has its own PDF, Word and Excel extraction used inside Ben’s scrapers.
+Images, `.doc` and `.rtf` are not extracted, and scanned PDFs return no text because there is no OCR. A password-protected file is dropped (not stored) and the tender reported as partial; a file that cannot be read is kept, but the tender is reported as partial. A file named `.docx` that is really a web page or an old-format Office file is stored with whatever text it has. Zip packages are unpacked (nested zips too); lock files, macOS resource forks and members over `MAX_ATTACHMENT_MB` are skipped.
 
 ### Attachment storage
 
@@ -540,7 +547,8 @@ Each page handles its own. Tenders and Favorites show a spinner, an Alert on err
 
 | Variable                                         | Default                           | Used by              | Purpose                                      |
 |--------------------------------------------------|-----------------------------------|----------------------|----------------------------------------------|
-| `SCRAPE_LIMIT`                                   | 10 in code, 50 in Dockerfile      | manager.py           | Max tenders per source per run               |
+| `SCRAPE_LIMIT_CLOUD`                             | 0 (no cap)                        | manager.py           | Max tenders per source per run; set it on one job execution for a smoke test (`--update-env-vars SCRAPE_LIMIT_CLOUD=1`) |
+| `PIPELINE_WORKERS`                               | 4                                 | manager.py           | Tenders stored / AI-processed / upserted at once |
 | `ATTACHMENTS_BUCKET`                             | `tenderai-dev-documents`          | attachment_store.py  | Bucket for original files                    |
 | `MAX_ATTACHMENT_MB`                              | 500                               | attachment_store.py  | Files larger than this are skipped           |
 | `ATTACHMENT_UPLOADS`                             | `on`                              | attachment_store.py  | `off` runs locally without uploading         |
@@ -549,10 +557,17 @@ Each page handles its own. Tenders and Favorites show a spinner, an Alert on err
 | `TENDER_PROCESSOR_CONFIG`                        | `processing/tender_processor.cfg` | tender_processor.py  | Path to a different AI config file           |
 | `GRANTCONNECT_USERNAME`, `GRANTCONNECT_PASSWORD` | none                              | GrantConnect scraper | Portal login for documents                   |
 | `ACT_USERNAME`, `ACT_PASSWORD`                   | none                              | Tenders ACT scraper  | Portal login                                 |
-| `RUNNING_IN_CONTAINER`                           | `1` in Dockerfile                 | Scrapers             | Adds Chrome flags needed in a container      |
+| `AUSTENDER_USERNAME`, `AUSTENDER_PASSWORD`       | none                              | AusTender scraper    | Portal login for downloads                   |
+| `NT_QTOL_USERNAME`, `NT_QTOL_PASSWORD`           | none                              | NT QTOL scraper      | Portal login                                 |
+| `QLD_USERNAME`, `QLD_PASSWORD`                   | none                              | QLD QTenders scraper | VendorPanel login for documents              |
+| `VIC_USERNAME`, `VIC_PASSWORD`                   | none                              | Buying for Victoria scraper | Portal login                          |
+| `SA_USERNAME`, `SA_PASSWORD`                     | none                              | SA Tenders scraper   | Portal login                                 |
+| `TAS_USERNAME`, `TAS_PASSWORD`                   | none                              | Tasmania scraper     | Portal login                                 |
+| `QLD_BROWSER_RESTARTS`                           | 3                                 | QLD QTenders scraper | Dead Chromes replaced per run (the `QLD_*`, `VIC_*`, `SA_*`, `TAS_*` `_SECONDS` variables tune waits the same way) |
+| `RUNNING_IN_CONTAINER`                           | `1` in Dockerfile                 | Scrapers, manager.py | Adds the Chrome flags needed in a container; lets manager.py kill leftover Chrome between portals |
 | `HOME`                                           | `/tmp` in Dockerfile              | SeleniumBase         | Writable home for the Chrome driver          |
 
-The AusTender login is currently written into `web_scrapers/webscraperinit.py`, not read from a variable (section 15). The GCP project `tenderai-dev` and dataset `TenderAI` are hard-coded in `tender_processor.py` and `ingestion/bigquery_client.py`.
+Every portal login is read from the environment (Secret Manager on the Cloud Run job; a `.env` in the repo root locally). The GCP project `tenderai-dev` and dataset `TenderAI` are hard-coded in `tender_processor.py` and `ingestion/bigquery_client.py`.
 
 ### API
 
@@ -664,12 +679,12 @@ Every endpoint except `/health` needs a token. To call it by hand, sign in to th
 
 ### Pipeline
 
-    pip install -r requirements.txt -r ingestion/requirements.txt \
-      -r web_scrapers/requirements.txt -r document_scraper/requirements.txt
+    pip install -r requirements.txt -r ingestion/requirements.txt
     gcloud auth application-default login
-    ATTACHMENT_UPLOADS=off SCRAPE_LIMIT=2 python manager.py
+    python manager.py --local                  # 2 tenders per site into tenders_data/; no AI, BigQuery or GCS
+    python -m error_scrapers.buy_nsw.scraper   # one scraper on its own
 
-The AI and database steps still call Vertex AI and BigQuery, so you need access to `tenderai-dev`. Tenders ACT needs Chrome installed. A single scraper can be run on its own, e.g. `python -m error_scrapers.buy_nsw.scraper`.
+`--local` only scrapes. A full run (`python manager.py`) calls Vertex AI and BigQuery, so you need access to `tenderai-dev`; `ATTACHMENT_UPLOADS=off` skips the bucket. Tenders ACT, Buying for Victoria, SA Tenders and QLD QTenders need Chrome installed. Portal logins come from a `.env` in the repo root locally.
 
 ## 14. Testing
 
@@ -720,10 +735,10 @@ The pipeline executes the following scrapers in sequence. Each was exercised acr
 | 3 | `buynsw` | buy.nsw (NSW) | 19+ | Working with partial data warnings (code 6) — successfully fetches opportunity pages and attachment ZIPs from S3. |
 | 4 | `vic_buyingfor` | Buying for Victoria (VIC) | Configured | Credentials provisioned via GCP Secret Manager. |
 | 5 | `qld_qtenders` | QTenders (QLD) | Configured | Credentials provisioned via GCP Secret Manager. |
-| 6 | `qbuild_etender` | QBuild eTender (QLD) | Configured | Credentials provisioned via GCP Secret Manager. |
-| 7 | `wa_tenders` | Tenders WA | Configured | Credentials provisioned via GCP Secret Manager. |
+| 6 | `qbuild_etender` | QBuild eTender (QLD) | Configured | No login needed. |
+| 7 | `tenders_wa` | Tenders WA | Configured | No login needed. |
 | 8 | `sa_tenders` | SA Tenders | Configured | Credentials provisioned via GCP Secret Manager. |
-| 9 | `tas_tenders` | Tasmanian Gov Tenders | Configured | Credentials provisioned via GCP Secret Manager. |
+| 9 | `tenders_tas` | Tasmanian Gov Tenders | Configured | Credentials provisioned via GCP Secret Manager. |
 | 10 | `nt_qtol` | NT QTOL | Configured | Credentials provisioned via GCP Secret Manager. |
 | 11 | `tenders_act` | Tenders ACT | 19+ | Intermittent failures (code 2) — anti-bot detection (Cloudflare/reCAPTCHA) blocking access. |
 
