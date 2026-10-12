@@ -114,7 +114,12 @@ FOLLOW_LINK = "a[href*='/fpt.axd']"
 PACKAGE_BUTTON = "input[name='PopUpMaster$masterMain$btnGo']"
 
 WAIT_TIMEOUT = 30            # seconds for a page's table or form to appear
-FILTER_WAIT_SECONDS = 10     # seconds for the search box to narrow the list
+# Seconds for the search box to narrow the list to one row. 10 was too short: on the
+# 5am run 67 of 100 tenders were reported "not on the Public Tenders list" when the
+# list had simply not narrowed yet, and every one the retry pass reached (25 s) was
+# found. A row that appears sooner returns at once, so a longer limit costs nothing
+# unless the search really is slow.
+FILTER_WAIT_SECONDS = int(os.environ.get("QLD_FILTER_WAIT_SECONDS", "30"))
 RELOAD_SECONDS = 3           # pause after clicking Follow, which reloads the page
 FOLLOW_CHECKS = 6            # times to look for "Unfollow" after clicking Follow
 FOLLOW_CHECK_PAUSE = 5       # seconds between those looks
@@ -126,16 +131,22 @@ FOLLOW_CHECK_PAUSE = 5       # seconds between those looks
 DOWNLOAD_WAIT_SECONDS = int(os.environ.get("QLD_DOWNLOAD_WAIT_SECONDS", "240"))
 DOWNLOAD_STALL_SECONDS = int(os.environ.get("QLD_DOWNLOAD_STALL_SECONDS", "300"))
 DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("QLD_DOWNLOAD_HARD_MAX_SECONDS", "900"))
-FIND_ATTEMPTS = 2            # times to search the list for a tender before calling it absent
-DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "2"))
+FIND_ATTEMPTS = int(os.environ.get("QLD_FIND_ATTEMPTS", "3"))  # searches before a tender is called absent
+# Three tries, not two: on the 5am run three packages gave nothing for 240 s on the
+# first click and arrived about a minute after the second, and one failed both tries.
+DOWNLOAD_ATTEMPTS = int(os.environ.get("QLD_DOWNLOAD_ATTEMPTS", "3"))
 DOWNLOAD_POLL_SECONDS = 1.0
 
 # After the main loop, tenders whose documents could not be reached (typically
-# the search never narrowed to their row) get one more go with a fresh list and
-# a more patient search. The pass stops after RETRY_PASS_MAX_SECONDS so it can
-# never stretch the nightly run without bound.
-RETRY_PASS_MAX_SECONDS = int(os.environ.get("QLD_RETRY_PASS_MAX_SECONDS", "3600"))
-RETRY_FILTER_WAIT_SECONDS = int(os.environ.get("QLD_RETRY_FILTER_WAIT_SECONDS", "25"))
+# the search never narrowed to their row) get another go with a fresh list and
+# a more patient search, up to RETRY_ROUNDS times each. The pass stops after
+# RETRY_PASS_MAX_SECONDS so it can never stretch the nightly run without bound.
+# The old limit of one hour reached 11 of 75 tenders; 6 hours covers every tender
+# at the pace seen (1-8 minutes each) and still leaves the 18 hour job timeout
+# well clear of the rest of the run.
+RETRY_PASS_MAX_SECONDS = int(os.environ.get("QLD_RETRY_PASS_MAX_SECONDS", "21600"))
+RETRY_FILTER_WAIT_SECONDS = int(os.environ.get("QLD_RETRY_FILTER_WAIT_SECONDS", "45"))
+RETRY_ROUNDS = int(os.environ.get("QLD_RETRY_ROUNDS", "3"))
 RETRY_PAUSE_SECONDS = 3
 
 # A session that lapses mid-run is replaced by signing in again, this many
@@ -603,8 +614,10 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
         return common.TENDER_PARTIAL
     except Exception as e:
         log.warning("       documents FAILED for VP%s: %s: %s", number, type(e).__name__, e)
+        result["package_failed"] = True  # the retry pass tries the download again
         return common.TENDER_PARTIAL
 
+    result["package_failed"] = False
     result["attachments"] = attachments
     # The package also holds a summary PDF, so it can hold more files than were advertised.
     if len(attachments) < advertised:
@@ -620,8 +633,9 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
                      max_seconds: float = None, sleep=time.sleep,
                      clock=time.monotonic) -> dict[str, int]:
     """
-    Second pass, run once after every tender has had its first go: try again for
-    each tender that has documents but is still not followed. The usual cause is
+    Second pass, run after every tender has had its first go: try again for each
+    tender that has documents but is still not followed (or was followed but whose
+    package download failed), up to RETRY_ROUNDS times each. The usual cause is
     the search not narrowing to the tender's row in time, which a fresh list and
     a more patient search often gets past (as doing it by hand does).
 
@@ -634,8 +648,12 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     # "Gated" means the tender's public page advertises more documents than it
     # links, so the rest can only come through VendorPanel and the tender has to
     # be followed. A tender whose documents are all linked never needs following.
-    todo = [r for r in results
-            if r.get("documents_advertised", 0) > 0 and r.get("documents_gated") and not r["followed"]]
+    def still_to_do():
+        return [r for r in results
+                if r.get("documents_advertised", 0) > 0 and r.get("documents_gated")
+                and (not r["followed"] or r.get("package_failed"))]
+
+    todo = still_to_do()
     if not todo:
         return {}
 
@@ -646,34 +664,45 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     started = clock()
     previous_wait = vendorpanel.filter_wait
     vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
+    stop = False
     try:
-        for result in todo:
-            if clock() - started > max_seconds:
-                log.warning("retry pass: out of time (%ds) -- leaving the rest as they are", max_seconds)
+        for round_number in range(1, RETRY_ROUNDS + 1):
+            pending = still_to_do()
+            if not pending or stop:
                 break
-            reference = result["tender_id"]
-            advertised = result["documents_advertised"]
-            vendorpanel._on_list = False  # open the list afresh, not the page the last search left
-            sleep(RETRY_PAUSE_SECONDS)
-            result["session_lapsed"] = False
-            code = fetch_documents(vendorpanel, result, advertised)
-            if result["session_lapsed"] and relogin is not None and relogin():
+            if round_number > 1:
+                log.info("retry pass: round %d of %d -- %d tender(s) still not followed",
+                         round_number, RETRY_ROUNDS, len(pending))
+            for result in pending:
+                if clock() - started > max_seconds:
+                    log.warning("retry pass: out of time (%ds) -- leaving the rest as they are", max_seconds)
+                    stop = True
+                    break
+                reference = result["tender_id"]
+                advertised = result["documents_advertised"]
+                vendorpanel._on_list = False  # open the list afresh, not the page the last search left
+                sleep(RETRY_PAUSE_SECONDS)
                 result["session_lapsed"] = False
                 code = fetch_documents(vendorpanel, result, advertised)
-            if result["session_lapsed"]:
-                log.warning("retry pass: the VendorPanel session lapsed and could not be "
-                            "restored -- stopping")
-                break
-            if result["followed"]:
-                recovered += 1
-                if result.get("public_download_failed"):
-                    code = common.TENDER_PARTIAL  # a directly linked document failed earlier
-                log.info("retry pass: %s followed this time", reference)
-            else:
-                log.warning("retry pass: %s still could not be followed", reference)
-                run_notes.note_reason(run_notes.PORTAL)
-            codes[reference] = code
-            run_notes.note_tender(reference, code)  # replaces the first pass's verdict
+                if result["session_lapsed"] and relogin is not None and relogin():
+                    result["session_lapsed"] = False
+                    code = fetch_documents(vendorpanel, result, advertised)
+                if result["session_lapsed"]:
+                    log.warning("retry pass: the VendorPanel session lapsed and could not be "
+                                "restored -- stopping")
+                    stop = True
+                    break
+                if result["followed"] and not result.get("package_failed"):
+                    recovered += 1
+                    if result.get("public_download_failed"):
+                        code = common.TENDER_PARTIAL  # a directly linked document failed earlier
+                    log.info("retry pass: %s followed this time", reference)
+                else:
+                    log.warning("retry pass: %s still could not be fetched (round %d of %d)",
+                                reference, round_number, RETRY_ROUNDS)
+                    run_notes.note_reason(run_notes.PORTAL)
+                codes[reference] = code
+                run_notes.note_tender(reference, code)  # replaces the first pass's verdict
     finally:
         vendorpanel.filter_wait = previous_wait
     log.info("retry pass: %d of %d tender(s) followed this time", recovered, len(todo))

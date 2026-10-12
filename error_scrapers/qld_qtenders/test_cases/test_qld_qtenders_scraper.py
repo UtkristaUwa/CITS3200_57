@@ -774,3 +774,131 @@ def test_a_search_request_that_times_out_is_asked_for_again(monkeypatch):
 
     assert len(tenders) == len(_search_page()["tenders"])
     assert calls["search"] >= 2
+
+
+# ---------------------------------------------------------------------------
+# The retry pass and the patience of the search and download
+# ---------------------------------------------------------------------------
+
+class FlakyVendorPanel(FakeVendorPanel):
+    """Cannot find a tender's row for its first `misses[number]` searches, then can."""
+
+    def __init__(self, misses=None, broken_downloads=None, **kwargs):
+        super().__init__(**kwargs)
+        self.misses = dict(misses or {})
+        self.broken_downloads = dict(broken_downloads or {})
+        self.searches = []
+
+    def find_row(self, number):
+        self.searches.append(number)
+        if self.misses.get(number, 0) > 0:
+            self.misses[number] -= 1
+            return None
+        return super().find_row(number)
+
+    def download_package(self, number, folder):
+        if self.broken_downloads.get(number, 0) > 0:
+            self.broken_downloads[number] -= 1
+            raise TimeoutError("the package download did not finish")
+        return super().download_package(number, folder)
+
+
+def _unfollowed_results(tmp_path, *numbers):
+    results = []
+    for number in numbers:
+        folder = tmp_path / f"VP{number}"
+        folder.mkdir(exist_ok=True)
+        results.append({"tender_id": f"VP{number}", "folder": str(folder), "attachments": [],
+                        "documents_advertised": 7, "documents_gated": True, "followed": False,
+                        "session_lapsed": False})
+    return results
+
+
+def test_the_retry_pass_is_given_hours_not_one_hour(tmp_path):
+    # Five tenders at 25 minutes each is well past the old one-hour limit.
+    vp = FlakyVendorPanel(misses={})
+    results = _unfollowed_results(tmp_path, "1", "2", "3", "4", "5")
+    now = [0.0]
+
+    def sleep(seconds):
+        now[0] += 1500
+
+    codes = scraper.retry_unfollowed(vp, results, sleep=sleep, clock=lambda: now[0])
+    assert all(r["followed"] for r in results)
+    assert len(codes) == 5
+
+
+def test_a_tender_the_search_missed_is_found_in_a_later_round(tmp_path):
+    vp = FlakyVendorPanel(misses={"1": scraper.RETRY_ROUNDS - 1})
+    results = _unfollowed_results(tmp_path, "1")
+    codes = scraper.retry_unfollowed(vp, results, sleep=lambda s: None)
+    assert results[0]["followed"] is True
+    assert codes["VP1"] == common.SITE_SUCCESS
+    assert vp.searches == ["1"] * scraper.RETRY_ROUNDS
+
+
+def test_a_tender_that_is_never_found_is_tried_each_round_then_left_partial(tmp_path):
+    vp = FlakyVendorPanel(misses={"1": 99})
+    results = _unfollowed_results(tmp_path, "1", "2")
+    codes = scraper.retry_unfollowed(vp, results, sleep=lambda s: None)
+    assert [r["followed"] for r in results] == [False, True]
+    assert vp.searches.count("1") == scraper.RETRY_ROUNDS
+    assert vp.searches.count("2") == 1  # the tender that worked is not searched again
+    assert codes["VP1"] == common.TENDER_PARTIAL
+
+
+def test_a_package_that_failed_to_download_is_tried_again_in_the_retry_pass(tmp_path):
+    vp = FlakyVendorPanel(broken_downloads={"1": 1})
+    results = _unfollowed_results(tmp_path, "1")
+    first = scraper.fetch_documents(vp, results[0], 7)
+    assert first == common.TENDER_PARTIAL
+    assert results[0]["followed"] is True and results[0]["package_failed"] is True
+    codes = scraper.retry_unfollowed(vp, results, sleep=lambda s: None)
+    assert results[0]["package_failed"] is False
+    assert codes["VP1"] == common.SITE_SUCCESS
+
+
+def test_the_retry_pass_still_stops_when_its_time_is_up(tmp_path):
+    vp = FlakyVendorPanel()
+    results = _unfollowed_results(tmp_path, "1", "2", "3")
+    now = [0.0]
+
+    def sleep(seconds):
+        now[0] += 100
+
+    codes = scraper.retry_unfollowed(vp, results, max_seconds=150, sleep=sleep, clock=lambda: now[0])
+    assert len(codes) == 2 and results[2]["followed"] is False
+
+
+def test_the_search_is_given_longer_and_more_tries_than_before():
+    assert scraper.VendorPanelSession().filter_wait >= 30
+    assert scraper.FIND_ATTEMPTS >= 3
+
+
+def test_browser_find_row_searches_the_whole_number_of_times_before_giving_up():
+    sb = _FakeSB(signed_in_after=0, rows={})
+    _session(sb).find_row("999")
+    assert len([t for t in sb.typed if t[1] == "VP999"]) == scraper.FIND_ATTEMPTS
+
+
+def test_a_package_that_arrives_on_the_third_click_is_not_given_up_on(tmp_path, monkeypatch):
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    downloads = tmp_path / "downloaded_files"
+    downloads.mkdir()
+    folder = tmp_path / "VP527073"
+    folder.mkdir()
+    sb = _FakeSB(downloads_dir=str(downloads))
+    calls = []
+
+    def wait_for_download(directory, before, wait, **kwargs):
+        calls.append(1)
+        if len(calls) < 3:
+            return None  # nothing started within the wait
+        with open(os.path.join(directory, "VP527073.zip"), "wb") as f:
+            f.write(_package_zip())
+        return "VP527073.zip"
+
+    monkeypatch.setattr(common, "wait_for_download", wait_for_download)
+    path = _session(sb).download_package("527073", str(folder))
+    assert os.path.exists(path)
+    assert sb.clicks.count(scraper.PACKAGE_BUTTON) == 3
