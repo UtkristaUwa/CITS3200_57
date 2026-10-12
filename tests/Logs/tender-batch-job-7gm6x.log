@@ -1,0 +1,236 @@
+﻿2026-09-29T18:24:23.890120Z [] [INFO] Starting Daily Tender Pipeline...
+2026-09-29T18:24:23.890143Z [] [INFO] Created temporary working directory: /tmp/tmph5n_zv65
+2026-09-29T18:24:23.890147Z [] [INFO] Executing scraper: grantconnect
+2026-09-29T18:24:23.976526Z [] [INFO] HTTP Request: GET https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:24:24.087062Z [] [INFO] HTTP Request: POST https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:24:24.089025Z [] [ERROR] Scraper 'grantconnect' reported failure code 2
+2026-09-29T18:24:24.089035Z [] [INFO] Executing scraper: buynsw
+2026-09-29T18:24:24.335834Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/opportunity/search?query=&categories=&types=&area=&page=1 "HTTP/1.1 200 "
+2026-09-29T18:24:24.796288Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6 "HTTP/1.1 200 "
+2026-09-29T18:24:25.177958Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6/opportunity-package-4CF23D43-D9DB-4886-81C4EB4F11D069C6.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T182424Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=31b061a8696a93e9ed1129c27a1c9fe7e81277aff99e46afb4c20cb29b5d177f "HTTP/1.1 200 OK"
+2026-09-29T18:24:25.470978Z [] [INFO] Executing scraper: tenders_act
+2026-09-29T18:24:29.069304Z [] Warning: uc_driver not found. Getting it now:
+2026-09-29T18:24:29.311454Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:24:29.311470Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:24:29.311475Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:24:31.244319Z [] Download Complete!
+2026-09-29T18:24:31.244468Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:24:31.424034Z [] Unzip Complete!
+2026-09-29T18:24:31.424052Z [] ['uc_driver'] was saved to:
+2026-09-29T18:24:31.424058Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:24:31.424062Z [] uc_driver
+2026-09-29T18:24:31.424067Z [] [uc_driver 154.0.8037.57] is ready for use!
+2026-09-29T18:24:31.426365Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:24:31.426388Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:24:31.426392Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:24:34.033325Z [] Download Complete!
+2026-09-29T18:24:34.033345Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:24:34.213018Z [] Unzip Complete!
+2026-09-29T18:24:34.213033Z [] ['chromedriver'] was saved to:
+2026-09-29T18:24:34.213038Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:24:34.213041Z [] chromedriver
+2026-09-29T18:24:34.213045Z [] [chromedriver 154.0.8037.57] is ready for use!
+2026-09-29T18:24:38.496222Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:24:38.496505Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:24:38.707219Z [] [ACT] attempt 1/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:24:55.641288Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:24:55.641312Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:24:56.388132Z [] [ACT] attempt 2/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:25:28.227009Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:25:28.227038Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:25:29.022278Z [] [ACT] attempt 3/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:26:14.021147Z [] [ERROR] Scraper 'tenders_act' reported failure code 2
+2026-09-29T18:26:14.021169Z [] [INFO] ? Executing Document Scraper...
+2026-09-29T18:26:14.021266Z [] processing tenders
+2026-09-29T18:26:14.021363Z [] directory:  /tmp/tmph5n_zv65/RFQ-12873300325
+2026-09-29T18:26:14.021416Z []   -> [PDF] Processing: VS27-Request-for-Quotation---Accessibility-Advisor.pdf
+2026-09-29T18:26:14.067278Z []      ? Saved 25328 chars to: VS27-Request-for-Quotation---Accessibility-Advisor.txt
+2026-09-29T18:26:14.067309Z []   -> [TXT] Existing text file: VS27-Request-for-Quotation---Accessibility-Advisor.pdf.txt
+2026-09-29T18:26:14.067318Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T18:26:14.081316Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T18:26:14.081331Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T18:26:14.081336Z []   -> [DOCX] Processing: 20260917-DNSW-Contract-of-Engagement-Template.docx
+2026-09-29T18:26:14.194622Z []      ? Saved 40818 chars to: 20260917-DNSW-Contract-of-Engagement-Template.txt
+2026-09-29T18:26:14.194639Z []   -> [TXT] Existing text file: 20260917-DNSW-Contract-of-Engagement-Template.docx.txt
+2026-09-29T18:26:14.194645Z []   -> [TXT] Existing text file: Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx.txt
+2026-09-29T18:26:14.194724Z []   -> [DOCX] Processing: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.docx
+2026-09-29T18:26:14.207181Z []      ? Saved 286 chars to: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.txt
+2026-09-29T18:26:14.207192Z []   -> [TXT] Existing text file: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.docx.txt
+2026-09-29T18:26:14.207196Z []   -> [PDF] Processing: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.pdf
+2026-09-29T18:26:14.215871Z []      ? Saved 802 chars to: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.txt
+2026-09-29T18:26:14.215884Z []   -> [TXT] Existing text file: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.pdf.txt
+2026-09-29T18:26:14.215890Z []   -> [TXT] Existing text file: Updated---Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx.txt
+2026-09-29T18:26:14.215934Z [] [INFO] ? Preparing data for AI Processing...
+2026-09-29T18:26:15.910191Z [] [INFO] RFQ-12873300325: stored 7 attachment(s)
+2026-09-29T18:26:15.910205Z [] [INFO] ? Processing tender: RFQ-12873300325...
+2026-09-29T18:26:15.910233Z [] start of process_tender function
+2026-09-29T18:26:18.723044Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:21.628146Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:25.912627Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:28.632856Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:31.756330Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:34.053565Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:36.826472Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:39.410586Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:43.643650Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:46.599593Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:51.532198Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:26:54.532608Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:27:04.524288Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:27:10.926139Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:27:10.928535Z [] [INFO] ? Determining relevance for RFQ-12873300325...
+2026-09-29T18:27:20.444779Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:27:20.446294Z [] [INFO] Fit score for RFQ-12873300325: 100 (focus_areas={'disability': 5}, work_types={'policy_program_design': 5})
+2026-09-29T18:27:20.446335Z [] [INFO] Generating Gemini Embedding ? for RFQ-12873300325...
+2026-09-29T18:27:20.654293Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T18:27:20.658264Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0996, 0.022, 0.0055, -0.0145, -0.008] | Range: [-0.1504, 0.1158]
+2026-09-29T18:27:20.658272Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T18:27:21.568613Z [] [ERROR] Failed to upsert to BigQuery: 400 Unrecognized name: focus_areas at [2:228]; reason: invalidQuery, location: query, message: Unrecognized name: focus_areas at [2:228]
+2026-09-29T18:27:21.568627Z [] Location: australia-southeast1
+2026-09-29T18:27:21.568631Z [] Job ID: 8b09827a-8680-4281-a93f-88ff24df056b
+2026-09-29T18:27:21.568929Z [] [INFO] Pipeline finished. Temporary files wiped from memory.
+2026-09-29T18:27:21.568997Z [] [ERROR] Pipeline finished with scraper failures: grantconnect (code 2), tenders_act (code 2)
+2026-09-29T18:27:21.613133Z [WARNING] Container called exit(1).
+2026-09-29T18:27:32.589574Z [] [INFO] Starting Daily Tender Pipeline...
+2026-09-29T18:27:32.589632Z [] [INFO] Created temporary working directory: /tmp/tmpcfykk7io
+2026-09-29T18:27:32.589649Z [] [INFO] Executing scraper: grantconnect
+2026-09-29T18:27:32.769805Z [] [INFO] HTTP Request: GET https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:27:32.864554Z [] [INFO] HTTP Request: POST https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:27:32.867712Z [] [ERROR] Scraper 'grantconnect' reported failure code 2
+2026-09-29T18:27:32.867729Z [] [INFO] Executing scraper: buynsw
+2026-09-29T18:27:33.055263Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/opportunity/search?query=&categories=&types=&area=&page=1 "HTTP/1.1 200 "
+2026-09-29T18:27:33.389818Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6 "HTTP/1.1 200 "
+2026-09-29T18:27:33.588378Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6/opportunity-package-4CF23D43-D9DB-4886-81C4EB4F11D069C6.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T182733Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=9765d093a0eaf447ca3c3b3ea3cd567e66b2cbcf6124e9d061e627bf6c7d4322 "HTTP/1.1 200 OK"
+2026-09-29T18:27:33.943222Z [] [INFO] Executing scraper: tenders_act
+2026-09-29T18:27:37.007835Z [] Warning: uc_driver not found. Getting it now:
+2026-09-29T18:27:37.460897Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:27:37.460907Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:27:37.460912Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:27:39.411566Z [] Download Complete!
+2026-09-29T18:27:39.411583Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:27:39.587125Z [] Unzip Complete!
+2026-09-29T18:27:39.587136Z [] ['uc_driver'] was saved to:
+2026-09-29T18:27:39.587141Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:27:39.587145Z [] uc_driver
+2026-09-29T18:27:39.587149Z [] [uc_driver 154.0.8037.57] is ready for use!
+2026-09-29T18:27:39.589475Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:27:39.589479Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:27:39.589483Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:27:41.510771Z [] Download Complete!
+2026-09-29T18:27:41.510784Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:27:41.694887Z [] Unzip Complete!
+2026-09-29T18:27:41.694898Z [] ['chromedriver'] was saved to:
+2026-09-29T18:27:41.694903Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:27:41.694907Z [] chromedriver
+2026-09-29T18:27:41.694910Z [] [chromedriver 154.0.8037.57] is ready for use!
+2026-09-29T18:27:45.958383Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:27:45.958394Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:27:46.158792Z [] [ACT] attempt 1/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:28:02.991812Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:28:02.991833Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:28:03.767021Z [] [ACT] attempt 2/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:28:35.607517Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:28:35.607535Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:28:36.358245Z [] [ACT] attempt 3/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:29:21.358980Z [] [ERROR] Scraper 'tenders_act' reported failure code 2
+2026-09-29T18:29:21.359Z [] processing tenders
+2026-09-29T18:29:21.359008Z [] [INFO] ? Executing Document Scraper...
+2026-09-29T18:29:21.359014Z [] directory:  /tmp/tmpcfykk7io/RFQ-12873300325
+2026-09-29T18:29:21.359240Z []   -> [PDF] Processing: VS27-Request-for-Quotation---Accessibility-Advisor.pdf
+2026-09-29T18:29:21.407112Z []      ? Saved 25328 chars to: VS27-Request-for-Quotation---Accessibility-Advisor.txt
+2026-09-29T18:29:21.407131Z []   -> [TXT] Existing text file: VS27-Request-for-Quotation---Accessibility-Advisor.pdf.txt
+2026-09-29T18:29:21.407137Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T18:29:21.421679Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T18:29:21.421696Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T18:29:21.421702Z []   -> [DOCX] Processing: 20260917-DNSW-Contract-of-Engagement-Template.docx
+2026-09-29T18:29:21.534452Z []      ? Saved 40818 chars to: 20260917-DNSW-Contract-of-Engagement-Template.txt
+2026-09-29T18:29:21.534473Z []   -> [TXT] Existing text file: 20260917-DNSW-Contract-of-Engagement-Template.docx.txt
+2026-09-29T18:29:21.534479Z []   -> [TXT] Existing text file: Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx.txt
+2026-09-29T18:29:21.534485Z []   -> [DOCX] Processing: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.docx
+2026-09-29T18:29:21.547113Z []      ? Saved 286 chars to: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.txt
+2026-09-29T18:29:21.547132Z []   -> [TXT] Existing text file: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.docx.txt
+2026-09-29T18:29:21.547138Z []   -> [PDF] Processing: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.pdf
+2026-09-29T18:29:21.565202Z []      ? Saved 802 chars to: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.txt
+2026-09-29T18:29:21.565216Z []   -> [TXT] Existing text file: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.pdf.txt
+2026-09-29T18:29:21.565254Z []   -> [TXT] Existing text file: Updated---Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx.txt
+2026-09-29T18:29:21.565273Z [] [INFO] ? Preparing data for AI Processing...
+2026-09-29T18:29:21.935123Z [] [INFO] Already stored, skipping upload: VS27-Request-for-Quotation---Accessibility-Advisor.pdf
+2026-09-29T18:29:22.156695Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T18:29:22.411572Z [] [INFO] Already stored, skipping upload: 20260917-DNSW-Contract-of-Engagement-Template.docx
+2026-09-29T18:29:22.641837Z [] [INFO] Already stored, skipping upload: Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx
+2026-09-29T18:29:22.846233Z [] [INFO] Already stored, skipping upload: Part-C1---VS27-Request-for-Quotation---Accessibility-Advisor---Response-Template.docx
+2026-09-29T18:29:23.086195Z [] [INFO] Already stored, skipping upload: RFQ-12873300325---Vivid-Sydney-Accessibility-Advisor---Clarification-1-Addendum.pdf
+2026-09-29T18:29:23.296184Z [] [INFO] Already stored, skipping upload: Updated---Part-C2---VS-2027-RFQ--Accessibility-Advisor---Costing-Template.xlsx
+2026-09-29T18:29:23.296402Z [] [INFO] RFQ-12873300325: stored 7 attachment(s)
+2026-09-29T18:29:23.296410Z [] [INFO] ? Processing tender: RFQ-12873300325...
+2026-09-29T18:29:23.296433Z [] start of process_tender function
+2026-09-29T18:29:26.895080Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:29.344190Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:33.684551Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:36.823535Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:39.795598Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:43.292992Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:46.055607Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:48.439094Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:51.155370Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:54.519095Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:29:57.816203Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:30:00.965509Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:30:11.961361Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:30:20.155512Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:30:20.157147Z [] [INFO] ? Determining relevance for RFQ-12873300325...
+2026-09-29T18:30:25.251448Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T18:30:25.252939Z [] [INFO] Fit score for RFQ-12873300325: 100 (focus_areas={'disability': 5}, work_types={'policy_program_design': 5})
+2026-09-29T18:30:25.252949Z [] [INFO] Generating Gemini Embedding ? for RFQ-12873300325...
+2026-09-29T18:30:25.463174Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T18:30:25.467486Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.1046, 0.02, 0.0099, -0.0191, 0.0093] | Range: [-0.1412, 0.1147]
+2026-09-29T18:30:25.467498Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T18:30:26.374290Z [] [ERROR] Failed to upsert to BigQuery: 400 Unrecognized name: focus_areas at [2:228]; reason: invalidQuery, location: query, message: Unrecognized name: focus_areas at [2:228]
+2026-09-29T18:30:26.374302Z [] Location: australia-southeast1
+2026-09-29T18:30:26.374314Z [] Job ID: bbeabe74-2fc2-4cbf-93b6-a0f665cdf1ff
+2026-09-29T18:30:26.374706Z [] [INFO] Pipeline finished. Temporary files wiped from memory.
+2026-09-29T18:30:26.374715Z [] [ERROR] Pipeline finished with scraper failures: grantconnect (code 2), tenders_act (code 2)
+2026-09-29T18:30:26.441629Z [WARNING] Container called exit(1).
+2026-09-29T18:30:37.829708Z [] [INFO] Starting Daily Tender Pipeline...
+2026-09-29T18:30:37.829897Z [] [INFO] Created temporary working directory: /tmp/tmp2gf51chw
+2026-09-29T18:30:37.829939Z [] [INFO] Executing scraper: grantconnect
+2026-09-29T18:30:37.913349Z [] [INFO] HTTP Request: GET https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:30:38.006809Z [] [INFO] HTTP Request: POST https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T18:30:38.008170Z [] [ERROR] Scraper 'grantconnect' reported failure code 2
+2026-09-29T18:30:38.008175Z [] [INFO] Executing scraper: buynsw
+2026-09-29T18:30:38.617124Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/opportunity/search?query=&categories=&types=&area=&page=1 "HTTP/1.1 200 "
+2026-09-29T18:30:39.061068Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6 "HTTP/1.1 200 "
+2026-09-29T18:30:39.308627Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/4CF23D43-D9DB-4886-81C4EB4F11D069C6/opportunity-package-4CF23D43-D9DB-4886-81C4EB4F11D069C6.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T183039Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=9f2bb570fb9f8c8cff9dcaa3702eb09cf4a1feda858e600a39f0d62e179597eb "HTTP/1.1 200 OK"
+2026-09-29T18:30:39.657952Z [] [INFO] Executing scraper: tenders_act
+2026-09-29T18:30:42.883733Z [] Warning: uc_driver not found. Getting it now:
+2026-09-29T18:30:43.374133Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:30:43.374152Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:30:43.374158Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:30:45.274156Z [] Download Complete!
+2026-09-29T18:30:45.274251Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:30:45.454674Z [] Unzip Complete!
+2026-09-29T18:30:45.454694Z [] ['uc_driver'] was saved to:
+2026-09-29T18:30:45.454700Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:30:45.454707Z [] uc_driver
+2026-09-29T18:30:45.454714Z [] [uc_driver 154.0.8037.57] is ready for use!
+2026-09-29T18:30:45.457406Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T18:30:45.457415Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T18:30:45.457421Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T18:30:47.998221Z [] Download Complete!
+2026-09-29T18:30:47.998242Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T18:30:48.177999Z [] Unzip Complete!
+2026-09-29T18:30:48.178017Z [] ['chromedriver'] was saved to:
+2026-09-29T18:30:48.178022Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T18:30:48.178026Z [] chromedriver
+2026-09-29T18:30:48.178030Z [] [chromedriver 154.0.8037.57] is ready for use!
+2026-09-29T18:30:51.881855Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:30:51.881871Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:30:52.103052Z [] [ACT] attempt 1/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:31:09.111802Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:31:09.111841Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:31:09.911258Z [] [ACT] attempt 2/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:31:41.704263Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T18:31:41.704285Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T18:31:42.482158Z [] [ACT] attempt 3/3 got code 2 with 0 tenders, retrying
+2026-09-29T18:31:52.586524Z [INFO] Shutting down user disabled instance
+2026-09-29T18:32:06.514313Z [INFO] Execution tender-batch-job-7gm6x has failed to complete, 0/1 tasks were a success.

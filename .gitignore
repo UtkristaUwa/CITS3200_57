@@ -16,6 +16,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Allow test execution logs for documentation
+!tests/Logs/
+!tests/Logs/*.log
+
 # === Node ===
 node_modules/
 dist/

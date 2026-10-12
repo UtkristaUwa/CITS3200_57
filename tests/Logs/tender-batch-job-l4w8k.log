@@ -1,0 +1,37 @@
+﻿2026-09-20T11:21:30.469249Z [ERROR] Traceback (most recent call last):
+  File "/app/manager.py", line 9, in <module>
+    from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
+  File "/app/error_scrapers/grant_connect/scraper.py", line 25, in <module>
+    from error_scrapers import common
+  File "/app/error_scrapers/common.py", line 7, in <module>
+    import openpyxl
+ModuleNotFoundError: No module named 'openpyxl'
+2026-09-20T11:21:30.568176Z [WARNING] Container called exit(1).
+2026-09-20T11:21:40.433208Z [ERROR] Traceback (most recent call last):
+  File "/app/manager.py", line 9, in <module>
+    from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
+  File "/app/error_scrapers/grant_connect/scraper.py", line 25, in <module>
+    from error_scrapers import common
+  File "/app/error_scrapers/common.py", line 7, in <module>
+    import openpyxl
+ModuleNotFoundError: No module named 'openpyxl'
+2026-09-20T11:21:40.533510Z [WARNING] Container called exit(1).
+2026-09-20T11:21:50.491562Z [ERROR] Traceback (most recent call last):
+  File "/app/manager.py", line 9, in <module>
+    from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
+  File "/app/error_scrapers/grant_connect/scraper.py", line 25, in <module>
+    from error_scrapers import common
+  File "/app/error_scrapers/common.py", line 7, in <module>
+    import openpyxl
+ModuleNotFoundError: No module named 'openpyxl'
+2026-09-20T11:21:50.578208Z [WARNING] Container called exit(1).
+2026-09-20T11:21:57.797857Z [ERROR] Traceback (most recent call last):
+  File "/app/manager.py", line 9, in <module>
+    from error_scrapers.grant_connect.scraper import run_scraper as run_grantconnect
+  File "/app/error_scrapers/grant_connect/scraper.py", line 25, in <module>
+    from error_scrapers import common
+  File "/app/error_scrapers/common.py", line 7, in <module>
+    import openpyxl
+ModuleNotFoundError: No module named 'openpyxl'
+2026-09-20T11:21:57.891181Z [WARNING] Container called exit(1).
+2026-09-20T11:22:03.380657Z [ERROR] Execution tender-batch-job-l4w8k has failed to complete, 0/1 tasks were a success.
