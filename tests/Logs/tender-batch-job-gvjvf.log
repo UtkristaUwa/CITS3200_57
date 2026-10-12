@@ -1,0 +1,9 @@
+﻿2026-09-20T14:13:20.038241Z [] /usr/local/bin/python: can't open file '/app/manager.py': [Errno 2] No such file or directory
+2026-09-20T14:13:20.086268Z [WARNING] Container called exit(2).
+2026-09-20T14:13:29.507142Z [] /usr/local/bin/python: can't open file '/app/manager.py': [Errno 2] No such file or directory
+2026-09-20T14:13:29.571366Z [WARNING] Container called exit(2).
+2026-09-20T14:13:36.754460Z [] /usr/local/bin/python: can't open file '/app/manager.py': [Errno 2] No such file or directory
+2026-09-20T14:13:36.783314Z [WARNING] Container called exit(2).
+2026-09-20T14:13:46.867103Z [] /usr/local/bin/python: can't open file '/app/manager.py': [Errno 2] No such file or directory
+2026-09-20T14:13:46.919694Z [WARNING] Container called exit(2).
+2026-09-20T14:13:51.914050Z [ERROR] Execution tender-batch-job-gvjvf has failed to complete, 0/1 tasks were a success.

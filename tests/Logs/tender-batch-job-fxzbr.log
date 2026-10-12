@@ -1,0 +1,694 @@
+﻿2026-09-20T13:54:41.942146Z [] (using temporary directory: /tmp/tmp2k7zcxbt)
+2026-09-20T13:54:43.868040Z [] === Scraping: sources=austender,wa,nt,vic,qld limit=0 ===
+2026-09-20T13:54:44.706081Z [] AUSTENDER_USERNAME/AUSTENDER_PASSWORD not set -- tender text will be scraped but attachments need a login
+2026-09-20T13:54:44.838465Z [] no WA_TENDERS_COOKIE or WA_TENDERS_USERNAME/PASSWORD set -- tender text will be scraped but specification documents need a login
+2026-09-20T13:56:24.773087Z [] no NT_QTOL_COOKIE set -- tender text will be scraped but the documents need a signed-in account with a business attached
+2026-09-20T13:57:12.983252Z [] Launching Chrome (headed on virtual display :1001)...
+2026-09-20T13:57:15.565752Z [] Warning: uc_driver not found. Getting it now:
+2026-09-20T13:57:15.827476Z [] *** Getting chromedriver 153.0.8010.52 (Latest Stable) 
+2026-09-20T13:57:15.827495Z [] Downloading chromedriver-linux64.zip from:
+2026-09-20T13:57:15.827500Z [] https://storage.googleapis.com/chrome-for-testing-public/153.0.8010.52/linux64/chromedriver-linux64.zip ...
+2026-09-20T13:57:18.180133Z [] Download Complete!
+2026-09-20T13:57:18.180207Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-20T13:57:18.352908Z [] Unzip Complete!
+2026-09-20T13:57:18.352929Z [] ['uc_driver'] was saved to:
+2026-09-20T13:57:18.352936Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-20T13:57:18.352942Z [] uc_driver
+2026-09-20T13:57:18.352948Z [] [uc_driver 153.0.8010.52] is ready for use!
+2026-09-20T13:57:22.289231Z [] Opening https://www.tenders.vic.gov.au/tenders/open
+2026-09-20T13:57:28.093083Z [] Detected 3 page(s) of results.
+2026-09-20T13:57:31.605299Z []   Page 1: found 25 tender link(s).
+2026-09-20T13:57:33.717960Z [] Opening page 2: https://www.tenders.vic.gov.au/tenders/open?page=2
+2026-09-20T13:57:42.375544Z []   Page 2: found 25 tender link(s).
+2026-09-20T13:57:45.811690Z [] Opening page 3: https://www.tenders.vic.gov.au/tenders/open?page=3
+2026-09-20T13:57:54.027317Z []   Page 3: found 21 tender link(s).
+2026-09-20T13:57:54.027332Z [] Collected 71 tender link(s). Saving detail pages...
+2026-09-20T13:57:56.198628Z [] [1/71] PROCF22-000236 -> https://www.tenders.vic.gov.au/tender/view?id=249237
+2026-09-20T13:58:01.463486Z []         saved PROCF22-000236/ (0/4 document(s))
+2026-09-20T13:58:04.125572Z [] [2/71] PROCF23-149 -> https://www.tenders.vic.gov.au/tender/view?id=285775
+2026-09-20T13:58:09.422498Z []         saved PROCF23-149/ (0/10 document(s))
+2026-09-20T13:58:12.421674Z [] [3/71] ITR-SS-05-2018 -> https://www.tenders.vic.gov.au/tender/view?id=97410
+2026-09-20T13:58:17.800854Z []         saved ITR-SS-05-2018/ (0/1 document(s))
+2026-09-20T13:58:21.118344Z [] [4/71] RFT 61 5408 25 -> https://www.tenders.vic.gov.au/tender/view?id=331825
+2026-09-20T13:58:26.600510Z []         saved RFT_61_5408_25/ (0/13 document(s))
+2026-09-20T13:58:29.919312Z [] [5/71] DOT2487-26 -> https://www.tenders.vic.gov.au/tender/view?id=333325
+2026-09-20T13:59:05.710330Z []         WARNING: skipped (BlockedError: Detail page for DOT2487-26 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T13:59:07.532272Z [] [6/71] 1222753561 -> https://www.tenders.vic.gov.au/tender/view?id=333001
+2026-09-20T13:59:43.383650Z []         WARNING: skipped (BlockedError: Detail page for 1222753561 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T13:59:45.546365Z [] [7/71] T000453 -> https://www.tenders.vic.gov.au/tender/view?id=333661
+2026-09-20T13:59:50.894449Z []         saved T000453/ (0/5 document(s))
+2026-09-20T13:59:53.654092Z [] [8/71] GH26019 -> https://www.tenders.vic.gov.au/tender/view?id=333481
+2026-09-20T13:59:58.965709Z []         saved GH26019/ (0/1 document(s))
+2026-09-20T14:00:02.043971Z [] [9/71] PRN-00178 -> https://www.tenders.vic.gov.au/tender/view?id=333005
+2026-09-20T14:00:07.422889Z []         saved PRN-00178/ (0/12 document(s))
+2026-09-20T14:00:10.861401Z [] [10/71] DOT45286 -> https://www.tenders.vic.gov.au/tender/view?id=332871
+2026-09-20T14:00:16.534535Z []         saved DOT45286/ (0/0 document(s))
+2026-09-20T14:00:19.230957Z [] [11/71] DOT45540 -> https://www.tenders.vic.gov.au/tender/view?id=332869
+2026-09-20T14:00:25.871211Z []         saved DOT45540/ (0/0 document(s))
+2026-09-20T14:00:29.107883Z [] [12/71] VLPRJ2958 -> https://www.tenders.vic.gov.au/tender/view?id=333750
+2026-09-20T14:00:34.648731Z []         saved VLPRJ2958/ (0/0 document(s))
+2026-09-20T14:00:37.821024Z [] [13/71] DOT45548 -> https://www.tenders.vic.gov.au/tender/view?id=333737
+2026-09-20T14:00:43.668924Z []         saved DOT45548/ (0/0 document(s))
+2026-09-20T14:00:46.274100Z [] [14/71] PRN-00151 -> https://www.tenders.vic.gov.au/tender/view?id=332562
+2026-09-20T14:00:51.745666Z []         saved PRN-00151/ (0/12 document(s))
+2026-09-20T14:00:53.674017Z [] [15/71] C01563 -> https://www.tenders.vic.gov.au/tender/view?id=333322
+2026-09-20T14:00:59.063530Z []         saved C01563/ (0/2 document(s))
+2026-09-20T14:01:02.201475Z [] [16/71] PAT-2526-4405 -> https://www.tenders.vic.gov.au/tender/view?id=328083
+2026-09-20T14:01:07.589483Z []         saved PAT-2526-4405/ (0/16 document(s))
+2026-09-20T14:01:09.961709Z [] [17/71] RFT-1011 -> https://www.tenders.vic.gov.au/tender/view?id=333461
+2026-09-20T14:01:15.336017Z []         saved RFT-1011/ (0/4 document(s))
+2026-09-20T14:01:17.978415Z [] [18/71] GWS576 -> https://www.tenders.vic.gov.au/tender/view?id=333318
+2026-09-20T14:01:23.325110Z []         saved GWS576/ (0/5 document(s))
+2026-09-20T14:01:25.568383Z [] [19/71] RCH-EOI-2025-0037 -> https://www.tenders.vic.gov.au/tender/view?id=331817
+2026-09-20T14:01:30.924162Z []         saved RCH-EOI-2025-0037/ (0/8 document(s))
+2026-09-20T14:01:33.893305Z [] [20/71] ARV-26-MBAR UV -> https://www.tenders.vic.gov.au/tender/view?id=333320
+2026-09-20T14:01:39.202013Z []         saved ARV-26-MBAR_UV/ (0/5 document(s))
+2026-09-20T14:01:41.642694Z [] [21/71] EOI DOT45634 - VGV -> https://www.tenders.vic.gov.au/tender/view?id=333213
+2026-09-20T14:01:46.964128Z []         saved EOI_DOT45634_-_VGV/ (0/2 document(s))
+2026-09-20T14:01:49.558060Z [] [22/71] T2026-0814 -> https://www.tenders.vic.gov.au/tender/view?id=333198
+2026-09-20T14:01:54.907729Z []         saved T2026-0814/ (0/8 document(s))
+2026-09-20T14:01:56.868177Z [] [23/71] BH 2025-1008 -> https://www.tenders.vic.gov.au/tender/view?id=332854
+2026-09-20T14:02:02.213169Z []         saved BH_2025-1008/ (0/1 document(s))
+2026-09-20T14:02:05.005619Z [] [24/71] BKI001693-RFT -> https://www.tenders.vic.gov.au/tender/view?id=333674
+2026-09-20T14:02:10.391563Z []         saved BKI001693-RFT/ (0/3 document(s))
+2026-09-20T14:02:12.030048Z [] [25/71] ARV-26-06-MBAR-CWS -> https://www.tenders.vic.gov.au/tender/view?id=332867
+2026-09-20T14:02:17.374995Z []         saved ARV-26-06-MBAR-CWS/ (0/6 document(s))
+2026-09-20T14:02:19.347610Z [] [26/71] VP516822 -> https://www.tenders.vic.gov.au/tender/view?id=332863
+2026-09-20T14:02:24.758739Z []         saved VP516822/ (0/2 document(s))
+2026-09-20T14:02:27.694421Z [] [27/71] DOT45380 -> https://www.tenders.vic.gov.au/tender/view?id=333217
+2026-09-20T14:02:33.020881Z []         saved DOT45380/ (0/0 document(s))
+2026-09-20T14:02:35.767321Z [] [28/71] DOT45587 -> https://www.tenders.vic.gov.au/tender/view?id=332744
+2026-09-20T14:02:41.067838Z []         saved DOT45587/ (0/0 document(s))
+2026-09-20T14:02:44.060891Z [] [29/71] DOT45289 -> https://www.tenders.vic.gov.au/tender/view?id=329029
+2026-09-20T14:02:49.301005Z []         saved DOT45289/ (0/0 document(s))
+2026-09-20T14:02:52.791984Z [] [30/71] CFA-2026-0171 -> https://www.tenders.vic.gov.au/tender/view?id=333205
+2026-09-20T14:02:58.156247Z []         saved CFA-2026-0171/ (0/4 document(s))
+2026-09-20T14:02:59.873Z [] [31/71] 100054 -> https://www.tenders.vic.gov.au/tender/view?id=331149
+2026-09-20T14:03:05.270371Z []         saved 100054/ (0/22 document(s))
+2026-09-20T14:03:06.932515Z [] [32/71] R1037-2027 -> https://www.tenders.vic.gov.au/tender/view?id=327947
+2026-09-20T14:03:12.228852Z []         saved R1037-2027/ (0/7 document(s))
+2026-09-20T14:03:14.067234Z [] [33/71] VCAA2026 -> https://www.tenders.vic.gov.au/tender/view?id=333474
+2026-09-20T14:03:19.396179Z []         saved VCAA2026/ (0/1 document(s))
+2026-09-20T14:03:20.946923Z [] [34/71] RFT 2841 -> https://www.tenders.vic.gov.au/tender/view?id=333214
+2026-09-20T14:03:56.813939Z []         WARNING: skipped (BlockedError: Detail page for RFT 2841 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:03:59.998352Z [] [35/71] BWCO-000035EOI -> https://www.tenders.vic.gov.au/tender/view?id=331283
+2026-09-20T14:04:05.381316Z []         saved BWCO-000035EOI/ (0/9 document(s))
+2026-09-20T14:04:07.305203Z [] [36/71] N1000309 -> https://www.tenders.vic.gov.au/tender/view?id=332072
+2026-09-20T14:04:43.047337Z []         WARNING: skipped (BlockedError: Detail page for N1000309 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:04:46.203762Z [] [37/71] CFA-2025-0195 -> https://www.tenders.vic.gov.au/tender/view?id=328565
+2026-09-20T14:05:22.091931Z []         WARNING: skipped (BlockedError: Detail page for CFA-2025-0195 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:05:25.059623Z [] [38/71] PAT-2526-5429 -> https://www.tenders.vic.gov.au/tender/view?id=331815
+2026-09-20T14:05:30.547053Z []         saved PAT-2526-5429/ (0/34 document(s))
+2026-09-20T14:05:32.057510Z [] [39/71] POH-VRET-CNT-199ROI -> https://www.tenders.vic.gov.au/tender/view?id=333662
+2026-09-20T14:06:07.790241Z []         WARNING: skipped (BlockedError: Detail page for POH-VRET-CNT-199ROI was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:06:09.381239Z [] [40/71] PRN-00130 -> https://www.tenders.vic.gov.au/tender/view?id=331691
+2026-09-20T14:06:45.373191Z []         WARNING: skipped (BlockedError: Detail page for PRN-00130 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:06:48.335375Z [] [41/71] CTFA1026-2 -> https://www.tenders.vic.gov.au/tender/view?id=332320
+2026-09-20T14:06:53.700714Z []         saved CTFA1026-2/ (0/6 document(s))
+2026-09-20T14:06:57.098628Z [] [42/71] CTFA1026-1 -> https://www.tenders.vic.gov.au/tender/view?id=332311
+2026-09-20T14:07:32.818413Z []         WARNING: skipped (BlockedError: Detail page for CTFA1026-1 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:07:36.260678Z [] [43/71] DOT42631 -> https://www.tenders.vic.gov.au/tender/view?id=332571
+2026-09-20T14:07:41.559952Z []         saved DOT42631/ (0/0 document(s))
+2026-09-20T14:07:43.203955Z [] [44/71] DOT45323 -> https://www.tenders.vic.gov.au/tender/view?id=332076
+2026-09-20T14:08:19.035261Z []         WARNING: skipped (BlockedError: Detail page for DOT45323 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:08:21.877081Z [] [45/71] DOT44844 -> https://www.tenders.vic.gov.au/tender/view?id=332061
+2026-09-20T14:08:57.728017Z []         WARNING: skipped (BlockedError: Detail page for DOT44844 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:08:59.380971Z [] [46/71] DOT45239 -> https://www.tenders.vic.gov.au/tender/view?id=331146
+2026-09-20T14:09:04.723433Z []         saved DOT45239/ (0/0 document(s))
+2026-09-20T14:09:06.983141Z [] [47/71] RFT-1036 -> https://www.tenders.vic.gov.au/tender/view?id=332030
+2026-09-20T14:09:42.636179Z []         WARNING: skipped (BlockedError: Detail page for RFT-1036 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:09:45.293763Z [] [48/71] NGV 26-02 -> https://www.tenders.vic.gov.au/tender/view?id=331830
+2026-09-20T14:10:21.265236Z []         WARNING: skipped (BlockedError: Detail page for NGV 26-02 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:10:23.859108Z [] [49/71] R195-2026 -> https://www.tenders.vic.gov.au/tender/view?id=330088
+2026-09-20T14:10:29.239757Z []         saved R195-2026/ (0/9 document(s))
+2026-09-20T14:10:32.313786Z [] [50/71] EOI70900 -> https://www.tenders.vic.gov.au/tender/view?id=332046
+2026-09-20T14:10:37.692026Z []         saved EOI70900/ (0/3 document(s))
+2026-09-20T14:10:40.535284Z [] [51/71] RFT2026CMW004.03 -> https://www.tenders.vic.gov.au/tender/view?id=332054
+2026-09-20T14:11:16.394412Z []         WARNING: skipped (BlockedError: Detail page for RFT2026CMW004.03 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:11:19.426865Z [] [52/71] VLA-0303 -> https://www.tenders.vic.gov.au/tender/view?id=332042
+2026-09-20T14:11:24.795095Z []         saved VLA-0303/ (0/7 document(s))
+2026-09-20T14:11:27.762237Z [] [53/71] RFT 22 6845 26 -> https://www.tenders.vic.gov.au/tender/view?id=332037
+2026-09-20T14:11:33.136471Z []         saved RFT_22_6845_26/ (0/11 document(s))
+2026-09-20T14:11:35.970359Z [] [54/71] RFT 9 6949 26 -> https://www.tenders.vic.gov.au/tender/view?id=332033
+2026-09-20T14:11:41.392247Z []         saved RFT_9_6949_26/ (0/6 document(s))
+2026-09-20T14:11:44.226845Z [] [55/71] RFT-1017 -> https://www.tenders.vic.gov.au/tender/view?id=332031
+2026-09-20T14:11:49.591595Z []         saved RFT-1017/ (0/10 document(s))
+2026-09-20T14:11:52.808700Z [] [56/71] SLV2026-005 -> https://www.tenders.vic.gov.au/tender/view?id=331402
+2026-09-20T14:12:28.626915Z []         WARNING: skipped (BlockedError: Detail page for SLV2026-005 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:12:31.498361Z [] [57/71] BH 306-26 -> https://www.tenders.vic.gov.au/tender/view?id=332462
+2026-09-20T14:12:36.820902Z []         saved BH_306-26/ (0/2 document(s))
+2026-09-20T14:12:39.282079Z [] [58/71] DOT35337 -> https://www.tenders.vic.gov.au/tender/view?id=332566
+2026-09-20T14:12:44.599506Z []         saved DOT35337/ (0/3 document(s))
+2026-09-20T14:12:48.078728Z [] [59/71] 2156B -> https://www.tenders.vic.gov.au/tender/view?id=332055
+2026-09-20T14:12:53.441371Z []         saved 2156B/ (0/0 document(s))
+2026-09-20T14:12:55.889105Z [] [60/71] 1016 -> https://www.tenders.vic.gov.au/tender/view?id=331809
+2026-09-20T14:13:31.611746Z []         WARNING: skipped (BlockedError: Detail page for 1016 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:13:34.070649Z [] [61/71] DOT45671 -> https://www.tenders.vic.gov.au/tender/view?id=332997
+2026-09-20T14:13:39.392889Z []         saved DOT45671/ (0/0 document(s))
+2026-09-20T14:13:41.057454Z [] [62/71] EOI ORO-1808 -> https://www.tenders.vic.gov.au/tender/view?id=332999
+2026-09-20T14:13:46.403876Z []         saved EOI_ORO-1808/ (0/1 document(s))
+2026-09-20T14:13:49.338784Z [] [63/71] EOISDT10059177THAL -> https://www.tenders.vic.gov.au/tender/view?id=332312
+2026-09-20T14:13:54.646454Z []         saved EOISDT10059177THAL/ (0/4 document(s))
+2026-09-20T14:13:56.382231Z [] [64/71] RFT 26-10 -> https://www.tenders.vic.gov.au/tender/view?id=331390
+2026-09-20T14:14:32.395463Z []         WARNING: skipped (BlockedError: Detail page for RFT 26-10 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:14:34.619903Z [] [65/71] C5381-2026 -> https://www.tenders.vic.gov.au/tender/view?id=330093
+2026-09-20T14:14:39.994849Z []         saved C5381-2026/ (0/0 document(s))
+2026-09-20T14:14:42.137361Z [] [66/71] 000046 -> https://www.tenders.vic.gov.au/tender/view?id=330485
+2026-09-20T14:14:47.579748Z []         saved 000046/ (0/24 document(s))
+2026-09-20T14:14:50.994212Z [] [67/71] BWRW-S1192-000048T -> https://www.tenders.vic.gov.au/tender/view?id=328793
+2026-09-20T14:14:56.555228Z []         saved BWRW-S1192-000048T/ (0/48 document(s))
+2026-09-20T14:14:59.132737Z [] [68/71] BH 303.-26 -> https://www.tenders.vic.gov.au/tender/view?id=331692
+2026-09-20T14:15:35.075087Z []         WARNING: skipped (BlockedError: Detail page for BH 303.-26 was blocked by Cloudflare (title: 'Just a moment...').)
+2026-09-20T14:15:37.071728Z [] [69/71] RFT 8 8974 26 -> https://www.tenders.vic.gov.au/tender/view?id=331820
+2026-09-20T14:15:42.607817Z []         saved RFT_8_8974_26/ (0/6 document(s))
+2026-09-20T14:15:45.262228Z [] [70/71] DOT44341 -> https://www.tenders.vic.gov.au/tender/view?id=330092
+2026-09-20T14:15:50.566873Z []         saved DOT44341/ (0/0 document(s))
+2026-09-20T14:15:53.461942Z [] [71/71] EOIMW29 -> https://www.tenders.vic.gov.au/tender/view?id=329644
+2026-09-20T14:15:58.773510Z []         saved EOIMW29/ (0/4 document(s))
+2026-09-20T14:15:58.773533Z [] Done. Saved 54/71 tender folder(s).
+2026-09-20T14:15:58.773539Z [] 17 failed:
+2026-09-20T14:15:58.773558Z []   - DOT2487-26: BlockedError
+2026-09-20T14:15:58.773566Z []   - 1222753561: BlockedError
+2026-09-20T14:15:58.773574Z []   - RFT 2841: BlockedError
+2026-09-20T14:15:58.773581Z []   - N1000309: BlockedError
+2026-09-20T14:15:58.773588Z []   - CFA-2025-0195: BlockedError
+2026-09-20T14:15:58.773596Z []   - POH-VRET-CNT-199ROI: BlockedError
+2026-09-20T14:15:58.773603Z []   - PRN-00130: BlockedError
+2026-09-20T14:15:58.773610Z []   - CTFA1026-1: BlockedError
+2026-09-20T14:15:58.773616Z []   - DOT45323: BlockedError
+2026-09-20T14:15:58.773623Z []   - DOT44844: BlockedError
+2026-09-20T14:15:58.773630Z []   - RFT-1036: BlockedError
+2026-09-20T14:15:58.773638Z []   - NGV 26-02: BlockedError
+2026-09-20T14:15:58.773645Z []   - RFT2026CMW004.03: BlockedError
+2026-09-20T14:15:58.773651Z []   - SLV2026-005: BlockedError
+2026-09-20T14:15:58.773658Z []   - 1016: BlockedError
+2026-09-20T14:15:58.773665Z []   - RFT 26-10: BlockedError
+2026-09-20T14:15:58.773672Z []   - BH 303.-26: BlockedError
+2026-09-20T14:15:58.945907Z [] Launching Chrome (headed on virtual display :1001)...
+2026-09-20T14:16:00.923150Z [] Opening page 1: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=1&sortBy=Opens
+2026-09-20T14:16:07.863870Z [] Detected 7 page(s), 123 total tenders.
+2026-09-20T14:16:08.998890Z []   Page 1: 20 link(s).
+2026-09-20T14:16:11.227952Z [] Opening page 2: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=2&sortBy=Opens
+2026-09-20T14:16:19.205608Z []   Page 2: 20 link(s).
+2026-09-20T14:16:22.028741Z [] Opening page 3: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=3&sortBy=Opens
+2026-09-20T14:16:28.227395Z []   Page 3: 20 link(s).
+2026-09-20T14:16:30.610519Z [] Opening page 4: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=4&sortBy=Opens
+2026-09-20T14:16:36.749331Z []   Page 4: 20 link(s).
+2026-09-20T14:16:38.921905Z [] Opening page 5: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=5&sortBy=Opens
+2026-09-20T14:16:45.193748Z []   Page 5: 20 link(s).
+2026-09-20T14:16:47.371609Z [] Opening page 6: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=6&sortBy=Opens
+2026-09-20T14:16:53.522916Z []   Page 6: 20 link(s).
+2026-09-20T14:16:55.991500Z [] Opening page 7: https://qtenders.hpw.qld.gov.au/search?keywords=&statuses=1&page=7&sortBy=Opens
+2026-09-20T14:17:00.802508Z []   Page 7: 3 link(s).
+2026-09-20T14:17:00.803090Z [] Saved 123 tender URL(s) to /app/web_scrapers/qld_qtenders/qld_qtenders_urls.txt
+2026-09-20T14:17:00.932115Z [] Fetching 123 tender detail page(s)...
+2026-09-20T14:17:01.029091Z [] [1/123] VP526340  (0/3 attachment(s))
+2026-09-20T14:17:01.582408Z [] [2/123] VP526320  (0/1 attachment(s))
+2026-09-20T14:17:02.395664Z [] [3/123] VP526301  (0/1 attachment(s))
+2026-09-20T14:17:03.148344Z [] [4/123] VP525784  (0/0 attachment(s))
+2026-09-20T14:17:04.059865Z [] [5/123] VP526078  (0/5 attachment(s))
+2026-09-20T14:17:04.806255Z [] [6/123] VP526066  (0/1 attachment(s))
+2026-09-20T14:17:05.669673Z [] [7/123] VP525983  (0/1 attachment(s))
+2026-09-20T14:17:06.627438Z [] [8/123] VP525921  (0/1 attachment(s))
+2026-09-20T14:17:07.376819Z [] [9/123] VP525958  (0/1 attachment(s))
+2026-09-20T14:17:08.015681Z [] [10/123] VP525953  (0/0 attachment(s))
+2026-09-20T14:17:08.749284Z [] [11/123] VP525945  (0/11 attachment(s))
+2026-09-20T14:17:09.665622Z [] [12/123] VP520862  (0/2 attachment(s))
+2026-09-20T14:17:10.378702Z [] [13/123] VP525908  (0/2 attachment(s))
+2026-09-20T14:17:11.179458Z [] [14/123] VP525810  (0/12 attachment(s))
+2026-09-20T14:17:11.923809Z [] [15/123] VP525801  (0/13 attachment(s))
+2026-09-20T14:17:12.774729Z [] [16/123] VP525769  (0/0 attachment(s))
+2026-09-20T14:17:13.255218Z [] [17/123] VP525756  (0/1 attachment(s))
+2026-09-20T14:17:13.946582Z [] [18/123] VP525399  (0/0 attachment(s))
+2026-09-20T14:17:14.851140Z [] [19/123] VP525715  (0/32 attachment(s))
+2026-09-20T14:17:15.457387Z [] [20/123] VP525702  (0/4 attachment(s))
+2026-09-20T14:17:16.188435Z [] [21/123] VP522676  (0/7 attachment(s))
+2026-09-20T14:17:16.785544Z [] [22/123] VP525626  (0/13 attachment(s))
+2026-09-20T14:17:17.537643Z [] [23/123] VP525523  (0/0 attachment(s))
+2026-09-20T14:17:18.388327Z [] [24/123] VP525563  (0/6 attachment(s))
+2026-09-20T14:17:18.901179Z [] [25/123] VP525152  (0/5 attachment(s))
+2026-09-20T14:17:19.499195Z [] [26/123] VP525551  (0/2 attachment(s))
+2026-09-20T14:17:20.203834Z [] [27/123] VP525511  (0/3 attachment(s))
+2026-09-20T14:17:20.869358Z [] [28/123] VP525465  (0/5 attachment(s))
+2026-09-20T14:17:21.633489Z [] [29/123] VP522182  (0/9 attachment(s))
+2026-09-20T14:17:22.665918Z [] [30/123] VP525495  (0/5 attachment(s))
+2026-09-20T14:17:23.458967Z [] [31/123] VP525470  (0/14 attachment(s))
+2026-09-20T14:17:24.146956Z [] [32/123] VP525295  (0/6 attachment(s))
+2026-09-20T14:17:24.927729Z [] [33/123] VP525197  (0/0 attachment(s))
+2026-09-20T14:17:25.444101Z [] [34/123] VP525342  (0/1 attachment(s))
+2026-09-20T14:17:26.490709Z [] [35/123] VP525130  (0/4 attachment(s))
+2026-09-20T14:17:27.274004Z [] [36/123] VP525316  (0/22 attachment(s))
+2026-09-20T14:17:28.228838Z [] [37/123] VP525211  (0/3 attachment(s))
+2026-09-20T14:17:29.224828Z [] [38/123] VP525195  (0/3 attachment(s))
+2026-09-20T14:17:29.856018Z [] [39/123] VP524698  (0/0 attachment(s))
+2026-09-20T14:17:30.898388Z [] [40/123] VP525124  (0/15 attachment(s))
+2026-09-20T14:17:31.961840Z [] [41/123] VP525148  (0/13 attachment(s))
+2026-09-20T14:17:32.782636Z [] [42/123] VP525029  (0/0 attachment(s))
+2026-09-20T14:17:33.281425Z [] [43/123] VP524923  (0/2 attachment(s))
+2026-09-20T14:17:34.054875Z [] [44/123] VP524945  (0/8 attachment(s))
+2026-09-20T14:17:35.077810Z [] [45/123] VP523022  (0/13 attachment(s))
+2026-09-20T14:17:35.631164Z [] [46/123] VP524944  (0/1 attachment(s))
+2026-09-20T14:17:36.142035Z [] [47/123] VP524929  (0/1 attachment(s))
+2026-09-20T14:17:36.736994Z [] [48/123] VP524590  (0/1 attachment(s))
+2026-09-20T14:17:37.599072Z [] [49/123] VP524912  (0/0 attachment(s))
+2026-09-20T14:17:38.254875Z [] [50/123] VP524905  (0/0 attachment(s))
+2026-09-20T14:17:39.251524Z [] [51/123] VP524818  (0/3 attachment(s))
+2026-09-20T14:17:40.080923Z [] [52/123] VP524792  (0/1 attachment(s))
+2026-09-20T14:17:40.876127Z [] [53/123] VP524671  (0/1 attachment(s))
+2026-09-20T14:17:41.737551Z [] [54/123] VP524640  (0/20 attachment(s))
+2026-09-20T14:17:42.385653Z [] [55/123] VP524727  (0/0 attachment(s))
+2026-09-20T14:17:43.169680Z [] [56/123] VP524716  (0/10 attachment(s))
+2026-09-20T14:17:44.047833Z [] [57/123] VP524683  (0/0 attachment(s))
+2026-09-20T14:17:44.880012Z [] [58/123] VP524695  (0/2 attachment(s))
+2026-09-20T14:17:45.772044Z [] [59/123] VP523813  (0/1 attachment(s))
+2026-09-20T14:17:46.450721Z [] [60/123] VP524464  (0/1 attachment(s))
+2026-09-20T14:17:47.132877Z [] [61/123] VP524360  (0/11 attachment(s))
+2026-09-20T14:17:48.116578Z [] [62/123] VP524241  (0/11 attachment(s))
+2026-09-20T14:17:48.745980Z [] [63/123] VP524231  (0/17 attachment(s))
+2026-09-20T14:17:49.561251Z [] [64/123] VP524007  (0/15 attachment(s))
+2026-09-20T14:17:50.175040Z [] [65/123] VP524082  (0/16 attachment(s))
+2026-09-20T14:17:51.123172Z [] [66/123] VP524076  (0/1 attachment(s))
+2026-09-20T14:17:52.189181Z [] [67/123] VP523889  (0/7 attachment(s))
+2026-09-20T14:17:52.667837Z [] [68/123] VP523840  (0/1 attachment(s))
+2026-09-20T14:17:54.918345Z [] [69/123] VP523874  (0/10 attachment(s))
+2026-09-20T14:17:55.941638Z [] [70/123] VP523909  (0/3 attachment(s))
+2026-09-20T14:17:56.659063Z [] [71/123] VP523905  (0/3 attachment(s))
+2026-09-20T14:17:57.183019Z [] [72/123] VP523687  (0/16 attachment(s))
+2026-09-20T14:17:58.032329Z [] [73/123] VP523896  (0/14 attachment(s))
+2026-09-20T14:17:58.539553Z [] [74/123] VP523676  (0/46 attachment(s))
+2026-09-20T14:17:59.254936Z [] [75/123] VP523870  (0/1 attachment(s))
+2026-09-20T14:17:59.925053Z [] [76/123] VP523866  (0/1 attachment(s))
+2026-09-20T14:18:00.542520Z [] [77/123] VP523772  (0/7 attachment(s))
+2026-09-20T14:18:01.015575Z [] [78/123] VP523746  (0/0 attachment(s))
+2026-09-20T14:18:01.865878Z [] [79/123] VP523708  (0/0 attachment(s))
+2026-09-20T14:18:02.651160Z [] [80/123] VP523664  (0/7 attachment(s))
+2026-09-20T14:18:03.190093Z [] [81/123] VP523655  (0/7 attachment(s))
+2026-09-20T14:18:04.176496Z [] [82/123] VP523584  (0/12 attachment(s))
+2026-09-20T14:18:04.825616Z [] [83/123] VP523433  (0/8 attachment(s))
+2026-09-20T14:18:05.463656Z [] [84/123] VP523375  (0/16 attachment(s))
+2026-09-20T14:18:06.472364Z [] [85/123] VP523303  (0/8 attachment(s))
+2026-09-20T14:18:07.058308Z [] [86/123] VP522998  (0/0 attachment(s))
+2026-09-20T14:18:07.673945Z [] [87/123] VP523261  (0/14 attachment(s))
+2026-09-20T14:18:08.659692Z [] [88/123] VP523182  (0/2 attachment(s))
+2026-09-20T14:18:09.715550Z [] [89/123] VP523043  (0/28 attachment(s))
+2026-09-20T14:18:10.652170Z [] [90/123] VP523009  (0/4 attachment(s))
+2026-09-20T14:18:11.579797Z [] [91/123] VP522767  (0/1 attachment(s))
+2026-09-20T14:18:12.087106Z [] [92/123] VP522807  (0/9 attachment(s))
+2026-09-20T14:18:12.587252Z [] [93/123] VP518331  (0/5 attachment(s))
+2026-09-20T14:18:13.109412Z [] [94/123] VP522335  (0/5 attachment(s))
+2026-09-20T14:18:14.028203Z [] [95/123] VP522876  (0/17 attachment(s))
+2026-09-20T14:18:14.693042Z [] [96/123] VP522769  (0/13 attachment(s))
+2026-09-20T14:18:15.438562Z [] [97/123] VP522442  (0/10 attachment(s))
+2026-09-20T14:18:16.262598Z [] [98/123] VP522456  (0/0 attachment(s))
+2026-09-20T14:18:17.323617Z [] [99/123] VP522541  (0/1 attachment(s))
+2026-09-20T14:18:17.947848Z [] [100/123] VP522352  (0/0 attachment(s))
+2026-09-20T14:18:18.608030Z [] [101/123] VP522355  (0/5 attachment(s))
+2026-09-20T14:18:19.676059Z [] [102/123] VP522207  (0/27 attachment(s))
+2026-09-20T14:18:20.567512Z [] [103/123] VP521950  (0/0 attachment(s))
+2026-09-20T14:18:21.339561Z [] [104/123] VP521700  (0/13 attachment(s))
+2026-09-20T14:18:22.088543Z [] [105/123] VP522003  (0/0 attachment(s))
+2026-09-20T14:18:22.822300Z [] [106/123] VP521941  (0/0 attachment(s))
+2026-09-20T14:18:23.808488Z [] [107/123] VP521648  (0/25 attachment(s))
+2026-09-20T14:18:24.836906Z [] [108/123] VP521761  (0/35 attachment(s))
+2026-09-20T14:18:25.566289Z [] [109/123] VP521633  (0/1 attachment(s))
+2026-09-20T14:18:26.474435Z [] [110/123] VP521043  (0/1 attachment(s))
+2026-09-20T14:18:27.162604Z [] [111/123] VP521227  (0/5 attachment(s))
+2026-09-20T14:18:27.741143Z [] [112/123] VP521181  (0/9 attachment(s))
+2026-09-20T14:18:28.459139Z [] [113/123] VP521162  (0/1 attachment(s))
+2026-09-20T14:18:28.964368Z [] [114/123] VP520536  (0/7 attachment(s))
+2026-09-20T14:18:29.665452Z [] [115/123] VP518556  (0/20 attachment(s))
+2026-09-20T14:18:30.575710Z [] [116/123] VP519531  (0/0 attachment(s))
+2026-09-20T14:18:31.263448Z [] [117/123] VP517458  (0/4 attachment(s))
+2026-09-20T14:18:31.940883Z [] [118/123] VP514142  (0/1 attachment(s))
+2026-09-20T14:18:32.474134Z [] [119/123] VP507930  (0/0 attachment(s))
+2026-09-20T14:18:33.350644Z [] [120/123] VP506255  (0/0 attachment(s))
+2026-09-20T14:18:34.395909Z [] [121/123] VP505968  (0/0 attachment(s))
+2026-09-20T14:18:35.155123Z [] [122/123] VP465869  (0/4 attachment(s))
+2026-09-20T14:18:35.782405Z [] [123/123] VP455349  (0/4 attachment(s))
+2026-09-20T14:18:36.470731Z [] Done. Saved 123/123 tender folder(s).
+2026-09-20T14:18:36.494247Z [] 361 tender(s); from austender=0, nt=37, qld=123, vic=54, wa=147
+2026-09-20T14:18:36.560720Z [] === Submitting 361 tender(s) to BigQuery ===
+2026-09-20T14:18:39.398971Z []   [NOOP] 'Construction of Montpellier Basins Monitoring Building and Associated Civil Works' [000046] tender_id=f8733734-890b-4ecd-8d37-470216d42478
+2026-09-20T14:18:44.366675Z []   [INSERTED] 'Toora WTP Disinfection Safety Improvements' [100054] tender_id=5711a322-bc70-45e2-a7ab-654f2c295cc8
+2026-09-20T14:18:46.754603Z []   [NOOP] 'Art Coordination Consultancy Services Panel 2018 (Panel Refresh)' [201705404] tender_id=177e09c7-7c75-4b5b-b524-cce194932594
+2026-09-20T14:18:49.349556Z []   [NOOP] 'Dinner Plain Water Recycling Plant ? Lagoon Rectification Works (Construct Only)' [2156B] tender_id=f6cd2eec-c697-4927-827a-39681b48eb6a
+2026-09-20T14:18:51.640920Z []   [NOOP] 'Royal Perth Hospital (RPH) - MRI Chiller Replacement' [24101833003] tender_id=0cb2c952-253e-4a7c-9971-d52805126f58
+2026-09-20T14:18:53.927707Z []   [NOOP] 'Audio Visual Services Panel for Murdoch University' [26006] tender_id=90003666-1da3-47fc-be93-f1a9b3d4cd4e
+2026-09-20T14:18:57.047867Z []   [NOOP] 'Provision of Media Planning and Buying Services' [26026] tender_id=31f947b7-15ab-45c3-acd6-f3168b7d42e8
+2026-09-20T14:18:59.365639Z []   [NOOP] 'AV Room Refurbishment Buildings 235, 245 & 440 for Murdoch University' [26027] tender_id=c315bdab-6963-4f4c-a1fe-42aa65eb6160
+2026-09-20T14:19:01.613246Z []   [NOOP] 'Mt Buller Alpine Resorts (MBAR) Clear Water Storage Project' [ARV-26-06-MBAR-CWS] tender_id=35592bfa-8b2f-4749-8c1e-d1d4a1b0d4c2
+2026-09-20T14:19:04.132967Z []   [NOOP] 'Mt Buller Potable & Wastewater UV Servicing' [ARV-26-MBAR_UV] tender_id=9b722e6e-bb36-4c01-983e-db8612b4bdb0
+2026-09-20T14:19:06.659135Z []   [NOOP] 'Alice Springs Renewable Energy Project - Expression of Interest (EOI)' [ASDC011-26] tender_id=191d2fc2-774f-4b4d-9ac8-60700364622e
+2026-09-20T14:19:08.961466Z []   [NOOP] 'Supported Accommodation' [BH_2025-1008] tender_id=3acec745-48fe-4454-b5e2-93aaea2d5e02
+2026-09-20T14:19:11.292142Z []   [NOOP] 'Provision of Passenger Air Travel Services Bendigo - Swan Hill' [BH_306-26] tender_id=27b9f9fe-28b4-4282-b151-beb6a834f129
+2026-09-20T14:19:15.638552Z []   [INSERTED] 'Bendigo Kangan Institute - Employee Assistance Program' [BKI001693-RFT] tender_id=9f58e077-e625-4a75-8574-bb3d2fc7e2d1
+2026-09-20T14:19:20.950480Z []   [INSERTED] 'Strategic Works Delivery Partner' [BWCO-000035EOI] tender_id=3a63f81f-8d69-4095-9b35-0f6d80eb501d
+2026-09-20T14:19:23.208031Z []   [NOOP] 'Major Gravity Sewers Rehabilitation' [BWRW-S1192-000048T] tender_id=80075e4c-3856-435c-9d24-eea3477654e5
+2026-09-20T14:19:25.516503Z []   [NOOP] 'Design & Construction of Murrayville Chlorinator Upgrade' [C01563] tender_id=4685fbe3-3e28-4cec-95e8-3fe40beb670c
+2026-09-20T14:19:27.782056Z []   [NOOP] 'Cowwarr Weir Switchboard Electrical Upgrades' [C5381-2026] tender_id=5a14e80b-7206-4646-8b79-d834e93bde3b
+2026-09-20T14:19:30.251392Z []   [NOOP] 'Launderable Clean Room Garments for CAHS Pharmacy and Auspman' [CAHS202515186] tender_id=66f81c33-d871-4d09-8aac-c4ba851f6db1
+2026-09-20T14:19:32.842657Z []   [NOOP] '2 x Nerve Integrity Monitors' [CAHS202515399] tender_id=361fe149-7189-41a1-b6c7-5e8e7b345782
+2026-09-20T14:19:35.488823Z []   [NOOP] 'Provision of 3 x Intracranial Pressure Monitors for Paediatric Critical Care Unit' [CAHS202616351] tender_id=0cf73e39-220a-4bac-ad6f-f37728441f88
+2026-09-20T14:19:39.117303Z []   [NOOP] 'Thermal Imaging Cameras' [CFA-2026-0171] tender_id=c29cf60f-d069-4bc3-a8e6-9514c61aae80
+2026-09-20T14:19:41.799367Z []   [NOOP] 'Transmission Building Replacement, Cocos Island' [CKISTS01] tender_id=937ee14a-4b7a-46a0-a2d0-a956afc720b7
+2026-09-20T14:19:44.210507Z []   [NOOP] 'Provision of a Tractor for the Agricultural Mechanical Program at Central Regional TAFE Northam Campus' [CRTF260000673] tender_id=49aa7200-dbdf-4fe7-8680-c29cdcc491ec
+2026-09-20T14:19:46.825423Z []   [NOOP] 'Electrical Maintenance Services 2026' [CTFA1026-2] tender_id=a5cce763-c496-4bb2-bf0a-628b67894e25
+2026-09-20T14:19:49.130591Z []   [NOOP] 'Electrical Distribution Network Stage 2' [DBCARIA0227] tender_id=b72d1b44-8c00-49f6-8db0-5875069e0dd6
+2026-09-20T14:19:51.473936Z []   [NOOP] 'RIA Hub Office Ablution Refurbishment' [DBCARIA0827] tender_id=46b13db1-faf8-49f0-ba1a-2668d2c3ba97
+2026-09-20T14:19:54.025556Z []   [NOOP] 'Colebatch Avenue Paving Upgrade' [DBCARIA1127] tender_id=af74495a-1b03-4c55-a990-fad0c1df7711
+2026-09-20T14:19:56.663944Z []   [NOOP] 'Wastewater Treatment Plant Capacity Expansion' [DBCARIAT0127] tender_id=00f90606-0d69-4fa9-8b1a-94b8926e15e9
+2026-09-20T14:19:59.432795Z []   [NOOP] 'Request for Proposal - Advanced Manufacturing and Technology Hub (AMTECH) Anchor Tenant' [DEED261929] tender_id=7ec5cd9a-cd17-4a0b-a9aa-d97d934f60a8
+2026-09-20T14:20:01.855153Z []   [NOOP] 'DEMONSTRATION TENDER - Practice Downloading Specification Documents and Uploading an Electronic Tender Lodgement (ETL)' [DEMOTENDER] tender_id=404abef0-4a9e-441e-8114-d75144d62636
+2026-09-20T14:20:04.188492Z []   [NOOP] 'Smartsheet Subcription' [DFES246725] tender_id=caee8770-60b6-46d3-93e1-5b9e2ae23a3c
+2026-09-20T14:20:06.720592Z []   [NOOP] 'Provisions of Shelter Systems and Associated Services' [DFES249226] tender_id=bc846979-c2a6-4861-bcf6-27e128867594
+2026-09-20T14:20:09.313242Z []   [NOOP] 'WAFES Conference and Awards Venue' [DFES249526] tender_id=5530d9aa-ea28-47f8-8a9f-46aea5dc084c
+2026-09-20T14:20:12.295348Z []   [NOOP] 'Provision of Group Teleconferencing Solution' [DFES251126] tender_id=68b4e0f7-46dc-449b-9efa-b6785cabfbc0
+2026-09-20T14:20:15.085967Z []   [NOOP] 'Department of Education - Rivervale Primary School - Covered Assembly Block - EC25' [DHW0019526] tender_id=3b895d11-73e2-4c1d-8cfc-af70a796fcf8
+2026-09-20T14:20:17.528005Z []   [NOOP] 'Department of Primary Industries and Regional Development - Albany Offices - Stage 2 Heating, Ventilation and Air Conditioning Upgrades' [DHW0029026] tender_id=1fb98e57-ddbd-44c3-b4db-c6460903dddd
+2026-09-20T14:20:20.220266Z []   [NOOP] 'Western Australia Police Force - Kununurra Police Station - Security System Upgrade' [DHW0085126] tender_id=3b1358a4-bd46-480e-8e60-6aa8081a5d19
+2026-09-20T14:20:22.601906Z []   [NOOP] 'Western Australia Police Force - Kununurra Police Station - Security System Upgrade' [DHW0085126A] tender_id=b8b98daf-7942-4a80-b405-3a3264922510
+2026-09-20T14:20:25.467142Z []   [NOOP] 'Department of Education - Esperance Senior High School Junior Campus - Middle Breezeway Canopy Roof Section - Rust Treatment' [DHW0086625] tender_id=d2df25d4-01ee-48e1-a123-adee46bc1557
+2026-09-20T14:20:28.172066Z []   [NOOP] 'Department of Training and Workforce Development - SMT Rockingham - Block A Roof Replacement and Mechanical Works' [DHW0114426] tender_id=c1be6b20-4176-4c6a-b315-afe0cc7afec5
+2026-09-20T14:20:30.853624Z []   [NOOP] 'Department of Training and Workforce Development - South Metropolitan TAFE - Munster - Clean Energy Expansion' [DHW0145825] tender_id=1d9be4c7-6828-4f3f-8eba-062e6a6bd465
+2026-09-20T14:20:33.538778Z []   [NOOP] 'Department of Education - Byford North Primary School - Forward Works' [DHW0167726] tender_id=4676582d-8ca3-4986-b2ee-01186db9c68d
+2026-09-20T14:20:36.078199Z []   [NOOP] 'Department of Training and Workforce Development - CR TAFE Geraldton - B Block Roof Replacement - Stage 2' [DHW0170926] tender_id=70f8841e-7f59-42d3-a836-9fd10a0168fa
+2026-09-20T14:20:38.538743Z []   [NOOP] 'Department of Education - Pingrup Primary School - Toilet Refurbishment' [DHW0175126] tender_id=e8518b11-103c-4487-8663-90b798f15865
+2026-09-20T14:20:40.949599Z []   [NOOP] 'Department of Education - Guildford Primary School - Relocation of 1 x GLA Transportables including associated works' [DHW0222226] tender_id=3867f44b-26a7-4811-95a3-2ae724c30155
+2026-09-20T14:20:43.410092Z []   [NOOP] 'Mainroads Western Australia - Bunbury Depot - Air Conditioning Upgrade' [DHW0223526] tender_id=e1ce02a2-1a68-4729-866b-6b4fc8473027
+2026-09-20T14:20:46.019863Z []   [NOOP] 'Department of Education - Leonora District High School - Air Conditioning Upgrade' [DHW0227125] tender_id=77e4e2db-42c0-4b1a-a934-4bc5adb50e7f
+2026-09-20T14:20:48.347798Z []   [NOOP] 'Western Australia Police Force - Broome Police Station - Perimeter Security Fence Upgrade & Associated Works' [DHW0248126] tender_id=78270ffb-5f68-4c20-89ed-651bfd3bce42
+2026-09-20T14:20:50.988668Z []   [NOOP] 'Western Australia Police Force - Broome Police Station - Perimeter Security Fence Upgrade & Associated Works' [DHW0248126A] tender_id=e74fb1ae-387e-4c7d-ac77-ebb8f324dc5a
+2026-09-20T14:20:54.918701Z []   [NOOP] 'Western Australia Police Force - Kimberley District Support Facility - Water Corporation services relocation' [DHW0266622] tender_id=e3567bd7-98e6-4ceb-8a29-68ee88379fee
+2026-09-20T14:20:57.690895Z []   [NOOP] 'Department of Education - Piara Waters Primary School - Additions' [DHW0276726] tender_id=e6fe8a96-34a7-4dcf-aae5-216d35d90e2d
+2026-09-20T14:21:00.104862Z []   [NOOP] 'Department of Housing and Works - Provision of Routine Maintenance, for HVAC Mechanical Systems ? Kimberley Region ? Various Sites ? Various Agencies' [DHW0312126] tender_id=5627a4c7-fec6-4d7b-99d8-171aa9903ac8
+2026-09-20T14:21:02.906423Z []   [NOOP] 'Department of Education - Cowaramup Primary School - Transportable Toilet Unit Supply and Installation' [DHW0320825] tender_id=f5f53534-0e27-4f54-91be-398f5ff9a739
+2026-09-20T14:21:05.403355Z []   [NOOP] 'WA Country Health Service - Halls Creek Renal Dialysis Service - Stage 1 - ECI' [DHW0350622] tender_id=64f241d2-6d9f-433b-9709-7974d39b51f1
+2026-09-20T14:21:07.931449Z []   [NOOP] 'Department of Education - Avonvale Education Support Centre - Northam SHS Site - Installation of 1 x General Learning Area (GLA) Modular Transportable Classroom' [DHW0364926] tender_id=63e38f45-dd88-4321-b166-15741a082588
+2026-09-20T14:21:10.315746Z []   [NOOP] 'Main Roads Western Australia - Derby Main Roads Department - Bindara Donga - Refurbishment' [DHW0371226] tender_id=f1bd1e9b-e8d5-439e-9cfc-ddb253662ddc
+2026-09-20T14:21:13.306719Z []   [NOOP] 'Department of Education - Tuart Forest Primary School - Installation of 1 x KPP Modular Classrooms with Associated Works' [DHW0395426] tender_id=1f5b92e1-9cd7-4719-8164-2efbfa775b33
+2026-09-20T14:21:15.875694Z []   [NOOP] 'Department of Education - Rostrata Primary School - New Classroom Block - SIP - EC25' [DHW0431825] tender_id=f8c684ff-5746-4333-a3b6-6021eb719fbf
+2026-09-20T14:21:18.634845Z []   [NOOP] 'Department of Education - Broome Senior High School - 12 Transportable Classroom Restorations' [DHW0442926] tender_id=c82ae074-abd4-4825-97ff-c96b3107be4f
+2026-09-20T14:21:21.037931Z []   [NOOP] 'Department of Education - Narrogin Residential College - Pool refurbishment' [DHW0471822] tender_id=f8dc6f1b-dcfc-4708-9a5a-f6b0ee3c41ce
+2026-09-20T14:21:23.511235Z []   [NOOP] 'Department of Education - Laverton Remote Community School - Playground Installation and Shade sails' [DHW0500025] tender_id=a7293123-c93b-4d9b-b927-5be1c922fc58
+2026-09-20T14:21:26.270748Z []   [NOOP] 'Department of Education - Pegs Creek Primary School - Full-Time Kindy Program' [DHW0544600526A] tender_id=eb5bdef5-e86f-4fa6-a3be-2f52897722f6
+2026-09-20T14:21:29.078532Z []   [NOOP] 'Department of Education - Lake Grace District High School - Bitumen resurfacing to basketball courts and new fencing' [DHW0544726] tender_id=5bce744e-25ce-49a5-96bf-c84326251ac5
+2026-09-20T14:21:31.851366Z []   [NOOP] 'Department of Training and Workforce Development - Bentley South Metro TAFE - Kitchen Refurbishments - Tile Remediation' [DHW0544826] tender_id=675de0e6-2748-4899-a5df-8d27331c9b0c
+2026-09-20T14:21:34.505434Z []   [NOOP] 'Department of Housing and Works - Provision of Routine Maintenance, for Traps and Pits - Various Agencies - Various Sites - East Kimberley Region' [DHW0556726] tender_id=5bcd93c1-dff9-4d37-a447-95de00ccda5f
+2026-09-20T14:21:37.340451Z []   [NOOP] 'Rectification of a New Water Reticulation System and Ancillary Works at Mirnutharntu Maya (EEH Facility) - South Hedland' [DHW20267408] tender_id=90dbe75d-9e44-40a7-a087-90714376a1e0
+2026-09-20T14:21:40.163532Z []   [NOOP] 'Work Health and Safety Software Solution' [DHW26007] tender_id=775852cc-626d-467b-b9a9-cf4ba0ca5d54
+2026-09-20T14:21:42.660547Z []   [NOOP] 'CATI Customer Satisfaction Surveys' [DHW26049] tender_id=8c4a769e-358e-4fd5-9304-676d4d90d4c3
+2026-09-20T14:21:45.031817Z []   [NOOP] 'Child Protection Casework Management System' [DOC20237359] tender_id=72395153-61c0-4672-8f5f-93b5f6628508
+2026-09-20T14:21:47.542295Z []   [NOOP] 'Provision of Information Governance Compliance Monitoring, Audit and Risk Application' [DOJ202559391] tender_id=c68ef401-90cd-4a7e-8657-f660c184f177
+2026-09-20T14:21:50.365411Z []   [NOOP] 'Provision of ICT Research and Advisory Services' [DOJ202612377] tender_id=0536932c-29e3-4ab9-926f-acb0e134347c
+2026-09-20T14:21:53.107921Z []   [NOOP] 'Provision of Application Lifecycle Management Software' [DOJ202612530] tender_id=60e01a07-3c40-4c1a-9346-908533ddf4e2
+2026-09-20T14:21:55.713294Z []   [NOOP] 'Waste Disposal Services for Banksia Hill Detention Centre' [DOJ202627087] tender_id=ee27dfc2-6e43-417d-991d-7fdb2439e24a
+2026-09-20T14:21:58.163599Z []   [NOOP] "Waste Disposal Services for Melaleuca Women's Prison" [DOJ202627088] tender_id=42a5b48a-549d-4f75-a854-6a188d6c68f0
+2026-09-20T14:22:00.524924Z []   [NOOP] 'Waste Disposal Services for Casuarina Prison' [DOJ202627812] tender_id=96cf0546-e0e8-4cfc-95a5-fe1e8a3993cd
+2026-09-20T14:22:02.935118Z []   [NOOP] 'Waste Disposal Services for Hakea Prison' [DOJ202629397] tender_id=a252ff33-76fa-431b-84d3-262419e0cca7
+2026-09-20T14:22:05.636547Z []   [NOOP] "Waste Disposal Services for Bandyup Women's Prison" [DOJ202635102] tender_id=306e44ff-6bf8-4276-a876-3ae11f6f27a0
+2026-09-20T14:22:08.453913Z []   [NOOP] 'Waste Disposal Services for Boronia Pre-release Centre for Women' [DOJ202635128] tender_id=8e5f6368-3ccc-4f0b-ae50-f6167b8166e1
+2026-09-20T14:22:11.157651Z []   [NOOP] 'Waste Disposal Services for Karnet Prison Farm' [DOJ202635129] tender_id=de9c631e-595a-4c02-aa73-f84406f9b831
+2026-09-20T14:22:14.052324Z []   [NOOP] 'Waste Disposal Services for Wooroloo Prison Farm' [DOJ202635130] tender_id=4e4dc854-0514-48b0-b891-b36fcc4384b1
+2026-09-20T14:22:18.172256Z []   [NOOP] 'Waste Disposal Services for Wandoo Rehabilitation Prison' [DOJ202635131] tender_id=be389ae7-bccf-41f3-bc93-158006ae4aad
+2026-09-20T14:22:20.924602Z []   [NOOP] 'Road Safety Data Development' [DOT35337] tender_id=9987dcf3-55eb-4893-9adf-6672e1538e4d
+2026-09-20T14:22:23.844736Z []   [INSERTED] 'Relocation of signal assets to new Yarra Trams poles at various locations in Melbourne Metropolitan' [DOT42631] tender_id=99930d64-afdb-4d90-917b-e5e87237d040
+2026-09-20T14:22:26.610057Z []   [NOOP] 'Level 3 Inspection and Load Assessment of the Twin Bridges Princes Hwy over Kororoit Creek (SN2663 & SN2777)' [DOT44341] tender_id=a469a3e8-47e5-4c8a-9676-cfaa71588b6b
+2026-09-20T14:22:30.235122Z []   [NOOP] '26/27 Statewide Microsurfacing' [DOT45239] tender_id=0f53200a-fdcc-4104-8823-29c74b125b72
+2026-09-20T14:22:33.037952Z []   [NOOP] 'Street Lighting Upgrade at Hume Region' [DOT45286] tender_id=121488c6-2396-4862-9339-e30cfc8fe29b
+2026-09-20T14:22:35.537264Z []   [NOOP] 'Traffic Signal Pole Replacement and Foundation Replacement' [DOT45289] tender_id=ef64bcdd-0d8e-4a12-99b9-16faa04a1610
+2026-09-20T14:22:37.981319Z []   [NOOP] 'Pavement Rehabilitation and Associated Works on St Arnaud-Wycheproof Road' [DOT45380] tender_id=e3a9ec39-3774-44c9-9b33-4ec045d353d6
+2026-09-20T14:22:40.780649Z []   [NOOP] 'Raised Safety Platform construction (Wombat Crossing) and associated works at the intersection of Warren St & High St, Echuca' [DOT45540] tender_id=f9f73af4-4dee-4249-8873-f67e20ed2208
+2026-09-20T14:22:44.183841Z []   [NOOP] '26/27 ASPHALT RESURFACING LODDON MALLEE - GRAMPIANS' [DOT45548] tender_id=55490f7f-bde7-4e59-ba08-703ea9bfcbce
+2026-09-20T14:22:46.929768Z []   [NOOP] 'Spray Sealing - Barwon South West Region' [DOT45587] tender_id=c2fdfcd3-3efe-48ea-8847-8773458bc824
+2026-09-20T14:22:50.509799Z []   [NOOP] 'Hume Highway ATLM and RRPM Install - Various Locations' [DOT45671] tender_id=a5c3c147-fa88-44d6-b3ba-26653205a7de
+2026-09-20T14:22:53.613902Z []   [NOOP] 'Enterprise Backup Solution with Support and Maintenance' [DTMI409226] tender_id=70ed7e50-39a4-4a2e-a646-670842832b7a
+2026-09-20T14:22:56.726512Z []   [NOOP] 'Provision of Passenger Transport Subsidy Scheme (PTSS) Application Assessment Services' [DTMI410226] tender_id=d7b66378-9e07-4c9c-b364-4f64644af2c2
+2026-09-20T14:22:59.310355Z []   [NOOP] 'Design and Construction of the Barrack Street Jetty One Replacement' [DTMI410626] tender_id=4f6df1e9-d2c7-4a53-920c-c3918984d975
+2026-09-20T14:23:02.053494Z []   [NOOP] 'Compliance Monitoring Dashboard Solution' [DTMI411426] tender_id=e43f1a7a-36d5-4508-9316-9d41297b848d
+2026-09-20T14:23:04.831932Z []   [NOOP] 'Supply of Atlassian Licences with Maintenance and Support' [DTMI41226] tender_id=dbf5e37f-efdb-4997-8e2f-8113b0529d9f
+2026-09-20T14:23:07.618866Z []   [NOOP] "Purchase and Removal of an unidentified 'Pink Yacht'" [DTMI412726] tender_id=5632e81b-0e3a-4f52-aa8b-a814405f4c07
+2026-09-20T14:23:10.093852Z []   [NOOP] 'Provision of Lease Facility (Panel of Financiers)' [ED250208] tender_id=ad228ea6-dab4-425c-b9be-80c46c59da7b
+2026-09-20T14:23:12.604973Z []   [NOOP] 'Supply and delivery of a Rental Self-propelled Sprayer for WA College of Agriculture Cunderdin' [ED261062] tender_id=efdab48c-5364-4aac-93e1-cf3d0d68a961
+2026-09-20T14:23:15.161692Z []   [NOOP] 'Horsham Ticket Agency' [EOI70900] tender_id=179f4c4c-fd60-4c31-af80-13ba2236301d
+2026-09-20T14:23:18.803542Z []   [NOOP] 'Executive Leadership and Management Program' [EOIDFES250526] tender_id=a15cb18e-ed42-42b5-b03b-5b78fcf2a69a
+2026-09-20T14:23:21.524538Z []   [NOOP] 'Department of Education - Riva Primary School - Percent for Art - Artist EOI' [EOIDHW0052426] tender_id=d1b1e4ea-8598-4ae1-8141-b9ca76e0226d
+2026-09-20T14:23:24.224005Z []   [NOOP] 'Department of Education - Eastern Hills Senior High School - Percent for Art' [EOIDHW0501825] tender_id=cc8c723a-4e04-4e72-98e8-01f360056659
+2026-09-20T14:23:27.051791Z []   [NOOP] 'EOIDTMI2603 - Request for Expressions of Interest (EOI) for Opportunity to Lease Unimproved Land at Fuel Facility Bandy Creek Boat Harbour, Esperance' [EOIDTMI2603] tender_id=f7a03e1d-aea6-4c29-8bcc-ec741dc403ba
+2026-09-20T14:23:29.770382Z []   [NOOP] 'Construction of Sutherland Street Rail Bridge Upgrade' [EOIMRWA023325] tender_id=227ce15c-6bfb-4068-a26f-abff397086a9
+2026-09-20T14:23:32.614788Z []   [NOOP] 'WTP Grit & Screenings Plant' [EOIMW29] tender_id=a337f4bd-a76d-4b17-af94-e48318cfc22c
+2026-09-20T14:23:35.371979Z []   [NOOP] 'Virtual Power Plant for Social Housing Project' [EOISDT10059177THAL] tender_id=e6b9b942-ebb3-426c-aa13-5235d2123318
+2026-09-20T14:23:37.824540Z []   [NOOP] 'Valuer General Victoria (VGV) Digital Automation Project' [EOI_DOT45634_-_VGV] tender_id=72774d00-ed14-47af-a50a-1c3a56a265a2
+2026-09-20T14:23:40.575831Z []   [NOOP] 'CONTRACT CLAIMS MANAGEMENT SYSTEM' [EOI_ORO-1808] tender_id=e536b07f-219d-43d2-9b23-c64afc1ab422
+2026-09-20T14:23:44.049674Z []   [INSERTED] 'Gillies Street Accommodation Precinct' [GH26019] tender_id=115e2ad9-800e-4e2a-9334-a8c33e43f1f9
+2026-09-20T14:23:46.510148Z []   [NOOP] 'Digital Mobile Radio Replacement' [GWS576] tender_id=ba650b91-dba7-4cd7-8d9d-3bbd809fcb5d
+2026-09-20T14:23:49.381693Z []   [NOOP] 'CHIIP WACHS - Facilities Works - Great Southern Region (A)' [HSS202616314] tender_id=7dbe39d1-b207-4363-8285-0a7ae5b9aad8
+2026-09-20T14:23:52.251989Z []   [NOOP] 'CHIIP WACHS - Facilities Works - Great Southern - Katanning Hospital' [HSS202616315] tender_id=4af54425-db24-41e4-bc6f-fa776ddf59b0
+2026-09-20T14:23:55.349819Z []   [NOOP] 'Invitation to Register - Uniforms and Personal Protective Equipment (PPE) Ethical Supplier Register.' [ITR-SS-05-2018] tender_id=a8742597-583a-4fa0-969b-201a08935bf9
+2026-09-20T14:23:57.931303Z []   [NOOP] 'Backup and Restoration Solution for MS Power Platform' [LGIRS26027] tender_id=0c9cd4f3-458d-45ba-859b-68a4e6c71ed9
+2026-09-20T14:24:00.683986Z []   [NOOP] 'Provision of Employee Assistance Program (EAP)' [LGIRS26042] tender_id=b3eb44f7-165f-409f-9c81-33884f6a8351
+2026-09-20T14:24:03.435767Z []   [NOOP] 'Check Point Gateway Services Renewal 2026-29' [LGIRS26285] tender_id=8de336c7-9892-4472-a2da-61c54ea20b06
+2026-09-20T14:24:06.320589Z []   [NOOP] 'Integration Licensing and Support Services' [LW26027] tender_id=d8ac59d9-fe64-4b3e-bce5-ea93311e7b7f
+2026-09-20T14:24:09.254295Z []   [NOOP] 'Road Construction ? Cortege Entry and Car Park Upgrade at Karrakatta Cemetery' [MCB20262705] tender_id=3191f611-5815-4746-be17-f41d9e8a108f
+2026-09-20T14:24:11.984149Z []   [NOOP] 'Retro Clay Solution & Associated Works' [MHCP02] tender_id=884abbe0-e249-44ba-8b51-028242ad26e7
+2026-09-20T14:24:14.753456Z []   [NOOP] '3 Year Portwide Cleaning Service Agreement' [MWPA26007] tender_id=2d8571da-8a4d-417c-9dd9-41088b81eee8
+2026-09-20T14:24:17.503060Z []   [NOOP] 'Compliance Training' [MWPA26033] tender_id=0a7bd29d-b6ef-44a5-a957-1ea7876a1854
+2026-09-20T14:24:20.453418Z []   [NOOP] 'Construction and Installation of BHF Fire Exit Stairs and Platforms' [MWPA26037] tender_id=c1217ac2-25b8-4eb4-a43a-492db265a946
+2026-09-20T14:24:23.406915Z []   [NOOP] 'Port Management Information System (PMIS)' [MWPA26039] tender_id=e11f2313-ed7b-4558-b474-1b312d6c90e2
+2026-09-20T14:24:26.235084Z []   [NOOP] 'Provision of Childcare Services for the Adult Migrant English Program (AMEP) Clients at North Metropolitan TAFE 2026' [NMTAFEP2026038] tender_id=2c096c3c-f4ac-4812-b5cd-6f1ba9e1b543
+2026-09-20T14:24:28.945344Z []   [NOOP] 'Supply, Delivery & Installation of Audio-Visual Equipment and Services at NR TAFE Newman Campus' [NRTAFE152026] tender_id=fcf666ab-9a32-477f-97ca-b08093d2174e
+2026-09-20T14:24:31.767080Z []   [NOOP] 'Darwin - Provision of a Service Maintenance Agreement for Cyclotron, Hot Cells and Biosafety Cabinets for a Period of 48 Months' [NTG26-0024] tender_id=669d5e9c-a3e5-4695-8b3a-ba518699868b
+2026-09-20T14:24:34.543290Z []   [NOOP] 'Tennant Creek - Provision of Cleaning Services for the Tennant Creek Police Station, Watch House, Visitor Officers Quarters and Single Officers Quarters for a Period of 36 Months' [NTG26-0028] tender_id=8000f1fa-1626-4b1b-91c0-5bad21636878
+2026-09-20T14:24:37.098667Z []   [NOOP] 'All of NT - Consultancy - Provision of Remote Power Technical Advice for a Period of 12 Months' [NTG26-0073] tender_id=6c29fbdf-4064-43d0-9ea7-c85f2b0b4fa2
+2026-09-20T14:24:39.920893Z []   [NOOP] 'Darwin - Supply and Delivery of Reflective Vehicle and Vessel Decals for a Period of 60 Months' [NTG26-0121] tender_id=b6f4913d-7a24-4b2b-82d2-ee3210b9c06e
+2026-09-20T14:24:42.598008Z []   [NOOP] 'All of NT - Panel Contract for Supply, Delivery, Training, Accessories and Service Support of Intensive Care Unit Ventilators for a Period of 60 Months' [NTG26-0126] tender_id=7b7c0541-1881-470d-9f83-c679789a6cf7
+2026-09-20T14:24:45.528809Z []   [NOOP] 'All of NT - Supply of Public Wi-Fi and Standalone Internet Services for a Period of 36 Months' [NTG26-0134] tender_id=51763e08-b1fd-4b50-acff-b160c7aa217d
+2026-09-20T14:24:49.813379Z []   [NOOP] 'Darwin - Provision of Cleaning Services for Palmerston Police Station for a Period of 24 Months' [NTG26-0168] tender_id=684d46aa-2ed8-45e4-8bab-6681e95aa69d
+2026-09-20T14:24:52.574387Z []   [NOOP] 'PHPC - Back of House Change Rooms - Detailed Design' [P26120] tender_id=6ec4d46f-ff43-4ee5-86fb-1dac73e479a6
+2026-09-20T14:24:55.156740Z []   [NOOP] 'Shrine to Sea Construction' [PAT-2526-4405] tender_id=0d4d2c61-b09c-4ec1-8307-6b8c206ae3aa
+2026-09-20T14:24:57.938162Z []   [NOOP] 'Modular Builder (D&C) - Omeo Depot' [PAT-2526-5429] tender_id=c17c3288-92cf-470f-bd39-4d3fe9a91a64
+2026-09-20T14:25:00.703347Z []   [NOOP] 'Fire Fighting and Land Management Fleet Servicing, Repair and Maintenance Services' [PRN-00151] tender_id=666d5601-0482-48d0-8329-7f44bb8ba052
+2026-09-20T14:25:03.937917Z []   [INSERTED] 'Provision of Groundwater Monitoring Services' [PRN-00178] tender_id=63aaa82d-50f4-4ad5-93c9-67519ffdac2c
+2026-09-20T14:25:06.613095Z []   [NOOP] 'Road Safety Services Register' [PROCF22-000236] tender_id=6a5ae72c-412e-482c-9055-b57aee19d480
+2026-09-20T14:25:09.549545Z []   [NOOP] 'Clinical Advisory Services Register' [PROCF23-149] tender_id=74a2f0f1-78e4-4373-ac2f-d97ad45e3311
+2026-09-20T14:25:12.387089Z []   [NOOP] 'PW11070 MWG Refurbishment - 7 Phillip Place Utakarra' [PRODOC26060] tender_id=1f82642f-bdb7-48cc-8860-4ee3238bb1db
+2026-09-20T14:25:15.090571Z []   [NOOP] 'PB Refurbishment & Roof Replacement 4 Forrest Court Onslow' [PRODOC26061] tender_id=c4840f4b-6ef7-4219-b006-e9c8b3ced18a
+2026-09-20T14:25:17.952602Z []   [NOOP] 'Edgewater Primary School | Undercover Area Upgrades' [PROMSA26152] tender_id=7ff09aa2-d13e-4564-815e-96e53c180d5d
+2026-09-20T14:25:20.719312Z []   [NOOP] 'Make Good Internal works for Eastern Industries - Casuarina Prison' [PROMSA26158] tender_id=eee8c39d-515b-42dd-852a-668645a4f445
+2026-09-20T14:25:23.228787Z []   [NOOP] 'Repair Cracked Court Surface Lining' [PROMSA26162] tender_id=b8b1a385-b7dd-4c56-a8c2-803ebfc4ce3a
+2026-09-20T14:25:26.047980Z []   [NOOP] 'Power Upgrade - Edgewater Primary School' [PROMSA26163] tender_id=b8210c4e-dfbe-48f1-bf3b-7a7f11f2060a
+2026-09-20T14:25:29.282156Z []   [NOOP] 'Classroom Upgrade & Playground Install -Balcatta Primary School' [PROMSA26165] tender_id=a6b2fcfa-631b-4e18-a55e-3323cf9b20b6
+2026-09-20T14:25:32.461531Z []   [NOOP] 'Mechanical Upgrade Gidgeegannup Primary School' [PROMSA26166] tender_id=6b081770-41b8-4e13-bf69-8f3d79e62b11
+2026-09-20T14:25:35.274601Z []   [NOOP] 'Roof membrane replacement, cladding and associated works - Perth Campus B1' [PROMSA26167] tender_id=7952d6ee-037b-46fb-b6ac-0a7d2cd66969
+2026-09-20T14:25:38.192313Z []   [NOOP] 'Western Power Substation Retrofit Works - NMT Mt Lawley Campus' [PROMSA26169] tender_id=ba1e1fb1-99f0-400b-8813-f6b6ba387dc5
+2026-09-20T14:25:41.062861Z []   [NOOP] 'Hardcourt Refurbishment & Carpark Redevelopment Works - Jarrahdale Primary School' [PROMSA26170] tender_id=55ab1d63-0d8c-4ef5-844a-ecc1b87d8c98
+2026-09-20T14:25:44.061185Z []   [NOOP] 'ACM Ceiling Replacement - SMT Carlisle. E Block' [PROMSA26171] tender_id=52a6f26e-e8d5-4f21-8812-3fb4bd095f21
+2026-09-20T14:25:47.098421Z []   [NOOP] 'Library Refurbishment - Kiara College' [PROMSA26176] tender_id=4abe7380-5423-416a-91be-13d6d62509c1
+2026-09-20T14:25:49.937647Z []   [NOOP] 'General Building including Balcony and Washdown Shed works Esperance Bus Depot' [PROPTA26018] tender_id=be77283e-2316-491a-9873-8c2c45211d24
+2026-09-20T14:25:52.765073Z []   [NOOP] 'Parliament House Supplementary Security Services' [PSD20260511] tender_id=3dabec98-be84-4655-846a-ca32fe6c9346
+2026-09-20T14:25:55.721493Z []   [NOOP] 'East Maddington LDC School Bus Service' [PTA260029] tender_id=9bb638d8-55b4-4104-b99d-e91d3448f95b
+2026-09-20T14:25:58.513966Z []   [NOOP] 'Broome Education Support School Bus Service' [PTA260032] tender_id=b3fdb864-3bf9-4224-adc1-170987df5948
+2026-09-20T14:26:01.423890Z []   [NOOP] 'Supply and Installation of Level 1 Video Wall in Public Transport Operations Control Centre' [PTA260039] tender_id=e7926cfa-b0f9-424f-aad8-cbbf620389e0
+2026-09-20T14:26:04.504069Z []   [NOOP] 'Matilda Bay Water Supply Upgrade' [PTA260054] tender_id=d1a06f41-d1f0-4d6a-b949-af77e9a809ca
+2026-09-20T14:26:07.499795Z []   [NOOP] 'Refurbishment of the Transwa Commercial Area - Ground Floor PTC' [PTA260055] tender_id=da7c6a38-91b8-4392-90fb-f2f7645edacb
+2026-09-20T14:26:10.417817Z []   [NOOP] 'Transwa - Albany to Hopetoun (via Ravensthorpe)' [PTA260058] tender_id=c41de99f-77d0-4b12-8fd9-f378dfc4fcf2
+2026-09-20T14:26:13.310390Z []   [NOOP] 'PW11235_QUO_MDT_Request for Quote - Kitchen Refurbs 18A Howard & 3-41 Napier, Broome' [PW11235] tender_id=2cf178d2-0836-4598-bb73-3cd1a8dc7955
+2026-09-20T14:26:16.129673Z []   [NOOP] 'PW11276_QUO_MDT_Request for Quote - 4 Rahman Way Broome IINSH' [PW11276] tender_id=a2758bd7-12a9-4b2a-9a83-2396a337bc0b
+2026-09-20T14:26:18.937546Z []   [NOOP] 'PW11281 EK Refurbishment 59 Barringtonia Ave Kununurra KSH' [PW11281] tender_id=9706c012-947f-4690-9818-89a01819e9bd
+2026-09-20T14:26:21.870488Z []   [NOOP] 'PW11291 - Quote Request PW11291 GF Refurbishment 15 Whitegum Avenue Espera' [PW11291] tender_id=76672bc4-493e-4405-b73d-65bf30bc98de
+2026-09-20T14:26:24.912129Z []   [NOOP] 'Request for quote - PW11323 GF-09 External Painting Kalgoorlie GROH PLND' [PW11323] tender_id=1f1033f5-950b-403f-b127-28fdb79c88ae
+2026-09-20T14:26:28.298590Z []   [NOOP] 'PW11329 -QR4 Quote Request PW11329 WB Refurbishment 24 Weld Street Northam' [PW11329] tender_id=3f289412-446b-4bfa-b03c-c10417a7d7ac
+2026-09-20T14:26:31.134337Z []   [NOOP] 'Quote Request - PW11351 EK Refurbishment 5 Sandalwood St Kununurra IINSH' [PW11351] tender_id=429d3c9a-f336-40a5-9557-33336cb47a04
+2026-09-20T14:26:33.930672Z []   [NOOP] 'QR4 Quote Request PW11362 WB Refurbishment 14 Clark St Narrogin IINSH' [PW11362] tender_id=97682d38-0c4a-4ba1-b215-69e93e1db14a
+2026-09-20T14:26:36.788386Z []   [NOOP] 'Quote Request PW11366 GF Refurbishment 9 Gilmore Place Esperance IINSH' [PW11366] tender_id=aa65a6fd-bc3c-460d-98c8-7ca5734848d3
+2026-09-20T14:26:39.576240Z []   [NOOP] 'Quote Request PW11367 GF Refurbishment 7 Ponton Street Esperance IINSH' [PW11367] tender_id=e77c55ba-0717-40fa-89e2-4c72e5dd331b
+2026-09-20T14:26:42.427205Z []   [NOOP] "Alice Springs - Request for Proposal St Mary's Redevelopment Project" [Q26-0114] tender_id=46c0fcbf-5a9e-48f2-9151-5364807c91c3
+2026-09-20T14:26:45.740364Z []   [NOOP] 'Darwin - Royal Darwin Hospital - Supply and Delivery of Mortuary Racks, Trays and Scissor Lift' [Q26-0120] tender_id=98ac229a-647a-4da9-bc20-2f21537f85fe
+2026-09-20T14:26:48.584153Z []   [NOOP] "Public Private Partnership - Darwin New Correctional Facility - 1,200 Bed Men's Remand and Intake Centre - Invitation for Expressions of Interest" [Q26-0136] tender_id=873febdb-89d7-4665-adae-aa5dbe5aaf25
+2026-09-20T14:26:51.494222Z []   [NOOP] 'Overpass 1 Installation and Dismantle' [R1037-2027] tender_id=37ff96aa-949b-4d28-83e6-eb283dacb7e8
+2026-09-20T14:26:54.453418Z []   [NOOP] 'Internal Traffic Management' [R195-2026] tender_id=3bd01568-fc40-4282-b84e-82b6ed2fe5f6
+2026-09-20T14:26:57.770805Z []   [NOOP] 'Retail Compounding Pharmacy Fit-Out and Tenancy' [RCH-EOI-2025-0037] tender_id=c5a46443-6cb3-4a87-a359-18033f87b4c0
+2026-09-20T14:27:00.737603Z []   [NOOP] 'Provision of Integrated Cost Tracking System - RFI' [RFIMRWA005026] tender_id=86de2860-a6a5-43fb-92a4-2ac43f9943a3
+2026-09-20T14:27:03.630722Z []   [NOOP] 'Sale of Industrial Wood and Forest Residue' [RFP112025FSa] tender_id=556b0a09-8d65-4c51-90f2-8b8d96ec61d2
+2026-09-20T14:27:06.610522Z []   [NOOP] 'Request for Quotation (RFQ) - Unexploded Ordnance (UXO) Services' [RFQ00326] tender_id=f4e47d81-6739-4a85-8fcf-ed1ec19e3c06
+2026-09-20T14:27:09.521012Z []   [NOOP] 'RFT-1011 Preventative Planned Maintenance of five Cremators' [RFT-1011] tender_id=47cacd91-e158-4d99-9051-011ef296c935
+2026-09-20T14:27:13.254387Z []   [NOOP] 'RFT-1017 SBC New Song He Yuan (Stage 3) Construction Works' [RFT-1017] tender_id=b298aa2d-0d4c-4325-855b-6e3c9392b638
+2026-09-20T14:27:16.001499Z []   [NOOP] 'All Centres - Supply of Chemicals for a Period of 36 Months' [RFT0031] tender_id=dd40a165-c90b-4121-be3a-d2046860b28c
+2026-09-20T14:27:19.077328Z []   [NOOP] 'Expression of Interest (EOI) - Capability to Support the Coordination and Delivery of Selected Field Services' [RFT0258] tender_id=06911eb6-d00d-4adf-8f0c-dbce623fe7e0
+2026-09-20T14:27:22.301511Z []   [NOOP] 'Supply and Delivery of Cable, Conductors and Wire for Power Services for a Period of 36 Months' [RFT0675] tender_id=755613a8-5809-45c7-b802-28206beccbb2
+2026-09-20T14:27:25.303683Z []   [NOOP] 'All Regions - Supply of Trade Apprentices, Trainees and Graduates under a Group Training Arrangement for a Period of 36 Months' [RFT0696] tender_id=1dc55612-d1ee-4d7c-90c4-7947717d1dfa
+2026-09-20T14:27:28.016253Z []   [NOOP] 'All Centres - Provision of Ground Water Monitoring for a Period of 36 Months' [RFT0723] tender_id=45ad6d0c-5ab2-42ee-9731-726446f18786
+2026-09-20T14:27:30.992288Z []   [NOOP] 'Haasts Bluff - Equip New Bores - Existing Bore Replacement' [RFT0770] tender_id=4e3c5192-8461-4e5e-8ea1-cc5c97e2225b
+2026-09-20T14:27:37.502255Z []   [NOOP] 'Sadadeen Complex - Disposal of Temple Bar Water Pump Station' [RFT0860] tender_id=58975176-4336-4198-8b20-4bc9ea9f19b6
+2026-09-20T14:27:43.446286Z []   [NOOP] 'GVW Nathalia Water Treatment Plant Decommissioning' [RFT_22_6845_26] tender_id=6f672661-c43e-45d1-a33c-5f385c605994
+2026-09-20T14:27:46.419178Z []   [NOOP] 'GVW Design and Construction of Disinfection Upgrades at Shepparton Water Treatment Plant' [RFT_61_5408_25] tender_id=a52ff814-d082-474a-9045-9e8669061875
+2026-09-20T14:27:49.557737Z []   [NOOP] 'GVW REPLACE DOMESTIC WATER SUPPLY TANK AND SUPPORT PLATFORM' [RFT_8_8974_26] tender_id=b7e305eb-0218-4265-ba6e-a4d7fb0c1687
+2026-09-20T14:27:52.835552Z []   [NOOP] 'GVW Corop Elevated Tanks Replacement' [RFT_9_6949_26] tender_id=7f99eab2-4fba-4e16-9cb3-b89b43be894b
+2026-09-20T14:27:55.831539Z []   [NOOP] 'Financial and Business Resilience Advisory Service - Gascoyne and Pilbara Regions' [SBDC082026] tender_id=73095b62-6905-4d7e-a723-79a68cd1a0c4
+2026-09-20T14:27:58.856265Z []   [NOOP] 'Online Learning and Assessment Tool, Support and Maintenance' [SMT2026224] tender_id=f5d39b42-8f59-49ad-898b-8434bb34843a
+2026-09-20T14:28:02.199598Z []   [NOOP] 'Battery/Hybrid Electric On-Highway Truck' [SMT2026256] tender_id=8e0f955c-b8c5-4882-8405-f0cb06dcaf90
+2026-09-20T14:28:05.201279Z []   [NOOP] 'SuniTAFE Solar Project' [T000453] tender_id=a3b7d2e5-2475-4de6-bd1a-ff55d7c64c33
+2026-09-20T14:28:08.487822Z []   [NOOP] 'Diesel Generator Maintenance Services' [T2026-0814] tender_id=543b72f4-517c-4d39-bdb3-0f665116bfc5
+2026-09-20T14:28:11.477734Z []   [NOOP] 'Katherine Region - Borroloola - Garawa 2 Town Camp Road Remedial Works' [T25-1364] tender_id=38959e72-a06c-421a-95a0-af969f4c53c2
+2026-09-20T14:28:14.446925Z []   [NOOP] 'Darwin Region - Melville Island - Pirlangimpi Road - Upgrade and Seal' [T25-1519] tender_id=c5d23fd6-f73f-4d4b-9c5b-1bf70c105625
+2026-09-20T14:28:17.905066Z []   [NOOP] 'Darwin Region - Stuart Highway - Consultancy - Detailed Design for Shared Path from Coolalinga to Arnhem Highway' [T25-1527] tender_id=7f0e6373-df2e-46bb-92a5-dbdcb4bdfcf5
+2026-09-20T14:28:20.791138Z []   [NOOP] 'Tennant Creek Region - Repairs and Maintenance of Various Aerodromes for a Period of 36 Months' [T26-1003] tender_id=b4486d0a-e13f-47f3-abdd-61e09f3a739a
+2026-09-20T14:28:23.782114Z []   [NOOP] 'Katherine Region - Eastern Area - General Plumbing, Gas Fitting and Roofing Repairs and Maintenance for a Period of 36 Months' [T26-1056] tender_id=1b4ae17f-c3b2-4de1-83bd-89e65168d3e0
+2026-09-20T14:28:26.705185Z []   [NOOP] 'Katherine Region - Western Area - General Plumbing, Gas Fitting and Roofing Repairs and Maintenance for a Period of 36 Months' [T26-1058] tender_id=fea06c01-9bb4-40ea-995f-557261d5e947
+2026-09-20T14:28:29.640325Z []   [NOOP] 'Katherine Region - Central Area - General Plumbing, Gas Fitting and Roofing Repairs and Maintenance for a Period of 36 Months' [T26-1061] tender_id=01c413ef-8fe0-4fc8-b689-c047fb8c774c
+2026-09-20T14:28:32.616343Z []   [NOOP] 'Darwin Region - Rural Roads - Bituminous Pavement Repairs for a Period of 36 Months' [T26-1066] tender_id=f22f415f-a7ab-48ed-9d3a-f9cbecee0b41
+2026-09-20T14:28:35.719744Z []   [NOOP] 'Alice Springs Region - Watarrka (Kings Canyon) National Park - Design and Construction of Walking Tracks and Camp Sites' [T26-1074] tender_id=19b4d049-dd36-4499-8121-9e8142c8491c
+2026-09-20T14:28:38.894927Z []   [NOOP] 'Darwin Region - Port Keats Road - Civil Road Maintenance for a Period of 36 Months' [T26-1111] tender_id=e7f138d2-4c13-4c96-ad8d-e168b7d6f79e
+2026-09-20T14:28:41.975808Z []   [NOOP] 'Darwin and Palmerston - Repairs and Maintenance of Group 4 - Airconditioning Plant and Equipment for a Period of 36 Months' [T26-1123] tender_id=7f088228-62c3-48ca-90bf-c7de09022aeb
+2026-09-20T14:28:44.898742Z []   [NOOP] 'Darwin - Defence Accommodation Precinct - Repairs and Maintenance of Fire Detection Systems and Associated Equipment for a Period of 12 Months' [T26-1165] tender_id=0079b089-728e-4c81-bfb6-1c8c0a682af6
+2026-09-20T14:28:48.118786Z []   [NOOP] 'Katherine Region - Western Outer Area - Repairs and Maintenance of Air Conditioning, Refrigeration and Mechanical Services for a Period of 36 Months' [T26-1170] tender_id=2a078bca-87c4-4f3c-a617-0ba22c1f1e66
+2026-09-20T14:28:51.038491Z []   [NOOP] 'Katherine Region - Numbulwar School - Demolition of Fire Affected Buildings' [T26-1188] tender_id=4e8ebc95-b834-4ad5-8108-385fb1014f93
+2026-09-20T14:28:54.313790Z []   [NOOP] 'Tennant Creek Region - Panel Contract for Building Repairs and Maintenance of all Government Buildings for a Period of 36 Months' [T26-1205] tender_id=ac9ceadc-8f11-4b6d-a0b9-561efc8b5e20
+2026-09-20T14:28:57.228858Z []   [NOOP] 'Darwin Region - Gunbalanya Health Clinic - Repairs and Maintenance' [T26-1213] tender_id=623ec1c5-e4b8-4a24-a0e1-e9865c47f080
+2026-09-20T14:29:00.540278Z []   [NOOP] 'Darwin Region - Repairs and Maintenance of General Electrical Equipment for a Period of 36 Months' [T26-1215] tender_id=f76f6575-dddf-4f63-bbea-9adce023cc40
+2026-09-20T14:29:03.572281Z []   [NOOP] 'Darwin Region - Road Reserves - Slashing for a Period of 36 Months' [T26-1262] tender_id=71e58cfc-76a5-47ee-aa79-eb43ec6044f1
+2026-09-20T14:29:06.464349Z []   [NOOP] 'Katherine Region - Victoria Highway - Watch Creek - Bridge Abutment Reconstruction and Reinstatement' [T26-1279] tender_id=874f42bd-696e-4088-8660-35e6501a2409
+2026-09-20T14:29:09.484621Z []   [NOOP] 'Mobile Energy Training Unit' [TWDT06122026] tender_id=26bb663c-cdac-4e8e-af6e-002947e0cc40
+2026-09-20T14:29:12.442105Z []   [NOOP] 'Request for Information on Digital Delivery of VCE Results and Credentials' [VCAA2026] tender_id=70c906b1-664c-4f73-8e5b-f89007d46c4c
+2026-09-20T14:29:17.063523Z []   [INSERTED] 'Provision of Employee Assistance Program/s' [VLA-0303] tender_id=3087837d-6ba5-4a2c-b645-47de8e103cd6
+2026-09-20T14:29:19.940448Z []   [NOOP] 'V/Line Welding Works Panel' [VLPRJ2958] tender_id=439b5874-fbb5-4e9b-b4bd-d0c2e47ba878
+2026-09-20T14:29:22.880659Z []   [NOOP] 'Expression of Interest Supply of Fill for Coolum Site' [VP455349] tender_id=86bbdb80-6597-4ebc-844a-15314f3638a6
+2026-09-20T14:29:25.850800Z []   [NOOP] 'Queensland Government - Preferred Supplier Panel for Grocery, Dairy and Beverages' [VP465869] tender_id=9c8ea7f9-45de-48c1-a393-cd3413fa43aa
+2026-09-20T14:29:28.867480Z []   [NOOP] 'CAPRICORNIA CORRECTIONAL CENTRE - Design and Construct - Low Security Air Conditioning Upgrade' [VP505968] tender_id=7b4d0a58-b409-4cd9-9c76-8e69e3e00cbd
+2026-09-20T14:29:31.820500Z []   [NOOP] 'MTR-26-17A Provision of Traffic Engineering,Design & Safety Audit Support for Development Assessment' [VP506255] tender_id=4dfdb370-b49f-4a15-9dbb-41b6687d42cd
+2026-09-20T14:29:34.744801Z []   [NOOP] 'QED 6264 2026 - Hermit Park State School - Grounds Enhancement' [VP507930] tender_id=9833c3fe-022a-4318-8cbd-8850a6162a00
+2026-09-20T14:29:37.684971Z []   [NOOP] 'Forward Procurement Notice: Roadside Advertising - Department of Transport and Main Roads' [VP514142] tender_id=3b1ff328-79ff-40e8-93cd-7cdef20f4b86
+2026-09-20T14:29:40.496425Z []   [NOOP] 'Provision of Food Services and Kiosk Services' [VP516822] tender_id=bceb9bed-6ce0-421e-95dd-02f9b65b07b6
+2026-09-20T14:29:43.486095Z []   [NOOP] 'North Johnstone River Bridge Replacement' [VP517458] tender_id=e9602f6e-2b51-4544-b5aa-5542591b92ef
+2026-09-20T14:29:46.515555Z []   [NOOP] 'Professional Electrical Engineering Services Panel' [VP518331] tender_id=7034b412-9fa5-4944-a578-946b719d4a70
+2026-09-20T14:29:49.664109Z []   [NOOP] 'Atherton Hospital Upgrades - Design and Construct Building Contractor' [VP518556] tender_id=6f990d75-d234-4d58-9429-df255ccc20cc
+2026-09-20T14:29:52.909572Z []   [NOOP] 'Belmont State School ? New A Block' [VP519531] tender_id=100595ab-f2c4-407d-92fc-15f72944ec25
+2026-09-20T14:29:55.868643Z []   [NOOP] 'Standing Offer Arrangement Trade Contractor Pest Control Services - NORTH QUEENSLAND REGION' [VP520536] tender_id=f4741344-45d3-4698-a9c1-88c0e2975cfa
+2026-09-20T14:29:58.823781Z []   [NOOP] 'Expression of Interest (EOI) for the Supply of Liquefied Petroleum Gas (LPG) and Storage Vessels' [VP520862] tender_id=5c489d2a-c8d1-49f3-b44f-16b79ba5458a
+2026-09-20T14:30:01.899442Z []   [NOOP] 'Central West Reseal and Preparation Works Program 2026/27 and 2027/28' [VP521043] tender_id=722186b2-cdd0-4c07-9dde-2485688b85ca
+2026-09-20T14:30:04.849851Z []   [NOOP] 'EMERALD STATE HIGH SCHOOL - Stage 1 and Stage 2 - EFA' [VP521162] tender_id=105898a9-3780-4468-97f1-30ede5a28611
+2026-09-20T14:30:08.106045Z []   [NOOP] 'Standing Offer Arrangement - Trade Contractor - Pest Control Services in Far North Queensland' [VP521181] tender_id=dcdcc829-6f6c-45cf-833f-382618ce8a2a
+2026-09-20T14:30:11.093213Z []   [NOOP] 'Gym Equipment Lease' [VP521227] tender_id=43339b8e-955d-479f-a4f6-9f5accdb699a
+2026-09-20T14:30:14.266740Z []   [NOOP] '92783DC1-Design & Construct Water Rectification Upgrade-PIMLICO STATE HIGH SCHOOL' [VP521633] tender_id=d52742d0-a70e-4b29-b8af-671549f83b2e
+2026-09-20T14:30:17.485548Z []   [NOOP] 'Civil , Electrical and Landscape Construction Works - Oonoonba' [VP521648] tender_id=6d5ef6fa-e8a8-4d9e-913c-bdb406c0ec69
+2026-09-20T14:30:20.749700Z []   [NOOP] 'TL26-00375 Elliott Heads ? Moore Park Emergency Service Contract' [VP521700] tender_id=3f32b88b-569d-419e-b71e-92fa740ce33f
+2026-09-20T14:30:23.955025Z []   [NOOP] 'ITSM Platform Review' [VP521761] tender_id=e5e8c42a-762b-4d83-afc2-2c47f308375f
+2026-09-20T14:30:27.964029Z []   [NOOP] 'Meter to Cash Solution and Implementation Services' [VP521941] tender_id=9667f7e2-a8bc-4b92-9483-058a76067cc6
+2026-09-20T14:30:30.920545Z []   [NOOP] 'Cairns Courthouse - HVAC and Mechanical Upgrade' [VP521950] tender_id=3b79bcb5-6efc-4972-946b-0e1bb255d1a8
+2026-09-20T14:30:33.849194Z []   [NOOP] 'Pre-Market Notification - Mackay and Rockhampton Emergency Helicopter Services' [VP522003] tender_id=5315f789-edaa-4067-8d65-26e66f4f53ce
+2026-09-20T14:30:37.177599Z []   [NOOP] 'Continuous Threat Exposure Management (CTEM) Platform' [VP522182] tender_id=cd283d67-d1f8-4f3a-ab9e-c541400677f8
+2026-09-20T14:30:40.703014Z []   [NOOP] 'Design and Construct - Warwick Specialist Clinic Redesign' [VP522207] tender_id=4b65ab8b-f717-47b8-bb11-9751bcdb9d55
+2026-09-20T14:30:44.104499Z []   [NOOP] '1720 Locomotive Life Extension Stage 1 Works 2026' [VP522335] tender_id=9e5b2ca2-dbab-4535-9c9f-df217aea93b3
+2026-09-20T14:30:47.354946Z []   [NOOP] 'CN-26496 DRFA Event 25J Southern Cross Creek Betterment - Flinders Highway' [VP522352] tender_id=41bd18d0-a41c-483c-990a-462e872b0579
+2026-09-20T14:30:50.620112Z []   [NOOP] 'ITO | Electrical Course Supplies' [VP522355] tender_id=709bd4c6-16cc-49a8-9c6b-52d417a803c7
+2026-09-20T14:30:53.648024Z []   [NOOP] 'North and Far North Tropical Low Environmental Recovery Program, Catchment Rehabilitation Program' [VP522442] tender_id=92b019c8-54c2-4244-8f5c-fb6a27888f7e
+2026-09-20T14:30:56.745493Z []   [NOOP] 'CN-26693 - 2026-27 GRC Reseals for the Darling Downs District on the State and National Network' [VP522456] tender_id=5eba519c-6fd6-4527-9683-59a0fa32e9be
+2026-09-20T14:30:59.685825Z []   [NOOP] 'Request for Information - Telecommunications Expense Management Solution' [VP522541] tender_id=178d222f-879c-4f83-b46c-e9d869b6ba67
+2026-09-20T14:31:03.261648Z []   [NOOP] 'Generator tender' [VP522676] tender_id=98d906dd-3566-4fb9-89a7-f3714a17c0a6
+2026-09-20T14:31:06.182070Z []   [NOOP] 'QBNQ440BLD1-Design and Installation New Playground Shade Structure-SUNSET STATE SCHOOL' [VP522767] tender_id=0b467412-be0d-4115-9124-d1b57e886029
+2026-09-20T14:31:09.157693Z []   [NOOP] 'Southern Downs Electorate Office Refurbishment' [VP522769] tender_id=69684c99-2190-481c-ad09-0bc9df8f1542
+2026-09-20T14:31:12.462773Z []   [NOOP] 'RFT000040 Description: Electronic Document and Records Management System (EDRMS)' [VP522807] tender_id=3105ebaa-f5a5-4f94-94bc-6248a66e4efe
+2026-09-20T14:31:15.821734Z []   [NOOP] 'Standing Offer Arrangement Trade Contractor Painting Services ? SOUTH EAST QUEENSLAND' [VP522876] tender_id=4ef7d52b-c245-4a46-ab7a-5e9567791608
+2026-09-20T14:31:18.950148Z []   [NOOP] 'QED 6391 2026 Collingwood Park SS - Flexible OLA (Eligible PQC contractors)' [VP522998] tender_id=b3a8ab45-3a2e-4566-a907-6659dcbd7c74
+2026-09-20T14:31:22.315551Z []   [NOOP] 'Design & Construct 6.5m-7m Vessel Package Karumba ?Nassau?' [VP523009] tender_id=ae735ac2-f1bc-42b1-84f4-e53800087b64
+2026-09-20T14:31:25.674651Z []   [NOOP] 'DLGWV2026-0351 Design and Construction of the Mapoon New Treated Water Reservoir Project' [VP523022] tender_id=453e5732-d1b9-4f01-8f32-d8e140bc65e9
+2026-09-20T14:31:29.285736Z []   [NOOP] '001388_HV Blue-Red Feeder' [VP523043] tender_id=44a0e9ca-252c-4990-815b-40349fd7d0e1
+2026-09-20T14:31:32.693337Z []   [NOOP] 'Ecotourism Opportunities in Queensland' [VP523182] tender_id=a512c28f-00b1-4eb4-b8f1-8e1d480cf486
+2026-09-20T14:31:36.313011Z []   [NOOP] 'Wide-bore CT Scanner suitable for Radiation Oncology' [VP523261] tender_id=0b2a7a43-ba98-44ce-b722-436230379116
+2026-09-20T14:31:39.368723Z []   [NOOP] 'Operational Partnership for Step-Up Step-Down (SUSD) for Mental Health facility at Nundah' [VP523303] tender_id=7292d20c-ca4a-4166-b9b2-df6d2ee5730f
+2026-09-20T14:31:42.874294Z []   [NOOP] 'CQURFQ-26-39-DFM - MKY TTC Car Park - Construction' [VP523375] tender_id=69d480d6-0571-4fa4-adc0-cb8acfb630f9
+2026-09-20T14:31:46.015446Z []   [NOOP] 'Supply of Low Voltage Diesel Generators at TPCH' [VP523433] tender_id=aeb34c6c-ee96-425d-ae66-5f33232222be
+2026-09-20T14:31:49.287852Z []   [NOOP] 'Provision of Assessment Services in South Asia' [VP523584] tender_id=fa0019f1-8fc8-46ac-91b1-05befd0a0e79
+2026-09-20T14:31:52.626165Z []   [NOOP] 'WBHHS130454 - Expression of Interest (EOI) - Rural GP Services' [VP523655] tender_id=09784473-023d-4ec5-89c5-f6d5e714b906
+2026-09-20T14:31:55.972809Z []   [NOOP] 'Reinsurance Brokerage Services' [VP523664] tender_id=e7359bf3-1b97-422c-95b0-99f3508d75c8
+2026-09-20T14:31:59.940419Z []   [NOOP] 'Heating, Ventilation, and Air Conditioning Projects' [VP523676] tender_id=55c22489-3573-4280-a296-47931f010818
+2026-09-20T14:32:03.345044Z []   [NOOP] 'Principal Contractor for RBWH Mental Health Stabilization Unit (MSHSU) and The Hub' [VP523687] tender_id=fe1ce816-5baf-4e47-990d-eae28a4d958c
+2026-09-20T14:32:06.993562Z []   [NOOP] 'QED 6383 2026 - HEALY SS AND HAPPY VALLEY SS - NEW CAR PARK' [VP523708] tender_id=0d4d5a04-0c65-49f9-8ebd-02e719226529
+2026-09-20T14:32:10.252521Z []   [NOOP] 'CN-25998 -TIC-CO - Sunshine Motorway Resurfacing project (Chainage 5.87-13.4km)' [VP523746] tender_id=5a5ca5b5-5749-4809-b307-e4d6dc1e78eb
+2026-09-20T14:32:14.968398Z []   [NOOP] 'Land Maintenance' [VP523772] tender_id=72ff3df7-7422-438a-a2e6-5c5dbaf0f745
+2026-09-20T14:32:19.950572Z []   [NOOP] 'Principal Contractor for Stage 2 - Balcony Repairs at Hill Houses - Thursday Is' [VP523813] tender_id=18818ac7-1db7-491a-b696-df6b25def311
+2026-09-20T14:32:25.023692Z []   [NOOP] 'FORWARD PROCUREMENT ADVICE - Targeted Refresh of GGS0111-24 Professional Services PSP Q3 2026' [VP523840] tender_id=2c3492fd-50a0-4ab8-87c8-db2d6fe00dbb
+2026-09-20T14:32:28.600239Z []   [NOOP] 'SPRINGSURE QAS - Design & Construct - New Ambulance Station, Relief Quarters & Plant Room' [VP523866] tender_id=85ca6935-ec7e-4b42-9f2c-82e3aaf4ddcc
+2026-09-20T14:32:32.498236Z []   [NOOP] 'PROSERPINE QAS - Design and Construct - New Relievers Quarters' [VP523870] tender_id=f0b54daa-231a-47a4-9a4b-417f4544715b
+2026-09-20T14:32:36.471723Z []   [NOOP] 'Tropical Cyclone Alfred Environmental Recovery Program, Catchment Rehabilitation Program' [VP523874] tender_id=6c868cce-5e1c-4387-af54-676aac8132a0
+2026-09-20T14:32:39.991969Z []   [NOOP] 'Fire Protection Services - Parliamentary Precinct' [VP523889] tender_id=cbb94080-449f-486c-a031-fff1f611cd20
+2026-09-20T14:32:43.352690Z []   [NOOP] 'Ports North Tingira Street ? 2026 Surcharge Relocation and Gravel Pavement Works' [VP523896] tender_id=c0ad903a-13f2-4c5f-8354-decf2317731b
+2026-09-20T14:32:46.709554Z []   [NOOP] '7.6m RHIB New Vessel Build ?SAXON? Vessel, Outboards and Trailer' [VP523905] tender_id=56caaf51-9891-42f6-99ee-7c8f740b8efc
+2026-09-20T14:32:50.132457Z []   [NOOP] 'Events Panel for Infrastructure, AV, Staging & structures, Lighting, Crew, Production' [VP523909] tender_id=8f09f94e-ff6c-4bf0-8e31-2e40bf7ba674
+2026-09-20T14:32:53.881920Z []   [NOOP] 'Central Queensland Hospital and Health Service (CQHHS) Condition Assessment Audit 2026-2029' [VP524007] tender_id=3275eed5-c649-42f8-bea4-55a84b6f1a21
+2026-09-20T14:32:57.199706Z []   [NOOP] 'Carry out Painting and Flooring Works to Townsville Watchhouse - 31 WALKER STREET, TOWNSVILLE 4810' [VP524076] tender_id=9b862bc4-88c7-438f-a443-6bd394fa9405
+2026-09-20T14:33:00.630904Z []   [NOOP] 'Angiography/Fluoroscopy Imaging Unit' [VP524082] tender_id=f1e87eb7-43b2-48b0-a71a-ef0007a75c52
+2026-09-20T14:33:04.337185Z []   [NOOP] 'Standing Offer Arrangement Trade Contractor Pest Control Services ? South East Queensland' [VP524231] tender_id=ec930aea-9f2e-415e-962e-35a05cda1073
+2026-09-20T14:33:07.937752Z []   [NOOP] 'Provision of Waste Management Services across South West Queensland Region' [VP524241] tender_id=ed4e57fb-8705-4c0e-88a8-9ae2dda2288e
+2026-09-20T14:33:11.219906Z []   [NOOP] 'FAIR Support and Maintenance' [VP524360] tender_id=c6abfe2d-74d0-48da-acbf-5ce82bab28c5
+2026-09-20T14:33:14.563388Z []   [NOOP] 'Expression of Interest - Aquaculture Gladstone Commercial Growth Strategy' [VP524464] tender_id=b64a7e9b-9e94-4771-8416-506680be4fc3
+2026-09-20T14:33:18.163356Z []   [NOOP] 'Protection Cubicles, Mounting and Blanking Plates' [VP524590] tender_id=1b7d4498-cb1f-465d-9669-ca193e45f134
+2026-09-20T14:33:22.102474Z []   [NOOP] 'MNHHS200260 TPCH and RBWH Transit Lounge - Principal Contractor' [VP524640] tender_id=85286148-c8af-464b-94e1-a10d5b6dfb37
+2026-09-20T14:33:25.447683Z []   [NOOP] 'Mobile Carrier Reception Improvement Managed Services' [VP524671] tender_id=34be7937-00e5-40cb-976e-10c6d141dd60
+2026-09-20T14:33:28.725390Z []   [NOOP] 'ISIS DISTRICT SHS - Construct - Changing Places and Covered Walkway' [VP524683] tender_id=bf91ba53-1faf-4721-99d7-827927487002
+2026-09-20T14:33:32.187434Z []   [NOOP] 'Expression of Interest ? Sunshine Coast Recreation Precinct Caf? Lease' [VP524695] tender_id=1eb52ef8-c46a-4afb-bf1b-555f1f4d367d
+2026-09-20T14:33:35.425004Z []   [NOOP] 'Injune P-10 State School - Multipurpose Sports Facility Upgrade (Eligible PQC Contractors)' [VP524698] tender_id=54bfc395-d2e1-4a4e-a9f5-be768302cff1
+2026-09-20T14:33:38.961968Z []   [NOOP] 'Targeted Refresh of GGS0111-24 Professional Services Preferred Supplier Panel' [VP524716] tender_id=0fb674c5-81d2-44c4-a3c3-6c027609031b
+2026-09-20T14:33:42.443482Z []   [NOOP] 'Head Contractor - Grovely State School ? Asbestos Mitigation (Stage 2) (With Design Responsibility)' [VP524727] tender_id=170b6d8d-f40c-4aed-95e6-1dece1725a01
+2026-09-20T14:33:46.235244Z []   [NOOP] 'CN-27585 - North Queensland Region - North West District - Weed Management - Various Locations' [VP524792] tender_id=540d8c20-e977-4add-b6eb-3ffc87fc9557
+2026-09-20T14:33:49.949805Z []   [NOOP] 'Request for Information (RFI) - Student Recruitment Transformation' [VP524818] tender_id=506c3143-cc4b-4fd8-8aae-458c5a6b2f72
+2026-09-20T14:33:53.419743Z []   [NOOP] 'Request for Information - Electricity Retail Supply ? Large Contestable Sites' [VP524905] tender_id=02023d74-dd68-4949-9b86-3477f9f79247
+2026-09-20T14:33:58.361911Z []   [NOOP] 'Mareeba Hospital - Birthing Suite Refurbishment' [VP524912] tender_id=9cdbac35-0c0c-4bd5-aeda-9ce9f1ec9bd6
+2026-09-20T14:34:01.747305Z []   [NOOP] 'Principal Contractor for Roof Replacement & Structural Repairs - Lockhart River PHCC' [VP524923] tender_id=a22e3b3a-c525-4d08-b8cc-ed635a70ea36
+2026-09-20T14:34:05.146303Z []   [NOOP] 'Hexagonal Bolts, Nuts, Coach Screws and Washers' [VP524929] tender_id=c6d1c4de-4c47-41ba-b763-025848bf082c
+2026-09-20T14:34:08.471140Z []   [NOOP] 'Forward Notice - Upcoming Fleet Projects' [VP524944] tender_id=14997864-0a42-4f00-a221-c6ff94bd2807
+2026-09-20T14:34:12.024111Z []   [NOOP] 'Motor Vehicle Cargo Terminal SP1' [VP524945] tender_id=3080b7a5-1a2a-4d43-bdb4-76f7347eb7c3
+2026-09-20T14:34:16.812637Z []   [NOOP] '2026/2027 South West District Western Reseal Program' [VP525029] tender_id=bad0ff09-3a2e-476e-9e4a-ae003736b8af
+2026-09-20T14:34:22.790849Z []   [NOOP] '001489_Estate Precinct (B060 Refurbishment)' [VP525124] tender_id=f6de383a-5daa-4d9d-bde0-9f386410f074
+2026-09-20T14:34:27.560305Z []   [NOOP] 'Request for Information - Redlands Hospital Administration Demountable' [VP525130] tender_id=601b8758-ea2b-4524-b6e6-fc63a367495d
+2026-09-20T14:34:31.022992Z []   [NOOP] 'ETCS Rollingstock Technical Advisory Team' [VP525148] tender_id=50965516-217d-4018-9723-3d352ed54371
+2026-09-20T14:34:34.596701Z []   [NOOP] 'Supply of Railway Track Materials' [VP525152] tender_id=13a1dd5c-65ee-4ffb-bc6f-e524baf006a1
+2026-09-20T14:34:38.289990Z []   [NOOP] 'Crocodile monitoring and capture services - Cairns' [VP525195] tender_id=2fac4099-4a2d-4a78-8a00-033bb579c9a8
+2026-09-20T14:34:41.708310Z []   [NOOP] 'QED 6448 2026 - Nirimba SPS - Car Park Extension & Bike Enclosure' [VP525197] tender_id=00db0464-c11e-4a49-ad60-8862c3eedaaf
+2026-09-20T14:34:45.555315Z []   [NOOP] 'NCR2627 015 - Program Scheduler' [VP525211] tender_id=98b4f938-93e0-4e17-a405-f11c1b87eb76
+2026-09-20T14:34:49.127119Z []   [NOOP] 'Expression of Interest: Network Infrastructure Deployment and Related Services' [VP525295] tender_id=d0e084e4-3153-49c5-9067-bc67005f43f8
+2026-09-20T14:34:52.731033Z []   [NOOP] 'TL26-00372 ? Invitation to Offer ? 2026 Diesel Bus Fleet Procurement' [VP525316] tender_id=d1bcb8f2-4bc1-4a35-9ba9-6672ab1606e1
+2026-09-20T14:34:56.622634Z []   [NOOP] 'QBNQ442 Carry out Bathroom Upgrades at SPINIFEX RESIDENTIAL COLLEGE, TRANSMISSION STREET, MOUNT ISA' [VP525342] tender_id=3ec56764-c933-4bdb-83d2-a82bcd7f6d65
+2026-09-20T14:35:01.993310Z []   [NOOP] 'QED 6470 2026 - Aspley SHS - Canteen Refurbishment' [VP525399] tender_id=f9345ad5-3e44-4af4-9902-ffc50228b0ef
+2026-09-20T14:35:09.479254Z []   [NOOP] 'Security Services for Clinical Support Queensland' [VP525465] tender_id=e4884eba-7bca-4a8b-a171-56c83f701a6d
+2026-09-20T14:35:16.652128Z []   [NOOP] "Royal Brisbane Woman's Hospital Hot Water Calorifiers Replacement" [VP525470] tender_id=739046c5-d51b-42ab-9b50-b192274e1bfb
+2026-09-20T14:35:20.114897Z []   [NOOP] 'Wacol Training Facility Grounds Maintenance' [VP525495] tender_id=8256592e-03fb-4788-a694-cac325f1b67d
+2026-09-20T14:35:23.623067Z []   [NOOP] 'Queensland Emergency Dispatchers ? Trauma and Wellbeing Research Project' [VP525511] tender_id=da995caf-8949-41c7-9fc3-185e478bc62d
+2026-09-20T14:35:27.595001Z []   [NOOP] 'QED 6277 2026 - Craigslea SHS - New Marine Science Building' [VP525523] tender_id=b9c05d65-e8f4-4bda-a043-74f46203b4ec
+2026-09-20T14:35:31.316555Z []   [NOOP] 'Provision of Meals to Watch-house(s) throughout Queensland' [VP525551] tender_id=81d14108-cd6c-48d7-9f17-ca7021151f15
+2026-09-20T14:35:35.254989Z []   [NOOP] 'Bruce Highway Targeted Safety Program Independent Financial Auditor Panel' [VP525563] tender_id=f02098f0-1398-485d-acb7-c6e6a6fc5ae2
+2026-09-20T14:35:38.913458Z []   [NOOP] 'Dhuny Yumba (Powrunna) Accommodation and Office Construction' [VP525626] tender_id=f6b063ba-84c5-4b6f-8b15-e806047bce87
+2026-09-20T14:35:42.408127Z []   [NOOP] 'DETSI Regulated Waste Tracking System Proof of Concept' [VP525702] tender_id=26743bd1-1019-4ed7-ab2d-32c166036f86
+2026-09-20T14:35:45.868240Z []   [NOOP] 'Ports North The Company One Hatchery - HVAC Renewal' [VP525715] tender_id=3f6c21f8-6397-4083-83e9-1a885d373138
+2026-09-20T14:35:49.403332Z []   [NOOP] 'HSQF Cultural Auditor and Resource Enhancement (CARE) Project' [VP525756] tender_id=f75ef137-35c7-4ded-bfd2-1e1e12278999
+2026-09-20T14:35:52.874639Z []   [NOOP] 'QED 6261A 2026 - HomeHill State High School - GFG Health & Physical Fitness Centre' [VP525769] tender_id=34253e8f-dae0-4e22-a528-b28607499492
+2026-09-20T14:35:56.383406Z []   [NOOP] 'QED 6469 2026 - Gracemere State School - Shade Structure' [VP525784] tender_id=3f9ab118-bb43-4d7b-80ca-5dae8be7f99d
+2026-09-20T14:36:03.589479Z []   [NOOP] 'Provision of Complete Camp Facilities for the Outback Way Project' [VP525801] tender_id=a5983543-a002-497a-b6e3-962131aa8476
+2026-09-20T14:36:07.018331Z []   [NOOP] 'Testing Orchestration, Automation, Support and Transition' [VP525810] tender_id=bc11e8b2-7257-44e8-a03f-49204b08ff3b
+2026-09-20T14:36:10.274946Z []   [NOOP] 'Expression of Interest - Sport Venues Digital Signage Opportunities' [VP525908] tender_id=883b761e-fd4d-4886-9edb-2371ae8e86b4
+2026-09-20T14:36:13.570227Z []   [NOOP] 'Request for Information - Cyber Security Dashboard' [VP525921] tender_id=308c6883-d335-4f2d-adaf-2f9b655210dd
+2026-09-20T14:36:17.033361Z []   [NOOP] 'Provision of Central Sterilising Equipment for the Royal Brisbane and Womens Hospital' [VP525945] tender_id=6d456656-fb9b-460a-805c-c41dcf9d5001
+2026-09-20T14:36:20.087521Z []   [NOOP] 'QED 6466 2026 - Ascot State School ? Block B 3x GLA & Verandah Area Refurbishment' [VP525953] tender_id=e0725622-d930-4730-b37e-e0d343c7bd26
+2026-09-20T14:36:23.335978Z []   [NOOP] 'Pedestrian Safety Works ? Moreton Bay Road' [VP525958] tender_id=61935c1a-e817-4272-8f3e-85ab82bd126a
+2026-09-20T14:36:26.884325Z []   [NOOP] 'QBNQ443BLD1 ? Carry Out Refurbishment of Block A-SPINIFEX SENIOR COLLEGE, ABEL SMITH PARADE MT ISA' [VP525983] tender_id=b8f29ee5-bedd-44b5-b1c5-9507f194ef24
+2026-09-20T14:36:30.171950Z []   [NOOP] 'CN-27754 (SSMW) Provision of SCR AADT Traffic Survey 2026 / 2027' [VP526066] tender_id=69a66dbc-035d-4277-9ff8-13d64a08c9ac
+2026-09-20T14:36:33.553097Z []   [NOOP] 'Development and Co-Design of Sustained Health Home Visiting (SHHV)' [VP526078] tender_id=9f12cf24-01e8-4271-856c-ba50cd72d6ba
+2026-09-20T14:36:36.941154Z []   [NOOP] 'EOI - Primary Care Service Partner (Clermont)' [VP526301] tender_id=b248487d-285b-4346-b823-9fc887d874d4
+2026-09-20T14:36:40.219289Z []   [NOOP] 'UniSQ International Admissions' [VP526320] tender_id=b5ccbd88-f9b8-4c3a-98fa-6306aebace79
+2026-09-20T14:36:43.506824Z []   [NOOP] 'TUH Kitchen Dishwasher Replacement - Supply' [VP526340] tender_id=0d6f2738-1a6c-44db-9961-aa8a6b23cb53
+2026-09-20T14:36:47.092802Z []   [NOOP] 'Cleaning and Gardening Services for Staff Accommodation in Kalgoorlie' [WACHS202514638] tender_id=0d3094f8-8ef5-4a22-a3b0-0905915a3cd2
+2026-09-20T14:36:50.291427Z []   [NOOP] 'Kununurra Hospital Fire Indicator Panel and Associated Systems' [WACHS202615499] tender_id=2c26cd1f-31ab-44c6-91cf-7e05ac29aa6d
+2026-09-20T14:36:53.270856Z []   [NOOP] 'Request for registration of interest for: South Hedland Step Up Step Down Service' [WACHSROI2026SHSUSD] tender_id=4f96589e-3c1e-40b6-9512-8eec2646c6e8
+2026-09-20T14:36:56.905153Z []   [NOOP] 'Provision and Implementation of an Asset Management Information System' [WAPOL00826] tender_id=1221d5b2-3d86-48b7-88bf-936170b40fe4
+2026-09-20T14:37:00.087444Z []   [NOOP] 'WAPOL03325 - Request State-Wide Electrical Services and Alternative Energy Solutions' [WAPOL03325] tender_id=aaacee62-fcfa-406b-b5a8-256db6a0cd9d
+2026-09-20T14:37:03.112816Z []   [NOOP] 'Live Streaming Services for the WA Police Academy' [WAPOL05826] tender_id=cf886e3b-ce26-4fe7-b7f2-59b47c863708
+2026-09-20T14:37:06.055652Z []   [NOOP] 'Redevelopment of the Road Smart KickStart Road Safety Education Program' [WAPOL07926] tender_id=c624b495-cdab-47dd-8e5b-8889b9a76edc
+2026-09-20T14:37:09.045975Z []   [NOOP] 'Supply of Variable Alternate Light Sources' [WAPOL09925] tender_id=66b8a55a-6afb-4f36-92a4-1eb42b6cfba3
+2026-09-20T14:37:12.337831Z []   [NOOP] 'Renewal of TRM Labs - TRM Forensics Premium LE Licenses' [WAPOL13626] tender_id=158112be-6db6-434b-90ab-f55adb2c8c7c
+2026-09-20T14:37:15.660871Z []   [NOOP] 'Workplace Cultural Review Services' [WAPOL15426] tender_id=d8204039-6887-4df0-a9e2-c5283017325a
+2026-09-20T14:37:18.680583Z []   [NOOP] 'COCOS WEST ISLAND SEAWATER DESALINATION PLANT ? DESIGN AND CONSTRUCT' [WC7000015480] tender_id=f29919c8-ab41-4759-af9f-99afc7755e35
+2026-09-20T14:37:21.991607Z []   [NOOP] 'PSA Inorganic Analytical Services' [WC7000015487] tender_id=d2f276fe-701e-452d-922b-01a031e210ff
+2026-09-20T14:37:24.896671Z []   [NOOP] 'Provision of Graphic Design Services for the Westport Program' [WPO201626] tender_id=60b0bd64-297e-4b32-aa36-181ffa040b84
+2026-09-20T14:37:28.120391Z []   [NOOP] 'Design, Supply, Installation, Testing and Commissioning of CCTV Systems for Selected Animal Enclosures at Perth Zoo' [ZPA49273126] tender_id=3d3fb5f2-9707-4286-a15b-6bf05d0f7318
+2026-09-20T14:37:28.120405Z [] Done. scraped=361 inserted=7 noop=354
+2026-09-20T14:37:28.369447Z [INFO] Container called exit(0).
+2026-09-20T14:37:34.026397Z [INFO] Execution tender-batch-job-fxzbr has completed successfully.

@@ -1,0 +1,195 @@
+﻿2026-10-01T06:09:08.484472Z [] [INFO] Starting Daily Tender Pipeline...
+2026-10-01T06:09:08.484494Z [] [INFO] Created temporary working directory: /tmp/tmpnszb0e6k
+2026-10-01T06:09:08.484500Z [] [INFO] ==============================================================================
+2026-10-01T06:09:08.484505Z [] [INFO] STAGE 1/4: SCRAPE every portal
+2026-10-01T06:09:08.484509Z [] [INFO] ==============================================================================
+2026-10-01T06:09:08.484512Z [] [INFO] Executing scraper: grantconnect
+2026-10-01T06:09:08.484517Z [] [INFO] [GRANTCONNECT] ==============================================================================
+2026-10-01T06:09:08.484538Z [] [INFO] [GRANTCONNECT] START  limit=1  output_dir=/tmp/tmpnszb0e6k
+2026-10-01T06:09:08.490462Z [] [INFO] [GRANTCONNECT] login: GRANTCONNECT_USERNAME set, GRANTCONNECT_PASSWORD set
+2026-10-01T06:09:09.279584Z [] [INFO] [GRANTCONNECT] login: OK
+2026-10-01T06:09:09.437852Z [] [INFO] [GRANTCONNECT] listing: 1 opportunity link(s) found
+2026-10-01T06:09:09.437861Z [] [INFO] [GRANTCONNECT] (1/1) fetching https://www.grants.gov.au/Go/Show?GoUuid=80fc63c7-d1ec-407a-b535-bf1aacbfb821
+2026-10-01T06:09:15.169748Z [] [INFO] [GRANTCONNECT]        documents: 6/6 saved
+2026-10-01T06:09:15.169760Z [] [INFO] [GRANTCONNECT] (1/1) GO8543  SITE_SUCCESS
+2026-10-01T06:09:15.169764Z [] [INFO] [GRANTCONNECT] results: 1 tender(s) -- 1 x SITE_SUCCESS
+2026-10-01T06:09:15.169767Z [] [INFO] [GRANTCONNECT] verdict: all 1 tender(s) scraped cleanly
+2026-10-01T06:09:15.171490Z [] [INFO] [GRANTCONNECT] END    code=0 SITE_SUCCESS  site=grantconnect  tenders=1  time=6.7s
+2026-10-01T06:09:15.171497Z [] [INFO] [GRANTCONNECT] ==============================================================================
+2026-10-01T06:09:15.171501Z [] [INFO] Executing scraper: buynsw
+2026-10-01T06:09:15.171506Z [] [INFO] [BUYNSW      ] ==============================================================================
+2026-10-01T06:09:15.171509Z [] [INFO] [BUYNSW      ] START  limit=1  output_dir=/tmp/tmpnszb0e6k
+2026-10-01T06:09:15.482186Z [] [INFO] [BUYNSW      ] listing: 1 opportunity link(s) found
+2026-10-01T06:09:15.482201Z [] [INFO] [BUYNSW      ] (1/1) fetching https://buy.nsw.gov.au/prcOpportunity/D7DD6E5C-F172-431C-842AD785F8F0E288
+2026-10-01T06:09:16.721654Z [] [INFO] [BUYNSW      ]        documents: 17 saved
+2026-10-01T06:09:16.721668Z [] [INFO] [BUYNSW      ] (1/1) ISLHD_4893  SITE_SUCCESS
+2026-10-01T06:09:16.721672Z [] [INFO] [BUYNSW      ] results: 1 tender(s) -- 1 x SITE_SUCCESS
+2026-10-01T06:09:16.721676Z [] [INFO] [BUYNSW      ] verdict: all 1 tender(s) scraped cleanly
+2026-10-01T06:09:16.721874Z [] [INFO] [BUYNSW      ] END    code=0 SITE_SUCCESS  site=buynsw  tenders=1  time=1.6s
+2026-10-01T06:09:16.721878Z [] [INFO] [BUYNSW      ] ==============================================================================
+2026-10-01T06:09:16.721963Z [] [INFO] Executing scraper: tenders_act
+2026-10-01T06:09:16.722077Z [] [INFO] [TENDERS_ACT ] ==============================================================================
+2026-10-01T06:09:16.722080Z [] [INFO] [TENDERS_ACT ] START  limit=1  output_dir=/tmp/tmpnszb0e6k
+2026-10-01T06:09:16.722107Z [] [INFO] [TENDERS_ACT ] browser attempt 1/3
+2026-10-01T06:09:20.445680Z [] Warning: uc_driver not found. Getting it now:
+2026-10-01T06:09:20.699750Z [] *** Getting chromedriver 154.0.8037.92 (Latest Stable) 
+2026-10-01T06:09:20.699762Z [] Downloading chromedriver-linux64.zip from:
+2026-10-01T06:09:20.699766Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/linux64/chromedriver-linux64.zip ...
+2026-10-01T06:09:21.578095Z [] Download Complete!
+2026-10-01T06:09:21.578108Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-10-01T06:09:21.708296Z [] Unzip Complete!
+2026-10-01T06:09:21.708312Z [] ['uc_driver'] was saved to:
+2026-10-01T06:09:21.708316Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-10-01T06:09:21.708319Z [] uc_driver
+2026-10-01T06:09:21.708322Z [] [uc_driver 154.0.8037.92] is ready for use!
+2026-10-01T06:09:21.709925Z [] *** Getting chromedriver 154.0.8037.92 (Latest Stable) 
+2026-10-01T06:09:21.709935Z [] Downloading chromedriver-linux64.zip from:
+2026-10-01T06:09:21.709939Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/linux64/chromedriver-linux64.zip ...
+2026-10-01T06:09:23.514781Z [] Download Complete!
+2026-10-01T06:09:23.514795Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-10-01T06:09:23.644005Z [] Unzip Complete!
+2026-10-01T06:09:23.644033Z [] ['chromedriver'] was saved to:
+2026-10-01T06:09:23.644038Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-10-01T06:09:23.644042Z [] chromedriver
+2026-10-01T06:09:23.644047Z [] [chromedriver 154.0.8037.92] is ready for use!
+2026-10-01T06:09:26.424818Z [] [INFO] [TENDERS_ACT ] chrome 154.0.8037.92
+2026-10-01T06:09:26.424833Z [] [INFO] [TENDERS_ACT ] login: ACT_USERNAME set, ACT_PASSWORD set -- submitting the form
+2026-10-01T06:09:38.091882Z [] [INFO] [TENDERS_ACT ] login: OK
+2026-10-01T06:09:46.336761Z [] [INFO] [TENDERS_ACT ] listing: 1 tender link(s) found
+2026-10-01T06:09:46.336773Z [] [INFO] [TENDERS_ACT ] (1/1) fetching https://www.tenders.act.gov.au/tender/view?id=224403
+2026-10-01T06:10:12.362738Z [] [INFO] [TENDERS_ACT ]        documents: 1/1 saved
+2026-10-01T06:10:12.362757Z [] [INFO] [TENDERS_ACT ] (1/1) 99999.8  SITE_SUCCESS
+2026-10-01T06:10:12.362762Z [] [INFO] [TENDERS_ACT ] results: 1 tender(s) -- 1 x SITE_SUCCESS
+2026-10-01T06:10:12.362765Z [] [INFO] [TENDERS_ACT ] verdict: all 1 tender(s) scraped cleanly
+2026-10-01T06:10:12.478209Z [] [INFO] [TENDERS_ACT ] END    code=0 SITE_SUCCESS  site=tenders_act  tenders=1  time=55.8s
+2026-10-01T06:10:12.478222Z [] [INFO] [TENDERS_ACT ] ==============================================================================
+2026-10-01T06:10:12.780083Z [] [INFO] ? Published scraper health status (3 records) to gs://tenderai-dev-documents/scraper_health.json
+2026-10-01T06:10:12.780097Z [] [INFO] ==============================================================================
+2026-10-01T06:10:12.780101Z [] [INFO] SCRAPE RUN SUMMARY
+2026-10-01T06:10:12.780105Z [] [INFO] SITE           CODE                       TENDERS     TIME
+2026-10-01T06:10:12.780109Z [] [INFO] GRANTCONNECT   0 SITE_SUCCESS                   1     6.7s
+2026-10-01T06:10:12.780112Z [] [INFO] BUYNSW         0 SITE_SUCCESS                   1     1.6s
+2026-10-01T06:10:12.780115Z [] [INFO] TENDERS_ACT    0 SITE_SUCCESS                   1    55.8s
+2026-10-01T06:10:12.780118Z [] [INFO] ==============================================================================
+2026-10-01T06:10:12.780140Z [] [INFO] ==============================================================================
+2026-10-01T06:10:12.780159Z [] [INFO] STAGE 2/4: EXTRACT text from attachments
+2026-10-01T06:10:12.780162Z [] [INFO] ==============================================================================
+2026-10-01T06:10:12.780199Z [] [INFO] ? Executing Document Scraper...
+2026-10-01T06:10:12.780300Z [] processing tenders
+2026-10-01T06:10:12.780330Z [] directory:  /tmp/tmpnszb0e6k/GO8543
+2026-10-01T06:10:12.780409Z []   -> [PDF] Processing: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.pdf
+2026-10-01T06:10:12.856984Z []      ? Saved 69553 chars to: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.txt
+2026-10-01T06:10:12.856997Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.pdf.txt
+2026-10-01T06:10:12.857002Z []   -> [DOCX] Processing: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.docx
+2026-10-01T06:10:12.985251Z []      ? Saved 46805 chars to: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.txt
+2026-10-01T06:10:12.985259Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.docx.txt
+2026-10-01T06:10:12.985263Z []   -> [PDF] Processing: Transport Resilience and Capacity Kickstart - Sample application form PDF.pdf
+2026-10-01T06:10:13.022908Z []      ? Saved 26234 chars to: Transport Resilience and Capacity Kickstart - Sample application form PDF.txt
+2026-10-01T06:10:13.022918Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart - Sample application form PDF.pdf.txt
+2026-10-01T06:10:13.022922Z []   -> [DOCX] Processing: Transport Resilience and Capacity Kickstart - Sample application form DOCX.docx
+2026-10-01T06:10:13.069059Z []      ? Saved 22594 chars to: Transport Resilience and Capacity Kickstart - Sample application form DOCX.txt
+2026-10-01T06:10:13.069072Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart - Sample application form DOCX.docx.txt
+2026-10-01T06:10:13.069075Z []   -> [PDF] Processing: Transport Resilience and Capacity Kickstart Sample grant agreement PDF.pdf
+2026-10-01T06:10:13.159979Z []      ? Saved 82448 chars to: Transport Resilience and Capacity Kickstart Sample grant agreement PDF.txt
+2026-10-01T06:10:13.159991Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart Sample grant agreement PDF.pdf.txt
+2026-10-01T06:10:13.159995Z []   -> [DOCX] Processing: Transport Resilience and Capacity Kickstart Sample grant agreement DOCX.docx
+2026-10-01T06:10:13.301590Z []      ? Saved 69882 chars to: Transport Resilience and Capacity Kickstart Sample grant agreement DOCX.txt
+2026-10-01T06:10:13.301605Z []   -> [TXT] Existing text file: Transport Resilience and Capacity Kickstart Sample grant agreement DOCX.docx.txt
+2026-10-01T06:10:13.301609Z [] directory:  /tmp/tmpnszb0e6k/ISLHD_4893
+2026-10-01T06:10:13.301613Z []   -> [PDF] Processing: ISLHD_4893---Part-B-Tender-Specification.pdf
+2026-10-01T06:10:13.323128Z []      ? Saved 19050 chars to: ISLHD_4893---Part-B-Tender-Specification.txt
+2026-10-01T06:10:13.323142Z []   -> [TXT] Existing text file: ISLHD_4893---Part-B-Tender-Specification.pdf.txt
+2026-10-01T06:10:13.323147Z []   -> [PDF] Processing: Appendix 1 - Critical Actions Compliance Declaration.pdf
+2026-10-01T06:10:13.336858Z []      ? Saved 7759 chars to: Appendix 1 - Critical Actions Compliance Declaration.txt
+2026-10-01T06:10:13.336871Z []   -> [TXT] Existing text file: Appendix 1 - Critical Actions Compliance Declaration.pdf.txt
+2026-10-01T06:10:13.336875Z []   -> [PDF] Processing: Appendix 2 - Reference Checking Template.pdf
+2026-10-01T06:10:13.341584Z []      ? Saved 1848 chars to: Appendix 2 - Reference Checking Template.txt
+2026-10-01T06:10:13.341597Z []   -> [TXT] Existing text file: Appendix 2 - Reference Checking Template.pdf.txt
+2026-10-01T06:10:13.341600Z []   -> [PDF] Processing: Appendix 3 - Recruitment Records Checklist.pdf
+2026-10-01T06:10:13.354603Z []      ? Saved 5383 chars to: Appendix 3 - Recruitment Records Checklist.txt
+2026-10-01T06:10:13.354617Z []   -> [TXT] Existing text file: Appendix 3 - Recruitment Records Checklist.pdf.txt
+2026-10-01T06:10:13.354620Z []   -> [PDF] Processing: appendix-1-Policy Directive checklist for implementation.pdf
+2026-10-01T06:10:13.358994Z []      ? Saved 1267 chars to: appendix-1-Policy Directive checklist for implementation.txt
+2026-10-01T06:10:13.359004Z []   -> [TXT] Existing text file: appendix-1-Policy Directive checklist for implementation.pdf.txt
+2026-10-01T06:10:13.359008Z []   -> [PDF] Processing: appendix-2-criminal-history-declaration.pdf
+2026-10-01T06:10:13.366421Z []      ? Saved 3025 chars to: appendix-2-criminal-history-declaration.txt
+2026-10-01T06:10:13.366432Z []   -> [TXT] Existing text file: appendix-2-criminal-history-declaration.pdf.txt
+2026-10-01T06:10:13.366436Z []   -> [DOCX] Processing: appendix-3-statutory-declaration-overseas-applicants-students.DOCX
+2026-10-01T06:10:13.372722Z []      ? Saved 1334 chars to: appendix-3-statutory-declaration-overseas-applicants-students.txt
+2026-10-01T06:10:13.372732Z []   -> [TXT] Existing text file: appendix-3-statutory-declaration-overseas-applicants-students.DOCX.txt
+2026-10-01T06:10:13.372736Z []   -> [PDF] Processing: appendix-4-national-police-check-consent-form.pdf
+2026-10-01T06:10:13.482906Z []      ? Saved 3750 chars to: appendix-4-national-police-check-consent-form.txt
+2026-10-01T06:10:13.482920Z []   -> [TXT] Existing text file: appendix-4-national-police-check-consent-form.pdf.txt
+2026-10-01T06:10:13.482925Z []   -> [PDF] Processing: appendix-5-national-police-check-identification-checklist-form.pdf
+2026-10-01T06:10:13.499521Z []      ? Saved 12305 chars to: appendix-5-national-police-check-identification-checklist-form.txt
+2026-10-01T06:10:13.499533Z []   -> [TXT] Existing text file: appendix-5-national-police-check-identification-checklist-form.pdf.txt
+2026-10-01T06:10:13.499538Z []   -> [PDF] Processing: appendix-6-statutory-declaration-aged-care.pdf
+2026-10-01T06:10:13.507844Z []      ? Saved 5914 chars to: appendix-6-statutory-declaration-aged-care.txt
+2026-10-01T06:10:13.507857Z []   -> [TXT] Existing text file: appendix-6-statutory-declaration-aged-care.pdf.txt
+2026-10-01T06:10:13.507861Z []   -> [PDF] Processing: appendix-7-npc-wwcc-nsw-health-requirements-at-a-glance.pdf
+2026-10-01T06:10:13.525670Z []      ? Saved 3008 chars to: appendix-7-npc-wwcc-nsw-health-requirements-at-a-glance.txt
+2026-10-01T06:10:13.525681Z []   -> [TXT] Existing text file: appendix-7-npc-wwcc-nsw-health-requirements-at-a-glance.pdf.txt
+2026-10-01T06:10:13.525684Z []   -> [PDF] Processing: appendix-8-checklist-does-this-role-require-a-wwcc.pdf
+2026-10-01T06:10:13.543015Z []      ? Saved 12791 chars to: appendix-8-checklist-does-this-role-require-a-wwcc.txt
+2026-10-01T06:10:13.543028Z []   -> [TXT] Existing text file: appendix-8-checklist-does-this-role-require-a-wwcc.pdf.txt
+2026-10-01T06:10:13.543031Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-10-01T06:10:13.558301Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-10-01T06:10:13.558314Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-10-01T06:10:13.558318Z []   -> [PDF] Processing: ISLHD_4893---Part-A---Tender-Overview-and-Terms-and-Conditions.pdf
+2026-10-01T06:10:13.604707Z []      ? Saved 50662 chars to: ISLHD_4893---Part-A---Tender-Overview-and-Terms-and-Conditions.txt
+2026-10-01T06:10:13.604721Z []   -> [TXT] Existing text file: ISLHD_4893---Part-A---Tender-Overview-and-Terms-and-Conditions.pdf.txt
+2026-10-01T06:10:13.604725Z []   -> [PDF] Processing: ISLHD_4893---DRAFT-Good-and-Services-Contract.pdf
+2026-10-01T06:10:13.765947Z []      ? Saved 190057 chars to: ISLHD_4893---DRAFT-Good-and-Services-Contract.txt
+2026-10-01T06:10:13.765965Z []   -> [TXT] Existing text file: ISLHD_4893---DRAFT-Good-and-Services-Contract.pdf.txt
+2026-10-01T06:10:13.765969Z []   -> [TXT] Existing text file: ISLHD_4893---pricing-Schedule.xlsx.txt
+2026-10-01T06:10:13.765973Z []   -> [DOCX] Processing: ISLHD_4893---Part-C---Tender-Response.docx
+2026-10-01T06:10:13.800196Z []      ? Saved 7779 chars to: ISLHD_4893---Part-C---Tender-Response.txt
+2026-10-01T06:10:13.800208Z []   -> [TXT] Existing text file: ISLHD_4893---Part-C---Tender-Response.docx.txt
+2026-10-01T06:10:13.800212Z [] directory:  /tmp/tmpnszb0e6k/99999.8
+2026-10-01T06:10:13.800216Z []   -> [PDF] Processing: Test Addendum for Training Purposes.pdf
+2026-10-01T06:10:13.801428Z []     -> Skipping save: No text extracted from Test Addendum for Training Purposes.pdf
+2026-10-01T06:10:13.801436Z []   -> [TXT] Existing text file: Test Addendum for Training Purposes.pdf.txt
+2026-10-01T06:10:13.801470Z [] [INFO] ==============================================================================
+2026-10-01T06:10:13.801480Z [] [INFO] STAGE 3/4: STORE attachments, AI-process, upsert (3 tender(s))
+2026-10-01T06:10:13.801485Z [] [INFO] ==============================================================================
+2026-10-01T06:10:13.801525Z [] [INFO] ? Preparing data for AI Processing...
+2026-10-01T06:10:13.801569Z [] [INFO] ---- tender 1/3: 99999.8  [TENDERS_ACT] ----
+2026-10-01T06:10:14.043306Z [] [INFO] Already stored, skipping upload: Test Addendum for Training Purposes.pdf
+2026-10-01T06:10:14.043377Z [] [INFO] 99999.8: stored 1 attachment(s)
+2026-10-01T06:10:14.043381Z [] [INFO] ? Processing tender: 99999.8...
+2026-10-01T06:10:14.043424Z [] start of process_tender function
+2026-10-01T06:10:17.696891Z [] [INFO] Generating Gemini Embedding ? for 99999.8...
+2026-10-01T06:10:17.902187Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0205, 0.0241, -0.0321, 0.0183, -0.0228] | Range: [-0.1464, 0.0972]
+2026-10-01T06:10:17.902197Z [] [INFO] Uploading processed tender to BigQuery...
+2026-10-01T06:10:27.281701Z [] [INFO] BigQuery upsert result for 99999.8: updated (id=d4be35d0-b810-4f5c-a769-527b3cf44af0)
+2026-10-01T06:10:27.281715Z [] [INFO] 99999.8 [tenders_act]: 1 document(s) stored, title=None
+2026-10-01T06:10:27.281718Z [] [INFO] ---- tender 2/3: GO8543  [GRANTCONNECT] ----
+2026-10-01T06:10:27.513920Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart - Sample application form DOCX.docx
+2026-10-01T06:10:27.923844Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart - Sample application form PDF.pdf
+2026-10-01T06:10:28.145195Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.docx
+2026-10-01T06:10:28.399385Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart Grant opportunity guidelines.pdf
+2026-10-01T06:10:28.634445Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart Sample grant agreement DOCX.docx
+2026-10-01T06:10:28.873842Z [] [INFO] Already stored, skipping upload: Transport Resilience and Capacity Kickstart Sample grant agreement PDF.pdf
+2026-10-01T06:10:28.873855Z [] [INFO] GO8543: stored 6 attachment(s)
+2026-10-01T06:10:28.873859Z [] [INFO] ? Processing tender: GO8543...
+2026-10-01T06:10:28.873870Z [] start of process_tender function
+2026-10-01T06:11:45.185652Z [] [INFO] Generating Gemini Embedding ? for GO8543...
+2026-10-01T06:11:45.385788Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.069, -0.0173, -0.0124, 0.0008, 0.0089] | Range: [-0.1172, 0.0988]
+2026-10-01T06:11:45.385802Z [] [INFO] Uploading processed tender to BigQuery...
+2026-10-01T06:11:51.081890Z [] [INFO] BigQuery upsert result for GO8543: updated (id=1dfb87b3-aef1-4a45-a591-00f9ebf08764)
+2026-10-01T06:11:51.081906Z [] [INFO] GO8543 [grantconnect]: 6 document(s) stored, title='Transport Resilience and Capacity Kickstart (TRACK) Program ? Round 1'
+2026-10-01T06:11:51.081909Z [] [INFO] ---- tender 3/3: ISLHD_4893  [BUYNSW] ----
+2026-10-01T06:11:54.820381Z [] [INFO] ISLHD_4893: stored 17 attachment(s)
+2026-10-01T06:11:54.820394Z [] [INFO] ? Processing tender: ISLHD_4893...
+2026-10-01T06:11:54.820400Z [] start of process_tender function
+2026-10-01T06:14:11.877281Z [] [INFO] Generating Gemini Embedding ? for ISLHD_4893...
+2026-10-01T06:14:12.062022Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0854, 0.0094, -0.0438, -0.0122, 0.0397] | Range: [-0.1087, 0.1095]
+2026-10-01T06:14:12.062037Z [] [INFO] Uploading processed tender to BigQuery...
+2026-10-01T06:14:16.688991Z [] [INFO] BigQuery upsert result for ISLHD_4893: inserted (id=0986edce-b707-45e6-a793-bbf0cadc01d4)
+2026-10-01T06:14:16.689005Z [] [INFO] ISLHD_4893 [buynsw]: 17 document(s) stored, title='Medical workforce emergency department-Milton Ulladulla Hospital-night shifts'
+2026-10-01T06:14:16.689592Z [] [INFO] ==============================================================================
+2026-10-01T06:14:16.689596Z [] [INFO] STAGE 4/4: FINISH
+2026-10-01T06:14:16.689629Z [] [INFO] ==============================================================================
+2026-10-01T06:14:16.689661Z [] [INFO] Pipeline finished. Temporary files wiped from memory.
+2026-10-01T06:14:16.752663Z [INFO] Container called exit(0).
+2026-10-01T06:14:21.469119Z [INFO] Execution tender-batch-job-lrbgx has completed successfully.

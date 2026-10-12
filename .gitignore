@@ -16,9 +16,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Allow execution logs for documentation
-!execution_logs/
-!execution_logs/*.log
+# Allow test execution logs for documentation
+!tests/Logs/
+!tests/Logs/*.log
 
 # === Node ===
 node_modules/

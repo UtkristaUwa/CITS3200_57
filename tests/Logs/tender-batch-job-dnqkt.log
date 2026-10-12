@@ -1,0 +1,327 @@
+﻿2026-09-29T03:52:21.157158Z [] [INFO] Starting Daily Tender Pipeline...
+2026-09-29T03:52:21.157787Z [] [INFO] Created temporary working directory: /tmp/tmp6si29m27
+2026-09-29T03:52:21.157796Z [] [INFO] Executing scraper: grantconnect
+2026-09-29T03:52:21.246118Z [] [INFO] HTTP Request: GET https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T03:52:21.354152Z [] [INFO] HTTP Request: POST https://www.grants.gov.au/RegisteredUser/Login "HTTP/1.1 200 OK"
+2026-09-29T03:52:21.355684Z [] [ERROR] Scraper 'grantconnect' reported failure code 2
+2026-09-29T03:52:21.355753Z [] [INFO] Executing scraper: buynsw
+2026-09-29T03:52:21.611509Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/opportunity/search?query=&categories=&types=&area=&page=1 "HTTP/1.1 200 "
+2026-09-29T03:52:22.051877Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/46709C00-67E9-4591-AE04602ACE4CEB51 "HTTP/1.1 200 "
+2026-09-29T03:52:22.267169Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/46709C00-67E9-4591-AE04602ACE4CEB51/opportunity-package-46709C00-67E9-4591-AE04602ACE4CEB51.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T035222Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=ec83b413e89731fba947fcc0822cbccd175a70434654ec03880aa129bdbcedaa "HTTP/1.1 200 OK"
+2026-09-29T03:52:23.260427Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/8BE4B7BA-59FB-4337-A32DF974611A32AF "HTTP/1.1 200 "
+2026-09-29T03:52:23.452471Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/8BE4B7BA-59FB-4337-A32DF974611A32AF/opportunity-package-8BE4B7BA-59FB-4337-A32DF974611A32AF.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T035223Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=646806e444c27760a513b3076f8aff1b635dc541fa19e6282f461591f9bcfa41 "HTTP/1.1 200 OK"
+2026-09-29T03:52:24.405634Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/4F6C8C44-55F7-4292-B82094419A56A56D "HTTP/1.1 200 "
+2026-09-29T03:52:24.603535Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/4F6C8C44-55F7-4292-B82094419A56A56D/opportunity-package-4F6C8C44-55F7-4292-B82094419A56A56D.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T035224Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=5174675aa62fc0d6177d4c0d0723af9cbab704590d841dd9ea93e3fc158ffe08 "HTTP/1.1 200 OK"
+2026-09-29T03:52:25.498122Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/4B85DCFE-06A4-4CEA-9DB171D82BE94204 "HTTP/1.1 200 "
+2026-09-29T03:52:25.750031Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/4B85DCFE-06A4-4CEA-9DB171D82BE94204/opportunity-package-4B85DCFE-06A4-4CEA-9DB171D82BE94204.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T035225Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=74647670ef2dc09783d2b3611de3ee831f1bc802cdc4a1d414f68ced073c98fe "HTTP/1.1 200 OK"
+2026-09-29T03:52:26.198378Z [] [INFO] HTTP Request: GET https://buy.nsw.gov.au/prcOpportunity/A2962DF3-01AE-400E-A50EFEAC11031120 "HTTP/1.1 200 "
+2026-09-29T03:52:26.374895Z [] [INFO] HTTP Request: GET https://nsw-procurement-hub-documents-production.s3.amazonaws.com/prcOpportunity/A2962DF3-01AE-400E-A50EFEAC11031120/opportunity-package-A2962DF3-01AE-400E-A50EFEAC11031120.zip?X-Amz-Credential=AKIA3N3KPJCVJBJWITPP%2F20260929%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Date=20260929T035226Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=a98921d51b78bb054868d8f7fd1e7ee4bb53feec2cf7c3d81d01c4fce19a7e40 "HTTP/1.1 200 OK"
+2026-09-29T03:52:26.823916Z [] [WARNING] Scraper 'buynsw' returned partial data (code 6)
+2026-09-29T03:52:26.823937Z [] [INFO] Executing scraper: tenders_act
+2026-09-29T03:52:30.046233Z [] Warning: uc_driver not found. Getting it now:
+2026-09-29T03:52:30.516351Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T03:52:30.516368Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T03:52:30.516375Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T03:52:32.829051Z [] Download Complete!
+2026-09-29T03:52:32.829122Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T03:52:33.036426Z [] Unzip Complete!
+2026-09-29T03:52:33.036443Z [] ['uc_driver'] was saved to:
+2026-09-29T03:52:33.036450Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T03:52:33.036456Z [] uc_driver
+2026-09-29T03:52:33.036551Z [] [uc_driver 154.0.8037.57] is ready for use!
+2026-09-29T03:52:33.040897Z [] *** Getting chromedriver 154.0.8037.57 (Latest Stable) 
+2026-09-29T03:52:33.040910Z [] Downloading chromedriver-linux64.zip from:
+2026-09-29T03:52:33.040915Z [] https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chromedriver-linux64.zip ...
+2026-09-29T03:52:34.942935Z [] Download Complete!
+2026-09-29T03:52:34.942953Z [] Extracting ['chromedriver'] from chromedriver-linux64.zip:
+2026-09-29T03:52:35.136191Z [] Unzip Complete!
+2026-09-29T03:52:35.136203Z [] ['chromedriver'] was saved to:
+2026-09-29T03:52:35.136208Z [] /usr/local/lib/python3.12/site-packages/seleniumbase/drivers/
+2026-09-29T03:52:35.136212Z [] chromedriver
+2026-09-29T03:52:35.136216Z [] [chromedriver 154.0.8037.57] is ready for use!
+2026-09-29T03:52:39.185201Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T03:52:39.185220Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T03:52:39.449129Z [] [ACT] attempt 1/3 got code 2 with 0 tenders, retrying
+2026-09-29T03:52:56.606096Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T03:52:56.606114Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T03:52:57.406656Z [] [ACT] attempt 2/3 got code 2 with 0 tenders, retrying
+2026-09-29T03:53:29.726467Z [] [ACT] chrome 154.0.8037.57
+2026-09-29T03:53:29.726491Z [] [ACT] ACT_USERNAME / ACT_PASSWORD are not set
+2026-09-29T03:53:30.492932Z [] [ACT] attempt 3/3 got code 2 with 0 tenders, retrying
+2026-09-29T03:54:15.494238Z [] [ERROR] Scraper 'tenders_act' reported failure code 2
+2026-09-29T03:54:15.494655Z [] [INFO] Executing Document Scraper...
+2026-09-29T03:54:15.494704Z [] processing tenders
+2026-09-29T03:54:15.494728Z [] directory:  /tmp/tmp6si29m27/Tender 853
+2026-09-29T03:54:15.494888Z []   -> [PDF] Processing: Tender-853-The-Provision-of-After-Hours-Security-Officer-Services-at-NESA?s-Clarence-Street-Office-RFQ-.pdf
+2026-09-29T03:54:15.592928Z []      ? Saved 48577 chars to: Tender-853-The-Provision-of-After-Hours-Security-Officer-Services-at-NESA?s-Clarence-Street-Office-RFQ-.txt
+2026-09-29T03:54:15.592946Z []   -> [TXT] Existing text file: Tender-853-The-Provision-of-After-Hours-Security-Officer-Services-at-NESA?s-Clarence-Street-Office-RFQ-.pdf.txt
+2026-09-29T03:54:15.592953Z []   -> [DOCX] Processing: Quotation-Submission-Form.docx
+2026-09-29T03:54:15.622362Z []      ? Saved 2025 chars to: Quotation-Submission-Form.txt
+2026-09-29T03:54:15.622381Z []   -> [TXT] Existing text file: Quotation-Submission-Form.docx.txt
+2026-09-29T03:54:15.622391Z []   -> [PDF] Processing: The-draft-Customer-Agreement-for-Security-Services-document.pdf
+2026-09-29T03:54:15.835550Z []      ? Saved 229707 chars to: The-draft-Customer-Agreement-for-Security-Services-document.txt
+2026-09-29T03:54:15.835566Z []   -> [TXT] Existing text file: The-draft-Customer-Agreement-for-Security-Services-document.pdf.txt
+2026-09-29T03:54:15.835570Z []   -> [PDF] Processing: NESA-Tender-853-Addendum-1.pdf
+2026-09-29T03:54:15.844772Z []      ? Saved 1590 chars to: NESA-Tender-853-Addendum-1.txt
+2026-09-29T03:54:15.844798Z []   -> [TXT] Existing text file: NESA-Tender-853-Addendum-1.pdf.txt
+2026-09-29T03:54:15.844805Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:15.860820Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T03:54:15.860836Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T03:54:15.860840Z [] directory:  /tmp/tmp6si29m27/SR01241
+2026-09-29T03:54:15.860944Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:15.879498Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T03:54:15.879516Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T03:54:15.879522Z []   -> [DOCX] Processing: 20260831_SR01241 Part A - Conditions of Tendering_FINAL.docx
+2026-09-29T03:54:15.971329Z []      ? Saved 22883 chars to: 20260831_SR01241 Part A - Conditions of Tendering_FINAL.txt
+2026-09-29T03:54:15.971347Z []   -> [TXT] Existing text file: 20260831_SR01241 Part A - Conditions of Tendering_FINAL.docx.txt
+2026-09-29T03:54:15.971352Z []   -> [DOCX] Processing: 20260831_SR01241 Part B - Response form_FINAL.docx
+2026-09-29T03:54:15.989662Z []     -> Skipping save: No text extracted from 20260831_SR01241 Part B - Response form_FINAL.docx
+2026-09-29T03:54:15.989681Z []   -> [DOCX] Processing: 20260831_SR01241 Part C - Goods and Services Contract_FINAL.docx
+2026-09-29T03:54:16.269554Z []      ? Saved 112735 chars to: 20260831_SR01241 Part C - Goods and Services Contract_FINAL.txt
+2026-09-29T03:54:16.269577Z []   -> [TXT] Existing text file: 20260831_SR01241 Part C - Goods and Services Contract_FINAL.docx.txt
+2026-09-29T03:54:16.269582Z []   -> [PDF] Processing: 20260904_SR01241-Addendum-1.pdf
+2026-09-29T03:54:16.287224Z []      ? Saved 3535 chars to: 20260904_SR01241-Addendum-1.txt
+2026-09-29T03:54:16.287244Z []   -> [TXT] Existing text file: 20260904_SR01241-Addendum-1.pdf.txt
+2026-09-29T03:54:16.287250Z []   -> [PDF] Processing: 20260907_SR01241-Addendum-2.pdf
+2026-09-29T03:54:16.299531Z []      ? Saved 1616 chars to: 20260907_SR01241-Addendum-2.txt
+2026-09-29T03:54:16.299548Z []   -> [TXT] Existing text file: 20260907_SR01241-Addendum-2.pdf.txt
+2026-09-29T03:54:16.299554Z []   -> [DOCX] Processing: 20260911_SR01241 Supplier Briefing Transcription Summary.docx
+2026-09-29T03:54:16.314999Z []      ? Saved 1882 chars to: 20260911_SR01241 Supplier Briefing Transcription Summary.txt
+2026-09-29T03:54:16.315017Z []   -> [TXT] Existing text file: 20260911_SR01241 Supplier Briefing Transcription Summary.docx.txt
+2026-09-29T03:54:16.315021Z []   -> [DOCX] Processing: 20260914_SR01241 Addendum 3.docx
+2026-09-29T03:54:16.324692Z []      ? Saved 164 chars to: 20260914_SR01241 Addendum 3.txt
+2026-09-29T03:54:16.324711Z []   -> [TXT] Existing text file: 20260914_SR01241 Addendum 3.docx.txt
+2026-09-29T03:54:16.324718Z []   -> [PDF] Processing: 20260922_SR01241---Addendum-4.pdf
+2026-09-29T03:54:16.353027Z []      ? Saved 14208 chars to: 20260922_SR01241---Addendum-4.txt
+2026-09-29T03:54:16.353044Z []   -> [TXT] Existing text file: 20260922_SR01241---Addendum-4.pdf.txt
+2026-09-29T03:54:16.353051Z []   -> [PDF] Processing: 20260929_SR01241-Addendum-5.pdf
+2026-09-29T03:54:16.378780Z []      ? Saved 11454 chars to: 20260929_SR01241-Addendum-5.txt
+2026-09-29T03:54:16.378797Z []   -> [TXT] Existing text file: 20260929_SR01241-Addendum-5.pdf.txt
+2026-09-29T03:54:16.378803Z [] directory:  /tmp/tmp6si29m27/RFT-12634696798
+2026-09-29T03:54:16.378811Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:16.393889Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T03:54:16.393905Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T03:54:16.393909Z []   -> [PDF] Processing: Part-A---Vivid-Technical-Support-Services---Conditions-of-Tendering.pdf
+2026-09-29T03:54:16.435714Z []      ? Saved 29099 chars to: Part-A---Vivid-Technical-Support-Services---Conditions-of-Tendering.txt
+2026-09-29T03:54:16.435728Z []   -> [TXT] Existing text file: Part-A---Vivid-Technical-Support-Services---Conditions-of-Tendering.pdf.txt
+2026-09-29T03:54:16.435732Z []   -> [PDF] Processing: Part-B---Vivid-Technical-Support-Services---Statement-of-Requirements.pdf
+2026-09-29T03:54:16.488916Z []      ? Saved 28835 chars to: Part-B---Vivid-Technical-Support-Services---Statement-of-Requirements.txt
+2026-09-29T03:54:16.488931Z []   -> [TXT] Existing text file: Part-B---Vivid-Technical-Support-Services---Statement-of-Requirements.pdf.txt
+2026-09-29T03:54:16.488936Z []   -> [DOCX] Processing: Part-D---Vivid-Technical-Support-Services---Contract-of-engagement-template-fnsw-3.docx
+2026-09-29T03:54:16.597503Z []      ? Saved 46072 chars to: Part-D---Vivid-Technical-Support-Services---Contract-of-engagement-template-fnsw-3.txt
+2026-09-29T03:54:16.597515Z []   -> [TXT] Existing text file: Part-D---Vivid-Technical-Support-Services---Contract-of-engagement-template-fnsw-3.docx.txt
+2026-09-29T03:54:16.597520Z []   -> [TXT] Existing text file: Part-C2---Technical-Support-Services---Price.xlsx.txt
+2026-09-29T03:54:16.597523Z []   -> [DOCX] Processing: Part-C1---Vivid-Technical-Support-Services---Non-Price-.docx
+2026-09-29T03:54:16.627216Z []      ? Saved 2204 chars to: Part-C1---Vivid-Technical-Support-Services---Non-Price-.txt
+2026-09-29T03:54:16.627230Z []   -> [TXT] Existing text file: Part-C1---Vivid-Technical-Support-Services---Non-Price-.docx.txt
+2026-09-29T03:54:16.627235Z []   -> [DOCX] Processing: Part-C1---Vivid-Sydney-Technical-Support-Services-2027---Response-Forms---Att-1-SME-and-Local-PP.docx
+2026-09-29T03:54:16.650073Z []      ? Saved 3313 chars to: Part-C1---Vivid-Sydney-Technical-Support-Services-2027---Response-Forms---Att-1-SME-and-Local-PP.txt
+2026-09-29T03:54:16.650087Z []   -> [TXT] Existing text file: Part-C1---Vivid-Sydney-Technical-Support-Services-2027---Response-Forms---Att-1-SME-and-Local-PP.docx.txt
+2026-09-29T03:54:16.650092Z []   -> [PDF] Processing: 20260929 Vivid Sydney Technical Support Services Addendum 1.pdf
+2026-09-29T03:54:16.659081Z []      ? Saved 885 chars to: 20260929 Vivid Sydney Technical Support Services Addendum 1.txt
+2026-09-29T03:54:16.659093Z []   -> [TXT] Existing text file: 20260929 Vivid Sydney Technical Support Services Addendum 1.pdf.txt
+2026-09-29T03:54:16.659097Z []   -> [DOCX] Processing: Part D Contract of Engagement Template.docx
+2026-09-29T03:54:16.785026Z []      ? Saved 40818 chars to: Part D Contract of Engagement Template.txt
+2026-09-29T03:54:16.785037Z []   -> [TXT] Existing text file: Part D Contract of Engagement Template.docx.txt
+2026-09-29T03:54:16.785042Z []   -> [PDF] Processing: Vivid Sydney Technical Support Services Tender Briefing Session 23 Sept 2026.pdf
+2026-09-29T03:54:16.825507Z []      ? Saved 11647 chars to: Vivid Sydney Technical Support Services Tender Briefing Session 23 Sept 2026.txt
+2026-09-29T03:54:16.825524Z []   -> [TXT] Existing text file: Vivid Sydney Technical Support Services Tender Briefing Session 23 Sept 2026.pdf.txt
+2026-09-29T03:54:16.825531Z [] directory:  /tmp/tmp6si29m27/RFI-2017495 - EF26_553
+2026-09-29T03:54:16.825535Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:16.840749Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T03:54:16.840768Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T03:54:16.840774Z []   -> [PDF] Processing: RFI-BSNSW-Trailers-and-Self-drive-vans-replacement-project.pdf
+2026-09-29T03:54:16.907477Z []      ? Saved 30702 chars to: RFI-BSNSW-Trailers-and-Self-drive-vans-replacement-project.txt
+2026-09-29T03:54:16.907490Z []   -> [TXT] Existing text file: RFI-BSNSW-Trailers-and-Self-drive-vans-replacement-project.pdf.txt
+2026-09-29T03:54:16.907494Z [] directory:  /tmp/tmp6si29m27/HI26363
+2026-09-29T03:54:16.907498Z []   -> [PDF] Processing: Information Doc_Flow Diagram.pdf
+2026-09-29T03:54:16.912293Z []      ? Saved 986 chars to: Information Doc_Flow Diagram.txt
+2026-09-29T03:54:16.912304Z []   -> [TXT] Existing text file: Information Doc_Flow Diagram.pdf.txt
+2026-09-29T03:54:16.912308Z []   -> [PDF] Processing: PS Section 4 - FRM 603A Consultant Agreement.pdf
+2026-09-29T03:54:16.971028Z []      ? Saved 64975 chars to: PS Section 4 - FRM 603A Consultant Agreement.txt
+2026-09-29T03:54:16.971044Z []   -> [TXT] Existing text file: PS Section 4 - FRM 603A Consultant Agreement.pdf.txt
+2026-09-29T03:54:16.971048Z []   -> [PDF] Processing: HI26363_PS_Section_1-Conditions_of_Tendering.pdf
+2026-09-29T03:54:16.994535Z []      ? Saved 26175 chars to: HI26363_PS_Section_1-Conditions_of_Tendering.txt
+2026-09-29T03:54:16.994556Z []   -> [TXT] Existing text file: HI26363_PS_Section_1-Conditions_of_Tendering.pdf.txt
+2026-09-29T03:54:16.994563Z []   -> [DOCX] Processing: HI26363_PS_Section_2-Tender_Schedules.docx
+2026-09-29T03:54:17.062527Z []      ? Saved 12099 chars to: HI26363_PS_Section_2-Tender_Schedules.txt
+2026-09-29T03:54:17.062546Z []   -> [TXT] Existing text file: HI26363_PS_Section_2-Tender_Schedules.docx.txt
+2026-09-29T03:54:17.062553Z []   -> [PDF] Processing: HI26363_PS_Section_2-Tender_Schedules.pdf
+2026-09-29T03:54:17.088990Z []      ? Saved 21012 chars to: HI26363_PS_Section_2-Tender_Schedules.txt
+2026-09-29T03:54:17.089007Z []   -> [TXT] Existing text file: HI26363_PS_Section_2-Tender_Schedules.pdf.txt
+2026-09-29T03:54:17.089013Z []   -> [PDF] Processing: HI26363_PS_Section_3-Scope_of_Services.pdf
+2026-09-29T03:54:17.107611Z []      ? Saved 19715 chars to: HI26363_PS_Section_3-Scope_of_Services.txt
+2026-09-29T03:54:17.107632Z []   -> [TXT] Existing text file: HI26363_PS_Section_3-Scope_of_Services.pdf.txt
+2026-09-29T03:54:17.107638Z []   -> [PDF] Processing: HI26363 FRM 607 Tender Addendum 1.pdf
+2026-09-29T03:54:17.114054Z []      ? Saved 1367 chars to: HI26363 FRM 607 Tender Addendum 1.txt
+2026-09-29T03:54:17.114069Z []   -> [TXT] Existing text file: HI26363 FRM 607 Tender Addendum 1.pdf.txt
+2026-09-29T03:54:17.114075Z []   -> [PDF] Processing: HI26363_Att A_Tender Briefing Slides.pdf
+2026-09-29T03:54:17.136723Z []      ? Saved 9881 chars to: HI26363_Att A_Tender Briefing Slides.txt
+2026-09-29T03:54:17.136739Z []   -> [TXT] Existing text file: HI26363_Att A_Tender Briefing Slides.pdf.txt
+2026-09-29T03:54:17.136746Z []   -> [PDF] Processing: HI26363_Att B Tender Briefing - Minutes.pdf
+2026-09-29T03:54:17.143138Z []      ? Saved 4016 chars to: HI26363_Att B Tender Briefing - Minutes.txt
+2026-09-29T03:54:17.143151Z []   -> [TXT] Existing text file: HI26363_Att B Tender Briefing - Minutes.pdf.txt
+2026-09-29T03:54:17.143157Z []   -> [PDF] Processing: HI26363-Tender-Addendum-2.pdf
+2026-09-29T03:54:17.150950Z []      ? Saved 1835 chars to: HI26363-Tender-Addendum-2.txt
+2026-09-29T03:54:17.150966Z []   -> [TXT] Existing text file: HI26363-Tender-Addendum-2.pdf.txt
+2026-09-29T03:54:17.150972Z []   -> [PDF] Processing: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:17.166057Z []      ? Saved 5965 chars to: buy-nsw-tenders-terms-and-conditions-2024.txt
+2026-09-29T03:54:17.166073Z []   -> [TXT] Existing text file: buy-nsw-tenders-terms-and-conditions-2024.pdf.txt
+2026-09-29T03:54:17.166096Z [] [INFO] Preparing data for AI Processing...
+2026-09-29T03:54:17.621692Z [] [INFO] Already stored, skipping upload: Information Doc_Flow Diagram.pdf
+2026-09-29T03:54:17.993346Z [] [INFO] Already stored, skipping upload: PS Section 4 - FRM 603A Consultant Agreement.pdf
+2026-09-29T03:54:18.213191Z [] [INFO] Already stored, skipping upload: HI26363_PS_Section_1-Conditions_of_Tendering.pdf
+2026-09-29T03:54:18.438164Z [] [INFO] Already stored, skipping upload: HI26363_PS_Section_2-Tender_Schedules.docx
+2026-09-29T03:54:18.672882Z [] [INFO] Already stored, skipping upload: HI26363_PS_Section_2-Tender_Schedules.pdf
+2026-09-29T03:54:18.897350Z [] [INFO] Already stored, skipping upload: HI26363_PS_Section_3-Scope_of_Services.pdf
+2026-09-29T03:54:19.122646Z [] [INFO] Already stored, skipping upload: HI26363 FRM 607 Tender Addendum 1.pdf
+2026-09-29T03:54:19.462045Z [] [INFO] Already stored, skipping upload: HI26363_Att A_Tender Briefing Slides.pdf
+2026-09-29T03:54:19.678247Z [] [INFO] Already stored, skipping upload: HI26363_Att B Tender Briefing - Minutes.pdf
+2026-09-29T03:54:19.902539Z [] [INFO] Already stored, skipping upload: HI26363-Tender-Addendum-2.pdf
+2026-09-29T03:54:20.121298Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:54:20.121316Z [] [INFO] HI26363: stored 11 attachment(s)
+2026-09-29T03:54:20.121377Z [] [INFO] Processing tender...
+2026-09-29T03:54:20.121464Z [] start of process_tender function
+2026-09-29T03:54:22.756175Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:25.083691Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:27.215516Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:29.646034Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:31.930004Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:35.983359Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:39.609413Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:43.102736Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:45.972640Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:48.831275Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:51.669087Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:54.361657Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:54:57.248678Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:00.012944Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:02.166100Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:04.642247Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:09.539046Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:13.095943Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:17.243884Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:20.155792Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:23.119902Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:37.882290Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:48.220460Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:48.222484Z [] [INFO] Generating Gemini Embedding ? for HI26363...
+2026-09-29T03:55:48.446679Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T03:55:48.451280Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.103, 0.0231, 0.0121, -0.0288, 0.0376] | Range: [-0.1511, 0.104]
+2026-09-29T03:55:48.451290Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T03:55:53.276367Z [] [ERROR] Failed to upsert to BigQuery: 400 Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON processing encountered too many errors, giving up. Rows: 1; errors: 1; max bad: 0; error percent: 0; reason: invalid, message: Error while reading data, error message: JSON parsing error in row starting at position 0: No such field: documents.content_type.
+2026-09-29T03:55:53.507037Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:55:53.734188Z [] [INFO] Already stored, skipping upload: RFI-BSNSW-Trailers-and-Self-drive-vans-replacement-project.pdf
+2026-09-29T03:55:53.734304Z [] [INFO] RFI-2017495 - EF26_553: stored 2 attachment(s)
+2026-09-29T03:55:53.734310Z [] [INFO] Processing tender...
+2026-09-29T03:55:53.734414Z [] start of process_tender function
+2026-09-29T03:55:56.771182Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:55:59.762474Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:02.643770Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:06.039521Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:15.553240Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:20.607929Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:20.609715Z [] [INFO] Generating Gemini Embedding ? for RFI-2017495 - EF26_553...
+2026-09-29T03:56:20.808444Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T03:56:20.810167Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0752, -0.0169, 0.0162, 0.0007, 0.0041] | Range: [-0.168, 0.0958]
+2026-09-29T03:56:20.810178Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T03:56:23.584530Z [] [ERROR] Failed to upsert to BigQuery: 400 Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON processing encountered too many errors, giving up. Rows: 1; errors: 1; max bad: 0; error percent: 0; reason: invalid, message: Error while reading data, error message: JSON parsing error in row starting at position 0: No such field: documents.content_type.
+2026-09-29T03:56:23.836276Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:56:24.087967Z [] [INFO] Already stored, skipping upload: Part-A---Vivid-Technical-Support-Services---Conditions-of-Tendering.pdf
+2026-09-29T03:56:24.341084Z [] [INFO] Already stored, skipping upload: Part-B---Vivid-Technical-Support-Services---Statement-of-Requirements.pdf
+2026-09-29T03:56:24.585351Z [] [INFO] Already stored, skipping upload: Part-D---Vivid-Technical-Support-Services---Contract-of-engagement-template-fnsw-3.docx
+2026-09-29T03:56:24.775339Z [] [INFO] Already stored, skipping upload: Part-C2---Technical-Support-Services---Price.xlsx
+2026-09-29T03:56:25.015258Z [] [INFO] Already stored, skipping upload: Part-C1---Vivid-Technical-Support-Services---Non-Price-.docx
+2026-09-29T03:56:25.289798Z [] [INFO] Already stored, skipping upload: Part-C1---Vivid-Sydney-Technical-Support-Services-2027---Response-Forms---Att-1-SME-and-Local-PP.docx
+2026-09-29T03:56:25.517460Z [] [INFO] Already stored, skipping upload: 20260929 Vivid Sydney Technical Support Services Addendum 1.pdf
+2026-09-29T03:56:25.790313Z [] [INFO] Already stored, skipping upload: Part D Contract of Engagement Template.docx
+2026-09-29T03:56:26.103386Z [] [INFO] Already stored, skipping upload: Vivid Sydney Technical Support Services Tender Briefing Session 23 Sept 2026.pdf
+2026-09-29T03:56:26.103402Z [] [INFO] RFT-12634696798: stored 10 attachment(s)
+2026-09-29T03:56:26.103482Z [] [INFO] Processing tender...
+2026-09-29T03:56:26.103521Z [] start of process_tender function
+2026-09-29T03:56:28.052506Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:30.456612Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:33.582284Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:36.990960Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:41.058706Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:44.132188Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:46.399381Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:49.332684Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:52.262302Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:55.270034Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:56:58.428762Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:01.429706Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:04.265087Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:08.428580Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:12.831609Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:14.865010Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:19.367202Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:23.260202Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:26.974636Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:39.950734Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:45.559038Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:45.560572Z [] [INFO] Generating Gemini Embedding ? for RFT-12634696798...
+2026-09-29T03:57:45.755038Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T03:57:45.757109Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0571, 0.0065, -0.0, -0.0073, 0.0345] | Range: [-0.1579, 0.1147]
+2026-09-29T03:57:45.757120Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T03:57:49.076436Z [] [ERROR] Failed to upsert to BigQuery: 400 Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON processing encountered too many errors, giving up. Rows: 1; errors: 1; max bad: 0; error percent: 0; reason: invalid, message: Error while reading data, error message: JSON parsing error in row starting at position 0: No such field: documents.content_type.
+2026-09-29T03:57:49.309137Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:57:49.522046Z [] [INFO] Already stored, skipping upload: 20260831_SR01241 Part A - Conditions of Tendering_FINAL.docx
+2026-09-29T03:57:49.755602Z [] [INFO] Already stored, skipping upload: 20260831_SR01241 Part B - Response form_FINAL.docx
+2026-09-29T03:57:50.049222Z [] [INFO] Already stored, skipping upload: 20260831_SR01241 Part C - Goods and Services Contract_FINAL.docx
+2026-09-29T03:57:50.294784Z [] [INFO] Already stored, skipping upload: 20260904_SR01241-Addendum-1.pdf
+2026-09-29T03:57:50.526154Z [] [INFO] Already stored, skipping upload: 20260907_SR01241-Addendum-2.pdf
+2026-09-29T03:57:50.780109Z [] [INFO] Already stored, skipping upload: Leadership Upskilling Program - RFx Supplier Briefing Presentation - 07.09.26.pptx
+2026-09-29T03:57:51.006380Z [] [INFO] Already stored, skipping upload: 20260911_SR01241 Supplier Briefing Transcription Summary.docx
+2026-09-29T03:57:51.203297Z [] [INFO] Already stored, skipping upload: 20260914_SR01241 Addendum 3.docx
+2026-09-29T03:57:51.417330Z [] [INFO] Already stored, skipping upload: 20260922_SR01241---Addendum-4.pdf
+2026-09-29T03:57:51.641229Z [] [INFO] Already stored, skipping upload: 20260929_SR01241-Addendum-5.pdf
+2026-09-29T03:57:51.641245Z [] [INFO] SR01241: stored 11 attachment(s)
+2026-09-29T03:57:51.641266Z [] [INFO] Processing tender...
+2026-09-29T03:57:51.641317Z [] start of process_tender function
+2026-09-29T03:57:54.356990Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:57:57.878539Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:01.651045Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:05.415Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:08.592570Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:11.253181Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:13.412653Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:15.442258Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:18.180277Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:20.478482Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:23.199264Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:25.633225Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:27.921915Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:30.841269Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:33.245635Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:35.563005Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:38.221789Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:41.336467Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:52.053026Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:58.882773Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:58:58.884304Z [] [INFO] Generating Gemini Embedding ? for SR01241...
+2026-09-29T03:58:59.084537Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/text-embedding-004:predict "HTTP/1.1 200 OK"
+2026-09-29T03:58:59.086683Z [] [INFO] Generated embedding: 768 dimensions. Preview (first 5): [0.0703, -0.0328, -0.0083, 0.0027, 0.029] | Range: [-0.1717, 0.0882]
+2026-09-29T03:58:59.086696Z [] [INFO] Uploading processed tender to BigQuery...
+2026-09-29T03:59:02.145343Z [] [ERROR] Failed to upsert to BigQuery: 400 Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON table encountered too many errors, giving up. Rows: 1; errors: 1. Please look into the errors[] collection for more details.; reason: invalid, message: Error while reading data, error message: JSON processing encountered too many errors, giving up. Rows: 1; errors: 1; max bad: 0; error percent: 0; reason: invalid, message: Error while reading data, error message: JSON parsing error in row starting at position 0: No such field: documents.content_type.
+2026-09-29T03:59:02.383796Z [] [INFO] Already stored, skipping upload: Tender-853-The-Provision-of-After-Hours-Security-Officer-Services-at-NESA?s-Clarence-Street-Office-RFQ-.pdf
+2026-09-29T03:59:02.594788Z [] [INFO] Already stored, skipping upload: Quotation-Submission-Form.docx
+2026-09-29T03:59:02.852064Z [] [INFO] Already stored, skipping upload: The-draft-Customer-Agreement-for-Security-Services-document.pdf
+2026-09-29T03:59:03.077044Z [] [INFO] Already stored, skipping upload: NESA-Tender-853-Addendum-1.pdf
+2026-09-29T03:59:03.296504Z [] [INFO] Already stored, skipping upload: buy-nsw-tenders-terms-and-conditions-2024.pdf
+2026-09-29T03:59:03.296522Z [] [INFO] Tender 853: stored 5 attachment(s)
+2026-09-29T03:59:03.296527Z [] [INFO] Processing tender...
+2026-09-29T03:59:03.296674Z [] start of process_tender function
+2026-09-29T03:59:04.715936Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:07.383907Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:11.128259Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:14.381444Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:17.021688Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:19.858557Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:23.719923Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:27.449154Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:30.504890Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:33.883309Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:36.521821Z [INFO] Shutting down user disabled instance
+2026-09-29T03:59:43.051061Z [] [INFO] HTTP Request: POST https://australia-southeast1-aiplatform.googleapis.com/v1beta1/projects/tenderai-dev/locations/australia-southeast1/publishers/google/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-09-29T03:59:50.594086Z [INFO] Execution tender-batch-job-dnqkt has failed to complete, 0/1 tasks were a success.
