@@ -186,15 +186,41 @@ def upload_attachment(local_path, source_id, tender_ref, bucket=None, content_ty
     }
 
 
-def attachment_names(folder: str, attachments=None) -> list:
+# The attachment types the scrapers extract text from (error_scrapers/common.py
+# EXTRACTORS, less .txt itself). A "<name>.<one of these>.txt" is that extraction.
+_EXTRACTED_FROM = (".pdf", ".docx", ".xlsx", ".xlsm", ".xls", ".pptx", ".csv")
+
+
+def _is_pipeline_text(folder: str, name: str, tender_ref=None) -> bool:
+    """
+    True for a .txt the pipeline wrote itself, as opposed to a .txt the portal
+    served as an attachment: the tender's own page text ("__tender__<ref>.txt",
+    or "<ref>.txt" from older scrapers) and the text extracted from an
+    attachment, which sits beside it under the attachment's name plus ".txt"
+    ("Requirements.pdf.txt" next to "Requirements.pdf"). A genuine "Notes.txt"
+    has no "Notes" beside it, so it is kept; its own extraction "Notes.txt.txt"
+    has "Notes.txt" beside it, so it is not.
+    """
+    if not name.lower().endswith(".txt"):
+        return False
+    if name.startswith("__tender__"):
+        return True
+    if tender_ref and name == f"{tender_ref}.txt":
+        return True
+    source = name[:-len(".txt")]
+    if source.lower().endswith(_EXTRACTED_FROM):
+        return True  # "x.pdf.txt" is an extraction even if "x.pdf" is gone
+    return os.path.isfile(os.path.join(folder, source))
+
+
+def attachment_names(folder: str, attachments=None, tender_ref=None) -> list:
     """
     Which files in a tender folder are real attachments.
 
-    Scrapers that report what they saved are believed. For the older ones
-    that don't, fall back to "everything that isn't a .txt" -- the folder
-    also holds extracted text written next to each original, and the two
-    are otherwise indistinguishable. The fallback misses genuine .txt
-    attachments, which is why the manifest is the preferred path.
+    Scrapers that report what they saved are believed. For the ones that
+    don't, fall back to scanning the folder, leaving out the text files the
+    pipeline wrote itself (see _is_pipeline_text) -- so a genuine .txt
+    attachment from the portal is stored like any other file.
     """
     if attachments is not None:
         return [a["file_name"] if isinstance(a, dict) else a for a in attachments]
@@ -203,7 +229,7 @@ def attachment_names(folder: str, attachments=None) -> list:
         name
         for name in os.listdir(folder)
         if os.path.isfile(os.path.join(folder, name))
-        and not name.lower().endswith(".txt")
+        and not _is_pipeline_text(folder, name, tender_ref)
     )
 
 
@@ -223,7 +249,7 @@ def upload_tender_attachments(folder, source_id, tender_ref, attachments=None, b
         if isinstance(a, dict) and "file_name" in a
     }
 
-    for file_name in attachment_names(folder, attachments):
+    for file_name in attachment_names(folder, attachments, tender_ref):
         local_path = os.path.join(folder, file_name)
         if not os.path.isfile(local_path):
             logger.warning(f"{file_name} was reported but is not on disk")
