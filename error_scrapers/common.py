@@ -1049,7 +1049,8 @@ def download_attachment(client, url: str, folder: str, file_name: str,
 
 def wait_for_download(downloads_dir: str, before, max_wait: float,
                       poll: float = 1.0, stall_seconds: float = 300.0,
-                      hard_max: float = 900.0) -> str | None:
+                      hard_max: float = 900.0, should_stop=None,
+                      stop_check_seconds: float = 5.0) -> str | None:
     """
     Wait for the browser to finish saving one new file into `downloads_dir`.
 
@@ -1063,10 +1064,16 @@ def wait_for_download(downloads_dir: str, before, max_wait: float,
     giving up only if the partial file has not changed in `stall_seconds`, or
     `hard_max` seconds have passed in all. A big package is slow, not broken,
     and a partial file that is still alive is not abandoned.
+
+    `should_stop`, if given, is called every `stop_check_seconds` while no file has
+    shown up yet; when it returns True the wait ends at once with None. A browser
+    that is looking at a block page will never produce a file, so there is no
+    point waiting the full `max_wait` for one.
     """
     before = set(before)
     started = time.monotonic()
     last_change = started
+    last_stop_check = started
     seen_sizes: dict[str, int] = {}
     seen_partial = False
     vanished_polls = 0
@@ -1091,6 +1098,13 @@ def wait_for_download(downloads_dir: str, before, max_wait: float,
             if now - last_change > stall_seconds or now - started > hard_max:
                 return None
         else:
+            if should_stop is not None and not seen_partial and now - last_stop_check >= stop_check_seconds:
+                last_stop_check = now
+                try:
+                    if should_stop():
+                        return None
+                except Exception:
+                    pass  # a check that cannot run must not end the wait
             if seen_partial:
                 # An in-progress file disappeared without a finished one: cancelled.
                 vanished_polls += 1

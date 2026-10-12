@@ -204,7 +204,7 @@ def site(monkeypatch):
     state = {"logins": 0, "login_ok": [True], "lapses": {}, "scraped": []}
 
     monkeypatch.setattr(gc.httpx, "Client", lambda **kw: contextlib.nullcontext(object()))
-    monkeypatch.setattr(gc, "collect_all_listing_urls", lambda client, limit: state["urls"])
+    monkeypatch.setattr(gc, "collect_all_listing_urls", lambda client, limit, problems=None: state["urls"])
 
     def login(client):
         state["logins"] += 1
@@ -290,13 +290,13 @@ def test_a_browser_that_will_not_start_is_started_again(session_class):
     assert isinstance(session, session_class) and session_class.starts == 3
 
 
-def test_a_browser_that_never_starts_gives_up_after_three_attempts(session_class):
+def test_a_browser_that_never_starts_gives_up_after_its_attempts(session_class):
     session_class.fail_first = 99
     with contextlib.ExitStack() as stack:
         with pytest.raises(RuntimeError, match="chrome not reachable"):
             qld.open_vendorpanel(stack)
 
-    assert session_class.starts == qld.BROWSER_START_ATTEMPTS == 3
+    assert session_class.starts == qld.BROWSER_START_ATTEMPTS
 
 
 def test_a_sign_in_that_does_not_take_is_not_repeated_after_the_browser_retry(
@@ -305,7 +305,7 @@ def test_a_sign_in_that_does_not_take_is_not_repeated_after_the_browser_retry(
     logins = []
     session_class.login = lambda self: (logins.append(1), False)[1]
     monkeypatch.setattr(qld, "credentials", lambda: ("user", "pass"))
-    monkeypatch.setattr(qld, "collect_all_tenders", lambda client, limit: [])
+    monkeypatch.setattr(qld, "collect_all_tenders", lambda client, limit, problems=None: [])
     monkeypatch.setattr(qld.httpx, "Client", lambda **kw: contextlib.nullcontext(object()))
 
     code, _ = qld._scrape_site(output_dir=str(tmp_path))

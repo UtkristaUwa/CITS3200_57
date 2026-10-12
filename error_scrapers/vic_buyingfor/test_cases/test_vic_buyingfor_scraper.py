@@ -17,6 +17,7 @@ fixture HTML by URL, so the tests need neither Chrome nor network.
 
 import io
 import os
+import time
 import zipfile
 
 import fitz
@@ -458,7 +459,7 @@ def test_a_cloudflare_block_is_retried_with_a_fresh_browser_then_reported(monkey
     assert scraper._scrape_with_retries() == (common.SITE_BOT_BLOCKED, [])
 
     assert len(calls) == scraper.BROWSER_ATTEMPTS == 3   # a hard cap, never more
-    assert sleeps == [15, 30]                            # backs off, no wait after the last try
+    assert sleeps == [scraper.BLOCKED_WAIT_SECONDS, 2 * scraper.BLOCKED_WAIT_SECONDS]  # backs off, no wait after the last try
 
 
 def test_a_cloudflare_block_that_clears_on_a_later_attempt_succeeds(monkeypatch):
@@ -477,17 +478,62 @@ def test_a_cloudflare_block_that_clears_on_a_later_attempt_succeeds(monkeypatch)
     assert len(calls) == 2
 
 
-def test_a_block_after_some_tenders_were_scraped_is_not_retried(monkeypatch):
-    calls = []
-    monkeypatch.setattr(
-        scraper, "_scrape_site",
-        lambda limit, output_dir, headless, known_urls=None, resume=False, state=None: (calls.append(1), (common.SITE_BOT_BLOCKED, [{"tender_id": "X"}]))[1])
-    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+class BlocksAfter(FakeSession):
+    """Serves `after` tender pages, then Cloudflare's challenge for every page."""
 
-    code, tenders = scraper._scrape_with_retries()
+    def __init__(self, after, **kwargs):
+        super().__init__(**kwargs)
+        self.after = after
 
-    assert code == common.SITE_BOT_BLOCKED and tenders == [{"tender_id": "X"}]
-    assert len(calls) == 1
+    def get(self, url, wait_selector=None):
+        if "/tenders/open" not in url and len([v for v in self.visited if "/tenders/open" not in v]) >= self.after:
+            self.visited.append(url)
+            raise scraper.BotBlockedError(url)
+        return super().get(url, wait_selector)
+
+
+def _blocked_run(monkeypatch, *makers):
+    made, sleeps = [], []
+
+    def make(**kwargs):
+        made.append(makers[min(len(made), len(makers) - 1)]())
+        return made[-1]
+    monkeypatch.setattr(scraper, "BrowserSession", make)
+    monkeypatch.setattr(scraper.time, "sleep", sleeps.append)
+    return made, sleeps
+
+
+def test_a_block_after_some_tenders_waits_then_carries_on_with_a_fresh_browser(tmp_path, monkeypatch):
+    made, sleeps = _blocked_run(
+        monkeypatch,
+        lambda: BlocksAfter(1, detail_html=_no_documents_details()),
+        lambda: FakeSession(detail_html=_no_documents_details()))
+    code, tenders = scraper._scrape_with_retries(limit=3, output_dir=str(tmp_path), resume=True,
+                                                 known_urls=frozenset())
+    assert code == common.SITE_SUCCESS and len(tenders) == 3
+    assert len(made) == 2
+    assert len([u for u in made[1].visited if "/tenders/open" not in u]) == 2  # not the one already done
+    assert scraper.BLOCKED_WAIT_SECONDS in sleeps
+
+
+def test_a_block_that_never_clears_keeps_what_was_scraped_and_is_not_an_error_when_resuming(tmp_path, monkeypatch):
+    made, sleeps = _blocked_run(monkeypatch,
+                                lambda: BlocksAfter(1, detail_html=_no_documents_details()),
+                                lambda: BlocksAfter(0, detail_html=_no_documents_details()))
+    code, tenders = scraper._scrape_with_retries(limit=3, output_dir=str(tmp_path), resume=True,
+                                                 known_urls=frozenset())
+    assert len(tenders) == 1
+    assert code not in (common.SITE_BOT_BLOCKED, common.SITE_TOTAL_FAILURE)
+    assert len(made) == scraper.BROWSER_ATTEMPTS
+    assert [x for x in sleeps if x >= 60] == [scraper.BLOCKED_WAIT_SECONDS, 2 * scraper.BLOCKED_WAIT_SECONDS]
+
+
+def test_a_block_that_never_clears_without_resume_is_still_reported_as_blocked(tmp_path, monkeypatch):
+    _blocked_run(monkeypatch,
+                 lambda: BlocksAfter(1, detail_html=_no_documents_details()),
+                 lambda: BlocksAfter(0, detail_html=_no_documents_details()))
+    code, tenders = scraper._scrape_with_retries(limit=3, output_dir=str(tmp_path))
+    assert code == common.SITE_BOT_BLOCKED and len(tenders) == 1
 
 
 def test_run_walks_every_reported_page(monkeypatch):
@@ -790,3 +836,43 @@ def test_a_vic_browser_that_keeps_dying_gives_up_after_three_with_total_failure(
 def test_a_vic_download_is_given_minutes_not_seconds_to_start():
     assert scraper.DOWNLOAD_WAIT_SECONDS >= 480
     assert scraper.DOWNLOAD_HARD_MAX_SECONDS >= 1800
+
+
+class _ChallengeAfterClickSB(_FakeDownloadSB):
+    """Clicking Download produces no file, and the page turns into Cloudflare's challenge."""
+
+    def click(self, selector):
+        self.clicks.append(selector)
+        if selector == "#downloadButton":
+            self.page = _read_fixture("vic_cloudflare_block.html")
+
+    def get_title(self):
+        return "Just a moment..." if self.clicks and self.clicks[-1] == "#downloadButton" else "Buying For Victoria"
+
+
+def test_a_download_that_never_starts_because_of_a_challenge_is_a_block_not_a_timeout(tmp_path, monkeypatch):
+    monkeypatch.setattr(scraper, "DOWNLOAD_STOP_CHECK_SECONDS", 0.05)
+    monkeypatch.setattr(scraper, "DOWNLOAD_WAIT_SECONDS", 120)  # would be minutes if the check did not end it
+    session = _download_session(tmp_path, _read_fixture("vic_downloads.html"))
+    session.sb = _ChallengeAfterClickSB(_read_fixture("vic_downloads.html"), session._downloads_dir)
+    folder = tmp_path / "tender"
+    folder.mkdir()
+    started = time.monotonic()
+    with pytest.raises(scraper.BotBlockedError):
+        session.download_documents("https://www.tenders.vic.gov.au/x", str(folder))
+    assert time.monotonic() - started < 20
+
+
+def test_a_download_that_never_starts_for_another_reason_is_still_a_timeout(tmp_path, monkeypatch):
+    class NothingSB(_FakeDownloadSB):
+        def click(self, selector):
+            self.clicks.append(selector)
+
+    monkeypatch.setattr(scraper, "DOWNLOAD_STOP_CHECK_SECONDS", 0.05)
+    monkeypatch.setattr(scraper, "DOWNLOAD_WAIT_SECONDS", 1)
+    session = _download_session(tmp_path, _read_fixture("vic_downloads.html"))
+    session.sb = NothingSB(_read_fixture("vic_downloads.html"), session._downloads_dir)
+    folder = tmp_path / "tender"
+    folder.mkdir()
+    with pytest.raises(TimeoutError):
+        session.download_documents("https://www.tenders.vic.gov.au/x", str(folder))

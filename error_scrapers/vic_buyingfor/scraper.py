@@ -85,8 +85,17 @@ BROWSER_ATTEMPTS = 3
 DOWNLOAD_WAIT_SECONDS = int(os.environ.get("VIC_DOWNLOAD_WAIT_SECONDS", "480"))
 DOWNLOAD_STALL_SECONDS = int(os.environ.get("VIC_DOWNLOAD_STALL_SECONDS", "480"))
 DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("VIC_DOWNLOAD_HARD_MAX_SECONDS", "1800"))
+# While waiting for a download to start, look at the page this often: a Cloudflare
+# challenge there means no file is coming, so the wait ends at once.
+DOWNLOAD_STOP_CHECK_SECONDS = 5.0
 
 RETRYABLE_CODES = (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED)
+
+# After Cloudflare serves its challenge the run backs off, then starts again with a
+# fresh browser (the tenders already done are skipped). It waits this long after the
+# first block and twice as long after the second. Nothing is done to the challenge
+# itself: if it is still there, the run stops and the next night carries on.
+BLOCKED_WAIT_SECONDS = int(os.environ.get("VIC_BLOCKED_WAIT_SECONDS", "300"))
 
 # The document form on the "Download Now" page: a checkbox per document
 # (all ticked by default) and one submit button that returns a single zip.
@@ -403,6 +412,13 @@ class BrowserSession:
                 return True
         return False
 
+    def _challenge_showing(self) -> bool:
+        """True if the browser is on a Cloudflare challenge or block page right now."""
+        try:
+            return is_blocked(self.sb.get_title(), self.sb.get_page_source())
+        except Exception:
+            return False
+
     def download_documents(self, download_docs_url: str, folder: str) -> str:
         """
         Open the document form, click Download, and move the zip that lands
@@ -423,11 +439,17 @@ class BrowserSession:
         self.sb.click("#downloadButton")
         name = common.wait_for_download(
             self._downloads_dir, before, DOWNLOAD_WAIT_SECONDS,
-            stall_seconds=DOWNLOAD_STALL_SECONDS, hard_max=DOWNLOAD_HARD_MAX_SECONDS)
+            stall_seconds=DOWNLOAD_STALL_SECONDS, hard_max=DOWNLOAD_HARD_MAX_SECONDS,
+            should_stop=self._challenge_showing, stop_check_seconds=DOWNLOAD_STOP_CHECK_SECONDS)
         if name:
             target = os.path.join(folder, name)
             shutil.move(os.path.join(self._downloads_dir, name), target)
             return target
+        # Nothing arrived. Say what the browser was looking at: a Cloudflare page
+        # here (seen live) means the run is blocked, not that the file was slow.
+        self._debug_dump("download")
+        if self._challenge_showing():
+            raise BotBlockedError(f"Cloudflare challenge after clicking Download on {download_docs_url}")
         raise TimeoutError(f"Document download from {download_docs_url} did not finish")
 
 
@@ -635,7 +657,9 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         return common.site_code_from(tender_codes), tenders
 
     except BotBlockedError:
-        if resume and tenders:
+        if state is not None:
+            state["blocked"] = True
+        if resume and (tenders or done):
             log.warning("Cloudflare stopped the run after %d tender(s) -- kept; the next run "
                         "carries on with the tenders not stored yet", len(tenders))
             # The intended flow, so a success unless a tender itself was incomplete.
@@ -663,33 +687,34 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
     `attempts` times, waiting longer between each.
 
     Tenders finished by an attempt are kept and never redone, so a crash part-way
-    costs only the tenders after it. A Cloudflare block is retried only while
-    nothing has been scraped (with tenders in hand it is the resume flow, as
-    before). A failed login, structure change or rate limit is never retried.
+    costs only the tenders after it. After a Cloudflare challenge the run waits
+    (BLOCKED_WAIT_SECONDS, longer each time) and starts again with a fresh browser,
+    whether or not tenders were scraped; if the challenge is still there on the last
+    attempt, what was scraped is kept and the next night carries on (resume flow).
+    A failed login, structure change or rate limit is never retried.
 
     If every attempt fails, the result is TOTAL_FAILURE with whatever was
     scraped. If a retry finishes, the result covers the tenders of all attempts.
     """
-    state = {"done": set(), "codes": set()}
+    state = {"done": set(), "codes": set(), "blocked": False}
     all_tenders: list[dict] = []
     code = common.SITE_TOTAL_FAILURE
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
+        state["blocked"] = False
         code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume, state)
         all_tenders.extend(tenders)
-        if code == common.SITE_TOTAL_FAILURE:
-            retry = True
-        elif code == common.SITE_BOT_BLOCKED:
-            retry = not all_tenders
-        else:
-            retry = False
+        blocked = code == common.SITE_BOT_BLOCKED or state["blocked"]
+        retry = code == common.SITE_TOTAL_FAILURE or blocked
         if not retry:
             break
         if attempt < attempts:
+            wait = BLOCKED_WAIT_SECONDS * attempt if blocked else 15 * attempt
             log.warning("attempt %d/%d got %s after %d tender(s) -- retrying with a new "
-                        "browser in %ds", attempt, attempts, reporting.code_name(code),
-                        len(all_tenders), 15 * attempt)
-            time.sleep(15 * attempt)
+                        "browser in %ds", attempt, attempts,
+                        "a Cloudflare challenge" if blocked else reporting.code_name(code),
+                        len(all_tenders), wait)
+            time.sleep(wait)
 
     if common.SITE_TOTAL_FAILURE <= code <= common.SITE_RATE_LIMITED:
         return code, all_tenders
