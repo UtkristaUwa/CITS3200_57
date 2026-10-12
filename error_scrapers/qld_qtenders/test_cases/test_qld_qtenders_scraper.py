@@ -592,6 +592,123 @@ def test_a_browser_that_will_not_start_is_login_failed_not_a_crash(tmp_path, mon
     assert len(results) == 2
 
 
+class DyingVendorPanel(FakeVendorPanel):
+    """A VendorPanel whose Chrome dies on its `die_on`-th search (1 = the first), and stays dead."""
+
+    def __init__(self, die_on=1, **kwargs):
+        super().__init__(**kwargs)
+        self.die_on = die_on
+        self.searches = 0
+
+    def find_row(self, number):
+        self.searches += 1
+        if self.searches >= self.die_on:
+            raise RuntimeError("invalid session id: browser has closed")
+        return super().find_row(number)
+
+
+def _patch_sessions(monkeypatch, sessions):
+    """Each browser start takes the next item: an exception is a failed start, anything else a session."""
+    made = []
+
+    def factory(**kwargs):
+        made.append(1)
+        if not sessions:
+            raise RuntimeError("chrome not found")
+        item = sessions.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return contextlib.nullcontext(item)
+
+    monkeypatch.setattr(scraper, "VendorPanelSession", factory)
+    return made
+
+
+@pytest.fixture(autouse=True)
+def _no_browser_waits(monkeypatch):
+    monkeypatch.setattr(scraper, "BROWSER_START_WAIT_SECONDS", 0)
+    monkeypatch.setattr(scraper, "LATE_START_WAIT_SECONDS", 0)
+
+
+def test_a_browser_that_dies_mid_run_is_replaced_and_the_run_carries_on(tmp_path, monkeypatch):
+    _credentials(monkeypatch)
+    first, second = DyingVendorPanel(die_on=2), FakeVendorPanel()
+    _patch_sessions(monkeypatch, [first, second])
+    _patch_client(monkeypatch, _portal())
+    code, results = scraper._scrape_site(limit=3, output_dir=str(tmp_path))
+    assert code == common.SITE_SUCCESS
+    assert len(results) == 3 and all(len(r["attachments"]) == 8 for r in results)
+    assert first.logins == 1 and second.logins == 1  # each browser signs in once
+
+
+def test_a_browser_that_keeps_dying_is_replaced_a_few_times_then_given_up_on(tmp_path, monkeypatch):
+    _credentials(monkeypatch)
+    sessions = [DyingVendorPanel(die_on=1) for _ in range(20)]
+    made = []
+    for item in sessions:
+        made.append(item)
+    _patch_sessions(monkeypatch, sessions)
+    _patch_client(monkeypatch, _portal())
+    code, results = scraper._scrape_site(limit=3, output_dir=str(tmp_path))
+    assert code == common.TENDER_PARTIAL  # page text kept, documents missing
+    assert len(results) == 3
+    started = [m for m in made if m.logins]
+    assert len(started) == 1 + scraper.MAX_BROWSER_RESTARTS
+
+
+def test_a_replacement_browser_whose_sign_in_is_rejected_is_not_tried_again(tmp_path, monkeypatch):
+    _credentials(monkeypatch)
+    first, second = DyingVendorPanel(die_on=1), FakeVendorPanel(login_ok=False)
+    _patch_sessions(monkeypatch, [first, second])
+    _patch_client(monkeypatch, _portal())
+    code, results = scraper._scrape_site(limit=2, output_dir=str(tmp_path))
+    assert code == common.TENDER_PARTIAL
+    assert second.logins == 1 and second.follow_calls == []
+
+
+def test_a_browser_that_will_not_start_at_first_is_started_after_the_pages_are_read(tmp_path, monkeypatch):
+    _credentials(monkeypatch)
+    vp = FakeVendorPanel()
+    failures = [RuntimeError("chrome crashed")] * scraper.BROWSER_START_ATTEMPTS
+    _patch_sessions(monkeypatch, failures + [vp])
+    _patch_client(monkeypatch, _portal())
+    code, results = scraper._scrape_site(limit=3, output_dir=str(tmp_path))
+    assert code == common.SITE_SUCCESS  # not LOGIN_FAILED: the browser did come up
+    assert len(results) == 3 and all(len(r["attachments"]) == 8 for r in results)
+    assert vp.logins == 1
+
+
+def test_a_browser_that_never_starts_is_still_login_failed_after_the_late_attempts(tmp_path, monkeypatch):
+    _credentials(monkeypatch)
+    made = _patch_sessions(monkeypatch, [])
+    _patch_client(monkeypatch, _portal())
+    code, results = scraper._scrape_site(limit=2, output_dir=str(tmp_path))
+    assert code == common.SITE_LOGIN_FAILED
+    assert len(results) == 2
+    assert len(made) == scraper.BROWSER_START_ATTEMPTS * (1 + scraper.LATE_START_ATTEMPTS)
+
+
+def test_the_retry_pass_carries_on_with_a_fresh_browser_when_one_dies():
+    dying, fresh = DyingVendorPanel(die_on=1), FakeVendorPanel()
+    results = [{"tender_id": "VP527073", "documents_advertised": 7, "documents_gated": True,
+                "followed": False, "folder": None}]
+    import tempfile
+    with tempfile.TemporaryDirectory() as folder:
+        results[0]["folder"] = folder
+        codes = scraper.retry_unfollowed(dying, results, sleep=lambda s: None, restart=lambda: fresh)
+    assert codes["VP527073"] == common.SITE_SUCCESS
+    assert results[0]["followed"] is True
+
+
+def test_the_retry_pass_stops_cleanly_when_the_browser_cannot_be_replaced():
+    dying = DyingVendorPanel(die_on=1)
+    results = [{"tender_id": f"VP52707{i}", "documents_advertised": 7, "documents_gated": True,
+                "followed": False, "folder": None} for i in range(3)]
+    codes = scraper.retry_unfollowed(dying, results, sleep=lambda s: None, restart=lambda: None)
+    assert codes == {}
+    assert dying.searches == 1  # it did not keep hammering a dead browser
+
+
 def test_a_lapsed_session_signs_in_again_and_carries_on(tmp_path, monkeypatch):
     _credentials(monkeypatch)
     vp = FakeVendorPanel(lapse_on_first=1)

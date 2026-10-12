@@ -619,6 +619,9 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
         result["session_lapsed"] = True
         return common.TENDER_PARTIAL
     except Exception as e:
+        if common.browser_is_gone(e):
+            # Not this tender's fault: every tender after it would fail the same way.
+            raise common.BrowserLostError(f"{type(e).__name__}: {e}") from e
         log.warning("       documents FAILED for VP%s: %s: %s", number, type(e).__name__, e)
         result["package_failed"] = True  # the retry pass tries the download again
         return common.TENDER_PARTIAL
@@ -637,7 +640,7 @@ def fetch_documents(vendorpanel, result: dict, advertised: int) -> int:
 
 def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
                      max_seconds: float = None, sleep=time.sleep,
-                     clock=time.monotonic) -> dict[str, int]:
+                     clock=time.monotonic, restart=None) -> dict[str, int]:
     """
     Second pass, run after every tender has had its first go: try again for each
     tender that has documents but is still not followed (or was followed but whose
@@ -646,7 +649,9 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     a more patient search often gets past (as doing it by hand does).
 
     `relogin` is called if the session lapses; it returns True when signed in
-    again. Returns {tender_id: status code} for every tender it tried, so the
+    again. `restart` is called if the browser itself dies; it returns a fresh,
+    signed-in session (or None when it cannot), and the pass carries on with it.
+    Returns {tender_id: status code} for every tender it tried, so the
     caller can replace the codes from the first pass.
     """
     if max_seconds is None:
@@ -671,6 +676,22 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
     previous_wait = vendorpanel.filter_wait
     vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
     stop = False
+
+    def fetch(result, advertised):
+        """fetch_documents, on a fresh browser if this one dies. None if there is no browser left."""
+        nonlocal vendorpanel
+        for _ in range(2):
+            try:
+                return fetch_documents(vendorpanel, result, advertised)
+            except common.BrowserLostError as exc:
+                log.warning("retry pass: the browser is gone (%s)", exc)
+                fresh = restart() if restart is not None else None
+                if fresh is None:
+                    return None
+                vendorpanel = fresh
+                vendorpanel.filter_wait = RETRY_FILTER_WAIT_SECONDS
+        return None
+
     try:
         for round_number in range(1, RETRY_ROUNDS + 1):
             pending = still_to_do()
@@ -689,10 +710,18 @@ def retry_unfollowed(vendorpanel, results: list[dict], relogin=None,
                 vendorpanel._on_list = False  # open the list afresh, not the page the last search left
                 sleep(RETRY_PAUSE_SECONDS)
                 result["session_lapsed"] = False
-                code = fetch_documents(vendorpanel, result, advertised)
+                code = fetch(result, advertised)
+                if code is None:
+                    log.error("retry pass: the browser is gone and could not be restarted -- stopping")
+                    stop = True
+                    break
                 if result["session_lapsed"] and relogin is not None and relogin():
                     result["session_lapsed"] = False
-                    code = fetch_documents(vendorpanel, result, advertised)
+                    code = fetch(result, advertised)
+                    if code is None:
+                        log.error("retry pass: the browser is gone and could not be restarted -- stopping")
+                        stop = True
+                        break
                 if result["session_lapsed"]:
                     log.warning("retry pass: the VendorPanel session lapsed and could not be "
                                 "restored -- stopping")
@@ -807,8 +836,22 @@ def scrape_opportunity(client, tender: dict, output_dir: str = "tenders_data",
 
 # Chrome sometimes fails to start inside the container. That is tried again with a
 # fresh browser; a sign-in that does not take is NOT repeated (a lockout risk).
-BROWSER_START_ATTEMPTS = 3
+BROWSER_START_ATTEMPTS = int(os.environ.get("QLD_BROWSER_START_ATTEMPTS", "4"))
 BROWSER_START_WAIT_SECONDS = 15
+# A browser that dies mid-run is replaced (and signed in again) up to this many times.
+MAX_BROWSER_RESTARTS = int(os.environ.get("QLD_BROWSER_RESTARTS", "3"))
+# A browser that would not start at the beginning gets another go after the pages
+# have been read, when whatever stopped it (memory, a busy container) has often passed.
+LATE_START_ATTEMPTS = int(os.environ.get("QLD_LATE_START_ATTEMPTS", "3"))
+LATE_START_WAIT_SECONDS = 60
+
+
+def _close_quietly(stack) -> None:
+    """Close a browser's ExitStack; a browser that is already dead may complain, which is fine."""
+    try:
+        stack.close()
+    except Exception as exc:
+        log.warning("browser: closing it raised %s: %s (ignored)", type(exc).__name__, exc)
 
 
 def open_vendorpanel(stack, headless: bool = True,
@@ -854,20 +897,67 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             vendorpanel = None
             logged_in = False
             login_failed = False
-            if have_credentials:
+            start_status = "none"   # "ok", "login_rejected", "no_browser" or "none" (no credentials)
+            restarts = 0
+            browser = {"stack": contextlib.ExitStack()}
+            stack.callback(lambda: _close_quietly(browser["stack"]))
+
+            def start_browser() -> str:
+                """
+                Open a fresh Chrome and sign in once. "ok", "login_rejected" (the site
+                did not accept the sign-in; never tried again) or "no_browser".
+                """
+                nonlocal vendorpanel, logged_in
+                _close_quietly(browser["stack"])
+                browser["stack"] = contextlib.ExitStack()
+                vendorpanel, logged_in = None, False
                 try:
-                    vendorpanel = open_vendorpanel(stack, headless)
-                    logged_in = vendorpanel.login()
+                    candidate = open_vendorpanel(browser["stack"], headless)
                 except Exception as exc:
+                    log.error("browser: could not start (%s: %s)", type(exc).__name__, exc)
+                    return "no_browser"
+                try:
+                    signed_in = candidate.login()
+                except Exception as exc:
+                    if common.browser_is_gone(exc):
+                        log.error("browser: died while signing in (%s: %s)", type(exc).__name__, exc)
+                        return "no_browser"
                     log.error("login: could not sign in to VendorPanel: %s: %s", type(exc).__name__, exc)
-                    logged_in = False
-                login_failed = not logged_in
-                if logged_in:
+                    signed_in = False
+                if not signed_in:
+                    return "login_rejected"
+                vendorpanel, logged_in = candidate, True
+                return "ok"
+
+            def restart_browser(reason) -> bool:
+                """Replace a dead browser (signing in again), up to MAX_BROWSER_RESTARTS times."""
+                nonlocal restarts, vendorpanel, logged_in
+                if restarts >= MAX_BROWSER_RESTARTS:
+                    log.error("browser: lost again (%s) and already restarted %d time(s) -- "
+                              "carrying on without documents", reason, restarts)
+                    vendorpanel, logged_in = None, False
+                    return False
+                restarts += 1
+                log.warning("browser: lost (%s) -- starting a fresh one and signing in (%d/%d)",
+                            reason, restarts, MAX_BROWSER_RESTARTS)
+                status = start_browser()
+                if status != "ok":
+                    log.error("browser: could not be replaced (%s) -- carrying on without documents", status)
+                return status == "ok"
+
+            def restart_for_retry_pass():
+                return vendorpanel if restart_browser("retry pass") else None
+
+            if have_credentials:
+                start_status = start_browser()
+                login_failed = start_status != "ok"
+                if start_status == "ok":
                     log.info("login: ok")
                 else:
                     log.error("login: FAILED -- check QLD_USERNAME (the account's email "
-                              "address) and QLD_PASSWORD; carrying on without documents")
-                    vendorpanel = None
+                              "address) and QLD_PASSWORD; carrying on without documents"
+                              if start_status == "login_rejected" else
+                              "browser: would not start; will try again after the tender pages are read")
             else:
                 log.warning("login: no credentials -- documents will be skipped and tenders "
                             "with documents will be TENDER_PARTIAL")
@@ -885,7 +975,15 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             for index, tender in enumerate(tenders, start=1):
                 reference = tender.get("vpReference")
                 try:
-                    code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
+                    # Chrome may die under this tender. A fresh one (signed in again) takes
+                    # over and the tender is done again; once restarts run out the browser
+                    # is dropped and this tender and the rest go on without documents.
+                    while True:
+                        try:
+                            code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
+                            break
+                        except common.BrowserLostError as exc:
+                            restart_browser(exc)
                     if result and result["session_lapsed"] and logged_in and relogins < MAX_RELOGINS:
                         # We were signed in, so the session probably lapsed.
                         relogins += 1
@@ -918,6 +1016,23 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     all_codes.append(common.TENDER_PARTIAL)
                 time.sleep(PAUSE_SECONDS)
 
+            if (have_credentials and start_status == "no_browser" and vendorpanel is None
+                    and any(r.get("documents_gated") for r in results)):
+                # Chrome would not start at the beginning. Now that the pages are read,
+                # try again; the retry pass below then fetches the documents.
+                for attempt in range(1, LATE_START_ATTEMPTS + 1):
+                    wait = LATE_START_WAIT_SECONDS * attempt
+                    log.warning("browser: trying to start it again in %ds (late attempt %d/%d)",
+                                wait, attempt, LATE_START_ATTEMPTS)
+                    time.sleep(wait)
+                    start_status = start_browser()
+                    if start_status != "no_browser":
+                        break
+                if start_status == "ok":
+                    log.info("login: ok (browser started on a later attempt)")
+                    login_failed = False
+                    tender_codes.discard(common.SITE_LOGIN_FAILED)
+
             if vendorpanel is not None and logged_in:
                 def relogin() -> bool:
                     nonlocal relogins, logged_in
@@ -929,7 +1044,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     logged_in = vendorpanel.login()
                     return logged_in
 
-                for reference, code in retry_unfollowed(vendorpanel, results, relogin).items():
+                for reference, code in retry_unfollowed(vendorpanel, results, relogin, restart=restart_for_retry_pass).items():
                     if reference in code_index:
                         all_codes[code_index[reference]] = code
                 tender_codes = (set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
