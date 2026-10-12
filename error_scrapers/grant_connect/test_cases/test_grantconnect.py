@@ -134,6 +134,7 @@ def test_tender_partial_when_attachment_extraction_fails(monkeypatch):
 #-----
  
 def test_site_total_failure_on_unreachable_url(monkeypatch):
+    monkeypatch.setattr(common, "RUN_RETRY_WAITS", ())
     monkeypatch.setenv("GRANTCONNECT_USERNAME", "someone@example.com")
     monkeypatch.setenv("GRANTCONNECT_PASSWORD", "any-password")
 

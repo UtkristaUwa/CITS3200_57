@@ -40,6 +40,7 @@ SIZE = "file over the size limit not stored"
 NOT_STORED = "file could not be stored"
 SCRAPE_ERROR = "error while scraping the tender"
 LISTING = "the list of tenders was not read in full"
+SITE_STOPPED = "the site stopped answering part-way through"
 UNKNOWN = "reason not recorded"
 
 _lock = threading.RLock()

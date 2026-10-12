@@ -243,6 +243,7 @@ def test_a_corrupt_package_download_gives_tender_partial_not_a_crash(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_site_total_failure_on_unreachable_url(monkeypatch):
+    monkeypatch.setattr(common, "RUN_RETRY_WAITS", ())
     import httpx
 
     def exploding_get(*args, **kwargs):

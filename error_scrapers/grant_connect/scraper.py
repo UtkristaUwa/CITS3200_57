@@ -423,6 +423,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                 tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             relogins = 0
+            watch = common.DeadSiteWatch()
             for index, url in enumerate(urls, start=1):
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
@@ -447,12 +448,24 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(urls),
                                           tender.get("tender_id", url) if tender else url, code)
+                    watch.succeeded()
                 except Exception as exc:
+                    if (isinstance(exc, httpx.HTTPStatusError)
+                            and exc.response.status_code == 429):
+                        # Asked to slow down: stop at once, as the other scrapers do,
+                        # rather than being turned away for every tender after this one.
+                        log.error("HTTP 429 from %s -- stopping the run", exc.request.url)
+                        return common.SITE_RATE_LIMITED, tenders
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                     continue
 
+            if watch.stopped:
+                watch.report(log, index, len(urls))
+                tender_codes.add(common.TENDER_PARTIAL)
             reporting.diagnose(log, all_codes, logged_in=True)
 
         if not tender_codes:
@@ -477,7 +490,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.Scra
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

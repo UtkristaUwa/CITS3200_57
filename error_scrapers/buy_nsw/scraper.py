@@ -490,7 +490,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir, known_urls, resume)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir, known_urls, resume), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 

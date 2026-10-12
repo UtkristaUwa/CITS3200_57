@@ -1239,6 +1239,89 @@ def note_listing_problems(log, problems: list) -> bool:
     return True
 
 
+# ---------------------------------------------------------------------------
+# A site that is down: start again once, and stop when it dies part-way
+# ---------------------------------------------------------------------------
+
+# Seconds to wait before each extra try of a whole run that found the site
+# unreachable (SITE_TOTAL_FAILURE with nothing scraped). Two extra tries, about
+# four minutes in all: long enough for a restart or a network blip to pass,
+# short enough that a site that is really down costs little. () turns it off.
+RUN_RETRY_WAITS = (60, 180)
+
+
+def retry_if_site_unreachable(run_once, log, waits=None):
+    """
+    run_once() -> (code, tenders). Runs it, and runs it again after each wait in
+    `waits` while it ends in SITE_TOTAL_FAILURE with no tenders scraped: the site
+    could not be reached at all (the first page, the login page), so nothing was
+    kept and nothing is repeated. Any other result is returned as it is, and so is
+    the last one when every try fails.
+
+    For the scrapers without a browser to restart (GrantConnect, AusTender, NT,
+    buy.nsw, eTender, WA, TAS). A failed login, a block, a rate limit and a
+    structure change are never retried.
+    """
+    waits = RUN_RETRY_WAITS if waits is None else waits
+    code, tenders = run_once()
+    for attempt, wait in enumerate(waits, start=2):
+        if code != SITE_TOTAL_FAILURE or tenders:
+            break
+        log.warning("the site could not be reached -- trying the whole run again in %ds "
+                    "(try %d of %d)", wait, attempt, len(waits) + 1)
+        time.sleep(wait)
+        code, tenders = run_once()
+    return code, tenders
+
+
+# A site that answers nothing for this many tenders in a row has stopped
+# answering. Each tender spends its retries first, so carrying on only burns the
+# run's time (hours, over a few hundred tenders) for nothing.
+DEAD_SITE_AFTER = 15
+
+
+class DeadSiteWatch:
+    """
+    Count tenders in a row that failed with a transient error (timeout, dropped
+    connection, 500/502/503/504 that survived its retries).
+
+        watch = common.DeadSiteWatch()
+        for ...:
+            try:
+                ...
+                watch.succeeded()
+            except Exception as exc:
+                if watch.failed(exc):       # True once the site looks dead
+                    break
+
+    Any tender that gets an answer, or fails for another reason, starts the count
+    again. `stopped` says the loop ended because of this.
+    """
+
+    def __init__(self, limit: int | None = None):
+        self.limit = DEAD_SITE_AFTER if limit is None else limit
+        self.streak = 0
+        self.stopped = False
+
+    def succeeded(self) -> None:
+        self.streak = 0
+
+    def failed(self, exc: BaseException) -> bool:
+        self.streak = self.streak + 1 if is_transient_error(exc) else 0
+        if self.limit and self.streak >= self.limit:
+            self.stopped = True
+        return self.stopped
+
+    def report(self, log, done: int, total: int) -> None:
+        """Log it and put it on the dashboard. Call once, after the loop."""
+        log.error("the site stopped answering: the last %d tender(s) all timed out or "
+                  "failed with a server error -- stopping after %d of %d; the rest are "
+                  "left for the next run", self.streak, done, total)
+        run_notes.note_late(
+            "site", run_notes.SITE_STOPPED,
+            f"stopped after {done} of {total} tenders")
+
+
 class BrowserLostError(Exception):
     """Raised when the browser itself has died (crashed, closed, lost its session)."""
 

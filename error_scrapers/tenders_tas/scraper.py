@@ -523,6 +523,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
             all_codes = []
             taken: dict[str, str] = {}
             relogins = 0
+            watch = common.DeadSiteWatch()
             for index, entry in enumerate(entries, start=1):
                 try:
                     try:
@@ -544,6 +545,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     all_codes.append(code)
                     reporting.tender_line(log, index, len(entries),
                                           tender.get("tender_id") or entry["url"], code)
+                    watch.succeeded()
                 except httpx.HTTPStatusError as exc:
                     blocked = blocked_code(exc)
                     if blocked is not None:
@@ -553,12 +555,19 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 except Exception as exc:
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    if watch.failed(exc):
+                        break
                 time.sleep(PAUSE_SECONDS)
 
+            if watch.stopped:
+                watch.report(log, index, len(entries))
+                tender_codes.add(common.TENDER_PARTIAL)
             reporting.diagnose(log, all_codes, logged_in=signed_in)
 
         return common.site_code_from(tender_codes), tenders
@@ -580,7 +589,8 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data") -> common.Scra
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_site(limit, output_dir)
+    code, tenders = common.retry_if_site_unreachable(
+        lambda: _scrape_site(limit, output_dir), log)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 
