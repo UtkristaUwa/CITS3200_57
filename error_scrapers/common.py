@@ -1192,6 +1192,39 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
 
     return attachments, any_failed
 
+def listing_page_failed(log, page: int, exc: BaseException, found: int, problems: list | None) -> bool:
+    """
+    For a loop that walks a tender listing page by page. Call it from the
+    `except` around one page's request. Returns True if the walk should stop
+    here and carry on with the `found` tenders from the earlier pages: that is
+    a later page (never the first) failing in a way that usually passes by
+    itself -- a timeout, a dropped connection or a 500/502/503/504 that
+    survived every retry. The page is noted in `problems` so the caller can
+    report the listing as not read in full.
+
+    Returns False for everything else (the first page, a 403/429, a block page,
+    a bug), and the caller re-raises as before: those still stop the run.
+    """
+    if page <= 1 or not is_transient_error(exc):
+        return False
+    reason = (str(exc).strip().splitlines() or [""])[0][:200]
+    log.error("listing: page %d could not be read (%s: %s) -- carrying on with the %d tender(s) "
+              "found on the pages before it", page, type(exc).__name__, reason, found)
+    if problems is not None:
+        problems.append(f"page {page}")
+    return True
+
+
+def note_listing_problems(log, problems: list) -> bool:
+    """Say so on the dashboard when a listing was not read in full. True if it was not."""
+    if not problems:
+        return False
+    log.error("listing: not read in full (%s) -- the tenders on those pages and after them "
+              "were not seen", ", ".join(problems))
+    run_notes.note_late("listing", run_notes.LISTING, ", ".join(problems))
+    return True
+
+
 class BrowserLostError(Exception):
     """Raised when the browser itself has died (crashed, closed, lost its session)."""
 

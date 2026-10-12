@@ -457,6 +457,12 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
         codes = set(res.codes) - {common.SITE_SUCCESS}
         if common.SITE_STRUCTURE_CHANGE in codes:
             return common.SITE_STRUCTURE_CHANGE, res.tenders
+        if res.listing_failed:
+            if res.pages == 0 and not res.tenders and not res.skipped:
+                log.error("verdict: the first listing page could not be read")
+                return common.SITE_TOTAL_FAILURE, res.tenders
+            common.note_listing_problems(log, [f"page {res.next_page}"])
+            return common.TENDER_PARTIAL, res.tenders
         if res.blocked:
             if res.pages <= 1 and not res.tenders and not res.skipped:
                 log.error("verdict: buy.nsw's WAF turned us away before anything could be read")

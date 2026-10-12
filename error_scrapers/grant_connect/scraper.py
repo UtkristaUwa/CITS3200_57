@@ -132,7 +132,7 @@ def login(client: httpx.Client) -> bool:
 
     # First GET the login page -- needed for its anti-forgery token,
     # which the server rejects the POST without.
-    get_response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
+    get_response = common.request_with_retries(client, "get", LOGIN_URL, headers=HEADERS, timeout=30.0)
     form = find_login_form(get_response.text)
     if form is None:
         raise common.StructureChangedError(
@@ -368,17 +368,26 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     }
 
 
-def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
+def collect_all_listing_urls(client, limit: int = 0, problems: list | None = None) -> list[str]:
     """
     Walk every page of the opportunity list, stopping when a page comes
     back with no new links (end of results) or once `limit` is reached.
     `limit` of 0 means walk every page.
+
+    If a later page cannot be read (a timeout or server error that survived its
+    retries) the opportunities from the pages before it are kept and the page
+    is noted in `problems`, so one bad page does not cost the whole night.
     """
     urls, page = [], 1
     while True:
-        response = common.request_with_retries(
-            client, "get", LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
-        response.raise_for_status()
+        try:
+            response = common.request_with_retries(
+                client, "get", LIST_URL, params={"page": page}, headers=HEADERS, timeout=30.0)
+            response.raise_for_status()
+        except Exception as exc:
+            if common.listing_page_failed(log, page, exc, len(urls), problems):
+                break
+            raise
         page_urls = parse_listing(response.text)
         if not page_urls:
             break  # no more results
@@ -405,10 +414,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
             if not login(client):
                 return common.SITE_LOGIN_FAILED, tenders
 
-            urls = collect_all_listing_urls(client, limit)
+            listing_problems: list[str] = []
+            urls = collect_all_listing_urls(client, limit, listing_problems)
             log.info("listing: %d opportunity link(s) found", len(urls))
 
             tender_codes = set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             relogins = 0
             for index, url in enumerate(urls, start=1):

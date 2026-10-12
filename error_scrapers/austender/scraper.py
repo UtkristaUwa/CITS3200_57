@@ -139,7 +139,7 @@ def login(client) -> bool:
     Returns False if the form was rejected or the page is still anonymous.
     """
     username, password = credentials()
-    response = client.get(LOGIN_URL, headers=HEADERS, timeout=20.0)
+    response = common.request_with_retries(client, "get", LOGIN_URL, headers=HEADERS, timeout=30.0)
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -416,7 +416,7 @@ def scrape_opportunity(client, url: str, output_dir: str = "tenders_data") -> tu
     return code, tender
 
 
-def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
+def collect_all_listing_urls(client, limit: int = 0, problems: list | None = None) -> list[str]:
     """
     Walk every page of the open-ATM list, stopping when a page comes back
     with no new links (end of results) or once `limit` is reached. `limit`
@@ -425,11 +425,20 @@ def collect_all_listing_urls(client, limit: int = 0) -> list[str]:
     Raises StructureChangedError if the very first page has no ATM links:
     AusTender always has open ATMs, so an empty first page means the
     listing's markup changed, not that there is nothing to scrape.
+
+    If a later page cannot be read (a timeout or server error that survived its
+    retries) the ATMs from the pages before it are kept and the page is noted
+    in `problems`, so one bad page does not cost the whole night.
     """
     urls, page = [], 1
     while True:
-        response = _get(client, LIST_URL, params={"page": page})
-        response.raise_for_status()
+        try:
+            response = _get(client, LIST_URL, params={"page": page})
+            response.raise_for_status()
+        except Exception as exc:
+            if common.listing_page_failed(log, page, exc, len(urls), problems):
+                break
+            raise
         page_urls = [u for u in parse_listing(response.text) if u not in urls]
         if not page_urls:
             if page == 1:
@@ -478,10 +487,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
                 log.warning("login: no credentials -- attachments will be skipped and "
                             "tenders with documents will be TENDER_PARTIAL")
 
-            urls = collect_all_listing_urls(client, limit)
+            listing_problems: list[str] = []
+            urls = collect_all_listing_urls(client, limit, listing_problems)
             log.info("listing: %d ATM link(s) found", len(urls))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             relogins = 0
             for index, url in enumerate(urls, start=1):

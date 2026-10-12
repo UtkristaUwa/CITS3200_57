@@ -199,7 +199,7 @@ def parse_search_page(data) -> tuple[list[dict], int | None]:
     return tenders, data.get("totalPages")
 
 
-def collect_all_tenders(client, limit: int = 0) -> list[dict]:
+def collect_all_tenders(client, limit: int = 0, problems: list | None = None) -> list[dict]:
     """
     Walk every page of open tenders, stopping at the reported page count, at
     an empty page, or once `limit` is reached. `limit` of 0 means every
@@ -207,9 +207,15 @@ def collect_all_tenders(client, limit: int = 0) -> list[dict]:
     """
     tenders, seen, page = [], set(), 1
     while True:
-        response = common.request_with_retries(
-            client, "post", SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
-        response.raise_for_status()
+        try:
+            response = common.request_with_retries(
+                client, "post", SEARCH_API_URL, json=search_body(page), headers=HEADERS, timeout=30.0)
+            response.raise_for_status()
+        except Exception as exc:
+            # A later page that keeps failing must not cost the pages before it.
+            if common.listing_page_failed(log, page, exc, len(tenders), problems):
+                break
+            raise
         try:
             data = response.json()
         except ValueError:
@@ -866,10 +872,13 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 log.warning("login: no credentials -- documents will be skipped and tenders "
                             "with documents will be TENDER_PARTIAL")
 
-            tenders = collect_all_tenders(client, limit)
+            listing_problems: list[str] = []
+            tenders = collect_all_tenders(client, limit, listing_problems)
             log.info("listing: %d tender(s) found", len(tenders))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_failed else set()
+            if common.note_listing_problems(log, listing_problems):
+                tender_codes.add(common.TENDER_PARTIAL)
             all_codes = []
             code_index = {}  # tender reference -> its position in all_codes
             relogins = 0
@@ -923,7 +932,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 for reference, code in retry_unfollowed(vendorpanel, results, relogin).items():
                     if reference in code_index:
                         all_codes[code_index[reference]] = code
-                tender_codes = set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
+                tender_codes = (set(all_codes) | ({common.SITE_LOGIN_FAILED} if login_failed else set())
+                                | ({common.TENDER_PARTIAL} if listing_problems else set()))
 
             if have_credentials:
                 needing = [r for r in results if r["documents_advertised"] > 0]
