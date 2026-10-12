@@ -72,6 +72,7 @@ LOGIN_ERROR_TEXT = "Invalid username/password combination"
 
 RECONNECT_SECONDS = 7
 WAIT_TIMEOUT = 30
+POLL_SECONDS = 0.5
 PAUSE_SECONDS = 2.0
 
 # A whole-run retry (fresh browser) is for a browser that would not start or
@@ -107,6 +108,33 @@ def credentials():
 
 class BotBlockedError(Exception):
     """Raised when Cloudflare keeps serving its challenge instead of the page."""
+
+
+class BrowserLostError(Exception):
+    """Raised when the browser itself has died (crashed, closed, lost its session)."""
+
+
+# Fragments of the messages Selenium/Chrome give when the browser is gone, not
+# when one page misbehaved. Matched on text so this file needs no selenium import.
+_BROWSER_GONE_MARKERS = (
+    "invalid session id",
+    "session deleted",
+    "chrome not reachable",
+    "disconnected",
+    "no such window",
+    "target window already closed",
+    "web view not found",
+    "not connected to devtools",
+    "browser has closed",
+    "connection refused",
+    "max retries exceeded",
+)
+
+
+def browser_is_gone(exc: BaseException) -> bool:
+    """True if `exc` means the browser died, so every later page would fail too."""
+    text = f"{type(exc).__name__}: {exc}".lower()
+    return any(marker in text for marker in _BROWSER_GONE_MARKERS)
 
 
 def is_blocked(title: str, html: str) -> bool:
@@ -462,17 +490,30 @@ class BrowserSession:
     def open_page(self, page: int) -> str:
         """
         Show page `page` of the open-tenders results (the same call the pager
-        links make) and return the page's HTML once its rows have loaded.
+        links make) and return the page's HTML once the new rows have arrived.
+
+        The pager form lives inside #resultDiv, and the site swaps the whole
+        block when its answer comes back. So #resultDiv must not be emptied
+        first: that deletes the form, and the call then fails with "Cannot read
+        properties of undefined (reading 'page')". The new page is the one whose
+        rows differ from the rows shown now. If they never do, the HTML is
+        returned as it is after WAIT_TIMEOUT, and the caller sees a page with
+        nothing new.
         """
-        self.sb.execute_script("$('#resultDiv').empty();")
+        page = int(page)
+        before = [e["url"] for e in parse_listing(self.sb.get_page_source())]
         self.sb.execute_script(
-            f"document.forms.groupedSearchForm.page.value={int(page)};"
+            f"document.forms.groupedSearchForm.page.value={page};"
             "changeGroupedTenderTablePageAjax();")
-        try:
-            self.sb.wait_for_element(DETAIL_LINK_SELECTOR, timeout=WAIT_TIMEOUT)
-        except Exception:
-            pass
-        return self.sb.get_page_source()
+        deadline = time.monotonic() + WAIT_TIMEOUT
+        while True:
+            html = self.sb.get_page_source()
+            urls = [e["url"] for e in parse_listing(html)]
+            if urls and urls != before:
+                return html
+            if time.monotonic() >= deadline:
+                return html
+            time.sleep(POLL_SECONDS)
 
     def download_documents(self, download_docs_url: str, folder: str) -> str:
         """
@@ -566,7 +607,7 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
     return (common.TENDER_PARTIAL if any_failed else common.SITE_SUCCESS), tender
 
 
-def collect_all_listing_entries(session, limit: int = 0) -> list[dict]:
+def collect_all_listing_entries(session, limit: int = 0, problems: list | None = None) -> list[dict]:
     """
     Every open tender, page by page. `limit` of 0 means all of them.
 
@@ -576,6 +617,11 @@ def collect_all_listing_entries(session, limit: int = 0) -> list[dict]:
 
     Raises StructureChangedError if the first page has no tender rows: the
     portal always has open tenders, so that means the markup changed.
+
+    If a later page cannot be opened, the tenders from the pages before it are
+    kept (one broken page must not cost the whole run) and a note is added to
+    `problems`, so the caller can report that the listing was not read in full.
+    A Cloudflare block or a dead browser is not caught here: it ends the attempt.
     """
     html = session.get(LIST_URL, wait_selector=DETAIL_LINK_SELECTOR)
     entries = parse_listing(html)
@@ -590,7 +636,21 @@ def collect_all_listing_entries(session, limit: int = 0) -> list[dict]:
         page += 1
         time.sleep(PAUSE_SECONDS)
         known = {e["url"] for e in entries}
-        new = [e for e in parse_listing(session.open_page(page)) if e["url"] not in known]
+        try:
+            page_html = session.open_page(page)
+        except BotBlockedError:
+            raise
+        except Exception as exc:
+            if browser_is_gone(exc):
+                raise BrowserLostError(str(exc)) from exc
+            reason = (str(exc).strip().splitlines() or [""])[0][:200]
+            log.error("listing: page %d of %d could not be opened (%s: %s) -- carrying on with "
+                      "the %d tender(s) found so far", page, pages, type(exc).__name__, reason,
+                      len(entries))
+            if problems is not None:
+                problems.append(f"page {page} of {pages}")
+            break
+        new = [e for e in parse_listing(page_html) if e["url"] not in known]
         if not new:
             log.warning("listing: page %d of %d had no new tenders -- stopping", page, pages)
             break
@@ -617,9 +677,13 @@ def order_for_resume(entries: list[dict], known_urls) -> tuple[list[dict], int]:
 
 def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                  headless: bool = True, known_urls=None,
-                 resume: bool = False) -> tuple[int, list[dict]]:
+                 resume: bool = False, state: dict | None = None) -> tuple[int, list[dict]]:
     """
     Scrape every open SA tender. `limit` of 0 means every tender found.
+
+    `state` is shared between whole-run attempts: {"done": URLs already finished,
+    "codes": every tender/site code seen}. A later attempt skips what is done, so
+    a browser that died part-way costs only the tenders after it.
 
     Returns (site_code, tenders). A failed login with credentials set is
     SITE_LOGIN_FAILED, but the page text is still scraped.
@@ -634,6 +698,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
              "set" if username else "MISSING", "set" if password else "MISSING")
     tenders: list[dict] = []
     tender_codes: set[int] = set()
+    done = state["done"] if state is not None else set()
     logged_in = False
     login_didnt_work = False
     try:
@@ -649,7 +714,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 log.warning("login: no credentials -- documents will be skipped and "
                             "tenders with documents will be TENDER_PARTIAL")
 
-            entries = collect_all_listing_entries(session, limit)
+            listing_problems: list[str] = []
+            entries = collect_all_listing_entries(session, limit, listing_problems)
             log.info("listing: %d tender(s) found", len(entries))
             if resume:
                 entries, new_count = order_for_resume(entries, known_urls)
@@ -658,9 +724,17 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             run_notes.note_total(len(entries))
 
             tender_codes = {common.SITE_LOGIN_FAILED} if login_didnt_work else set()
+            if listing_problems:
+                # The pager stopped working part-way. The tenders already listed
+                # are still scraped, but the site is reported as changed.
+                log.error("listing: not read in full (%s) -- scraping what was found; "
+                          "reporting a structure change", ", ".join(listing_problems))
+                tender_codes.add(common.SITE_STRUCTURE_CHANGE)
             all_codes = []
             relogins = 0
             for index, entry in enumerate(entries, start=1):
+                if entry["url"] in done:
+                    continue  # finished by an earlier attempt
                 try:
                     code, tender = scrape_opportunity(session, entry, output_dir)
                     if tender and tender["documents_gated"] and logged_in and relogins < MAX_RELOGINS:
@@ -682,9 +756,14 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 except BotBlockedError:
                     raise
                 except Exception as exc:
+                    if browser_is_gone(exc):
+                        # Not this tender's fault: every later one would fail the same
+                        # way, in a second each. End the attempt; a new browser takes over.
+                        raise BrowserLostError(str(exc)) from exc
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                done.add(entry["url"])
                 time.sleep(PAUSE_SECONDS)
 
             reporting.diagnose(log, all_codes, logged_in=logged_in)
@@ -704,6 +783,9 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
     except Exception as exc:
         log.error("run failed: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, tenders
+    finally:
+        if state is not None:
+            state["codes"] |= tender_codes
 
 
 def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
@@ -711,21 +793,44 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
                          attempts: int = BROWSER_ATTEMPTS,
                          known_urls=None, resume: bool = False) -> tuple[int, list[dict]]:
     """
-    Retry, each time with a brand-new browser, only when nothing was scraped
-    and the code is in RETRYABLE_CODES. A failed login, structure change or any
-    partial result is returned as-is.
+    Run the scrape, starting again with a brand-new browser when it fails as a
+    whole (SITE_TOTAL_FAILURE: the browser would not start, crashed, or the site
+    could not be read), up to `attempts` times.
+
+    Tenders finished by an attempt are kept and never redone, so a crash part-way
+    costs only the tenders after it. A Cloudflare block is retried only while
+    nothing has been scraped (with tenders in hand it is returned as before).
+    A failed login, structure change or rate limit is never retried.
+
+    If every attempt fails, the result is TOTAL_FAILURE with whatever was
+    scraped. If a retry finishes, the result covers the tenders of all attempts.
     """
-    code, tenders = common.SITE_TOTAL_FAILURE, []
+    state = {"done": set(), "codes": set()}
+    all_tenders: list[dict] = []
+    code = common.SITE_TOTAL_FAILURE
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
-        code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume)
-        if tenders or code not in RETRYABLE_CODES:
-            return code, tenders
+        code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume, state)
+        all_tenders.extend(tenders)
+        if code == common.SITE_TOTAL_FAILURE:
+            retry = True
+        elif code == common.SITE_BOT_BLOCKED:
+            retry = not all_tenders
+        else:
+            retry = False
+        if not retry:
+            break
         if attempt < attempts:
-            log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
-                        attempt, attempts, reporting.code_name(code), 15 * attempt)
+            log.warning("attempt %d/%d got %s after %d tender(s) -- retrying with a new "
+                        "browser in %ds", attempt, attempts, reporting.code_name(code),
+                        len(all_tenders), 15 * attempt)
             time.sleep(15 * attempt)
-    return code, tenders
+
+    if common.SITE_TOTAL_FAILURE <= code <= common.SITE_RATE_LIMITED:
+        return code, all_tenders
+    # The last attempt finished. An earlier attempt may have seen something worse
+    # (a login failure, a partial tender); keep that in the final code.
+    return common.site_code_from(state["codes"] | {code}), all_tenders
 
 
 @reporting.reported(SOURCE_ID.upper())

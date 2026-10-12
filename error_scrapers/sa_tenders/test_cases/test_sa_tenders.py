@@ -282,6 +282,205 @@ def test_a_page_with_nothing_new_stops_the_walk(caplog):
     assert any("only 1 were found" in r.getMessage() for r in caplog.records)
 
 
+class PagerBreaksAt(FakeSession):
+    """A pager that works until `broken_page`, then fails the way the live site did."""
+
+    def __init__(self, broken_page, **kwargs):
+        super().__init__(**kwargs)
+        self.broken_page = broken_page
+
+    def open_page(self, page):
+        if page >= self.broken_page:
+            self.opened_pages.append(page)
+            raise RuntimeError("javascript error: Cannot read properties of undefined (reading 'page')\n"
+                               "Stacktrace:\n#0 0x55 <unknown>")
+        return super().open_page(page)
+
+
+def _three_pages():
+    return dict(
+        list_html=_list_page(_page((1, "A", "a"), (2, "B", "b"), total=5)),
+        pages={2: _page((3, "C", "c"), (4, "D", "d"), total=5, first=3),
+               3: _page((5, "E", "e"), total=5, first=5)})
+
+
+def test_a_page_that_cannot_be_opened_keeps_the_pages_before_it():
+    problems = []
+    entries = scraper.collect_all_listing_entries(PagerBreaksAt(3, **_three_pages()), problems=problems)
+    assert [e["tender_code"] for e in entries] == ["A", "B", "C", "D"]
+    assert problems == ["page 3 of 3"]
+
+
+def test_a_pager_that_fails_on_the_first_page_still_gives_page_one():
+    problems = []
+    entries = scraper.collect_all_listing_entries(PagerBreaksAt(2, **_three_pages()), problems=problems)
+    assert [e["tender_code"] for e in entries] == ["A", "B"]
+    assert problems == ["page 2 of 3"]
+
+
+def test_a_working_pager_reports_no_problem():
+    problems = []
+    scraper.collect_all_listing_entries(FakeSession(**_three_pages()), problems=problems)
+    assert problems == []
+
+
+def test_a_cloudflare_block_while_opening_a_page_still_ends_the_run():
+    class BlockedOnPage2(FakeSession):
+        def open_page(self, page):
+            raise scraper.BotBlockedError("challenge")
+
+    with pytest.raises(scraper.BotBlockedError):
+        scraper.collect_all_listing_entries(BlockedOnPage2(**_three_pages()))
+
+
+def test_a_broken_pager_still_scrapes_page_one_and_reports_a_structure_change(tmp_path, monkeypatch):
+    session = PagerBreaksAt(2, detail_html=_no_documents_details(), **_three_pages())
+    _patch_session(monkeypatch, session)
+    code, tenders = scraper._scrape_site(output_dir=str(tmp_path))
+    assert len(tenders) == 2  # page 1's two tenders were still scraped
+    assert code == common.SITE_STRUCTURE_CHANGE
+
+
+def test_a_broken_pager_is_not_retried_with_a_new_browser_when_tenders_were_scraped(tmp_path, monkeypatch):
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    sessions = []
+
+    def make_session(**kwargs):
+        sessions.append(PagerBreaksAt(2, detail_html=_no_documents_details(), **_three_pages()))
+        return sessions[-1]
+    monkeypatch.setattr(scraper, "BrowserSession", make_session)
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_STRUCTURE_CHANGE
+    assert result.count == 2
+    assert len(sessions) == 1
+
+
+# ---------------------------------------------------------------------------
+# Whole-run retry: a dead browser
+# ---------------------------------------------------------------------------
+
+DEAD = "invalid session id: session deleted as the browser has closed the connection"
+
+
+def _four_tenders():
+    return dict(list_html=_list_page(_page((1, "A", "a"), (2, "B", "b"), (3, "C", "c"), (4, "D", "d"),
+                                            total=4)))
+
+
+class DiesOnDetail(FakeSession):
+    """Works for `after` detail pages, then the browser is gone for good."""
+
+    def __init__(self, after, **kwargs):
+        super().__init__(**kwargs)
+        self.after = after
+
+    def get(self, url, wait_selector=None):
+        if "/tender/search" not in url and len(self.visited) - 1 >= self.after:
+            self.visited.append(url)
+            raise RuntimeError(DEAD)
+        return super().get(url, wait_selector)
+
+
+def _sessions(monkeypatch, *makers):
+    """Hand out one session per browser start, in order; returns the list made."""
+    made = []
+    makers = list(makers)
+
+    def make(**kwargs):
+        made.append(makers[min(len(made), len(makers) - 1)]())
+        return made[-1]
+    monkeypatch.setattr(scraper, "BrowserSession", make)
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    return made
+
+
+def test_browser_is_gone_recognises_dead_browsers_only():
+    assert scraper.browser_is_gone(RuntimeError(DEAD))
+    assert scraper.browser_is_gone(RuntimeError("chrome not reachable"))
+    assert scraper.browser_is_gone(RuntimeError("disconnected: not connected to DevTools"))
+    assert not scraper.browser_is_gone(TimeoutError("Download did not complete"))
+    assert not scraper.browser_is_gone(ValueError("bad page"))
+
+
+def test_a_browser_that_dies_part_way_is_replaced_and_finishes_the_rest_once(tmp_path, monkeypatch):
+    made = _sessions(
+        monkeypatch,
+        lambda: DiesOnDetail(2, detail_html=_no_documents_details(), **_four_tenders()),
+        lambda: FakeSession(detail_html=_no_documents_details(), **_four_tenders()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_SUCCESS
+    assert result.count == 4
+    assert len(made) == 2
+    details = lambda s: [u for u in s.visited if "/tender/search" not in u]
+    assert len(details(made[1])) == 2  # only the two the first browser never reached
+
+
+def test_a_dead_browser_is_not_counted_as_a_failure_of_every_remaining_tender(tmp_path, monkeypatch, caplog):
+    _sessions(monkeypatch,
+              lambda: DiesOnDetail(1, detail_html=_no_documents_details(), **_four_tenders()),
+              lambda: FakeSession(detail_html=_no_documents_details(), **_four_tenders()))
+    with caplog.at_level("ERROR"):
+        scraper.run_scraper(output_dir=str(tmp_path))
+    assert not [r for r in caplog.records if "FAILED" in r.getMessage()]
+
+
+def test_a_partial_tender_before_the_crash_keeps_the_final_code_partial(tmp_path, monkeypatch):
+    # FakeSession() with no zip: the document download raises, so tenders are partial.
+    _sessions(monkeypatch,
+              lambda: DiesOnDetail(1, **_four_tenders()),
+              lambda: FakeSession(detail_html=_no_documents_details(), **_four_tenders()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.TENDER_PARTIAL
+    assert result.count == 4
+
+
+def test_it_gives_up_after_three_browsers_and_reports_total_failure(tmp_path, monkeypatch):
+    made = _sessions(monkeypatch,
+                     lambda: DiesOnDetail(1, detail_html=_no_documents_details(), **_four_tenders()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_TOTAL_FAILURE
+    assert len(made) == 3
+    assert result.count == 3  # each browser got one more tender before it died; none redone
+
+
+def test_a_browser_that_dies_while_walking_the_pager_is_retried_not_called_a_structure_change(tmp_path, monkeypatch):
+    class PagerDies(FakeSession):
+        def open_page(self, page):
+            raise RuntimeError(DEAD)
+
+    made = _sessions(monkeypatch,
+                     lambda: PagerDies(detail_html=_no_documents_details(), **_three_pages()),
+                     lambda: FakeSession(detail_html=_no_documents_details(), **_three_pages()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_SUCCESS
+    assert result.count == 5
+    assert len(made) == 2
+
+
+def test_cloudflare_after_tenders_were_scraped_is_not_retried(tmp_path, monkeypatch):
+    class BlockedAfterOne(FakeSession):
+        def get(self, url, wait_selector=None):
+            if "/tender/search" not in url and len(self.visited) >= 2:
+                raise scraper.BotBlockedError(url)
+            return super().get(url, wait_selector)
+
+    made = _sessions(monkeypatch,
+                     lambda: BlockedAfterOne(detail_html=_no_documents_details(), **_four_tenders()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_BOT_BLOCKED
+    assert len(made) == 1
+
+
+def test_a_failed_login_is_never_retried(tmp_path, monkeypatch):
+    _set_credentials(monkeypatch)
+    made = _sessions(monkeypatch,
+                     lambda: FakeSession(login_ok=False, detail_html=_no_documents_details(),
+                                         **_four_tenders()))
+    result = scraper.run_scraper(output_dir=str(tmp_path))
+    assert result.code == common.SITE_LOGIN_FAILED
+    assert len(made) == 1
+
+
 def test_a_complete_walk_logs_no_error(caplog):
     p1 = _list_page(_page((1, "A", "a"), total=2))
     session = FakeSession(list_html=p1, pages={2: _page((2, "B", "b"), total=2, first=2)})
@@ -708,14 +907,72 @@ def test_browser_get_gives_up_on_the_first_challenge():
         session.get(scraper.LIST_URL)
 
 
-def test_opening_a_page_clears_the_results_then_calls_the_sites_own_pager():
+class _PagerSB(_FakeSB):
+    """
+    The site's pager as the real page behaves: the form sits inside #resultDiv,
+    so emptying #resultDiv first removes it and the pager call then fails with
+    the error seen on the live site. The answer shows up after `delay` reads.
+    """
+
+    def __init__(self, first, second, delay=0):
+        super().__init__(page=first)
+        self.first, self.second, self.delay = first, second, delay
+        self.form_present = True
+        self.requested = False
+        self.reads_since_request = 0
+
+    def execute_script(self, script):
+        super().execute_script(script)
+        if "empty()" in script:
+            self.form_present = False
+        if "groupedSearchForm" in script:
+            if not self.form_present:
+                raise RuntimeError("javascript error: Cannot read properties of undefined (reading 'page')")
+            self.requested = True
+
+    def get_page_source(self):
+        if self.requested:
+            self.reads_since_request += 1
+            if self.reads_since_request > self.delay:
+                return self.second
+        return self.first
+
+
+def _two_pages():
+    first = _list_page(_page((1, "A", "a"), (2, "B", "b"), total=4))
+    second = _list_page(_page((3, "C", "c"), (4, "D", "d"), total=4, first=3))
+    return first, second
+
+
+def test_opening_a_page_calls_the_sites_own_pager_without_emptying_the_results(monkeypatch):
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    first, second = _two_pages()
     session = scraper.BrowserSession()
-    session.sb = _FakeSB(page=_list_page())
-    html = session.open_page(3)
-    assert session.sb.scripts[0] == "$('#resultDiv').empty();"
-    assert session.sb.scripts[1] == ("document.forms.groupedSearchForm.page.value=3;"
-                                     "changeGroupedTenderTablePageAjax();")
-    assert "tenderRowTitle" in html
+    session.sb = _PagerSB(first, second)
+    html = session.open_page(2)
+    assert session.sb.scripts == ["document.forms.groupedSearchForm.page.value=2;"
+                                  "changeGroupedTenderTablePageAjax();"]
+    assert [e["tender_code"] for e in scraper.parse_listing(html)] == ["C", "D"]
+
+
+def test_opening_a_page_waits_until_the_new_rows_have_arrived(monkeypatch):
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    first, second = _two_pages()
+    session = scraper.BrowserSession()
+    session.sb = _PagerSB(first, second, delay=3)
+    html = session.open_page(2)
+    assert [e["tender_code"] for e in scraper.parse_listing(html)] == ["C", "D"]
+    assert session.sb.reads_since_request == 4  # three stale reads, then the new page
+
+
+def test_a_page_that_never_arrives_comes_back_unchanged_and_does_not_hang(monkeypatch):
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    monkeypatch.setattr(scraper, "WAIT_TIMEOUT", 0)
+    first, second = _two_pages()
+    session = scraper.BrowserSession()
+    session.sb = _PagerSB(first, second, delay=10_000)
+    html = session.open_page(2)
+    assert [e["tender_code"] for e in scraper.parse_listing(html)] == ["A", "B"]
 
 
 def test_a_page_number_that_is_not_a_number_is_refused():
