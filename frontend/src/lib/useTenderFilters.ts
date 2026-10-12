@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useUserPreferences } from './UserPreferencesContext';
-import type { DefaultTenderFilters, DefaultTenderStatus } from './tenderPreferences';
+import {
+  sanitizeDefaultTenderFilters,
+  type DefaultTenderFilters,
+  type DefaultTenderStatus,
+} from './tenderPreferences';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -10,10 +14,17 @@ function defaultFiltersMatch(
   second: DefaultTenderFilters,
 ): boolean {
   return first.jurisdiction === second.jurisdiction
+    && first.states.length === second.states.length
+    && first.states.every((state, index) => state === second.states[index])
+    && first.sourceId === second.sourceId
+    && first.focusAreas.length === second.focusAreas.length
+    && first.focusAreas.every((focusArea, index) => focusArea === second.focusAreas[index])
     && first.status === second.status
     && first.year === second.year
     && first.minDate === second.minDate
-    && first.maxDate === second.maxDate;
+    && first.maxDate === second.maxDate
+    && first.publishedAfter === second.publishedAfter
+    && first.publishedBefore === second.publishedBefore;
 }
 
 export function useTenderFilters() {
@@ -30,12 +41,10 @@ export function useTenderFilters() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  // Kept so the saved-defaults payload keeps the exact shape firestore.rules
-  // validates. It has no control behind it any more -- the state multi-select
-  // replaced it -- and is deliberately not applied to the query, so a value
-  // saved before that change can't narrow results invisibly.
+  // Retained for schema-v1 compatibility. It has no control behind it any more
+  // and is deliberately not applied to the query, so a legacy value cannot
+  // narrow results invisibly.
   const [jurisdiction, setJurisdiction] = useState('');
-  // Session-only: not part of tenderPreferences, so no schema or rules change.
   const [states, setStates] = useState<string[]>([]);
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
   const [sourceId, setSourceId] = useState('');
@@ -63,19 +72,29 @@ export function useTenderFilters() {
   const currentUidRef = useRef(currentUid);
   const currentDefaultFiltersRef = useRef<DefaultTenderFilters>({
     jurisdiction,
+    states,
+    sourceId,
+    focusAreas,
     status,
     year,
     minDate,
     maxDate,
+    publishedAfter,
+    publishedBefore,
   });
 
   currentUidRef.current = currentUid;
   currentDefaultFiltersRef.current = {
     jurisdiction,
+    states,
+    sourceId,
+    focusAreas,
     status,
     year,
     minDate,
     maxDate,
+    publishedAfter,
+    publishedBefore,
   };
 
   const filtersReady = currentUid !== null
@@ -109,6 +128,7 @@ export function useTenderFilters() {
     setShowFilters(false);
     setJurisdiction('');
     setStates([]);
+    setFocusAreas([]);
     setSourceId('');
     setStatus('');
     setYear('');
@@ -138,10 +158,15 @@ export function useTenderFilters() {
 
     const defaultFilters = preferences.defaultFilters;
     setJurisdiction(defaultFilters.jurisdiction);
+    setStates(defaultFilters.states);
+    setSourceId(defaultFilters.sourceId);
+    setFocusAreas(defaultFilters.focusAreas);
     setStatus(defaultFilters.status);
     setYear(defaultFilters.year);
     setMinDate(defaultFilters.minDate);
     setMaxDate(defaultFilters.maxDate);
+    setPublishedAfter(defaultFilters.publishedAfter);
+    setPublishedBefore(defaultFilters.publishedBefore);
     setFiltersOwnerUid(currentUid);
   }, [
     authLoading,
@@ -179,33 +204,72 @@ export function useTenderFilters() {
   const setSavedJurisdiction = (value: string) => {
     setJurisdiction(value);
     setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
+  };
+
+  const setSavedStates = (value: string[]) => {
+    setStates(value);
+    setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
+  };
+
+  const setSavedSourceId = (value: string) => {
+    setSourceId(value);
+    setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
+  };
+
+  const setSavedFocusAreas = (value: string[]) => {
+    setFocusAreas(value);
+    setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
   };
 
   const setSavedStatus = (value: DefaultTenderStatus) => {
     setStatus(value);
     setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
   };
 
   const setSavedYear = (value: string) => {
     setYear(value);
     setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
   };
 
   const setSavedMinDate = (value: string) => {
     setMinDate(value);
     setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
   };
 
   const setSavedMaxDate = (value: string) => {
     setMaxDate(value);
     setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
+  };
+
+  const setSavedPublishedAfter = (value: string) => {
+    setPublishedAfter(value);
+    setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
+  };
+
+  const setSavedPublishedBefore = (value: string) => {
+    setPublishedBefore(value);
+    setDefaultFiltersSaved(false);
+    setDefaultFiltersSaveError(null);
   };
 
   const handleSaveDefaultFilters = async () => {
     if (!filtersReady || defaultFiltersSaving) return;
 
     const originatingUid = currentUid;
-    const submittedFilters = { ...currentDefaultFiltersRef.current };
+    const submittedFilters = {
+      ...currentDefaultFiltersRef.current,
+      states: [...currentDefaultFiltersRef.current.states],
+      focusAreas: [...currentDefaultFiltersRef.current.focusAreas],
+    };
     if (!originatingUid) return;
 
     if (
@@ -220,6 +284,27 @@ export function useTenderFilters() {
       return;
     }
 
+    if (
+      submittedFilters.publishedAfter
+      && submittedFilters.publishedBefore
+      && submittedFilters.publishedAfter > submittedFilters.publishedBefore
+    ) {
+      setDefaultFiltersSaveError(
+        'Published After date cannot be later than Published Before date.',
+      );
+      setDefaultFiltersSaved(false);
+      return;
+    }
+
+    const sanitizedFilters = sanitizeDefaultTenderFilters(submittedFilters);
+    if (!defaultFiltersMatch(sanitizedFilters, submittedFilters)) {
+      setDefaultFiltersSaveError(
+        'One or more filter values are invalid and could not be saved.',
+      );
+      setDefaultFiltersSaved(false);
+      return;
+    }
+
     const requestToken = saveRequestTokenRef.current + 1;
     saveRequestTokenRef.current = requestToken;
     setSavingDefaultFilters(true);
@@ -227,11 +312,11 @@ export function useTenderFilters() {
     setDefaultFiltersSaved(false);
 
     try {
-      await saveDefaultTenderFilters(submittedFilters);
+      await saveDefaultTenderFilters(sanitizedFilters);
       if (
         currentUidRef.current === originatingUid
         && saveRequestTokenRef.current === requestToken
-        && defaultFiltersMatch(currentDefaultFiltersRef.current, submittedFilters)
+        && defaultFiltersMatch(currentDefaultFiltersRef.current, sanitizedFilters)
       ) {
         setDefaultFiltersSaved(true);
       }
@@ -261,16 +346,16 @@ export function useTenderFilters() {
     advancedSearch, setAdvancedSearch,
     showFilters, setShowFilters,
     sortBy, setSortBy,
-    states, setStates,
-    focusAreas, setFocusAreas,
-    sourceId, setSourceId,
+    states, setStates: setSavedStates,
+    focusAreas, setFocusAreas: setSavedFocusAreas,
+    sourceId, setSourceId: setSavedSourceId,
     jurisdiction, setJurisdiction: setSavedJurisdiction,
     status, setStatus: setSavedStatus,
     year, setYear: setSavedYear,
     minDate, setMinDate: setSavedMinDate,
     maxDate, setMaxDate: setSavedMaxDate,
-    publishedAfter, setPublishedAfter,
-    publishedBefore, setPublishedBefore,
+    publishedAfter, setPublishedAfter: setSavedPublishedAfter,
+    publishedBefore, setPublishedBefore: setSavedPublishedBefore,
     filtersReady,
     defaultFiltersSaving,
     defaultFiltersLoadError: preferencesError?.message ?? null,

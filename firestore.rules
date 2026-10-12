@@ -87,17 +87,103 @@ service cloud.firestore {
 
     function dateIsValid(date) {
       return date is string
-             && (date == '' || date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'));
+             && (date == ''
+                 || date.matches(
+                   '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+                 ));
     }
 
-    function defaultFiltersAreValid(defaultFilters) {
-      return defaultFilters is map
-             && defaultFilters.keys().hasAll([
+    function legacyDefaultFiltersShapeIsValid(defaultFilters) {
+      return defaultFilters.keys().hasAll([
                'jurisdiction', 'status', 'year', 'minDate', 'maxDate'
              ])
              && defaultFilters.keys().hasOnly([
                'jurisdiction', 'status', 'year', 'minDate', 'maxDate'
+             ]);
+    }
+
+    function extendedDefaultFiltersShapeIsValid(defaultFilters) {
+      return defaultFilters.keys().hasAll([
+               'jurisdiction',
+               'states',
+               'sourceId',
+               'focusAreas',
+               'status',
+               'year',
+               'minDate',
+               'maxDate',
+               'publishedAfter',
+               'publishedBefore'
              ])
+             && defaultFilters.keys().hasOnly([
+               'jurisdiction',
+               'states',
+               'sourceId',
+               'focusAreas',
+               'status',
+               'year',
+               'minDate',
+               'maxDate',
+               'publishedAfter',
+               'publishedBefore'
+             ]);
+    }
+
+    function statesAreValid(states) {
+      return states is list
+             && states.size() <= 8
+             && states.toSet().size() == states.size()
+             && states.toSet().hasOnly([
+               'ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'
+             ]);
+    }
+
+    function dynamicIdIsValid(value) {
+      return value is string
+             && value.size() <= 100
+             && value.matches('^[a-z][a-z0-9_]*$');
+    }
+
+    // Firestore Rules has no list-wide predicate. Keep this explicit validation
+    // in sync with MAX_FOCUS_AREAS in tenderPreferences.ts.
+    function focusAreasAreValid(focusAreas) {
+      return focusAreas is list
+             && focusAreas.size() <= 12
+             && focusAreas.toSet().size() == focusAreas.size()
+             && (focusAreas.size() < 1 || dynamicIdIsValid(focusAreas[0]))
+             && (focusAreas.size() < 2 || dynamicIdIsValid(focusAreas[1]))
+             && (focusAreas.size() < 3 || dynamicIdIsValid(focusAreas[2]))
+             && (focusAreas.size() < 4 || dynamicIdIsValid(focusAreas[3]))
+             && (focusAreas.size() < 5 || dynamicIdIsValid(focusAreas[4]))
+             && (focusAreas.size() < 6 || dynamicIdIsValid(focusAreas[5]))
+             && (focusAreas.size() < 7 || dynamicIdIsValid(focusAreas[6]))
+             && (focusAreas.size() < 8 || dynamicIdIsValid(focusAreas[7]))
+             && (focusAreas.size() < 9 || dynamicIdIsValid(focusAreas[8]))
+             && (focusAreas.size() < 10 || dynamicIdIsValid(focusAreas[9]))
+             && (focusAreas.size() < 11 || dynamicIdIsValid(focusAreas[10]))
+             && (focusAreas.size() < 12 || dynamicIdIsValid(focusAreas[11]));
+    }
+
+    function sourceIdIsValid(sourceId) {
+      return sourceId is string
+             && sourceId.size() <= 100
+             && (sourceId == ''
+                 || sourceId.matches('^[A-Za-z0-9][A-Za-z0-9_-]*$'));
+    }
+
+    function extendedDefaultFilterValuesAreValid(defaultFilters) {
+      return statesAreValid(defaultFilters.states)
+             && sourceIdIsValid(defaultFilters.sourceId)
+             && focusAreasAreValid(defaultFilters.focusAreas)
+             && dateIsValid(defaultFilters.publishedAfter)
+             && dateIsValid(defaultFilters.publishedBefore);
+    }
+
+    function defaultFiltersAreValid(defaultFilters) {
+      return defaultFilters is map
+             && (legacyDefaultFiltersShapeIsValid(defaultFilters)
+                 || (extendedDefaultFiltersShapeIsValid(defaultFilters)
+                     && extendedDefaultFilterValuesAreValid(defaultFilters)))
              && defaultFilters.jurisdiction is string
              && defaultFilters.jurisdiction.size() <= 200
              && defaultFilters.status is string

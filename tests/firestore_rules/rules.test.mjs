@@ -49,7 +49,7 @@ const allCompactFields = [
   'status',
 ];
 
-const preferences = ({
+const legacyPreferences = ({
   compactFields = ['atAGlance', 'atmId', 'closingDate', 'agency', 'source'],
   jurisdiction = 'Commonwealth',
   status = 'open',
@@ -60,6 +60,35 @@ const preferences = ({
   schemaVersion: 1,
   cardView: { compactFields },
   defaultFilters: { jurisdiction, status, year, minDate, maxDate },
+});
+
+const preferences = ({
+  compactFields = ['atAGlance', 'atmId', 'closingDate', 'agency', 'source'],
+  jurisdiction = '',
+  states = ['NSW'],
+  sourceId = 'austender',
+  focusAreas = ['health_wellbeing'],
+  status = 'open',
+  year = '2026',
+  minDate = '2026-01-01',
+  maxDate = '2026-12-31',
+  publishedAfter = '2025-01-01',
+  publishedBefore = '2025-12-31',
+} = {}) => ({
+  schemaVersion: 1,
+  cardView: { compactFields },
+  defaultFilters: {
+    jurisdiction,
+    states,
+    sourceId,
+    focusAreas,
+    status,
+    year,
+    minDate,
+    maxDate,
+    publishedAfter,
+    publishedBefore,
+  },
 });
 
 const aliceRef = doc(alice, 'users/alice');
@@ -88,6 +117,16 @@ await check('legacy profile can update last tender visit without preferences', a
 // --- tender preferences: exact schema, values, and self-only access ---
 await check('can add valid preferences to own profile', assertSucceeds(updateDoc(aliceRef, {
   tenderPreferences: preferences(),
+})));
+await check('maximum valid state and focus area arrays are accepted', assertSucceeds(updateDoc(aliceRef, {
+  tenderPreferences: preferences({
+    states: ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'],
+    focusAreas: Array.from({ length: 12 }, (_, i) => `focus_${i}`),
+    sourceId: 'dynamic-portal_1',
+  }),
+})));
+await check('legacy v1 default filter shape remains valid', assertSucceeds(updateDoc(aliceRef, {
+  tenderPreferences: legacyPreferences({ jurisdiction: 'WA', compactFields: ['location'] }),
 })));
 await check('can update existing preferences', assertSucceeds(updateDoc(aliceRef, {
   tenderPreferences: preferences({
@@ -165,6 +204,12 @@ await check('unexpected defaultFilters key is rejected', assertFails(updateDoc(a
     defaultFilters: { ...preferences().defaultFilters, extra: true },
   },
 })));
+await check('partially extended defaultFilters shape is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: {
+    ...legacyPreferences(),
+    defaultFilters: { ...legacyPreferences().defaultFilters, states: ['NSW'] },
+  },
+})));
 await check('non-list compactFields is rejected', assertFails(updateDoc(aliceRef, {
   tenderPreferences: preferences({ compactFields: 'atAGlance' }),
 })));
@@ -206,6 +251,48 @@ await check('non-string maxDate is rejected', assertFails(updateDoc(aliceRef, {
 })));
 await check('jurisdiction length 201 is rejected', assertFails(updateDoc(aliceRef, {
   tenderPreferences: preferences({ jurisdiction: 'x'.repeat(201) }),
+})));
+await check('non-list states is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ states: 'NSW' }),
+})));
+await check('unknown state code is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ states: ['NSW', 'XX'] }),
+})));
+await check('duplicate states are rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ states: ['NSW', 'NSW'] }),
+})));
+await check('more than eight states are rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ states: ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NSW'] }),
+})));
+await check('invalid source ID type is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ sourceId: 1 }),
+})));
+await check('invalid source ID characters are rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ sourceId: 'portal with spaces' }),
+})));
+await check('source ID longer than 100 characters is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ sourceId: 'x'.repeat(101) }),
+})));
+await check('non-list focus areas is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ focusAreas: 'health_wellbeing' }),
+})));
+await check('duplicate focus areas are rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ focusAreas: ['health_wellbeing', 'health_wellbeing'] }),
+})));
+await check('invalid dynamic focus area ID is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ focusAreas: ['Health and wellbeing'] }),
+})));
+await check('non-string focus area ID is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ focusAreas: ['health_wellbeing', 1] }),
+})));
+await check('more than twelve focus areas are rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ focusAreas: Array.from({ length: 13 }, (_, i) => `focus_${i}`) }),
+})));
+await check('invalid publishedAfter format is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ publishedAfter: '01/01/2025' }),
+})));
+await check('invalid publishedBefore type is rejected', assertFails(updateDoc(aliceRef, {
+  tenderPreferences: preferences({ publishedBefore: null }),
 })));
 await check('cannot remove tenderPreferences', assertFails(updateDoc(aliceRef, {
   tenderPreferences: deleteField(),
