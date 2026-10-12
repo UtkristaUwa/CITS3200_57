@@ -135,6 +135,24 @@ def note_tender_error(ref, exc: Exception) -> None:
         _current = None
 
 
+def note_unfinished(exc: BaseException) -> None:
+    """
+    The run was stopped (a Cloudflare block, a dead browser, a crash) on a tender
+    whose folder was already opened (note_current) but never reported. Its page
+    text is on disk without its documents, so it is filed as a scrape error: the
+    pipeline then stores it incomplete and fetches it again, instead of storing
+    it as a finished tender with no documents. Nothing to do when no tender was
+    part-way through.
+    """
+    global _current
+    with _lock:
+        if _current is None:
+            return
+        _partials[_current] = [(SCRAPE_ERROR, type(exc).__name__)]
+        _pending.clear()
+        _current = None
+
+
 def note_late(ref, category: str, detail: str | None = None) -> None:
     """A problem found after scraping, while the tender's files were stored."""
     key = _key(ref)

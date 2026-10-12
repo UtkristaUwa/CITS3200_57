@@ -478,6 +478,13 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
             listing_html = session.get(LIST_URL)
             urls = parse_listing(listing_html)
             advertised_total = listing_record_count(listing_html)
+            if not urls and advertised_total is None:
+                # Neither a tender link nor the listing's own "Records:" count: this
+                # is not the open-tenders list (a page that did not render, a new
+                # layout). It used to pass as "no new tenders" and a successful run.
+                raise common.StructureChangedError(
+                    f"listing: no tender links and no record count on {LIST_URL} "
+                    f"(page title: {page_title(listing_html) or '(none)'!r})")
             if advertised_total is not None and len(urls) < advertised_total and not limit:
                 log.error("listing: the page says %d record(s) but only %d link(s) were "
                           "found -- some tenders are not being seen", advertised_total, len(urls))
@@ -559,12 +566,17 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
                 except BotBlockedError as exc:
                     # Blocked partway through: keep what was already scraped.
                     # The caller decides whether that is a failure or a run to resume.
+                    # If this tender's folder was already written (the challenge came
+                    # on its download page), note it as unfinished: stored incomplete
+                    # and fetched again, not stored as complete without its documents.
+                    run_notes.note_unfinished(exc)
                     log.error("blocked at tender %d/%d: %s", index, len(urls), exc)
                     return common.SITE_BOT_BLOCKED, tenders
                 except Exception as exc:
                     if common.browser_is_gone(exc):
                         # Not this tender's fault: every later one would fail the same way.
                         # End the attempt; the next one starts a new browser and skips what is done.
+                        run_notes.note_unfinished(exc)
                         raise common.BrowserLostError(str(exc)) from exc
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
@@ -578,6 +590,9 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
     except BotBlockedError as exc:
         log.error("blocked: %s", exc)
         return common.SITE_BOT_BLOCKED, tenders
+    except common.StructureChangedError as exc:
+        log.error("structure change: %s", exc)
+        return common.SITE_STRUCTURE_CHANGE, tenders
     except Exception:
         log.exception("browser run crashed")
         return common.SITE_TOTAL_FAILURE, tenders

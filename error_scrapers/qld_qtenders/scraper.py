@@ -948,6 +948,23 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             def restart_for_retry_pass():
                 return vendorpanel if restart_browser("retry pass") else None
 
+            def sign_in_again() -> bool:
+                """
+                vendorpanel.login() after a lapsed session. login() raises when the
+                sign-in form does not appear (a maintenance page, a slow render, a
+                browser that has died); start_browser guards the first sign-in
+                against that, and this guards the later ones, so a failed re-login
+                is a failed re-login and not a crash of the whole run.
+                """
+                nonlocal logged_in
+                try:
+                    logged_in = vendorpanel.login()
+                except Exception as exc:
+                    logged_in = False
+                    log.error("login: could not sign in to VendorPanel again (%s: %s)",
+                              type(exc).__name__, exc)
+                return logged_in
+
             if have_credentials:
                 start_status = start_browser()
                 login_failed = start_status != "ok"
@@ -989,7 +1006,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                         relogins += 1
                         log.warning("       VendorPanel session lapsed -- signing in again "
                                     "(%d/%d) and retrying this tender", relogins, MAX_RELOGINS)
-                        logged_in = vendorpanel.login()
+                        logged_in = sign_in_again()
                         if logged_in:
                             code, result = scrape_opportunity(client, tender, output_dir, vendorpanel)
                         else:
@@ -1041,8 +1058,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     relogins += 1
                     log.warning("       VendorPanel session lapsed -- signing in again (%d/%d)",
                                 relogins, MAX_RELOGINS)
-                    logged_in = vendorpanel.login()
-                    return logged_in
+                    return sign_in_again()
 
                 for reference, code in retry_unfollowed(vendorpanel, results, relogin, restart=restart_for_retry_pass).items():
                     if reference in code_index:

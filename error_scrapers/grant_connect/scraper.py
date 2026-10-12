@@ -133,6 +133,10 @@ def login(client: httpx.Client) -> bool:
     # First GET the login page -- needed for its anti-forgery token,
     # which the server rejects the POST without.
     get_response = common.request_with_retries(client, "get", LOGIN_URL, headers=HEADERS, timeout=30.0)
+    # A 403/429/5xx here is a block, a rate limit or an outage, not a changed
+    # login page: raise it as the status it is, so _scrape_site reports (and
+    # retries) it as such instead of calling it a structure change.
+    get_response.raise_for_status()
     form = find_login_form(get_response.text)
     if form is None:
         raise common.StructureChangedError(
@@ -281,11 +285,14 @@ def process_documents(client, documents: list[dict], output_dir: str) -> tuple[i
 
     for document in documents:
         try:
-            # Tried once more on a timeout, dropped connection or 5xx. GrantConnect
-            # has always saved whatever came back, so a web page is not rejected here.
+            # Tried once more on a timeout, dropped connection or 5xx. A web page
+            # served in place of the file (the sign-in form after the session
+            # lapsed) is a failed download, not a document: saved as "spec.pdf"
+            # it would be stored, and its "please sign in" text extracted, as if
+            # it were the real file.
             raw_path, content_type = common.stream_attachment(
                 client, document["url"], output_dir, document["file_name"],
-                headers=HEADERS, timeout=60.0, reject_web_pages=False)
+                headers=HEADERS, timeout=60.0)
         except Exception as exc:
             log.warning("       download FAILED  %s  (%s: %s)",
                         document["file_name"], type(exc).__name__, exc)
@@ -478,9 +485,17 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int,
         log.error("HTTP %s from %s", exc.response.status_code, exc.request.url)
         if exc.response.status_code == 429:
             return common.SITE_RATE_LIMITED, tenders
+        if exc.response.status_code == 403 or common.is_block_response(exc.response):
+            return common.SITE_BOT_BLOCKED, tenders
         return common.SITE_TOTAL_FAILURE, tenders
-    except (httpx.ConnectError, ConnectionError) as exc:
-        log.error("could not connect: %s", exc)
+    except common.StructureChangedError as exc:
+        log.error("structure change: %s", exc)
+        return common.SITE_STRUCTURE_CHANGE, tenders
+    except (httpx.TransportError, ConnectionError) as exc:
+        # Every way a request can fail to get an answer: a timeout, a refused or
+        # dropped connection, a reply cut off part-way. (ConnectError alone left
+        # a ReadTimeout on the login or listing to crash the whole run.)
+        log.error("could not reach the site: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, tenders
 
 

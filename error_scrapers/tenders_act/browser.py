@@ -130,7 +130,16 @@ class BrowserSession:
                 self.sb.uc_open_with_reconnect(url, reconnect_time=4 + 4 * attempt)
                 if wait_selector:
                     self.sb.wait_for_element(wait_selector, timeout=WAIT_TIMEOUT)
-                return self.sb.get_page_source()
+                html = self.sb.get_page_source()
+                if is_blocked(self.sb.get_title(), html):
+                    # Without a wait_selector a challenge page "loads" fine and was
+                    # handed back as the page asked for: the listing then parsed as
+                    # "no tenders" and the run was reported a success.
+                    self._debug_dump("challenge")
+                    raise BotBlockedError(f"Cloudflare challenge instead of {url}")
+                return html
+            except BotBlockedError:
+                raise
             except Exception as e:
                 last_err = e
                 log.warning("get attempt %d/%d failed (%s) for %s",

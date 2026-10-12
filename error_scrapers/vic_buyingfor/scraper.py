@@ -503,8 +503,13 @@ def scrape_opportunity(session, entry: dict, output_dir: str = "tenders_data") -
     try:
         zip_path = session.download_documents(download_url, folder)
         tender["attachments"], any_failed = common.unpack_zip(zip_path, folder)
-    except BotBlockedError:
-        raise  # a Cloudflare challenge ends the run -- it is not a per-tender failure
+    except BotBlockedError as e:
+        # A Cloudflare challenge ends the run -- it is not a per-tender failure. But
+        # this tender's folder is already written without its documents: note it,
+        # so a last attempt that ends here stores it incomplete (fetched again next
+        # run) rather than as a finished tender with no documents.
+        run_notes.note_unfinished(e)
+        raise
     except Exception as e:
         log.warning("       document download FAILED for %s: %s", tender_code, e)
         run_notes.note_reason(run_notes.DOWNLOAD, "document package")

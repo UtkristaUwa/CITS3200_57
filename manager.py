@@ -453,6 +453,19 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso, prev_succe
         result = scrape(limit=limit, output_dir=temp_dir, **extra)
     except Exception as e:
         logger.error(f"Scraper '{source_id}' failed: {e}")
+        # The tenders it wrote before crashing are still this portal's. Returning
+        # an empty manifest filed them under "unknown" (wrong source_id in
+        # BigQuery, never matched by the resume). The one it was part-way through
+        # is noted as incomplete, so it is stored for another try rather than as
+        # a finished tender missing its documents.
+        run_notes.note_unfinished(e)
+        manifest = {
+            folder_name: (source_id, None, None)
+            for folder_name in _folders_in(temp_dir) - before
+        }
+        if manifest:
+            logger.warning(f"{source_id}: keeping the {len(manifest)} tender folder(s) "
+                           "scraped before the failure")
         health_record = {
             "website": source_id.upper(),
             "url": PORTAL_URL_MAP.get(source_id, "N/A"),
@@ -462,8 +475,8 @@ def _scrape_one(source_id, scrape, temp_dir, limit, publish, now_iso, prev_succe
             "status_color": "error",
             "message": f"Unhandled exception: {e}",
         }
-        summary_row = (source_id.upper(), None, 0, time.monotonic() - started)
-        return {}, (source_id, f"exception: {e}"), health_record, summary_row
+        summary_row = (source_id.upper(), None, len(manifest), time.monotonic() - started)
+        return manifest, (source_id, f"exception: {e}"), health_record, summary_row
 
     code = _site_code(result)
     scraped_count = result.count if code is not None else 0
