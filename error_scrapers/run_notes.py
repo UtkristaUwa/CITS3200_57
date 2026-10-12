@@ -19,6 +19,7 @@ The model:
 No third-party imports, so attachment_store.py can use it too.
 """
 
+import json
 import re
 import threading
 from collections import Counter
@@ -142,6 +143,64 @@ def note_late(ref, category: str, detail: str | None = None) -> None:
             reasons.clear()
         if (category, detail) not in reasons:
             reasons.append((category, detail))
+
+
+# ---------------------------------------------------------------------------
+# Tenders that were stored incomplete and are worth fetching again
+# ---------------------------------------------------------------------------
+
+# Problems another night's try can fix. A password-protected, unreadable, empty or
+# oversized file will be just as bad next time, so those do not count.
+RETRYABLE = (DOWNLOAD, PORTAL, SCRAPE_ERROR, NOT_STORED, UNKNOWN)
+# A tender is fetched again on at most this many later nights, then left alone, so
+# a document that is gone for good cannot use up a site's request allowance every night.
+MAX_INCOMPLETE_TRIES = 3
+INCOMPLETE_KEY = "scrape_incomplete"
+ATTEMPTS_KEY = "scrape_attempts"
+
+
+def needs_another_try(ref) -> bool:
+    """True if `ref` finished this run with a problem that fetching it again could fix."""
+    with _lock:
+        reasons = _partials.get(_key(ref)) or []
+    return any(category in RETRYABLE for category, _ in reasons)
+
+
+def flag_incomplete(raw_extra, prior_tries: int = 0) -> str:
+    """
+    `raw_extra` (a JSON string, a dict or None) with the incomplete flag and the
+    number of tries so far added. Anything already in it is kept.
+    """
+    if isinstance(raw_extra, str):
+        try:
+            extra = json.loads(raw_extra)
+        except ValueError:
+            extra = {}
+    else:
+        extra = dict(raw_extra or {})
+    if not isinstance(extra, dict):
+        extra = {}
+    extra[INCOMPLETE_KEY] = True
+    extra[ATTEMPTS_KEY] = prior_tries + 1
+    return json.dumps(extra, sort_keys=True)
+
+
+def urls_to_treat_as_stored(rows, max_tries: int = MAX_INCOMPLETE_TRIES):
+    """
+    From (source_url, incomplete flag, tries) rows: (urls a resuming scraper may
+    skip, {url: tries so far} for every flagged tender). A flagged tender with
+    tries left is left out of the first set, so the scraper fetches it again.
+    """
+    skip, tries = set(), {}
+    for url, flag, attempts in rows:
+        if not url:
+            continue
+        flagged = str(flag).lower() == "true"
+        if flagged:
+            tries[url] = int(attempts or 0)
+        if not flagged or int(attempts or 0) >= max_tries:
+            skip.add(url)
+    return skip, tries
 
 
 class Snapshot:

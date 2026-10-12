@@ -224,17 +224,35 @@ def _stage(number, total, title):
     logger.info(reporting.RULE)
 
 
+# {source_url: how many times it has already been fetched again} for tenders stored
+# incomplete. Filled by _known_source_urls, read when such a tender comes back.
+_INCOMPLETE_TRIES: dict[str, int] = {}
+
+
 def _known_source_urls(source_id):
-    """source_urls already stored for this source. Empty set if the lookup fails."""
+    """
+    source_urls already stored for this source, which a resuming scraper skips.
+    A tender stored incomplete (a document that failed to download, say) is left
+    out until it has been fetched again a few times, so it gets another go.
+    Empty set if the lookup fails.
+    """
     try:
         job = bq_client.query(
-            f"SELECT DISTINCT source_url FROM `{TENDERS_TABLE}` "
+            "SELECT source_url, "
+            "SAFE.JSON_VALUE(raw_extra, '$.scrape_incomplete') AS incomplete, "
+            "SAFE_CAST(SAFE.JSON_VALUE(raw_extra, '$.scrape_attempts') AS INT64) AS tries "
+            f"FROM `{TENDERS_TABLE}` "
             "WHERE source_id = @sid AND source_url IS NOT NULL",
             job_config=bigquery.QueryJobConfig(query_parameters=[
                 bigquery.ScalarQueryParameter("sid", "STRING", source_id)]),
         )
-        urls = {row.source_url for row in job.result()}
-        logger.info(f"{source_id}: {len(urls)} tender URL(s) already in the DB")
+        rows = [(row.source_url, row.incomplete, row.tries) for row in job.result()]
+        urls, tries = run_notes.urls_to_treat_as_stored(rows)
+        _INCOMPLETE_TRIES.update(tries)
+        again = sum(1 for url, n in tries.items()
+                    if n < run_notes.MAX_INCOMPLETE_TRIES)
+        logger.info(f"{source_id}: {len(urls)} tender URL(s) already in the DB"
+                    + (f"; {again} stored incomplete and will be fetched again" if again else ""))
         return urls
     except Exception as e:
         logger.warning(f"{source_id}: could not load known URLs ({e}); treating none as stored")
@@ -599,6 +617,13 @@ def _process_one_tender(position, total, tender_folder_name, temp_dir, scraped,
             # The scraper's own reference (the folder name), never Gemini's guess:
             # the model's value changed between runs and produced duplicate rows.
             current_tender["source_reference_id"] = tender_folder_name
+            if run_notes.needs_another_try(tender_folder_name):
+                # Stored with something missing that another try could fix: mark it so
+                # the next night's resume fetches it again (see _known_source_urls).
+                current_tender["raw_extra"] = run_notes.flag_incomplete(
+                    current_tender.get("raw_extra"),
+                    _INCOMPLETE_TRIES.get(current_tender.get("source_url"), 0))
+                logger.info(f"{tender_folder_name}: stored incomplete; will be fetched again")
             current_tender["documents"] = _merge_document_records(
                 documents, current_tender.get("documents") or []
             )
