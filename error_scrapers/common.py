@@ -1192,6 +1192,33 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
 
     return attachments, any_failed
 
+class BrowserLostError(Exception):
+    """Raised when the browser itself has died (crashed, closed, lost its session)."""
+
+
+# Fragments of the messages Selenium/Chrome give when the browser is gone, as
+# opposed to one page misbehaving. Matched on text so common.py needs no selenium import.
+_BROWSER_GONE_MARKERS = (
+    "invalid session id",
+    "session deleted",
+    "chrome not reachable",
+    "disconnected",
+    "no such window",
+    "target window already closed",
+    "web view not found",
+    "not connected to devtools",
+    "browser has closed",
+    "connection refused",
+    "max retries exceeded",
+)
+
+
+def browser_is_gone(exc: BaseException) -> bool:
+    """True if `exc` means the browser died, so every later page would fail the same way."""
+    text = f"{type(exc).__name__}: {exc}".lower()
+    return any(marker in text for marker in _BROWSER_GONE_MARKERS)
+
+
 #The site-level code for a run, from the per-tender codes it collected. Same
 #precedence every scraper uses: a structure change outranks a partial tender,
 #since it means the scraper itself needs fixing.

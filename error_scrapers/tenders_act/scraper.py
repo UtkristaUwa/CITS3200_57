@@ -562,6 +562,10 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
                     log.error("blocked at tender %d/%d: %s", index, len(urls), exc)
                     return common.SITE_BOT_BLOCKED, tenders
                 except Exception as exc:
+                    if common.browser_is_gone(exc):
+                        # Not this tender's fault: every later one would fail the same way.
+                        # End the attempt; the next one starts a new browser and skips what is done.
+                        raise common.BrowserLostError(str(exc)) from exc
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)

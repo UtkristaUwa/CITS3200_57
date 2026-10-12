@@ -82,9 +82,9 @@ BROWSER_ATTEMPTS = 3
 # The download has to start within DOWNLOAD_WAIT_SECONDS; once a partial file
 # exists it gets until it stalls or the hard maximum. Not retried: another
 # request to a Cloudflare-fronted site risks a block.
-DOWNLOAD_WAIT_SECONDS = int(os.environ.get("VIC_DOWNLOAD_WAIT_SECONDS", "180"))
-DOWNLOAD_STALL_SECONDS = int(os.environ.get("VIC_DOWNLOAD_STALL_SECONDS", "300"))
-DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("VIC_DOWNLOAD_HARD_MAX_SECONDS", "900"))
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("VIC_DOWNLOAD_WAIT_SECONDS", "480"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("VIC_DOWNLOAD_STALL_SECONDS", "480"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("VIC_DOWNLOAD_HARD_MAX_SECONDS", "1800"))
 
 RETRYABLE_CODES = (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED)
 
@@ -546,9 +546,13 @@ def order_for_resume(entries: list[dict], known_urls) -> tuple[list[dict], int]:
 
 def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                  headless: bool = True, known_urls=None,
-                 resume: bool = False) -> tuple[int, list[dict]]:
+                 resume: bool = False, state: dict | None = None) -> tuple[int, list[dict]]:
     """
     Scrape every open Victorian tender. `limit` of 0 means every tender found.
+
+    `state` is shared between whole-run attempts: {"done": URLs already finished,
+    "codes": every tender/site code seen}. A later attempt skips what is done, so
+    a browser that died part-way costs only the tenders after it.
 
     Returns (site_code, tenders). A failed login with credentials set is
     SITE_LOGIN_FAILED, but the page text is still scraped.
@@ -565,6 +569,7 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
              "set" if username else "MISSING", "set" if password else "MISSING")
     tenders: list[dict] = []
     tender_codes: set[int] = set()
+    done = state["done"] if state is not None else set()
     logged_in = False
     login_failed = False
     try:
@@ -592,6 +597,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
             all_codes = []
             relogins = 0
             for index, entry in enumerate(entries, start=1):
+                if entry["url"] in done:
+                    continue  # finished by an earlier attempt
                 try:
                     code, tender = scrape_opportunity(session, entry, output_dir)
                     if tender and tender["documents_gated"] and logged_in and relogins < MAX_RELOGINS:
@@ -613,9 +620,14 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                 except BotBlockedError:
                     raise
                 except Exception as exc:
+                    if common.browser_is_gone(exc):
+                        # Not this tender's fault: every later one would fail the same way,
+                        # in a second each. End the attempt; a new browser takes over.
+                        raise common.BrowserLostError(str(exc)) from exc
                     reporting.tender_failed(log, index, len(entries), entry["url"], exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                done.add(entry["url"])
                 time.sleep(PAUSE_SECONDS)
 
             reporting.diagnose(log, all_codes, logged_in=logged_in)
@@ -636,6 +648,9 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
     except Exception as exc:
         log.error("run failed: %s: %s", type(exc).__name__, exc)
         return common.SITE_TOTAL_FAILURE, tenders
+    finally:
+        if state is not None:
+            state["codes"] |= tender_codes
 
 
 def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
@@ -643,23 +658,43 @@ def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
                          attempts: int = BROWSER_ATTEMPTS,
                          known_urls=None, resume: bool = False) -> tuple[int, list[dict]]:
     """
-    Retry, each time with a brand-new browser, only when nothing was scraped
-    and the code is in RETRYABLE_CODES: the browser would not start or
-    crashed, or Cloudflare served its challenge. At most `attempts` tries in
-    total, waiting longer between each. A failed login, structure change or any
-    partial result is returned as-is.
+    Run the scrape, starting again with a brand-new browser when it fails as a
+    whole (SITE_TOTAL_FAILURE: the browser would not start or crashed), up to
+    `attempts` times, waiting longer between each.
+
+    Tenders finished by an attempt are kept and never redone, so a crash part-way
+    costs only the tenders after it. A Cloudflare block is retried only while
+    nothing has been scraped (with tenders in hand it is the resume flow, as
+    before). A failed login, structure change or rate limit is never retried.
+
+    If every attempt fails, the result is TOTAL_FAILURE with whatever was
+    scraped. If a retry finishes, the result covers the tenders of all attempts.
     """
-    code, tenders = common.SITE_TOTAL_FAILURE, []
+    state = {"done": set(), "codes": set()}
+    all_tenders: list[dict] = []
+    code = common.SITE_TOTAL_FAILURE
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
-        code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume)
-        if tenders or code not in RETRYABLE_CODES:
-            return code, tenders
+        code, tenders = _scrape_site(limit, output_dir, headless, known_urls, resume, state)
+        all_tenders.extend(tenders)
+        if code == common.SITE_TOTAL_FAILURE:
+            retry = True
+        elif code == common.SITE_BOT_BLOCKED:
+            retry = not all_tenders
+        else:
+            retry = False
+        if not retry:
+            break
         if attempt < attempts:
-            log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
-                        attempt, attempts, reporting.code_name(code), 15 * attempt)
+            log.warning("attempt %d/%d got %s after %d tender(s) -- retrying with a new "
+                        "browser in %ds", attempt, attempts, reporting.code_name(code),
+                        len(all_tenders), 15 * attempt)
             time.sleep(15 * attempt)
-    return code, tenders
+
+    if common.SITE_TOTAL_FAILURE <= code <= common.SITE_RATE_LIMITED:
+        return code, all_tenders
+    # The last attempt finished. Keep anything worse an earlier attempt saw.
+    return common.site_code_from(state["codes"] | {code}), all_tenders
 
 
 @reporting.reported(SOURCE_ID.upper())

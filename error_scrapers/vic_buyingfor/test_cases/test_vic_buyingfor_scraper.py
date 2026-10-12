@@ -426,7 +426,7 @@ def test_browser_get_gives_up_on_the_first_challenge():
 def test_a_dead_browser_is_retried_with_a_fresh_one(monkeypatch):
     calls = []
 
-    def run(limit, output_dir, headless, known_urls=None, resume=False):
+    def run(limit, output_dir, headless, known_urls=None, resume=False, state=None):
         calls.append(1)
         return (common.SITE_TOTAL_FAILURE, []) if len(calls) < 3 else (common.SITE_SUCCESS, [{"tender_id": "X"}])
 
@@ -442,7 +442,7 @@ def test_login_failures_and_structure_changes_are_never_retried(monkeypatch, cod
     # Repeated bad logins can lock an account, so a failed login stops at once.
     calls = []
     monkeypatch.setattr(scraper, "_scrape_site",
-                        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (code, []))[1])
+                        lambda limit, output_dir, headless, known_urls=None, resume=False, state=None: (calls.append(1), (code, []))[1])
     monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
     assert scraper._scrape_with_retries() == (code, [])
     assert len(calls) == 1
@@ -452,7 +452,7 @@ def test_a_cloudflare_block_is_retried_with_a_fresh_browser_then_reported(monkey
     calls, sleeps = [], []
     monkeypatch.setattr(
         scraper, "_scrape_site",
-        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (common.SITE_BOT_BLOCKED, []))[1])
+        lambda limit, output_dir, headless, known_urls=None, resume=False, state=None: (calls.append(1), (common.SITE_BOT_BLOCKED, []))[1])
     monkeypatch.setattr(scraper.time, "sleep", sleeps.append)
 
     assert scraper._scrape_with_retries() == (common.SITE_BOT_BLOCKED, [])
@@ -464,7 +464,7 @@ def test_a_cloudflare_block_is_retried_with_a_fresh_browser_then_reported(monkey
 def test_a_cloudflare_block_that_clears_on_a_later_attempt_succeeds(monkeypatch):
     calls = []
 
-    def run(limit, output_dir, headless, known_urls=None, resume=False):
+    def run(limit, output_dir, headless, known_urls=None, resume=False, state=None):
         calls.append(1)
         return (common.SITE_BOT_BLOCKED, []) if len(calls) < 2 else (common.SITE_SUCCESS, [{"tender_id": "X"}])
 
@@ -481,7 +481,7 @@ def test_a_block_after_some_tenders_were_scraped_is_not_retried(monkeypatch):
     calls = []
     monkeypatch.setattr(
         scraper, "_scrape_site",
-        lambda limit, output_dir, headless, known_urls=None, resume=False: (calls.append(1), (common.SITE_BOT_BLOCKED, [{"tender_id": "X"}]))[1])
+        lambda limit, output_dir, headless, known_urls=None, resume=False, state=None: (calls.append(1), (common.SITE_BOT_BLOCKED, [{"tender_id": "X"}]))[1])
     monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
 
     code, tenders = scraper._scrape_with_retries()
@@ -727,3 +727,66 @@ def test_a_cloudflare_block_during_a_document_download_stops_the_run(tmp_path, m
     code, tenders = scraper._scrape_site(limit=3, output_dir=str(tmp_path))
     assert code == common.SITE_BOT_BLOCKED
     assert len(tenders) <= 1  # stopped at the first block, did not carry on to the rest
+
+# ---------------------------------------------------------------------------
+# A browser that dies part-way
+# ---------------------------------------------------------------------------
+
+DEAD = "invalid session id: session deleted as the browser has closed the connection"
+
+
+class DiesOnDetail(FakeSession):
+    """Serves `after` tender pages, then the browser is gone for good."""
+
+    def __init__(self, after, **kwargs):
+        super().__init__(**kwargs)
+        self.after = after
+
+    def get(self, url, wait_selector=None):
+        if "/tenders/open" not in url and len(self.visited) - 1 >= self.after:
+            self.visited.append(url)
+            raise RuntimeError(DEAD)
+        return super().get(url, wait_selector)
+
+
+def _sessions_in_order(monkeypatch, *makers):
+    made = []
+
+    def make(**kwargs):
+        made.append(makers[min(len(made), len(makers) - 1)]())
+        return made[-1]
+    monkeypatch.setattr(scraper, "BrowserSession", make)
+    monkeypatch.setattr(scraper.time, "sleep", lambda s: None)
+    return made
+
+
+def test_a_browser_that_dies_part_way_is_replaced_and_finishes_the_rest_once(tmp_path, monkeypatch):
+    made = _sessions_in_order(
+        monkeypatch,
+        lambda: DiesOnDetail(1, detail_html=_no_documents_details()),
+        lambda: FakeSession(detail_html=_no_documents_details()))
+    result = scraper.run_scraper(limit=3, output_dir=str(tmp_path))
+    assert result.code == common.SITE_SUCCESS and result.count == 3
+    assert len(made) == 2
+    assert len([u for u in made[1].visited if "/tenders/open" not in u]) == 2  # not the one already done
+
+
+def test_a_dead_browser_is_not_counted_as_a_failure_of_every_remaining_tender(tmp_path, monkeypatch, caplog):
+    _sessions_in_order(monkeypatch,
+                       lambda: DiesOnDetail(1, detail_html=_no_documents_details()),
+                       lambda: FakeSession(detail_html=_no_documents_details()))
+    with caplog.at_level("ERROR"):
+        scraper.run_scraper(limit=3, output_dir=str(tmp_path))
+    assert not [r for r in caplog.records if "FAILED" in r.getMessage()]
+
+
+def test_a_vic_browser_that_keeps_dying_gives_up_after_three_with_total_failure(tmp_path, monkeypatch):
+    made = _sessions_in_order(monkeypatch,
+                              lambda: DiesOnDetail(0, detail_html=_no_documents_details()))
+    result = scraper.run_scraper(limit=3, output_dir=str(tmp_path))
+    assert result.code == common.SITE_TOTAL_FAILURE and len(made) == 3
+
+
+def test_a_vic_download_is_given_minutes_not_seconds_to_start():
+    assert scraper.DOWNLOAD_WAIT_SECONDS >= 480
+    assert scraper.DOWNLOAD_HARD_MAX_SECONDS >= 1800

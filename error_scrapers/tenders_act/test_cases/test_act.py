@@ -782,3 +782,43 @@ def test_a_download_that_never_starts_on_a_normal_page_is_still_a_timeout(tmp_pa
         with pytest.raises(TimeoutError):
             _download_that_never_starts(tmp_path, monkeypatch, sb)
     assert any("download not started" in r.getMessage() for r in caplog.records)  # it says what it saw
+
+
+class DiesOnDetail(FakeBrowserSession):
+    """Serves `n` tender pages, then the browser is gone for good."""
+
+    def __init__(self, tmp_path, zip_bytes, n):
+        super().__init__(tmp_path, zip_bytes)
+        self.n = n
+
+    def get(self, url, wait_selector=None, attempts=3):
+        if url != scraper.LIST_URL and "downloadSpecDocs" not in url and self.details_served >= self.n:
+            raise RuntimeError("invalid session id: session deleted as the browser has closed the connection")
+        return super().get(url, wait_selector, attempts)
+
+
+def test_a_browser_that_dies_part_way_is_replaced_and_finishes_the_rest_once(tmp_path, monkeypatch):
+    zip_bytes = _zip_of(_offered_ids())
+    dying = DiesOnDetail(tmp_path, zip_bytes, n=1)
+    fine = FakeBrowserSession(tmp_path, zip_bytes)
+    sessions = SessionsInOrder(dying, fine)
+    result, sleeps = _retry_run(monkeypatch, tmp_path, sessions)
+    assert result.code == common.SITE_SUCCESS and result.count == 4
+    assert sessions.started == 2
+    assert fine.details_served == 3  # only what the first browser never reached
+    assert sleeps == [15]            # a plain failure waits 15 s, not the Cloudflare wait
+
+
+def test_a_dead_browser_is_not_counted_as_a_failure_of_every_remaining_tender(tmp_path, monkeypatch, caplog):
+    zip_bytes = _zip_of(_offered_ids())
+    sessions = SessionsInOrder(DiesOnDetail(tmp_path, zip_bytes, n=1),
+                               FakeBrowserSession(tmp_path, zip_bytes))
+    with caplog.at_level("ERROR"):
+        _retry_run(monkeypatch, tmp_path, sessions)
+    assert not [r for r in caplog.records if "FAILED" in r.getMessage()]
+
+
+def test_the_shared_dead_browser_check_knows_dead_from_slow():
+    assert common.browser_is_gone(RuntimeError("chrome not reachable"))
+    assert common.browser_is_gone(RuntimeError("invalid session id"))
+    assert not common.browser_is_gone(TimeoutError("Download did not complete"))

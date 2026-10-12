@@ -83,9 +83,9 @@ RETRYABLE_CODES = (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED)
 
 # The download has to start within DOWNLOAD_WAIT_SECONDS; once a partial file
 # exists it gets until it stalls or the hard maximum.
-DOWNLOAD_WAIT_SECONDS = int(os.environ.get("SA_DOWNLOAD_WAIT_SECONDS", "180"))
-DOWNLOAD_STALL_SECONDS = int(os.environ.get("SA_DOWNLOAD_STALL_SECONDS", "300"))
-DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("SA_DOWNLOAD_HARD_MAX_SECONDS", "900"))
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("SA_DOWNLOAD_WAIT_SECONDS", "480"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("SA_DOWNLOAD_STALL_SECONDS", "480"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("SA_DOWNLOAD_HARD_MAX_SECONDS", "1800"))
 
 DOWNLOAD_FORM_SELECTOR = "form#spec"
 DOCUMENT_CHECKBOX_SELECTOR = "input[name='ids[]']"
