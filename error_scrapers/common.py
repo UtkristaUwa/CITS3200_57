@@ -465,6 +465,108 @@ def extract_xlsx(file_path: str) -> str:
     except Exception as e:
         raise ExtractionError(f"XLSX extraction failed on {file_path}: {e}") from e
 
+# A spreadsheet's XML parts are never legitimately this large.
+_MAX_XLSX_XML_BYTES = 1024 * 1024 * 1024
+_SHEET_NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+_REL_NS = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+_PKG_REL_NS = "{http://schemas.openxmlformats.org/package/2006/relationships}"
+
+
+def _column_index(cell_ref: str) -> int:
+    """0-based column of a cell reference such as "C12" (AA7 is 26)."""
+    index = 0
+    for char in cell_ref:
+        if not char.isalpha():
+            break
+        index = index * 26 + (ord(char.upper()) - 64)
+    return max(index - 1, 0)
+
+
+def extract_xlsx_cells(file_path: str) -> str:
+    """
+    Fallback spreadsheet text: read the cell values straight out of the file's
+    zip, in the same layout extract_xlsx produces, without openpyxl. Used when
+    openpyxl refuses a workbook over something that has nothing to do with its
+    cells -- for example a cell style with no name, which some estimating
+    software writes (openpyxl: "_NamedCellStyle.name should be <class 'str'>").
+
+    Cached values only (a formula shows its last-calculated result), and dates
+    come out as their serial numbers.
+    """
+    import zipfile
+    from lxml import etree
+
+    def parse(archive, name):
+        if archive.getinfo(name).file_size > _MAX_XLSX_XML_BYTES:
+            raise ValueError(f"{name} is implausibly large")
+        parser = etree.XMLParser(resolve_entities=False, no_network=True)
+        return etree.fromstring(archive.read(name), parser)
+
+    try:
+        with zipfile.ZipFile(file_path) as archive:
+            names = set(archive.namelist())
+
+            shared: list[str] = []
+            if "xl/sharedStrings.xml" in names:
+                for item in parse(archive, "xl/sharedStrings.xml").iter(_SHEET_NS + "si"):
+                    # Rich text is several runs; phonetic hints (rPh) are not part of the text.
+                    shared.append("".join(
+                        t.text or "" for t in item.iter(_SHEET_NS + "t")
+                        if not any(parent.tag == _SHEET_NS + "rPh" for parent in t.iterancestors())))
+
+            sheets: list[tuple[str, str]] = []  # (sheet name, part name)
+            try:
+                targets = {rel.get("Id"): rel.get("Target") for rel in
+                           parse(archive, "xl/_rels/workbook.xml.rels").iter(_PKG_REL_NS + "Relationship")}
+                for sheet in parse(archive, "xl/workbook.xml").iter(_SHEET_NS + "sheet"):
+                    target = targets.get(sheet.get(_REL_NS + "id"))
+                    if target:
+                        part = target.lstrip("/") if target.startswith("/") else "xl/" + target
+                        if part in names:
+                            sheets.append((sheet.get("name") or part, part))
+            except Exception:
+                sheets = []
+            if not sheets:
+                sheets = [(f"Sheet{n}", name) for n, name in enumerate(
+                    sorted(n for n in names if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", n)), start=1)]
+
+            parts = []
+            for sheet_name, part in sheets:
+                lines = [f"## Sheet: {sheet_name}"]
+                for row in parse(archive, part).iter(_SHEET_NS + "row"):
+                    cells: dict[int, str] = {}
+                    for position, cell in enumerate(row.iter(_SHEET_NS + "c")):
+                        column = _column_index(cell.get("r") or "") if cell.get("r") else position
+                        kind = cell.get("t")
+                        value = cell.find(_SHEET_NS + "v")
+                        if kind == "inlineStr":
+                            text = "".join(t.text or "" for t in cell.iter(_SHEET_NS + "t"))
+                        elif value is None or value.text is None:
+                            continue
+                        elif kind == "s":
+                            index = int(value.text)
+                            text = shared[index] if 0 <= index < len(shared) else ""
+                        elif kind == "b":
+                            text = "True" if value.text.strip() == "1" else "False"
+                        else:
+                            text = value.text
+                        cells[column] = text
+                    if not cells:
+                        continue
+                    line = ["" for _ in range(max(cells) + 1)]
+                    for column, text in cells.items():
+                        line[column] = text
+                    while line and not line[-1].strip():
+                        line.pop()
+                    if any(text.strip() for text in line):
+                        lines.append("\t".join(line))
+                if len(lines) > 1:
+                    parts.append("\n".join(lines))
+            return "\n\n".join(parts)
+    except Exception as e:
+        raise ExtractionError(f"XLSX cell-value extraction failed on {file_path}: {e}") from e
+
+
 def extract_xls(file_path: str) -> str:
     """
     Extract all cell content from every sheet of a legacy Excel (.xls)
@@ -661,11 +763,12 @@ def _check_office_container(path: str):
 
 def extract_with_fallback(extractor, path: str, timeout: float | None = None) -> str:
     """
-    run_extractor, plus one more try for Word files: if the full extraction
-    fails or times out, fall back to the body text read straight from the
-    file. The tender keeps that text (tables and headers may be missing), and
-    the loss is logged. Any other file type, or a file the fallback can't read
-    either, raises the original error.
+    run_extractor, plus one more try for Word and Excel files: if the full
+    extraction fails or times out, fall back to the text read straight from the
+    file (a Word file's body text; a spreadsheet's cell values). The tender
+    keeps that text (tables, headers, formatting may be missing), and the loss
+    is logged. Any other file type, or a file the fallback can't read either,
+    raises the original error.
 
     A password-protected file raises EncryptedFileError. An Office-named file
     that is not a zip at all (a web page or old-format file saved under the
@@ -683,14 +786,21 @@ def extract_with_fallback(extractor, path: str, timeout: float | None = None) ->
                        os.path.basename(path), e)
         return ""
     except ExtractionError as first_error:
-        if not path.lower().endswith(".docx") or extractor is extract_docx_body_text:
+        lower = path.lower()
+        if lower.endswith(".docx"):
+            fallback, kept = extract_docx_body_text, "its body text only"
+        elif lower.endswith((".xlsx", ".xlsm")):
+            fallback, kept = extract_xlsx_cells, "its cell values only"
+        else:
+            raise
+        if extractor is fallback:
             raise
         try:
-            text = run_extractor(extract_docx_body_text, path, timeout)
+            text = run_extractor(fallback, path, timeout)
         except ExtractionError:
             raise first_error from None
-        logger.warning("full extraction failed for %s (%s); kept its body text only",
-                       os.path.basename(path), first_error)
+        logger.warning("full extraction failed for %s (%s); kept %s",
+                       os.path.basename(path), first_error, kept)
         return text
 
 
@@ -991,6 +1101,24 @@ def wait_for_download(downloads_dir: str, before, max_wait: float,
         time.sleep(poll)
 
 
+# Files that ride along in a package but are never documents: Office lock files
+# ("~$report.pdf", 162 bytes of who had it open), macOS resource-fork copies and
+# Windows folder metadata. They are skipped, not stored, and are not a failure.
+JUNK_FILE_NAMES = frozenset({".ds_store", "thumbs.db", "desktop.ini"})
+# An empty file of one of these kinds is leftover system data (e.g. the empty
+# "TRIMfiles.dat" that TRIM/Content Manager exports leave behind), not a
+# download that went wrong. An empty .pdf or .docx still is.
+EMPTY_JUNK_EXTENSIONS = frozenset({"", ".dat", ".tmp", ".db", ".ini", ".bak", ".log", ".lnk"})
+
+
+def is_junk_file(member_name: str) -> bool:
+    """True for a package member that is never a document (see JUNK_FILE_NAMES)."""
+    path = member_name.replace("\\", "/")
+    name = os.path.basename(path).lower()
+    return (name.startswith("~$") or name.startswith("._") or name in JUNK_FILE_NAMES
+            or "__macosx/" in path.lower())
+
+
 MAX_ZIP_DEPTH = 5
 
 def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]:
@@ -1017,6 +1145,9 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
             file_name = os.path.basename(member.filename.replace("\\", "/"))
             if member.is_dir() or not file_name:
                 continue
+            if is_junk_file(member.filename):
+                logger.info("package held a junk file (%s); ignored", file_name)
+                continue
             if zip_member_is_encrypted(member):
                 # One locked file must not cost the tender the rest of its package.
                 logger.warning("package held a password-protected file (%s); not stored", file_name)
@@ -1034,8 +1165,13 @@ def unpack_zip(zip_file, folder: str, depth: int = 0) -> tuple[list[dict], bool]
                     while chunk := source.read(1024 * 1024):
                         target.write(chunk)
             saved_name = os.path.basename(path)
+            if os.path.getsize(path) == 0 and os.path.splitext(saved_name)[1].lower() in EMPTY_JUNK_EXTENSIONS:
+                os.remove(path)
+                logger.info("package held an empty %s file (%s); ignored",
+                            os.path.splitext(saved_name)[1].lower() or "extensionless", saved_name)
+                continue
             if os.path.getsize(path) == 0:
-                # An empty file in the package is a download that went wrong,
+                # An empty document in the package is a download that went wrong,
                 # not a document: drop it and report the tender as partial.
                 os.remove(path)
                 logger.warning(f"package held an empty file ({saved_name}); not stored")
