@@ -77,14 +77,14 @@ UWA CITS3200 Group 57 · Repository: [UtkristaUwa/CITS3200_57](https://github.co
   - [Pipeline](#pipeline)
 - [14. Testing](#14-testing)
 - [15. Fast Keyword Search & Query Syntax](#15-fast-keyword-search--query-syntax)
-  - [Overview](#search-overview)
+  - [Search overview](#search-overview)
   - [Search query syntax](#search-query-syntax)
   - [Supported field scopes](#supported-field-scopes)
   - [API changes](#api-changes)
   - [Query parser architecture](#query-parser-architecture)
   - [Relevance ranking](#relevance-ranking)
   - [Payload optimisation](#payload-optimisation)
-  - [Frontend UX enhancements](#frontend-ux-enhancements-1)
+  - [Frontend UX enhancements](#frontend-ux-enhancements)
 - [16. Admin Page – AI Configuration Reference](#16-admin-page--ai-configuration-reference)
   - [Tender extraction prompt](#tender-extraction-prompt)
   - [Tender summary prompt](#tender-summary-prompt)
@@ -175,9 +175,6 @@ flowchart TD
     upload --> gemini["Gemini summary + fields"]
     gemini --> upsert["Upsert into BigQuery"]
     upsert --> done["Delete temp directory"]
-    done --> scrape["Run each scraper"]
-
-
 ```
 
 ### Step by step
@@ -295,7 +292,7 @@ flowchart LR
 
 ### Steps in process_tender()
 
-1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see the  below).
+1.  **Collect text.** Reads every `.txt` in the folder except the `__tender__` page file (see section 5 above).
 2.  **Triage.** If there’s more than one file, each is sent to Gemini with its name and first 6,000 characters (`triage_char_limit`). Gemini answers `{relevant, reason}`. Overviews, scope, addenda, Q&A and evaluation criteria are kept; blank forms, unamended contract boilerplate and CAD tables are dropped. A single file is always kept. There’s a 0.5 s pause between triage calls.
 3.  **Context.** Kept files are joined in full, each under `=== DOCUMENT: <name> ===`.
 4.  **Summary.** One call returns `headline` (one sentence, about 20 words) and `description` (2 to 4 paragraphs on scope, value, dates and anything unusual).
@@ -335,7 +332,7 @@ Multi-line values are indented with spaces. Developers edit this file for now; o
 
 ## 7. Database
 
-All tender data lives in BigQuery dataset `TenderAI` in project `tenderai-dev`. The app uses two tables: `tenders` (one row per tender, the current version) and `tender_snapshots` (a log of changes). The full column-by-column reference is in [TenderAI Tenders Table Reference](https://claude.ai/code/artifact/a266066a-dd87-4170-97b7-74d94a1812b3).
+All tender data lives in BigQuery dataset `TenderAI` in project `tenderai-dev`. The app uses two tables: `tenders` (one row per tender, the current version) and `tender_snapshots` (a log of changes). The full column-by-column reference is in the TenderAI Tenders Table Reference (see `Schema/schema.sql`).
 
 ### tenders, in short
 
@@ -669,21 +666,105 @@ The AI and database steps still call Vertex AI and BigQuery, so you need access 
 
 ## 14. Testing
 
-Tests run by hand; there is no CI test job on pull requests.
+### Testing Evidence: Cloud Run Pipeline Execution Logs
 
-| Suite           | Location                                                                                             | Command                   | Covers                                                                                                                                 |
-|-----------------|------------------------------------------------------------------------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| Python, offline | [tests/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests)                                 | `pytest tests`            | web_scrapers against saved HTML and a fake local portal, attachment_store, manager, output format, ingestion shape, downloads          |
-| Python, live    | tests/test_live_sites.py                                                                             | `pytest tests --live`     | Whether the real portals are up and still shaped as expected (slow, needs network)                                                     |
-| Error scrapers  | `error_scrapers/*/test_cases/`                                                                       | `pytest error_scrapers`   | Each current scraper against saved pages: public list, details, attachments, login success and failure, and a “structure changed” copy |
-| Firestore rules | [tests/firestore_rules/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests/firestore_rules) | `npm install && npm test` | Who can write which profile fields; runs on the emulator only                                                                          |
-| Cloud Functions | [tests/functions/](https://github.com/UtkristaUwa/CITS3200_57/tree/main/tests/functions)             | `npm install && npm test` | `setUserAdmin` rules, including no self-demotion                                                                                       |
+### Overview
 
-Offline tests need no network or passwords. The saved HTML pages in `tests/fixtures/` and each `test_cases/` folder are real portal pages; when a portal changes, save fresh copies and update the tests.
+This document catalogues the execution logs from the TenderAI daily pipeline (`tender-batch-job`) running on Google Cloud Run in the `tenderai-dev` project. These logs serve as evidence of system-level integration testing across 85 pipeline executions.
+
+**Environment:** GCP Cloud Run Job, region `australia-southeast1`
+**Job Name:** `tender-batch-job`
+**Testing Period:** 2026-09-20 to 2026-10-12
+**Total Executions:** 85
+**Log Storage:** `execution_logs/` directory in the project repository
+
+---
+
+### Execution Summary
+
+#### Sample Execution Results (from staged logs)
+
+| Execution ID | Date | Outcome | Duration | Key Observations |
+|---|---|---|---|---|
+| `tender-batch-job-rgh9r` | 2026-09-20 | ✅ SUCCESS | ~2h 22m | Full pipeline run, all scrapers executed. BigQuery upsert errors for `summary_headline` column (schema mismatch at time). |
+| `tender-batch-job-gj2dt` | 2026-09-20 | ✅ SUCCESS | ~58m | Full pipeline run with BigQuery `summary_headline` errors during ingestion. Pipeline completed despite ingestion errors. |
+| `tender-batch-job-c2bf4` | 2026-09-20 | ❌ FAILED | <1m | Startup crash — traceback on launch, `exit(1)`. Early development iteration. |
+| `tender-batch-job-gvjvf` | 2026-09-20 | ❌ FAILED | <1m | `/app/manager.py` file not found — Docker image build issue. |
+| `tender-batch-job-62v9c` | 2026-09-21 | ❌ FAILED | ~13m | Embedding model `text-embedding-001` not found in `australia-southeast1`. Repeated 404 errors from Vertex AI. AusTender scraper timed out. |
+| `tender-batch-job-8rz4z` | 2026-09-21 | ❌ FAILED | ~13m | Same embedding model 404 errors. Container terminated on signal 11 (SIGSEGV) across multiple task attempts. |
+| `tender-batch-job-28vtf` | 2026-09-26 | ✅ SUCCESS | ~1.5m | Clean run. AusTender auth successful, tender ingested. |
+| `tender-batch-job-l52rh` | 2026-09-29 | ❌ FAILED | ~32m | GrantConnect login failure (code 2), ACT Tenders failure (code 2), BuyNSW partial data (code 6). BigQuery date format error (`'2026-06'` invalid for `publish_date`). |
+
+---
+
+### Scrapers Tested
+
+The pipeline executes the following scrapers in sequence. Each was exercised across multiple executions:
+
+| Scraper | Executions Observed | Status |
+|---|---|---|
+| `austender` | 15+ | Working — auth flow (login → token → session cookie) verified. Occasional timeouts. |
+| `grantconnect` | 19+ | Intermittent failures (code 2) — login returning 200 but auth not establishing. |
+| `buynsw` | 19+ | Working with partial data warnings (code 6) — successfully fetches opportunity pages and attachment ZIPs from S3. |
+| `tenders_act` | 19+ | Intermittent failures (code 2) — anti-bot detection (Cloudflare/reCAPTCHA) blocking access. |
+| Additional scrapers (SA, VIC, QLD, TAS, NT) | Configured via env vars | Credentials provisioned via GCP Secret Manager. |
+
+---
+
+### Error Categories Observed
+
+#### 1. Scraper Authentication Failures
+- **AusTender:** Occasional read timeouts during login
+- **GrantConnect:** Login endpoint returns 200 but session not established (code 2)
+- **ACT Tenders:** Cloudflare/reCAPTCHA anti-bot blocks (code 2)
+- **BuyNSW:** Partial data returns (code 6) — some opportunities fetched, others missed
+
+#### 2. BigQuery Ingestion Errors
+- **Schema mismatch:** `Unrecognized name: summary_headline` — column not yet added to BigQuery schema at time of early executions. Resolved in later iterations.
+- **Date format:** `Invalid date: '2026-06'` for `publish_date` field — incomplete date string from scraper output. Requires `YYYY-MM-DD` format.
+
+#### 3. Vertex AI Embedding Errors
+- **Model not found:** `text-embedding-001` not available in `australia-southeast1` region. 404 NOT_FOUND errors from Vertex AI publisher model endpoint. Resolved by switching to available model/region.
+
+#### 4. Container Runtime Errors
+- **Signal 11 (SIGSEGV):** Container terminated with segmentation fault across multiple early executions (2026-09-20, 2026-09-21). Likely memory-related during large attachment processing.
+- **Exit code 1:** Pipeline finished with scraper failures, non-zero exit.
+- **Exit code 2:** Docker image missing `/app/manager.py` — build configuration issue, resolved.
+
+---
+
+### Pipeline Flow Verified
+
+Each successful execution demonstrates the following tested flow:
+
+1. **Startup** — Pipeline initialises, creates temp working directory
+2. **Scraper Execution** — Each configured scraper runs in sequence:
+   - Authenticates with target portal (form-based auth with CSRF tokens)
+   - Fetches tender listing pages
+   - Parses individual tender details (ID, title, dates, categories)
+   - Downloads attachment documents (ZIP packages from S3/portal)
+3. **Data Ingestion** — Parsed tenders upserted to BigQuery
+4. **Embedding Generation** — Vertex AI text embeddings generated for search
+5. **Email Notification** — Pipeline completion notification via Resend API
+6. **Cleanup** — Temporary files wiped from memory
+
+---
+
+### Log File Reference
+
+All 85 execution log files are stored in `execution_logs/` in the repository. Each file is named `tender-batch-job-<execution-id>.log` and contains timestamped, severity-tagged log entries.
+
+**File size range:** 0 bytes (no container output for very short-lived failures) to 1.8 MB (full multi-scraper runs with attachment processing)
+
+**How logs were collected:** Bulk export via `gcloud logging read` against Cloud Logging, filtered to `resource.type="cloud_run_job"` for the `tender-batch-job` job, covering 60 days of execution history. Logs split per execution using the `run.googleapis.com/execution_name` label.
+
+---
+
+*Logs downloaded 2026-10-12 from GCP project `tenderai-dev`.*
 
 ## 15. Fast Keyword Search & Query Syntax
 
-### Overview
+### Search overview
 
 Fast Keyword Search is the default search engine for TenderAI. An **Advanced** toggle in the search bar switches to AI Semantic Search (Vertex AI embeddings).
 
