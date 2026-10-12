@@ -761,7 +761,8 @@ def _scrape_site(limit: int = 0, output_dir: str = "tenders_data",
                     if tender:
                         tenders.append(tender)
                     if code == common.SITE_STRUCTURE_CHANGE:
-                        unparsed.append(entry["url"])  # levelled after the loop
+                        # levelled after the loop; keyed by the tender's code for the report
+                        unparsed.append(entry.get("tender_code") or entry["url"])
                     else:
                         tender_codes.add(code)
                     all_codes.append(code)

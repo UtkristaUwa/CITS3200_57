@@ -72,9 +72,12 @@ RATE_LIMIT_ABORT_AFTER = 3    # stop the site after this many rate-limited tende
 # "opportunity-<id>.pdf" (e.g. opportunity-RFT-12634672652.pdf) -- everything
 # else in the zip is a real attachment. The old "opportunity-*.pdf" pattern also
 # swallowed an agency's own "Opportunity-Brief.pdf", which then replaced the page
-# text and was never stored. The generated name is lower-case "opportunity-", has
-# a number in it and no spaces; a person's file name rarely has all three.
-SUMMARY_PDF_PATTERN = re.compile(r"^opportunity-[A-Za-z0-9-]*\d[A-Za-z0-9-]*\.pdf$")
+# text and was never stored. The generated name is lower-case "opportunity-"
+# followed by buy.nsw's own reference (RFT-12634672652: an optional short type
+# prefix and a long number) -- not the agency's Opportunity ID shown on the
+# page, which is why the exact-ID check alone is not enough. An agency's
+# "opportunity-brief-2024.pdf" or "opportunity-1.pdf" does not match.
+SUMMARY_PDF_PATTERN = re.compile(r"^opportunity-(?:[A-Z]{2,5}-)?\d{5,}\.pdf$")
 
 
 def is_summary_pdf(file_name: str, opportunity_id: str) -> bool:

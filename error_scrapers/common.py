@@ -1316,8 +1316,9 @@ def level_unparsed_pages(log, unparsed: list, attempted: int, tender_codes: set)
     if len(unparsed) >= attempted:
         tender_codes.add(SITE_STRUCTURE_CHANGE)
         return
-    log.warning("%d of %d tender page(s) could not be parsed -- reported as incomplete, "
-                "not as a site-wide structure change, since the other pages parsed",
+    log.warning("%d of %d tender page(s) could not be parsed -- reported as incomplete "
+                "(nothing stored for them, so they are tried again next run), not as a "
+                "site-wide structure change, since the other pages parsed",
                 len(unparsed), attempted)
     for ref in unparsed:
         run_notes.note_late(ref, run_notes.PAGE)
