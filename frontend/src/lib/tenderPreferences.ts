@@ -30,10 +30,15 @@ export type DefaultTenderStatus = '' | 'open' | 'closed' | 'awarded' | 'unknown'
 
 export interface DefaultTenderFilters {
   jurisdiction: string;
+  states: string[];
+  sourceId: string;
+  focusAreas: string[];
   status: DefaultTenderStatus;
   year: string;
   minDate: string;
   maxDate: string;
+  publishedAfter: string;
+  publishedBefore: string;
 }
 
 export interface TenderPreferences {
@@ -48,10 +53,15 @@ export const DEFAULT_TENDER_CARD_VIEW_PREFERENCES: TenderCardViewPreferences = O
 
 export const DEFAULT_TENDER_FILTERS: DefaultTenderFilters = Object.freeze({
   jurisdiction: '',
+  states: [],
+  sourceId: '',
+  focusAreas: [],
   status: '',
   year: '',
   minDate: '',
   maxDate: '',
+  publishedAfter: '',
+  publishedBefore: '',
 });
 
 export const DEFAULT_TENDER_PREFERENCES: TenderPreferences = Object.freeze({
@@ -62,6 +72,22 @@ export const DEFAULT_TENDER_PREFERENCES: TenderPreferences = Object.freeze({
 
 // Firestore Rules in Module 2 should enforce the same limit.
 export const MAX_JURISDICTION_LENGTH = 200;
+export const MAX_SOURCE_ID_LENGTH = 100;
+export const MAX_FOCUS_AREA_ID_LENGTH = 100;
+// The current taxonomy has 11 entries; leave one slot for a compatible addition
+// while keeping Firestore Rules' explicit per-item validation within its budget.
+export const MAX_FOCUS_AREAS = 12;
+
+const VALID_STATES: ReadonlySet<string> = new Set([
+  'ACT',
+  'NSW',
+  'NT',
+  'QLD',
+  'SA',
+  'TAS',
+  'VIC',
+  'WA',
+]);
 
 const CARD_FIELD_IDS: ReadonlySet<string> = new Set(
   CONFIGURABLE_CARD_FIELDS.map((field) => field.id),
@@ -75,6 +101,9 @@ const VALID_STATUSES: ReadonlySet<string> = new Set([
 ]);
 const YEAR_PATTERN = /^\d{4}$/;
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const SOURCE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+// Keep in sync with the runtime taxonomy parser in api/app/runtime_config.py.
+const FOCUS_AREA_ID_PATTERN = /^[a-z][a-z0-9_]*$/;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
@@ -90,7 +119,11 @@ function defaultCardViewPreferences(): TenderCardViewPreferences {
 }
 
 function defaultTenderFilters(): DefaultTenderFilters {
-  return { ...DEFAULT_TENDER_FILTERS };
+  return {
+    ...DEFAULT_TENDER_FILTERS,
+    states: [...DEFAULT_TENDER_FILTERS.states],
+    focusAreas: [...DEFAULT_TENDER_FILTERS.focusAreas],
+  };
 }
 
 function defaultTenderPreferences(): TenderPreferences {
@@ -106,6 +139,46 @@ function sanitizeJurisdiction(value: unknown): string {
 
   const jurisdiction = value.trim();
   return jurisdiction.length <= MAX_JURISDICTION_LENGTH ? jurisdiction : '';
+}
+
+function sanitizeStates(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  const states = new Set<string>();
+  for (const state of value) {
+    if (typeof state === 'string' && VALID_STATES.has(state)) {
+      states.add(state);
+      if (states.size === VALID_STATES.size) break;
+    }
+  }
+  return [...states];
+}
+
+function sanitizeSourceId(value: unknown): string {
+  if (typeof value !== 'string') return '';
+
+  const sourceId = value.trim();
+  return sourceId.length <= MAX_SOURCE_ID_LENGTH
+    && (sourceId === '' || SOURCE_ID_PATTERN.test(sourceId))
+    ? sourceId
+    : '';
+}
+
+function sanitizeFocusAreas(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  const focusAreas = new Set<string>();
+  for (const focusArea of value) {
+    if (
+      typeof focusArea === 'string'
+      && focusArea.length <= MAX_FOCUS_AREA_ID_LENGTH
+      && FOCUS_AREA_ID_PATTERN.test(focusArea)
+    ) {
+      focusAreas.add(focusArea);
+      if (focusAreas.size === MAX_FOCUS_AREAS) break;
+    }
+  }
+  return [...focusAreas];
 }
 
 function sanitizeStatus(value: unknown): DefaultTenderStatus {
@@ -185,12 +258,24 @@ export function sanitizeDefaultTenderFilters(value: unknown): DefaultTenderFilte
     maxDate = '';
   }
 
+  let publishedAfter = sanitizeDate(value.publishedAfter);
+  let publishedBefore = sanitizeDate(value.publishedBefore);
+  if (publishedAfter && publishedBefore && publishedAfter > publishedBefore) {
+    publishedAfter = '';
+    publishedBefore = '';
+  }
+
   return {
     jurisdiction: sanitizeJurisdiction(value.jurisdiction),
+    states: sanitizeStates(value.states),
+    sourceId: sanitizeSourceId(value.sourceId),
+    focusAreas: sanitizeFocusAreas(value.focusAreas),
     status: sanitizeStatus(value.status),
     year: sanitizeYear(value.year),
     minDate,
     maxDate,
+    publishedAfter,
+    publishedBefore,
   };
 }
 
