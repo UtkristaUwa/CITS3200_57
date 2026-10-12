@@ -43,13 +43,14 @@ GET_ATTEMPTS = 3
 WAIT_TIMEOUT = 30
 
 # ACT builds each tender's document zip on request; 60s was too short for big
-# packages. The download has to start within DOWNLOAD_WAIT_SECONDS. Once a partial file is
-# there it is given until it stalls (no change for DOWNLOAD_STALL_SECONDS) or
-# DOWNLOAD_HARD_MAX_SECONDS in all: the large packages (33 documents) are slow,
-# not broken, and used to be abandoned at 60s.
-DOWNLOAD_WAIT_SECONDS = int(os.environ.get("ACT_DOWNLOAD_WAIT_SECONDS", "180"))
-DOWNLOAD_STALL_SECONDS = int(os.environ.get("ACT_DOWNLOAD_STALL_SECONDS", "300"))
-DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("ACT_DOWNLOAD_HARD_MAX_SECONDS", "900"))
+# packages (the biggest seen, 33 documents, took about 6 minutes). Time is not the
+# constraint here, getting every document is, so the limits are generous. The download
+# has to start within DOWNLOAD_WAIT_SECONDS. Once a partial file is there it is given
+# until it stalls (no change for DOWNLOAD_STALL_SECONDS) or DOWNLOAD_HARD_MAX_SECONDS
+# in all.
+DOWNLOAD_WAIT_SECONDS = int(os.environ.get("ACT_DOWNLOAD_WAIT_SECONDS", "480"))
+DOWNLOAD_STALL_SECONDS = int(os.environ.get("ACT_DOWNLOAD_STALL_SECONDS", "480"))
+DOWNLOAD_HARD_MAX_SECONDS = int(os.environ.get("ACT_DOWNLOAD_HARD_MAX_SECONDS", "1800"))
 
 
 class BrowserSession:
@@ -190,6 +191,12 @@ class BrowserSession:
             dst = os.path.join(self.download_dir, name)
             os.replace(src, dst)
             return dst
+        # Say what the browser is looking at. A download that never starts has been
+        # followed by a signed-out or challenge page; this is how we find out which.
+        self._debug_dump("download not started")
+        if self._on_challenge_page():
+            raise BotBlockedError(
+                f"Cloudflare challenge after asking for the documents at {download_docs_url}")
         raise TimeoutError(
             f"Download did not complete (nothing started within {DOWNLOAD_WAIT_SECONDS}s, "
             f"or it stalled for {DOWNLOAD_STALL_SECONDS}s, or took over {DOWNLOAD_HARD_MAX_SECONDS}s)")

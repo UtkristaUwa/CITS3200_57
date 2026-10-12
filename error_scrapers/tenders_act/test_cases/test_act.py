@@ -382,7 +382,7 @@ def test_a_challenge_at_login_is_reported_as_bot_blocked(tmp_path, monkeypatch):
 def test_bot_blocked_is_retried_with_a_fresh_browser_then_reported(monkeypatch):
     attempts = []
 
-    def blocked_run(limit, output_dir):
+    def blocked_run(limit, output_dir, **kwargs):
         attempts.append(1)
         return common.SITE_BOT_BLOCKED, []
 
@@ -398,7 +398,7 @@ def test_bot_blocked_is_retried_with_a_fresh_browser_then_reported(monkeypatch):
 def test_a_structure_change_is_not_retried(monkeypatch):
     attempts = []
 
-    def changed_run(limit, output_dir):
+    def changed_run(limit, output_dir, **kwargs):
         attempts.append(1)
         return common.SITE_STRUCTURE_CHANGE, []
 
@@ -607,3 +607,178 @@ def test_browser_login_fails_on_the_wrong_password_page(tmp_path, monkeypatch):
 def test_browser_login_is_not_assumed_from_leaving_the_login_url(tmp_path, monkeypatch):
     # The page moved off /login but shows no Log Out link: not a confirmed sign-in.
     assert _login_with(monkeypatch, tmp_path, "<html><body>Welcome</body></html>") is False
+
+
+# ---------------------------------------------------------------------------
+# A challenge part-way: say what the page was, stop, resume, retry later
+# ---------------------------------------------------------------------------
+
+class BlocksAfter(FakeBrowserSession):
+    """Serves `n` tender pages, then Cloudflare's challenge for every detail page."""
+
+    def __init__(self, tmp_path, zip_bytes, n):
+        super().__init__(tmp_path, zip_bytes)
+        self.n = n
+
+    def get(self, url, wait_selector=None, attempts=3):
+        if url != scraper.LIST_URL and "downloadSpecDocs" not in url and self.details_served >= self.n:
+            return CLOUDFLARE_CHALLENGE_HTML
+        return super().get(url, wait_selector, attempts)
+
+
+def _listing_urls():
+    return scraper.parse_listing(_read_fixture("act_public_list.html"))
+
+
+def test_a_challenge_page_is_not_mistaken_for_a_lapsed_session(tmp_path, monkeypatch, caplog):
+    session = BlocksAfter(tmp_path, _zip_of(_offered_ids()), n=1)
+    with caplog.at_level("WARNING"):
+        code, tenders = _run_with(monkeypatch, tmp_path, session, limit=4)
+    assert code == common.SITE_BOT_BLOCKED
+    assert len(tenders) == 1
+    assert session.logins == 1  # it did not go back to /login to ask Cloudflare again
+    assert any("Just a moment" in r.getMessage() for r in caplog.records)  # and it says what it saw
+
+
+def test_a_signed_out_page_that_is_not_a_challenge_still_signs_in_again(tmp_path, monkeypatch, caplog):
+    session = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()), lapse_after=1)
+    with caplog.at_level("WARNING"):
+        code, tenders = _run_with(monkeypatch, tmp_path, session, limit=3)
+    assert code == common.SITE_SUCCESS and len(tenders) == 3
+    assert any("no Log Out link" in r.getMessage() for r in caplog.records)
+
+
+def test_resume_does_the_tenders_not_stored_yet_first():
+    urls = ["a", "b", "c", "d"]
+    ordered, new = scraper.order_for_resume(urls, {"a", "c"})
+    assert ordered == ["b", "d", "a", "c"] and new == 2
+    assert scraper.order_for_resume(urls, None) == (urls, 4)
+
+
+def test_resume_fetches_new_tenders_first_and_skips_finished_ones(tmp_path, monkeypatch):
+    urls = _listing_urls()[:3]
+    fetched = []
+
+    class Recording(FakeBrowserSession):
+        def get(self, url, wait_selector=None, attempts=3):
+            if url in urls:
+                fetched.append(url)
+            return super().get(url, wait_selector, attempts)
+
+    state = {"done": {urls[2]}, "codes": set()}
+    session = Recording(tmp_path, _zip_of(_offered_ids()))
+    from error_scrapers.tenders_act import browser
+    monkeypatch.setattr(browser, "BrowserSession", session)
+    scraper._run_once(limit=3, output_dir=str(tmp_path / "out"),
+                      known_urls={urls[0]}, resume=True, state=state)
+    assert fetched == [urls[1], urls[0]]  # new one first; the finished one never fetched again
+
+
+class SessionsInOrder:
+    """One session per browser start, in order; the last one is reused after that."""
+
+    def __init__(self, *sessions):
+        self.sessions = list(sessions)
+        self.started = 0
+
+    def __call__(self, download_dir=None):
+        session = self.sessions[min(self.started, len(self.sessions) - 1)]
+        self.started += 1
+        return session
+
+
+def _retry_run(monkeypatch, tmp_path, sessions, **kwargs):
+    from error_scrapers.tenders_act import browser
+
+    sleeps = []
+    monkeypatch.setattr(browser, "BrowserSession", sessions)
+    monkeypatch.setattr(scraper.time, "sleep", sleeps.append)
+    result = scraper.run_scraper_via_browser(output_dir=str(tmp_path / "out"), limit=4, **kwargs)
+    return result, sleeps
+
+
+def test_a_block_part_way_is_retried_with_a_fresh_browser_that_finishes_the_rest(tmp_path, monkeypatch):
+    zip_bytes = _zip_of(_offered_ids())
+    blocked = BlocksAfter(tmp_path, zip_bytes, n=1)
+    fine = FakeBrowserSession(tmp_path, zip_bytes)
+    sessions = SessionsInOrder(blocked, fine)
+    result, sleeps = _retry_run(monkeypatch, tmp_path, sessions)
+    assert result.code == common.SITE_SUCCESS
+    assert result.count == 4
+    assert sessions.started == 2
+    assert fine.details_served == 3  # only the three the first browser never reached
+    assert sleeps == [scraper.BLOCKED_WAIT_SECONDS]  # it waited before trying again
+
+
+def test_blocked_every_time_with_tenders_in_hand_and_resume_is_not_a_failure(tmp_path, monkeypatch):
+    zip_bytes = _zip_of(_offered_ids())
+    sessions = SessionsInOrder(*[BlocksAfter(tmp_path, zip_bytes, n=1) for _ in range(3)])
+    result, sleeps = _retry_run(monkeypatch, tmp_path, sessions, known_urls=set(), resume=True)
+    assert result.code == common.SITE_SUCCESS  # stopped part-way; the next run carries on
+    assert result.count >= 1
+    assert sessions.started == 3
+    assert sleeps == [scraper.BLOCKED_WAIT_SECONDS, 2 * scraper.BLOCKED_WAIT_SECONDS]
+
+
+def test_blocked_every_time_without_resume_is_reported_as_blocked(tmp_path, monkeypatch):
+    zip_bytes = _zip_of(_offered_ids())
+    sessions = SessionsInOrder(*[BlocksAfter(tmp_path, zip_bytes, n=1) for _ in range(3)])
+    result, _sleeps = _retry_run(monkeypatch, tmp_path, sessions)
+    assert result.code == common.SITE_BOT_BLOCKED
+
+
+def test_a_partial_tender_before_the_block_keeps_the_final_code_partial(tmp_path, monkeypatch):
+    # The first browser gets a package with a file missing, then is blocked; the
+    # second finishes cleanly. The partial tender must not be forgotten.
+    short = BlocksAfter(tmp_path, _zip_of(max(_offered_ids() - 1, 0)), n=1)
+    fine = FakeBrowserSession(tmp_path, _zip_of(_offered_ids()))
+    result, _sleeps = _retry_run(monkeypatch, tmp_path, SessionsInOrder(short, fine))
+    assert result.code == common.TENDER_PARTIAL
+    assert result.count == 4
+
+
+class _DownloadSB:
+    def __init__(self, page_title, page_html):
+        self.page_title, self.page_html = page_title, page_html
+
+    def uc_open_with_reconnect(self, url, reconnect_time=None):
+        pass
+
+    def wait_for_element(self, selector, timeout=None):
+        pass
+
+    def click(self, selector):
+        pass
+
+    def get_title(self):
+        return self.page_title
+
+    def get_current_url(self):
+        return scraper.BASE_URL + "/x"
+
+    def get_page_source(self):
+        return self.page_html
+
+
+def _download_that_never_starts(tmp_path, monkeypatch, sb):
+    from error_scrapers.tenders_act import browser
+
+    monkeypatch.setattr(common, "wait_for_download", lambda *a, **kw: None)
+    session = browser.BrowserSession(download_dir=str(tmp_path))
+    session._sb_downloads_dir = str(tmp_path / "sb_downloads")
+    session.sb = sb
+    return session.download_via_form(scraper.BASE_URL + "/tender/downloadSpecDocs?id=1", ["1"])
+
+
+def test_a_download_that_never_starts_on_a_challenge_page_is_a_block(tmp_path, monkeypatch):
+    sb = _DownloadSB("Just a moment...", CLOUDFLARE_CHALLENGE_HTML)
+    with pytest.raises(scraper.BotBlockedError):
+        _download_that_never_starts(tmp_path, monkeypatch, sb)
+
+
+def test_a_download_that_never_starts_on_a_normal_page_is_still_a_timeout(tmp_path, monkeypatch, caplog):
+    sb = _DownloadSB("Tenders ACT", _read_fixture("act_tender_detail.html"))
+    with caplog.at_level("WARNING"):
+        with pytest.raises(TimeoutError):
+            _download_that_never_starts(tmp_path, monkeypatch, sb)
+    assert any("download not started" in r.getMessage() for r in caplog.records)  # it says what it saw

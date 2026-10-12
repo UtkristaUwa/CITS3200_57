@@ -201,7 +201,7 @@ SCRAPERS = [
 # part-way). Their scraper gets the URLs already in BigQuery and carries on where the
 # last run stopped: buy.nsw from a saved listing page, VIC by doing the tenders not
 # stored yet first. Not applied to --local runs.
-CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor", "sa_tenders"}
+CRAWL_RESUME_SOURCES = {"buynsw", "vic_buyingfor", "sa_tenders", "tenders_act"}
 
 UNKNOWN_SOURCE_ID = "unknown"
 

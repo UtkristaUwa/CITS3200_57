@@ -402,6 +402,25 @@ def run_scraper(limit: int = 0, output_dir: str = "tenders_data",
     except (httpx.ConnectError, ConnectionError):
         return common.SITE_TOTAL_FAILURE, tenders
 
+def page_title(html: str) -> str:
+    """The page's <title>, or "" -- what a log line needs to say what we were served."""
+    tag = BeautifulSoup(html or "", "html.parser").find("title")
+    return tag.get_text(" ", strip=True) if tag else ""
+
+
+def order_for_resume(urls: list[str], known_urls) -> tuple[list[str], int]:
+    """
+    Tenders we do not hold yet first, then the ones we already have, so a run
+    that Cloudflare stops part-way has spent its time on the tenders that matter.
+
+    Returns (ordered urls, how many are new).
+    """
+    known_urls = known_urls or frozenset()
+    new = [u for u in urls if u not in known_urls]
+    old = [u for u in urls if u in known_urls]
+    return new + old, len(new)
+
+
 def _scrape_documents(session, download_url: str, folder: str) -> tuple[list[dict], int, bool]:
     """
     Download and unpack one tender's document package.
@@ -435,13 +454,20 @@ def _scrape_documents(session, download_url: str, folder: str) -> tuple[list[dic
     return attachments, advertised, not any_failed and len(attachments) >= advertised
 
 
-def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, list[dict]]:
+def _run_once(limit: int = 0, output_dir: str = "tenders_data", known_urls=None,
+              resume: bool = False, state: dict | None = None) -> tuple[int, list[dict]]:
     """
     One full browser attempt: sign in, walk the listing, scrape every tender.
+
+    `state` is shared between attempts: {"done": tender URLs already finished,
+    "codes": every tender code seen}. A later attempt skips what is done.
+    With resume=True the tenders not stored yet (`known_urls`) are done first.
     """
     from error_scrapers.tenders_act.browser import BrowserSession
 
     tenders: list[dict] = []
+    tender_codes: set[int] = set()
+    done = state["done"] if state is not None else set()
     try:
         with BrowserSession(download_dir=output_dir) as session:
             if not session.login():
@@ -458,15 +484,33 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
             if limit:
                 urls = urls[:limit]
             log.info("listing: %d tender link(s) found", len(urls))
+            if resume:
+                urls, new_count = order_for_resume(urls, known_urls)
+                log.info("resume: %d new tender(s) first, then %d already stored",
+                         new_count, len(urls) - new_count)
+            run_notes.note_total(len(urls))
 
-            tender_codes = set()
             all_codes = []
             relogins = 0
             for index, url in enumerate(urls, start=1):
+                if url in done:
+                    continue  # finished by an earlier attempt
                 log.info("(%d/%d) fetching %s", index, len(urls), url)
                 try:
                     detail_html = session.get(url)
                     if not is_signed_in(detail_html):
+                        # Say what we were actually served. "Signed out" has turned out
+                        # to be a lapsed session on some nights and a Cloudflare page
+                        # on others, and the log could not tell them apart.
+                        title = page_title(detail_html)
+                        log.warning("       no Log Out link on %s -- page title: %r",
+                                    url, title or "(none)")
+                        if hasattr(session, "_debug_dump"):
+                            session._debug_dump("signed-out page")
+                        if is_blocked(title, detail_html):
+                            # A challenge, not a lapsed session. Going to /login would
+                            # only ask Cloudflare again; end the attempt instead.
+                            raise BotBlockedError(f"Cloudflare challenge instead of {url}")
                         # The session lapsed mid-run. Sign in again (capped) and retry.
                         if relogins >= MAX_RELOGINS:
                             log.error("session lapsed %d times -- stopping the run", relogins)
@@ -509,17 +553,19 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
                                      "source_url": url, **fields})
                     tender_codes.add(tender_code_result)
                     all_codes.append(tender_code_result)
+                    done.add(url)
                     reporting.tender_line(log, index, len(urls), tender_code,
                                           tender_code_result)
                 except BotBlockedError as exc:
-                    # Blocked partway through: keep what was already scraped,
-                    # but report the block rather than a partial.
+                    # Blocked partway through: keep what was already scraped.
+                    # The caller decides whether that is a failure or a run to resume.
                     log.error("blocked at tender %d/%d: %s", index, len(urls), exc)
                     return common.SITE_BOT_BLOCKED, tenders
                 except Exception as exc:
                     reporting.tender_failed(log, index, len(urls), url, exc)
                     tender_codes.add(common.TENDER_PARTIAL)
                     all_codes.append(common.TENDER_PARTIAL)
+                    done.add(url)
                     continue
 
             reporting.diagnose(log, all_codes, logged_in=True)
@@ -531,6 +577,9 @@ def _run_once(limit: int = 0, output_dir: str = "tenders_data") -> tuple[int, li
     except Exception:
         log.exception("browser run crashed")
         return common.SITE_TOTAL_FAILURE, tenders
+    finally:
+        if state is not None:
+            state["codes"] |= tender_codes
 
 
 # Site-level codes worth another attempt with a fresh browser. A Cloudflare
@@ -543,27 +592,62 @@ RETRYABLE_CODES = (
 )
 
 
+# Cloudflare is given longer to settle than a plain failure before the next
+# fresh browser tries: we back off, we do not hammer the site.
+BLOCKED_WAIT_SECONDS = 120
+
+
 def _scrape_with_retries(limit: int = 0, output_dir: str = "tenders_data",
-                         attempts: int = 3) -> tuple[int, list[dict]]:
+                         attempts: int = 3, known_urls=None,
+                         resume: bool = False) -> tuple[int, list[dict]]:
     """
-    Retry wrapper: each attempt opens a brand-new browser, since a flagged
-    session can stay flagged. Only retries when nothing was scraped and the
-    failure was a login/total failure.
+    Run the scrape, starting again with a brand-new browser (after a wait) when
+    it ends in a total failure or a Cloudflare challenge. A failed login is
+    retried only while nothing has been scraped (a refused password is never
+    hammered).
+
+    Tenders finished by an attempt are kept and never redone, so a block part-way
+    costs only the tenders after it. If the last attempt is still blocked:
+      * with resume=True and tenders in hand, the run is reported as what was
+        scraped (success/partial) and the next run carries on with the tenders
+        not stored yet -- the same as VIC and buy.nsw;
+      * otherwise it is reported as SITE_BOT_BLOCKED.
     """
-    code, tenders = common.SITE_TOTAL_FAILURE, []
+    all_tenders: list[dict] = []
+    code = common.SITE_TOTAL_FAILURE
     if not all(credentials()):
         log.error("ACT_USERNAME / ACT_PASSWORD are not set -- not opening a browser. "
                   "Check the job's env vars / Secret Manager mapping.")
-        return common.SITE_LOGIN_FAILED, tenders
+        return common.SITE_LOGIN_FAILED, all_tenders
+    state = {"done": set(), "codes": set()}
     for attempt in range(1, attempts + 1):
         log.info("browser attempt %d/%d", attempt, attempts)
-        code, tenders = _run_once(limit, output_dir)
-        if tenders or code not in RETRYABLE_CODES:
-            return code, tenders
-        log.warning("attempt %d/%d got %s with 0 tenders -- retrying in %ds",
-                    attempt, attempts, reporting.code_name(code), 15 * attempt)
-        time.sleep(15 * attempt)
-    return code, tenders
+        code, tenders = _run_once(limit, output_dir, known_urls=known_urls,
+                                  resume=resume, state=state)
+        all_tenders.extend(tenders)
+        if code in (common.SITE_TOTAL_FAILURE, common.SITE_BOT_BLOCKED):
+            retry = True
+        elif code == common.SITE_LOGIN_FAILED:
+            retry = not all_tenders
+        else:
+            retry = False
+        if not retry:
+            break
+        if attempt < attempts:
+            wait = (BLOCKED_WAIT_SECONDS if code == common.SITE_BOT_BLOCKED else 15) * attempt
+            log.warning("attempt %d/%d got %s after %d tender(s) -- retrying with a new browser "
+                        "in %ds", attempt, attempts, reporting.code_name(code),
+                        len(all_tenders), wait)
+            time.sleep(wait)
+
+    if code == common.SITE_BOT_BLOCKED and resume and all_tenders:
+        log.warning("Cloudflare stopped the run after %d tender(s) -- kept; the next run carries "
+                    "on with the tenders not stored yet", len(all_tenders))
+        return common.site_code_from(state["codes"]), all_tenders
+    if common.SITE_TOTAL_FAILURE <= code <= common.SITE_RATE_LIMITED:
+        return code, all_tenders
+    # The last attempt finished. Keep anything worse an earlier attempt saw.
+    return common.site_code_from(state["codes"] | {code}), all_tenders
 
 
 def _scrape_all(client, urls, output_dir, tenders):
@@ -588,12 +672,14 @@ def _scrape_all(client, urls, output_dir, tenders):
 
 @reporting.reported(SOURCE_ID.upper())
 def run_scraper_via_browser(limit: int = 0, output_dir: str = "tenders_data",
-                            attempts: int = 3) -> common.ScrapeResult:
+                            attempts: int = 3, known_urls=None,
+                            resume: bool = False) -> common.ScrapeResult:
     """
     The pipeline's entry point. Returns (error code, site name, tenders scraped)
     and nothing else -- the tenders themselves are left in output_dir.
     """
-    code, tenders = _scrape_with_retries(limit, output_dir, attempts)
+    code, tenders = _scrape_with_retries(limit, output_dir, attempts,
+                                          known_urls=known_urls, resume=resume)
     return common.ScrapeResult(code, SOURCE_ID, len(tenders))
 
 
