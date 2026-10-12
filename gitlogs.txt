@@ -1,4 +1,9 @@
-* acadec1  (HEAD -> main, origin/main, origin/HEAD) final context cap change to 1m to save a couple of long tenders (PiesOnTues)
+*   507104b  (HEAD -> main, origin/main, origin/HEAD) Merge pull request #109 from UtkristaUwa/documentation (bgilmore22)
+|\  
+| * c9461ee  documentation (bgilmore22)
+|/  
+* 4472f7c  final gitlogs added to gitlogs.txt (PiesOnTues)
+* acadec1  final context cap change to 1m to save a couple of long tenders (PiesOnTues)
 * ce9943b  Update README.md (UtkristaUwa)
 * 78138c4  Update documentation.md (UtkristaUwa)
 * 76ed86e  Fix formatting and capitalization in documentation (UtkristaUwa)
